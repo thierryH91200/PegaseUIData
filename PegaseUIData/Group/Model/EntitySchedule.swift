@@ -27,6 +27,7 @@ import SwiftData
     var category: EntityCategory?
     @Relationship(inverse: \EntityAccount.compteLie) var compteLie: EntityAccount?
     var paymentMode: EntityPaymentMode?
+    
     public init() {
 
     }

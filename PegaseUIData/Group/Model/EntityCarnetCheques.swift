@@ -18,6 +18,7 @@ import SwiftData
     var prefix: String?
     var uuid: UUID?
     var account: EntityAccount?
+  
     public init() {
 
     }

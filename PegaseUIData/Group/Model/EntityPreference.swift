@@ -16,6 +16,7 @@ import SwiftData
     var account: EntityAccount?
     var category: EntityCategory?
     var paymentMode: EntityPaymentMode?
+    
     public init() {
 
     }

@@ -13,7 +13,7 @@ import UniformTypeIdentifiers
 struct PegaseUIDataApp: App {
     var body: some Scene {
         DocumentGroup(editing: .itemDocument, migrationPlan: PegaseUIDataMigrationPlan.self) {
-            ContentView()
+            ContentView100()
         }
     }
 }
@@ -38,6 +38,15 @@ struct PegaseUIDataVersionedSchema: VersionedSchema {
     static var versionIdentifier = Schema.Version(1, 0, 0)
 
     static var models: [any PersistentModel.Type] = [
-        Item.self,
+        EntityAccount.self,
     ]
 }
+
+func localizeString(_ key: String, comment: String = "") -> String {
+    if #available(macOS 12, *) {
+        return String(localized: String.LocalizationValue(key))
+    } else {
+        return NSLocalizedString(key, comment: comment)
+    }
+}
+

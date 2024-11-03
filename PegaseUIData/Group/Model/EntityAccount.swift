@@ -21,12 +21,14 @@ import SwiftData
     var nameImage: String?
     @Attribute(.ephemeral) var solde: Double? = 0.0
     var type: Int16? = 0
-    var uuid: UUID
+    var uuid: UUID = UUID()
+    
     @Relationship(deleteRule: .cascade, inverse: \EntityBank.account) var bank: EntityBank?
     @Relationship(inverse: \EntityBankStatement.account) var bankStatement: [EntityBankStatement]?
     @Relationship(deleteRule: .cascade, inverse: \EntityCarnetCheques.account) var carnetCheques: [EntityCarnetCheques]?
     var children: [EntityAccount]?
     var compteLie: EntitySchedule?
+    
     @Relationship(deleteRule: .cascade, inverse: \EntitySchedule.account) var echeanciers: [EntitySchedule]?
     @Relationship(deleteRule: .cascade, inverse: \EntityIdentity.account) var identity: EntityIdentity?
     @Relationship(deleteRule: .cascade, inverse: \EntityInitAccount.account) var initAccount: EntityInitAccount?
@@ -35,12 +37,9 @@ import SwiftData
     @Relationship(deleteRule: .cascade, inverse: \EntityPreference.account) var preference: EntityPreference?
     @Relationship(deleteRule: .cascade, inverse: \EntityRubric.account) var rubric: [EntityRubric]?
     @Relationship(deleteRule: .cascade, inverse: \EntityTransactions.account) var transactions: [EntityTransactions]?
-    public init(uuid: UUID) {
-        self.uuid = uuid
 
+    public init() {
     }
-    
+}
 
 #warning("The property \"ordered\" on EntityAccount:children is unsupported in SwiftData.")
-
-}

@@ -6,7 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		0359AE602CD7BB8900687E3F /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 0359AE5F2CD7BB8900687E3F /* README.md */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		0359AE5F2CD7BB8900687E3F /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		039B4BA92CD78949002203D9 /* PegaseUIData.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PegaseUIData.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -21,6 +26,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		0359AE612CD7BBA300687E3F /* Doc */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Doc;
+			sourceTree = "<group>";
+		};
 		039B4BAB2CD78949002203D9 /* PegaseUIData */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -45,6 +55,8 @@
 		039B4BA02CD78949002203D9 = {
 			isa = PBXGroup;
 			children = (
+				0359AE612CD7BBA300687E3F /* Doc */,
+				0359AE5F2CD7BB8900687E3F /* README.md */,
 				039B4BAB2CD78949002203D9 /* PegaseUIData */,
 				039B4BAA2CD78949002203D9 /* Products */,
 			);
@@ -74,6 +86,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				0359AE612CD7BBA300687E3F /* Doc */,
 				039B4BAB2CD78949002203D9 /* PegaseUIData */,
 			);
 			name = PegaseUIData;
@@ -122,6 +135,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0359AE602CD7BB8900687E3F /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
