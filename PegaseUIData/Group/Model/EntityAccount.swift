@@ -11,6 +11,7 @@ import SwiftData
 
 
 @Model public class EntityAccount {
+    
     var dateEcheancier: Date?
     var isAccount: Bool? = false
     var isDemo: Bool?
