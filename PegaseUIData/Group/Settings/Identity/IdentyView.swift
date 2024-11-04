@@ -1,97 +1,114 @@
+//  IdentyView.swift
+//  PegaseUIData
+//
+//  Created by Thierry hentic on 03/11/2024.
+//
+
 import SwiftUI
+import SwiftData
 
-struct ContentView400: View {
-    @State private var name: String = "Doe"
-    @State private var surname: String = "John"
-    @State private var address: String = ""
-    @State private var complement: String = ""
-    @State private var postalCode: String = "0"
-    @State private var town: String = ""
-    @State private var country: String = ""
-    @State private var phone: String = ""
-    @State private var mobile: String = ""
-    @State private var email: String = ""
-
+struct IdentyView: View {
+    @Environment(\.modelContext) var modelContext
+    @Query private var identityInfo: [IdentityInfo]
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Identité")
                 .font(.title)
                 .padding(.bottom, 10)
-
+            
             VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text("Name")
-                        .frame(width: 100, alignment: .leading)
-                    TextField("Name", text: $name)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    Spacer()
-                    Text("Surname")
-                        .frame(width: 100, alignment: .leading)
-                    TextField("Surname", text: $surname)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                }
-
-                HStack {
-                    Text("Address")
-                        .frame(width: 100, alignment: .leading)
-                    TextField("Address", text: $address)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                }
-
-                HStack {
-                    Text("Complement")
-                        .frame(width: 100, alignment: .leading)
-                    TextField("Complement", text: $complement)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                }
-
-                HStack {
-                    Text("CP")
-                        .frame(width: 100, alignment: .leading)
-                    TextField("Postal Code", text: $postalCode)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .frame(width: 80)
-                    Spacer()
-                    Text("Town")
-                        .frame(width: 100, alignment: .leading)
-                    TextField("Town", text: $town)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                }
-
-                HStack {
-                    Text("Country")
-                        .frame(width: 100, alignment: .leading)
-                    TextField("Country", text: $country)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                }
-
-                HStack {
-                    Text("Phone")
-                        .frame(width: 100, alignment: .leading)
-                    TextField("Phone", text: $phone)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .frame(width: 150)
-                    Spacer()
-                    Text("Mobile")
-                        .frame(width: 100, alignment: .leading)
-                    TextField("Mobile", text: $mobile)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .frame(width: 150)
-                }
-
-                HStack {
-                    Text("Email")
-                        .frame(width: 100, alignment: .leading)
-                    TextField("Email", text: $email)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                
+                if let identityInfo = identityInfo.first {
+                    SectionInfoView(identityInfo: identityInfo)
                 }
             }
-            .padding()
-            .background(Color.gray.opacity(0.1))
-            .cornerRadius(10)
         }
         .padding()
         .frame(width: 600)
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(10)
+        .onAppear {
+            // Créer un nouvel enregistrement si la base de données est vide
+            if identityInfo.isEmpty {
+                let context = modelContext
+                let newIdentityInfo = IdentityInfo()
+                context.insert(newIdentityInfo)
+            }
+        }
+        
     }
 }
 
+struct SectionInfoView: View {
+    
+    @Bindable var identityInfo: IdentityInfo
+        
+    var body: some View {
+        HStack {
+            Text("Name")
+                .frame(width: 100, alignment: .leading)
+            TextField("Name", text: $identityInfo.name)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+            Spacer()
+            Text("Surname")
+                .frame(width: 100, alignment: .leading)
+            TextField("Surname", text: $identityInfo.surName)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+        }
+        
+        HStack {
+            Text("Address")
+                .frame(width: 100, alignment: .leading)
+            TextField("Address", text: $identityInfo.adress)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+        }
+        
+        HStack {
+            Text("Complement")
+                .frame(width: 100, alignment: .leading)
+            TextField("Complement", text: $identityInfo.complement)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+        }
+        
+        HStack {
+            Text("CP")
+                .frame(width: 100, alignment: .leading)
+            TextField("Postal Code", text: $identityInfo.town)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .frame(width: 80)
+            Spacer()
+            Text("Town")
+                .frame(width: 100, alignment: .leading)
+            TextField("Town", text: $identityInfo.town)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+        }
+        
+        HStack {
+            Text("Country")
+                .frame(width: 100, alignment: .leading)
+            TextField("Country", text: $identityInfo.country)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+        }
+        
+        HStack {
+            Text("Phone")
+                .frame(width: 100, alignment: .leading)
+            TextField("Phone", text: $identityInfo.phone)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .frame(width: 150)
+            Spacer()
+            Text("Mobile")
+                .frame(width: 100, alignment: .leading)
+            TextField("Mobile", text: $identityInfo.mobile)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .frame(width: 150)
+        }
+        HStack {
+            Text("Email")
+                .frame(width: 100, alignment: .leading)
+            TextField("Email", text: $identityInfo.email)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+        }
+    }
+}

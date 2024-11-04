@@ -14,40 +14,10 @@
             filePath = "PegaseUIData/PegaseUIDataApp.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "31"
-            endingLineNumber = "31"
+            startingLineNumber = "44"
+            endingLineNumber = "44"
             landmarkName = "PegaseUIDataMigrationPlan"
             landmarkType = "14">
-            <Locations>
-               <Location
-                  uuid = "2AF4F59C-843B-4B1D-802E-4F781C3AED50 - 3d44d572c5b3c81d"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "one-time initialization function for stages"
-                  moduleName = "PegaseUIData.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Volumes/X10Pro/Desktop/swiftUI/UI/PegaseUIData/PegaseUIData/PegaseUIDataApp.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "32"
-                  endingLineNumber = "32">
-               </Location>
-               <Location
-                  uuid = "2AF4F59C-843B-4B1D-802E-4F781C3AED50 - 2d98c38c5b16a193"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "PegaseUIData.PegaseUIDataMigrationPlan.stages.unsafeMutableAddressor : Swift.Array&lt;SwiftData.MigrationStage&gt;"
-                  moduleName = "PegaseUIData.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Volumes/X10Pro/Desktop/swiftUI/UI/PegaseUIData/PegaseUIData/PegaseUIDataApp.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "32"
-                  endingLineNumber = "32">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

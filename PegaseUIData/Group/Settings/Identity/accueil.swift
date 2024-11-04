@@ -8,60 +8,77 @@
 
 import SwiftUI
 
+struct Identy: View {
+    
+    @Binding var isVisible: Bool
+    
+    var body: some View {
+        Accueil()
+            .padding()
+            .task {
+                await performFalseTask()
+            }
+    }
+    
+    private func performFalseTask() async {
+        // Exécuter une tâche asynchrone (par exemple, un délai)
+        try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 seconde de délai
+        isVisible = false
+    }
+}
 
 
-import SwiftUI
-
-struct ContentView300: View {
+struct Accueil: View {
     var body: some View {
         TabView {
-            HomeView()
+            Account()
                 .tabItem {
-                    Label("Accueil", systemImage: "house")
+                    Label("Compte", systemImage: "house")
                 }
             
-            ProfileView()
+            Bank()
                 .tabItem {
-                    Label("Profil", systemImage: "person.circle")
+                    Label("Banque", systemImage: "eurosign.bank.building")
                 }
             
-            SettingsView()
+            Identite()
                 .tabItem {
-                    Label("Paramètres", systemImage: "gearshape")
+                    Label("Identites", systemImage: "person")
                 }
         }
-        .frame(width: 600, height: 400)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .layoutPriority(1) // Priorité élevée pour occuper tout l’espace disponible
     }
 }
 
-struct HomeView: View {
+struct Account: View {
     var body: some View {
         VStack {
-            Text("Bienvenue sur la page d'accueil")
-                .font(.largeTitle)
-            Spacer()
+            AccountView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .layoutPriority(1) // Priorité élevée pour occuper tout l’espace disponible
         }
         .padding()
     }
 }
 
-struct ProfileView: View {
+struct Bank: View {
     var body: some View {
         VStack {
-            Text("Page de profil")
-                .font(.largeTitle)
-            Spacer()
+            BankView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .layoutPriority(1) // Priorité élevée pour occuper tout l’espace disponible
         }
         .padding()
     }
 }
 
-struct SettingsView: View {
+struct Identite: View {
     var body: some View {
         VStack {
-            Text("Paramètres")
-                .font(.largeTitle)
-            Spacer()
+            IdentyView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .layoutPriority(1) // Priorité élevée pour occuper tout l’espace disponible
         }
         .padding()
     }

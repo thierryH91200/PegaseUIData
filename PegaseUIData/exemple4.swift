@@ -114,7 +114,7 @@ struct DetailContainer: View {
         "Rubrique Pie"           : { isVisible in AnyView(RubriquePieView(isVisible           : isVisible)) },
         
         // Reglage
-        "Identité"               : {  isVisible in AnyView(IdentyView(isVisible               : isVisible)) },
+        "Identité"               : {  isVisible in AnyView(Identy(isVisible                   : isVisible)) },
         "Echeancier"             : {  isVisible in AnyView(SchedulerView(isVisible            : isVisible)) },
         "Réglage"                : {  isVisible in AnyView(SettingView(isVisible              : isVisible)) }
     ]

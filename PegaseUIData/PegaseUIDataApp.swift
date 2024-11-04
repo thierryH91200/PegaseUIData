@@ -11,9 +11,22 @@ import UniformTypeIdentifiers
 
 @main
 struct PegaseUIDataApp: App {
+    
+    @StateObject private var windowSizeManager = WindowSizeManager()
+
     var body: some Scene {
-        DocumentGroup(editing: .itemDocument, migrationPlan: PegaseUIDataMigrationPlan.self) {
+        WindowGroup {
             ContentView100()
+                .modelContainer(for: BanqueInfo.self)
+        }
+    }
+}
+class WindowSizeManager: NSObject, NSWindowDelegate, ObservableObject {
+    func windowDidResize(_ notification: Notification) {
+        if let window = notification.object as? NSWindow {
+            let size = window.frame.size
+            UserDefaults.standard.set(size.width, forKey: "windowWidth")
+            UserDefaults.standard.set(size.height, forKey: "windowHeight")
         }
     }
 }

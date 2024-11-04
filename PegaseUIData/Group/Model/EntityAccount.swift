@@ -31,7 +31,7 @@ import SwiftData
     var compteLie: EntitySchedule?
     
     @Relationship(deleteRule: .cascade, inverse: \EntitySchedule.account) var echeanciers: [EntitySchedule]?
-    @Relationship(deleteRule: .cascade, inverse: \EntityIdentity.account) var identity: EntityIdentity?
+    @Relationship(deleteRule: .cascade, inverse: \IdentityInfo.account) var identity: IdentityInfo?
     @Relationship(deleteRule: .cascade, inverse: \EntityInitAccount.account) var initAccount: EntityInitAccount?
     var parent: EntityAccount?
     @Relationship(deleteRule: .cascade, inverse: \EntityPaymentMode.account) var paymentMode: [EntityPaymentMode]?

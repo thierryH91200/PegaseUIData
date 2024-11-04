@@ -22,7 +22,7 @@ import SwiftData
     var soldeDebut: Double? = 0.0
     var soldeFin: Double? = 0.0
     var soldeInter: Double? = 0.0
-    var uuid: UUID?
+    var uuid = UUID()
     var account: EntityAccount?
 
     public init() {
