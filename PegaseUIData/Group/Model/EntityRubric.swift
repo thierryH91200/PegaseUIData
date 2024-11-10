@@ -13,24 +13,23 @@ import SwiftUI
 
 @Model
 public class EntityRubric {
-
-    var name: String
     
-//    @Attribute(.transformable(by: "NSColorValueTransformer")) var color: NSObject?
+    var name: String = ""
+    
+    //    @Attribute(.transformable(by: "NSColorValueTransformer")) var color: NSObject?
     @Attribute(.ephemeral) var total: Double = 0.0
-
-    var uuid: UUID
+    
+    var uuid: UUID = UUID()
     
     var account: EntityAccount?
     
     @Relationship(deleteRule: .cascade) var category: [EntityCategory]?
     
-    public init( name: String, uuid: UUID) {
-//        public init( name: String, color: Color, uuid: UUID) {
+    public init( name: String, /*color: Color,*/ uuid: UUID) {
         self.name = name
-//        self.color = NSColor(color)
+        //        self.color = NSColor(color)
         self.uuid = uuid
-
+        
     }
     
 }
@@ -40,7 +39,7 @@ public class EntityRubric {
 //class ColorModel {
 //    var name: String
 //    @Attribute(.transformable(by: ColorTransformer.self)) var color: UIColor
-//    
+//
 //    init(name: String, color: Color) {
 //        self.name = name
 //        self.color = UIColor(color)

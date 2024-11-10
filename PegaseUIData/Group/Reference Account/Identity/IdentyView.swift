@@ -9,7 +9,8 @@ import SwiftData
 
 struct IdentyView: View {
     @Environment(\.modelContext) var modelContext
-    @Query private var identityInfo: [IdentityInfo]
+    @Query private var identityInfo: [EntityIdentity]
+    
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -32,7 +33,7 @@ struct IdentyView: View {
             // Créer un nouvel enregistrement si la base de données est vide
             if identityInfo.isEmpty {
                 let context = modelContext
-                let newIdentityInfo = IdentityInfo()
+                let newIdentityInfo = EntityIdentity()
                 context.insert(newIdentityInfo)
             }
         }
@@ -42,7 +43,7 @@ struct IdentyView: View {
 
 struct SectionInfoView: View {
     
-    @Bindable var identityInfo: IdentityInfo
+    @Bindable var identityInfo: EntityIdentity
         
     var body: some View {
         HStack {

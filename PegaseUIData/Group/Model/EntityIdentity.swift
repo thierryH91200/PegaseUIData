@@ -10,7 +10,7 @@ import Foundation
 import SwiftData
 
 @Model
-public class IdentityInfo {
+public class EntityIdentity {
     var adress: String = ""
     var complement: String = ""
     var country: String = ""
@@ -22,6 +22,7 @@ public class IdentityInfo {
     var phone: String = ""
     var surName: String = ""
     var town: String = ""
+    
     var account: EntityAccount?
     
     public init(adress: String,

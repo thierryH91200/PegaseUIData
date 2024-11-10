@@ -11,8 +11,8 @@ import SwiftData
 
 
 @Model public class EntityPreference {
-    var signe: Bool?
-    var statut: Int16? = 0
+    var signe: Bool = true
+    var statut: Int16 = 0
 
     var category: EntityCategory?
     var paymentMode: EntityPaymentMode?
@@ -22,5 +22,4 @@ import SwiftData
     public init() {
 
     }
-    
 }

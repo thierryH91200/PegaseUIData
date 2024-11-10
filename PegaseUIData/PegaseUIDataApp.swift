@@ -17,7 +17,7 @@ struct PegaseUIDataApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView100()
-                .modelContainer(for: BanqueInfo.self)
+                .modelContainer(for: EntityAccount.self)
         }
     }
 }

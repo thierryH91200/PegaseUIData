@@ -15,9 +15,11 @@ struct ContentView100: View {
     @State private var isVisible: Bool = true
     
     @State private var inspectorIsShown: Bool = false
-
+    
+    
     
     var body: some View {
+        
         HStack
         {
             NavigationSplitView {
@@ -48,12 +50,6 @@ struct ContentView100: View {
                     Label("Ajouter", systemImage: "plus")
                 }
                 
-                Button(action: {
-                    print("Recherche effectuée")
-                }) {
-                    Label("Rechercher", systemImage: "magnifyingglass")
-                }
-                
                 Spacer()
                 Button {
                     inspectorIsShown.toggle()
@@ -72,6 +68,44 @@ struct ContentView100: View {
                 } label: {
                     Label("Apparence", systemImage: "paintbrush")
                 }
+                
+                Menu {
+                    Button(action: { changeSearchFieldItem("all") }) {
+                        Text("all")
+                    }
+                    Button(action: { changeSearchFieldItem("comment") }) {
+                        Text("comment")
+                    }
+                    Button(action: { changeSearchFieldItem("category") }) {
+                        Text("category")
+                    }
+                    Button(action: { changeSearchFieldItem("rubric") }) {
+                        Text("rubric")
+                    }
+                } label: {
+                    Label("Recherche", systemImage: "magnifyingglass")
+                }
+
+                Menu {
+                    Button(action: { chooseCouleur("Unie") }) {
+                        Label("Unie", systemImage: "paintbrush.fill")
+                    }
+                    Button(action: { chooseCouleur("Income/Expense") }) {
+                        Label("Income/Expense", systemImage: "dollarsign.circle")
+                    }
+                    Button(action: { chooseCouleur("Rubric") }) {
+                        Label("Rubric", systemImage: "tag.fill")
+                    }
+                    Button(action: { chooseCouleur("Payment Mode") }) {
+                        Label("Payment Mode", systemImage: "creditcard.fill")
+                    }
+                    Button(action: { chooseCouleur("Statut") }) {
+                        Label("Statut", systemImage: "checkmark.circle.fill")
+                    }
+                } label: {
+                    Label("Choisir Couleur", systemImage: "paintpalette")
+                }
+
 
                 Button(action: {
                     print("Paramètres ouverts")
@@ -89,6 +123,19 @@ struct ContentView100: View {
         }
         
     }
+    
+    // Fonction d'action pour chaque choix de couleur
+    private func chooseCouleur(_ type: String) {
+        // Ajoutez ici la logique de gestion du choix de couleur
+        print("Couleur sélectionnée : \(type)")
+    }
+    
+    private func changeSearchFieldItem(_ itemType: String) {
+        // Ajoutez ici la logique pour gérer la sélection du champ de recherche
+        print("Champ de recherche sélectionné : \(itemType)")
+    }
+
+
     private func setAppearance(_ appearance: NSAppearance.Name) {
         NSApp.appearance = NSAppearance(named: appearance)
         
@@ -255,8 +302,6 @@ struct AccountRow: View {
     }
 }
 
-
-
 struct Sidebar2A: View {
     
     @Binding var selection2: String?
@@ -302,35 +347,25 @@ struct SidebarListView<T: Identifiable>: View {
 
 struct Bouton: View {
     
-    @State private var selectedOption = ""
-    //    @State var  UUID : UUID
+    @State private var selectedOption = "Options"
     
     var body: some View {
-        
         HStack {
-            // Bouton "Moins"
             Button(action: {
                 print("Bouton moins appuyé")
             }) {
                 Image(systemName: "minus.circle")
                     .font(.system(size: 16))
             }
-            
             Spacer()
-            
-            // Pop-up bouton (Menu)
             Menu {
-                Button("", action: { selectedOption = "" })
                 Button("Add Group Account", action: { selectedOption = "Add Group Account" })
                 Button("Add Account", action: { selectedOption = "Add Account" })
             } label: {
                 Label(selectedOption, systemImage: "ellipsis.circle")
                     .font(.system(size: 16))
             }
-            
             Spacer()
-            
-            // Bouton Cadenas
             Button(action: {
                 print("UUID")
             }) {
@@ -342,4 +377,3 @@ struct Bouton: View {
         .padding(.bottom, 10)
     }
 }
-
