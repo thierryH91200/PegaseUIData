@@ -62,7 +62,17 @@ struct ContentView100: View {
                           systemImage: "sidebar.right")
                 }
 
-                
+                Menu {
+                    Button("Light") {
+                        setAppearance(.aqua)
+                    }
+                    Button("Dark") {
+                        setAppearance(.darkAqua)
+                    }
+                } label: {
+                    Label("Apparence", systemImage: "paintbrush")
+                }
+
                 Button(action: {
                     print("Paramètres ouverts")
                 }) {
@@ -73,9 +83,21 @@ struct ContentView100: View {
                 }
                 .toggleStyle(.button)
                 .keyboardShortcut("r", modifiers: .command)
+                
             }
+            
+        }
+        
+    }
+    private func setAppearance(_ appearance: NSAppearance.Name) {
+        NSApp.appearance = NSAppearance(named: appearance)
+        
+        // Pour s'assurer que la fenêtre actuelle est également mise à jour
+        if let window = NSApplication.shared.windows.first {
+            window.appearance = NSAppearance(named: appearance)
         }
     }
+
 }
 
 struct SidebarContainer: View {

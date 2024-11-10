@@ -1,0 +1,42 @@
+{
+  "originHash" : "3535da84d313236b03c3348beb3361638b9cea53fecffb04184a29d2d4cc5b64",
+  "pins" : [
+    {
+      "identity" : "charts",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/danielgindi/Charts",
+      "state" : {
+        "branch" : "master",
+        "revision" : "29e4f58f7cb20cbc0e4bd9b3fb060479b42c06c5"
+      }
+    },
+    {
+      "identity" : "launchatlogin",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/sindresorhus/LaunchAtLogin",
+      "state" : {
+        "branch" : "main",
+        "revision" : "9a894d799269cb591037f9f9cb0961510d4dca81"
+      }
+    },
+    {
+      "identity" : "swiftdate",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/malcommac/SwiftDate",
+      "state" : {
+        "branch" : "master",
+        "revision" : "5d943224c3bb173e6ecf27295611615eba90c80e"
+      }
+    },
+    {
+      "identity" : "swiftytranslate",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/cpageler93/SwiftyTranslate",
+      "state" : {
+        "branch" : "master",
+        "revision" : "5a5d84d8d0cab536563a274c3b37a7099237777e"
+      }
+    }
+  ],
+  "version" : 3
+}

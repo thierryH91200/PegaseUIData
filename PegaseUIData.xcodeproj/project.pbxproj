@@ -12,7 +12,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		031346A02CE092ED0048F465 /* Pegase.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = Pegase.xcodeproj; sourceTree = "<group>"; };
 		0359AE5F2CD7BB8900687E3F /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		037059202CDF6AC100AA39D4 /* Pegase.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pegase.xcodeproj; path = PegaseUIData/Group/Model/Pegase.xcodeproj; sourceTree = SOURCE_ROOT; };
 		037066222CD7FECA0071312A /* README_fr.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README_fr.md; sourceTree = "<group>"; };
 		039B4BA92CD78949002203D9 /* PegaseUIData.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PegaseUIData.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -54,6 +56,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		031346C72CE092ED0048F465 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		037059232CDF6AC100AA39D4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		039B4BA02CD78949002203D9 = {
 			isa = PBXGroup;
 			children = (
@@ -127,6 +143,16 @@
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 039B4BAA2CD78949002203D9 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 031346C72CE092ED0048F465 /* Products */;
+					ProjectRef = 031346A02CE092ED0048F465 /* Pegase.xcodeproj */;
+				},
+				{
+					ProductGroup = 037059232CDF6AC100AA39D4 /* Products */;
+					ProjectRef = 037059202CDF6AC100AA39D4 /* Pegase.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				039B4BA82CD78949002203D9 /* PegaseUIData */,

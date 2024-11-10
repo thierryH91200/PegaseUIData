@@ -7,6 +7,7 @@
 
 import AppKit
 import SwiftData
+import SwiftUI
 
 
 
@@ -14,17 +15,34 @@ import SwiftData
 public class EntityRubric {
 
     var name: String
+    
+//    @Attribute(.transformable(by: "NSColorValueTransformer")) var color: NSObject?
+    @Attribute(.ephemeral) var total: Double = 0.0
+
     var uuid: UUID
+    
     var account: EntityAccount?
     
-    @Attribute(.ephemeral) var total: Double? = 0.0
     @Relationship(deleteRule: .cascade) var category: [EntityCategory]?
     
     public init( name: String, uuid: UUID) {
-//        self.color = color
+//        public init( name: String, color: Color, uuid: UUID) {
         self.name = name
+//        self.color = NSColor(color)
         self.uuid = uuid
 
     }
     
 }
+
+
+//@Model
+//class ColorModel {
+//    var name: String
+//    @Attribute(.transformable(by: ColorTransformer.self)) var color: UIColor
+//    
+//    init(name: String, color: Color) {
+//        self.name = name
+//        self.color = UIColor(color)
+//    }
+//}

@@ -19,10 +19,10 @@ import SwiftData
     @Relationship(inverse: \EntityPreference.category) var preference: EntityPreference?
     var rubric: EntityRubric?
     @Relationship(inverse: \EntitySousOperations.category) var sousOperations: [EntitySousOperations]?
-
+    
     public init(name: String) {
         self.name = name
-
+        
     }
     
 }
