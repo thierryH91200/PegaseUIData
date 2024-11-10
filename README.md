@@ -5,7 +5,7 @@ I converted coredata to SwiftData
 Identity = ok
 Bank = ok
 Satement = ok
-Dark/LIght toolBar = ok
+Dark/LIght toolBar = OKk
 
 <p align="center">
 <img src="Doc/Capture1.png" alt="Sample">
