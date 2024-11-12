@@ -50,17 +50,6 @@ public class EntityIdentity {
     }
     
     public init() {
-        self.adress = ""
-        self.complement = ""
-        self.country = ""
-        self.cp = 0
-        self.email = ""
-        self.mobile = ""
-        self.name = ""
-        self.nameImage = ""
-        self.phone = ""
-        self.surName = ""
-        self.town = ""
     }
 }
 

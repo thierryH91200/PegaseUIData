@@ -29,3 +29,12 @@
 // Operation dialogue
 "Creation mode" = "Mode création";
 "Edit mode" = "Mode édition";
+
+// MARK: -  PaymentMethod
+"PaymentMethod.Bank_Card" = "Carte Bancaire Card";
+"PaymentMethod.Check" = "Chéque";
+"PaymentMethod.Cash" = "Cash";
+"PaymentMethod.Prelevement" = "Prelevement";
+"PaymentMethod.Discount" = "Remise";
+"PaymentMethod.RetraitEspeces" = "Retrait espéces";
+"PaymentMethod.Transfers" = "Transfers";

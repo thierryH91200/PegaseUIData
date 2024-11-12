@@ -11,9 +11,9 @@ import SwiftData
 
 
 @Model public class EntityTransactions {
-    var amount: Double? = 0.0
-    var bankStatement: Double? = 0.0
-    var checkNumber: String?
+    var amount: Double = 0.0
+    var bankStatement: Double = 0.0
+    var checkNumber: String = ""
     var dateCree: Date? = Date(timeIntervalSinceReferenceDate: 526815360.000000)
     var dateModifie: Date? = Date(timeIntervalSinceReferenceDate: 526815360.000000)
     var dateOperation: Date? = Date(timeIntervalSinceReferenceDate: 526815360.000000)
@@ -24,7 +24,7 @@ import SwiftData
     @Attribute(.ephemeral) var solde: Double? = 0.0
     
     var statut: Int16? = 0
-    var uuid: UUID?
+    var uuid: UUID = UUID()
     var account: EntityAccount?
     var paymentMode: EntityPaymentMode?
     var sousOperations: [EntitySousOperations]?

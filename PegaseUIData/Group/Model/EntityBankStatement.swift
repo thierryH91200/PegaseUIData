@@ -60,6 +60,43 @@ class EntityBankStatement: Identifiable {
 //    public init() {
 //
 //    }
+}
+
+final class BankStatementManager: ObservableObject {
+    
+    @Environment(\.modelContext) private var modelContext: ModelContext // Contexte pour les modifications
 
     
+    static let shared = BankStatementManager()
+    private var entities = [EntityBankStatement]()
+    var currentAccount: EntityAccount?
+
+    
+    init() {
+    }
+    
+    // MARK: - Public Methods
+    // Supprimer une transaction
+    func remove(entity: EntityBankStatement) {
+        modelContext.undoManager?.beginUndoGrouping()
+        modelContext.undoManager?.setActionName("DeleteBankStatement")
+        modelContext.delete(entity)
+        modelContext.undoManager?.endUndoGrouping()
+    }
+
+    // MARK: - Public Methods
+    func getAllDatas() -> [EntityBankStatement] {
+        let descriptor = FetchDescriptor<EntityBankStatement>(
+            predicate: #Predicate { $0.account == currentAccount },
+            sortBy: [SortDescriptor(\.num, order: .forward)]
+        )
+        
+        do {
+            entities = try modelContext.fetch(descriptor)
+        } catch {
+            print("Erreur lors de la récupération des données avec SwiftData")
+        }
+        
+        return entities
+    }
 }

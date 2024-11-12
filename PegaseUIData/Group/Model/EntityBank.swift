@@ -21,11 +21,11 @@ import SwiftData
     var name: String = ""
     var phone: String = ""
     var town: String = ""
-    var uuid: UUID?
+    var uuid: UUID = UUID()
     var account: EntityAccount?
 
-    public init() {
-
+    init( account: EntityAccount)  {
+        self.account = account
     }
 }
 
@@ -55,14 +55,34 @@ class BanqueInfo {
         self.fonctionContact = fonctionContact
         self.telephoneContact = telephoneContact
     }
-    init() {
-        self.nomBanque = ""
-        self.adresse = ""
-        self.complement = ""
-        self.codePostal = ""
-        self.ville = ""
-        self.nomContact = ""
-        self.fonctionContact = ""
-        self.telephoneContact = ""
+    
+    init( account: EntityAccount)  {
+        self.account = account
+    }
+}
+
+final class BankManager {
+    
+    static let shared = BankManager()
+    var entitiesBank = [EntityBank]()
+
+    init() { }
+
+    func create(account: EntityAccount) -> EntityBank {
+
+        let entity = EntityBank(account: account)
+        entitiesBank.append(entity)
+        return entity
+    }
+    
+    @discardableResult
+    func getAllData(account: EntityAccount) -> EntityBank {
+        let results = entitiesBank.filter { $0.account == account }
+        
+        if let firstEntity = results.first {
+            return firstEntity
+        } else {
+            return create(account: account)
+        }
     }
 }

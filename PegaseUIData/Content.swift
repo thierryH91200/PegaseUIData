@@ -106,7 +106,6 @@ struct ContentView100: View {
                     Label("Choisir Couleur", systemImage: "paintpalette")
                 }
 
-
                 Button(action: {
                     print("Paramètres ouverts")
                 }) {
@@ -119,9 +118,7 @@ struct ContentView100: View {
                 .keyboardShortcut("r", modifiers: .command)
                 
             }
-            
         }
-        
     }
     
     // Fonction d'action pour chaque choix de couleur
@@ -220,6 +217,10 @@ struct Sidebar1A: View {
     var body: some View {
         
         let accounts = Bundle.main.decode([DatasCompte].self, from: "Account.plist" )
+        
+        if let url = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first {
+            let path = "Core Data SQLite file is located at: \(url.path)"
+        }
         
         List(selection: $selection1) {
             ForEach(accounts) { section in

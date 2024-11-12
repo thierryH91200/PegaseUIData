@@ -31,6 +31,13 @@
 "Edit mode" = "Edit mode";
 
 
-// Account
+// MARK: -  PaymentMethod
+"PaymentMethod.Bank_Card" = "Bank Card";
+"PaymentMethod.Check" = "Check";
+"PaymentMethod.Cash" = "Cash";
+"PaymentMethod.Prelevement" = "Prelevement";
+"PaymentMethod.Discount" = "Discount";
+"PaymentMethod.RetraitEspeces" = "Retrait espéces";
+"PaymentMethod.Transfers" = "Transfers";
 
 

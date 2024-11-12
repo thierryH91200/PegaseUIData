@@ -41,8 +41,6 @@ import SwiftUI
 
     public init() {
     }
-    
-
 }
 
 
@@ -77,4 +75,66 @@ final class TypeAccount : NSObject {
     }
 
 }
-#warning("The property \"ordered\" on EntityAccount:children is unsupported in SwiftData.")
+
+
+final class AccountManager {
+    
+    // Contexte pour les modifications
+    @Environment(\.modelContext) private var modelContext: ModelContext
+    
+    static let shared = Account()
+    var entities = [EntityAccount]()
+    
+    init() { }
+
+    func getAllData() -> [EntityAccount] {
+        // Récupère toutes les instances d'EntityAccount stockées localement dans `entities`
+        return entities
+    }
+    
+    // MARK: create account
+    func create(nameAccount: String,
+                nameImage: String,
+                idName: String,
+                idPrenom: String,
+                numAccount: String) -> EntityAccount {
+        // Crée un nouvel objet EntityAccount
+        let account = EntityAccount(
+            name: nameAccount,
+            nameImage: nameImage,
+            dateEcheancier: Date().noon,
+            isAccount: true,
+            isRoot: false,
+            uuid: UUID()
+        )
+        
+        // Crée une nouvelle identité et un compte initial pour cet EntityAccount
+        let identity = Identity.shared.create(name: idName, prenom: idPrenom)
+        identity.account = account
+        account.identity = identity
+        
+        let initAccount = InitAccountManager.shared.create(numAccount: numAccount)
+        initAccount.account = account
+        account.initAccount = initAccount
+        
+        // Ajoute le nouveau compte à la liste des entités
+        entities.append(account)
+        return account
+    }
+    
+    func getRoot() -> [EntityAccount] {
+        // Filtre les comptes racine dans la liste d'entités
+        return entities.filter { $0.isRoot }
+    }
+    
+    // Juste pour le debug
+    func printAccount(entityAccount: EntityAccount, description: String) {
+        let name = entityAccount.name
+        let identity = entityAccount.identity
+        let idName = identity?.name
+        let idPrenom = identity?.surName
+        let idNumber = entityAccount.initAccount?.codeAccount
+        
+        print("\(description) : \(name) \(idName) \(idPrenom) \(idNumber)")
+    }
+}
