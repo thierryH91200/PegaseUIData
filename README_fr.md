@@ -5,7 +5,9 @@ j'ai convertis coredata en SwiftData
 
 Identity = ok
 Bank = ok
-
+Statement = ok
+Dark/LIght toolBar = ok                             10/11/24
+Ajoute helper and definition for SwiftData          15//11/24
 
 <p align="center">
 <img src="Doc/Capture1.png" alt="Sample">
