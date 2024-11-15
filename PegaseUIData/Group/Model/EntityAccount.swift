@@ -43,52 +43,25 @@ import SwiftUI
     }
 }
 
-
-final class TypeAccount : NSObject {
-    @Environment(\.modelContext) var modelContext
-
-    var body: some View {
-        Text("")
-    }
-    func create(nameAccount: String, nameImage: String, name: String, surname: String, numAccount: String) -> EntityAccount {
-        
-        let account = EntityAccount()
-        account.name = nameAccount
-        account.nameImage = nameImage
-        account.dateEcheancier = Date().noon
-        account.isAccount = true
-        account.isRoot = false
-        account.uuid = UUID()
-        modelContext.insert(account)
-
-        let identity = EntityIdentity()
-        identity.name = name
-        identity.surName = surname
-        identity.account = account
-        account.identity = identity
-        
-        let initAccount = EntityInitAccount()
-        initAccount.account = account
-        account.initAccount = initAccount
-        
-        return account
-    }
-
-}
-
-
 final class AccountManager {
     
     // Contexte pour les modifications
-    @Environment(\.modelContext) private var modelContext: ModelContext
+//    @Environment(\.modelContext) private var modelContext: ModelContext
     
     static let shared = Account()
     var entities = [EntityAccount]()
     
     init() { }
 
-    func getAllData() -> [EntityAccount] {
-        // Récupère toutes les instances d'EntityAccount stockées localement dans `entities`
+    
+    func getAllData(modelContext: ModelContext) -> [EntityAccount] {
+        do {
+            // Exécution d'une requête manuelle si besoin de filtrer ou trier
+            let request = FetchDescriptor<EntityAccount>()
+            entities = try modelContext.fetch(request)
+        } catch {
+            print("Erreur lors de la récupération des données avec SwiftData")
+        }
         return entities
     }
     
@@ -97,44 +70,45 @@ final class AccountManager {
                 nameImage: String,
                 idName: String,
                 idPrenom: String,
-                numAccount: String) -> EntityAccount {
+                numAccount: String,
+                modelContext: ModelContext) -> EntityAccount {
         // Crée un nouvel objet EntityAccount
-        let account = EntityAccount(
-            name: nameAccount,
-            nameImage: nameImage,
-            dateEcheancier: Date().noon,
-            isAccount: true,
-            isRoot: false,
-            uuid: UUID()
-        )
+        let account            = EntityAccount()
+        account.name           = nameAccount
+        account.nameImage      = nameImage
+        account.dateEcheancier = Date().noon
+        account.isAccount      = true
+        account.isRoot         = false
+        account.uuid           = UUID()
         
         // Crée une nouvelle identité et un compte initial pour cet EntityAccount
-        let identity = Identity.shared.create(name: idName, prenom: idPrenom)
+        let identity = IdentityManager.shared.create(name: idName, prenom: idPrenom)
         identity.account = account
         account.identity = identity
         
-        let initAccount = InitAccountManager.shared.create(numAccount: numAccount)
+        let initAccount     = InitAccountManager.shared.create(numAccount : numAccount, for: account, in: modelContext)
         initAccount.account = account
         account.initAccount = initAccount
         
         // Ajoute le nouveau compte à la liste des entités
-        entities.append(account)
+        modelContext.insert(account)
         return account
     }
     
-    func getRoot() -> [EntityAccount] {
-        // Filtre les comptes racine dans la liste d'entités
-        return entities.filter { $0.isRoot }
+    func getRoot(modelContext: ModelContext) -> [EntityAccount] {
+        let request = FetchDescriptor<EntityAccount>(predicate: #Predicate { $0.isRoot == true })
+        let entities = try? modelContext.fetch(request)
+        return entities!
     }
     
     // Juste pour le debug
-    func printAccount(entityAccount: EntityAccount, description: String) {
-        let name = entityAccount.name
+    func printAccount(entityAccount : EntityAccount, description : String) {
+        let name     = entityAccount.name
         let identity = entityAccount.identity
-        let idName = identity?.name
+        let idName   = identity?.name
         let idPrenom = identity?.surName
         let idNumber = entityAccount.initAccount?.codeAccount
         
-        print("\(description) : \(name) \(idName) \(idPrenom) \(idNumber)")
+        print("\(description)       : \(name) \(idName ?? "") \(idPrenom ?? "") \(idNumber ?? "")")
     }
 }

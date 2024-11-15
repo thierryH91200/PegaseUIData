@@ -15,17 +15,21 @@ import SwiftUI
 
     var name: String
     var objectif: Double = 0.0
-    var uuid: UUID?
+    var uuid: UUID = UUID()
     
     @Relationship(inverse: \EntitySchedule.category) var echeancier: [EntitySchedule]?
     @Relationship(inverse: \EntityPreference.category) var preference: EntityPreference?
+    
     var rubric: EntityRubric?
     @Relationship(inverse: \EntitySousOperations.category) var sousOperations: [EntitySousOperations]?
     
-    public init(name: String, objectif : Double) {
+    public init(name: String, objectif : Double, rubric: EntityRubric? = nil) {
         self.name = name
         self.objectif = objectif
-        self.uuid = UUID() 
+        self.rubric = rubric
+        
+        self.uuid = UUID()
+
     }
 }
 

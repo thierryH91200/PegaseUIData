@@ -17,11 +17,10 @@ struct PegaseUIDataApp: App {
     
     @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
 
-
     init() {
-        setupForNilLibrary()
+        ColorTransformer.register()
+        setupForNilLibrary(modelContext: modelContext)
     }
-
     
     var body: some Scene {
         WindowGroup {
@@ -42,7 +41,7 @@ struct PegaseUIDataApp: App {
         }
     }
     
-    func setupForNilLibrary() {
+    func setupForNilLibrary(modelContext: ModelContext) {
         // Création de l'élément racine
         let root = EntityAccount()
         root.isRoot = true
@@ -100,12 +99,12 @@ struct PegaseUIDataApp: App {
         let header2 = createHeader(name: "BankAccount", parent: root)
 
         // Ajout des comptes aux en-têtes
-//        header1.addToChildren(pierreAccount)
-//        header1.addToChildren(marieAccount)
-//        header1.addToChildren(carteDeCredit1)
-//        header1.addToChildren(saving)
-//
-//        header2.addToChildren(jeanAccount)
+        header1.children?.append(pierreAccount)
+        header1.children?.append(marieAccount)
+        header1.children?.append(carteDeCredit1)
+        header1.children?.append(saving)
+
+        header2.children?.append(jeanAccount)
 
         // Enregistrement des modifications
         do {

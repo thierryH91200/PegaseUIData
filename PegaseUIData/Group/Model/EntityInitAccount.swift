@@ -34,24 +34,49 @@ import SwiftUI
     var account: EntityAccount?
  
     public init() {
+        iban1 = "3"
     }
 }
 
 final class InitAccountManager: NSObject {
     
-    @Environment(\.modelContext) private var modelContext: ModelContext // Contexte pour les modifications
+    static let shared = InitAccountManager()
+    private var entitiesInitAccount = [EntityInitAccount]()
+    
     var currentAccount: EntityAccount?
 
-    
-    static let shared = InitAccountManager()
-    var entitiesInitAccount = [EntityInitAccount]()
-
-    var viewContext: ModelContext?
-
     override init() {
+        currentAccount = nil
     }
-    
-    func create(numAccount: String = "") -> EntityInitAccount {
+
+    // Utiliser un seul contexte pour la gestion des données
+    func getAllDatas(for account: EntityAccount, in modelContext: ModelContext) -> EntityInitAccount {
+        
+        currentAccount = account
+        
+        let lhs = currentAccount!.uuid.uuidString
+        let predicate = #Predicate<EntityInitAccount>{ entity in entity.account!.uuid.uuidString == lhs }
+
+        let descriptor = FetchDescriptor<EntityInitAccount>(
+            predicate: predicate,
+            sortBy: [SortDescriptor(\.codeAccount)]
+        )
+
+        do {
+            entitiesInitAccount = try modelContext.fetch(descriptor)
+        } catch {
+            print("Erreur lors de la récupération des données")
+        }
+        
+        if let firstEntity = entitiesInitAccount.first {
+            return firstEntity
+        } else {
+            return create(numAccount: "", for: account, in: modelContext)
+        }
+    }
+
+    // Méthode de création d'entité
+    func create(numAccount: String = "", for account: EntityAccount, in modelContext: ModelContext) -> EntityInitAccount {
         let entity = EntityInitAccount()
         entity.bic = ""
         entity.cleRib = ""
@@ -70,29 +95,11 @@ final class InitAccountManager: NSObject {
         entity.iban9 = ""
         entity.prevu = 0
         entity.realise = 0
+        entity.account = account // Associe le compte à l'entité
         modelContext.insert(entity)
 
+        entitiesInitAccount.append(entity) // Mise à jour de la liste locale
+        
         return entity
-    }
-
-    @discardableResult
-    func getAllDatas() -> EntityInitAccount {
-        
-        let descriptor = FetchDescriptor<EntityInitAccount>(
-            predicate: #Predicate { $0.account == currentAccount },
-            sortBy: [SortDescriptor(\.codeAccount)]
-        )
-
-        do {
-            entitiesInitAccount = try viewContext?.fetch(descriptor) ?? []
-        } catch {
-            print("Error fetching data from SwiftData")
-        }
-        
-        if let firstEntity = entitiesInitAccount.first {
-            return firstEntity
-        } else {
-            return create()
-        }
     }
 }

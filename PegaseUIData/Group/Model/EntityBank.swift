@@ -10,22 +10,22 @@ import Foundation
 import SwiftData
 
 @Model public class EntityBank {
-    var adress: String = ""
-    var bank: String = ""
-    var complement: String = ""
-    var country: String = ""
-    var cp: Int32? = 0
-    var email: String = ""
-    var fonction: String = ""
-    var mobile: String = ""
-    var name: String = ""
-    var phone: String = ""
-    var town: String = ""
-    var uuid: UUID = UUID()
-    var account: EntityAccount?
+    var adress     : String  = ""
+    var bank       : String  = ""
+    var complement : String  = ""
+    var country    : String  = ""
+    var cp         : Int32?  = 0
+    var email      : String  = ""
+    var fonction   : String  = ""
+    var mobile     : String  = ""
+    var name       : String  = ""
+    var phone      : String  = ""
+    var town       : String  = ""
+    var uuid       : UUID    = UUID()
+    var account    : EntityAccount?
 
-    init( account: EntityAccount)  {
-        self.account = account
+    init( account  : EntityAccount)  {
+        self.account         = account
     }
 }
 
@@ -43,6 +43,7 @@ class BanqueInfo {
     var telephoneContact: String = ""
     var uuid: UUID = UUID()
     
+    @Relationship(deleteRule: .cascade, inverse: \EntityAccount.bank)
     var account: EntityAccount?
     
     init(nomBanque: String, adresse: String, complement: String, codePostal: String, ville: String, nomContact: String, fonctionContact: String, telephoneContact: String) {

@@ -30,7 +30,6 @@
 "Creation mode" = "Creation mode";
 "Edit mode" = "Edit mode";
 
-
 // MARK: -  PaymentMethod
 "PaymentMethod.Bank_Card" = "Bank Card";
 "PaymentMethod.Check" = "Check";
@@ -40,4 +39,20 @@
 "PaymentMethod.RetraitEspeces" = "Retrait espéces";
 "PaymentMethod.Transfers" = "Transfers";
 
+
+// MARK: -  Statut
+"Sstatut.Planifie" = "Planifie";
+"Sstatut.Engaged" = "Engaged";
+"Sstatut.Realise" = "Realise";
+
+
+/* MARK: -  Document */
+"Document.Bank_Account" = "Bank account";
+"Document.Carte_de_crédit" = "Bank card";
+"Document.Current account" = "Current account";
+"Document.Especes" = "Cash account";
+"Document.IdName" = "Doe";
+"Document.IdPrenom" = "John";
+"Document.OpenProjectPanelMessage" = "Open Project";
+"Document.Save" = "Save";
 

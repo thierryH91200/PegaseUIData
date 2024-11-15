@@ -62,18 +62,18 @@ class EntityBankStatement: Identifiable {
 //    }
 }
 
-final class BankStatementManager: ObservableObject {
-    
-    @Environment(\.modelContext) private var modelContext: ModelContext // Contexte pour les modifications
+//final class BankStatementManager: NSObject {
+    final class BankStatementManager {
 
+    // Contexte pour les modifications
+    @Environment(\.modelContext) private var modelContext: ModelContext
+    var currentAccount: EntityAccount?
     
     static let shared = BankStatementManager()
     private var entities = [EntityBankStatement]()
-    var currentAccount: EntityAccount?
 
-    
-    init() {
-    }
+//    override init() {
+//    }
     
     // MARK: - Public Methods
     // Supprimer une transaction
@@ -85,18 +85,21 @@ final class BankStatementManager: ObservableObject {
     }
 
     // MARK: - Public Methods
-    func getAllDatas() -> [EntityBankStatement] {
-        let descriptor = FetchDescriptor<EntityBankStatement>(
-            predicate: #Predicate { $0.account == currentAccount },
-            sortBy: [SortDescriptor(\.num, order: .forward)]
-        )
+    func getAllDatas(for account: EntityAccount?) -> [EntityBankStatement] {
         
+        let lhs = account!.uuid.uuidString
+        
+        let predicate = #Predicate<EntityBankStatement>{ entity in entity.account!.uuid.uuidString  ==  lhs }
+        let descriptor = FetchDescriptor<EntityBankStatement>(
+            predicate: predicate,
+            sortBy: [SortDescriptor(\.num)]
+        )
+
         do {
             entities = try modelContext.fetch(descriptor)
         } catch {
             print("Erreur lors de la récupération des données avec SwiftData")
         }
-        
         return entities
     }
 }

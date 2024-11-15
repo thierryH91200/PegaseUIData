@@ -11,7 +11,7 @@
 "Relevé bancaire" = "Relevé bancaire";
 "Notes" = "Notes";
 
-// Rapport
+//  MARK: - Rapport
 "Categorie Bar1" = "Categorie Bar1";
 "Categorie Bar2" = "Categorie Bar2";
 "Mode de paiement" = "Mode de paiement";
@@ -20,13 +20,13 @@
 "Rubrique Bar" = "Rubrique Bar";
 "Rubrique Pie" = "Rubrique Pie";
 
-// Setings
+//  MARK: - Setings
 "Identité" = "Identité";
 "Echeancier" = "Echeancier"; // (ou “Payment schedule” selon le contexte)
 "Réglage" = "Réglage";
 
 
-// Operation dialogue
+//  MARK: - Operation dialogue
 "Creation mode" = "Mode création";
 "Edit mode" = "Mode édition";
 
@@ -38,3 +38,20 @@
 "PaymentMethod.Discount" = "Remise";
 "PaymentMethod.RetraitEspeces" = "Retrait espéces";
 "PaymentMethod.Transfers" = "Transfers";
+
+// MARK: -  Statut
+"Sstatut.Planifie" = "Planifié";
+"Sstatut.Engaged" = "Engagé";
+"Sstatut.Realise" = "Realisé";
+
+
+/* MARK: -  Document */
+"Document.Bank_Account" = "Bank account";
+"Document.Carte_de_crédit" = "Carte Banquaire";
+"Document.Current account" = "Current account";
+"Document.Especes" = "Cash account";
+"Document.IdName" = "Martin";
+"Document.IdPrenom" = "Jean";
+"Document.OpenProjectPanelMessage" = "Open Project";
+"Document.Save" = "Sauve";
+

@@ -12,6 +12,9 @@ struct BankView: View {
     @Environment(\.modelContext) var modelContext
     @Query private var banqueInfos: [BanqueInfo]
     
+    var account: EntityAccount?
+    @State var currentAccount: EntityAccount?
+    
     var body: some View {
         VStack(spacing: 30) {
             if let banqueInfo = banqueInfos.first {
@@ -27,7 +30,7 @@ struct BankView: View {
             // Créer un nouvel enregistrement si la base de données est vide
             if banqueInfos.isEmpty {
                 let context = modelContext
-                let newBanqueInfo = BanqueInfo()
+                let newBanqueInfo = BanqueInfo(account: currentAccount!)
                 context.insert(newBanqueInfo)
             }
         }

@@ -12,125 +12,147 @@ import SwiftUI
 
 
 @Model
-public class EntityRubric {
+public class EntityRubric: ObservableObject {
     
     var name: String = ""
+    @Attribute(.transformable(by: ColorTransformer.self)) var color: Color
     
-    //    @Attribute(.transformable(by: "NSColorValueTransformer")) var color: NSObject?
     @Attribute(.ephemeral) var total: Double = 0.0
     var uuid: UUID = UUID()
-    var account: EntityAccount?
     
     @Relationship(deleteRule: .cascade) var category: [EntityCategory]?
-//    
-//    public init( name: String, /*color: Color,*/ uuid: UUID) {
-    public init( name: String, account: EntityAccount) {
+    var account: EntityAccount?
+    
+    public init( name: String, color: Color) {
         self.name = name
-        //        self.color = NSColor(color)
+        self.color = color
         self.uuid = UUID()
         self.account = account
     }
 }
 
-//@Model
-//class ColorModel {
-//    var name: String
-//    @Attribute(.transformable(by: ColorTransformer.self)) var color: UIColor
-//
-//    init(name: String, color: Color) {
-//        self.name = name
-//        self.color = UIColor(color)
-//    }
-//}
-
-
-
-
-
 final class RubricManager: ObservableObject {
     
-    var currentAccount: EntityAccount?
-
     static let shared = RubricManager()
     
-    @Query private var entitiesRubric: [EntityRubric]
+    // Contexte pour les modifications
     @Environment(\.modelContext) private var modelContext: ModelContext
-
+    var currentAccount: EntityAccount?
     
-    init() {}
-
+    
+    @Published private(set) var entitiesRubric: [EntityRubric] = []
+    
+    private init() {    }
+    
     func findOrCreate(account: EntityAccount, name: String, color: Color) -> EntityRubric {
-        if let entityRubric = find(account: account, name: name) {
-            return entityRubric
-        } else {
-//            let newEntity = EntityRubric(name: name, color: color, uuid: UUID(), account: account)
-            let newEntity = EntityRubric(name: name, account: account)
-            modelContext.insert(newEntity)
-            return newEntity
+        if let existingRubric = find(account: account, name: name) {
+            return existingRubric
         }
+        
+        let newRubric = EntityRubric(name: name, color: color)
+        modelContext.insert(newRubric)
+        
+        entitiesRubric.append(newRubric)
+        return newRubric
     }
-
+    
     func find(account: EntityAccount, name: String) -> EntityRubric? {
-        entitiesRubric.first { $0.account == account && $0.name == name }
+        return entitiesRubric.first { $0.account?.id == account.id && $0.name == name }
     }
     
     func remove(entity: EntityRubric) {
-        modelContext.delete(entity)  // Utilisez modelContext pour supprimer l'entité
-    }
-
-    func getAllDatas(for account: EntityAccount) -> [EntityRubric] {
-        entitiesRubric.filter { $0.account == account }
+        modelContext.delete(entity)
+        entitiesRubric.removeAll { $0.id == entity.id }
     }
     
-    fileprivate func addRubric(_ key: [String: String]) {
-        guard entitiesRubric.isEmpty else {
-            // Ajout à la première rubrique existante
-            if let rubric = entitiesRubric.first {
-                let newCategory = EntityCategory(name: key["categorie"] ?? "", objectif: Double(key["objectif"] ?? "0.0")!, rubric: rubric)
-                rubric.category?.insert(newCategory, at: 0)
+    @discardableResult
+    func getAllDatas(account: EntityAccount) -> [EntityRubric] {
+                
+        let lhs = currentAccount!.uuid.uuidString
+        let predicate = #Predicate<EntityRubric>{ entity in entity.account!.uuid.uuidString == lhs }
+
+        let fetchDescriptor = FetchDescriptor<EntityRubric>(
+            predicate: predicate    //, // Filtrer par le compte
+        )
+        
+        do {
+            entitiesRubric = try modelContext.fetch(fetchDescriptor)
+        } catch {
+            print("Erreur lors de la récupération des données avec SwiftData")
+        }
+        if entitiesRubric.isEmpty {
+            defaultEntity()
+        }
+        return entitiesRubric
+    }
+    
+    fileprivate func addRubric(_ key: [String: String], account: EntityAccount) {
+        if entitiesRubric.isEmpty {
+            let name = key["rubrique"] ?? ""
+            let color = Color.init(key["color"]!)
+            
+            let entityRubric = findOrCreate(account: account, name: name, color: color)
+            
+            let categoryName = key["categorie"] ?? ""
+            let categoryObjectif = Double(key["objectif"] ?? "0.0") ?? 0.0
+            let entityCategory = EntityCategory(name: categoryName, objectif: categoryObjectif, rubric: entityRubric)
+            modelContext.insert(entityCategory)
+            
+            entityRubric.category?.append(entityCategory)
+        } else {
+            // Adds category to the first rubric in the list
+            if let firstRubric = entitiesRubric.first {
+                let categoryName = key["categorie"] ?? ""
+                let categoryObjectif = Double(key["objectif"] ?? "0.0") ?? 0.0
+                let entityCategory = EntityCategory(name: categoryName, objectif: categoryObjectif, rubric: firstRubric)
+                modelContext.insert(entityCategory)
+                
+                firstRubric.category?.append(entityCategory)
             }
-            return
+        }
+    }
+    
+    
+    
+    func loadCSVFile() -> String? {
+        guard let url = Bundle.main.url(forResource: "rubrique", withExtension: "csv") else {
+            print("Error: File not found.")
+            return nil
         }
         
-        // Ajout d'une nouvelle rubrique si aucune n'existe
-        let newRubric = EntityRubric(name: key["rubrique"] ?? "", color: Color(rawValue: key["color"]!) ?? .gray, account: currentAccount)
-        let newCategory = EntityCategory(name: key["categorie"] ?? "", objectif: Double(key["objectif"] ?? "0.0")!, uuid: UUID(), rubric: newRubric)
-        newRubric.category = [newCategory]
-//        entitiesRubric.append(newRubric)
-        modelContext.insert(newRubric)
-
-    }
-
-    func defaultEntity() {
-        if entitiesRubric.isEmpty {
-            if let content = loadCSV("rubrique") {
-                let csv = CSwiftV(with: content, separator: ";", replace: "\r")
-                csv.keyedRows?.forEach { addRubric($0) }
-            }
+        
+        do {
+            let content = try String(contentsOf: url, encoding: .utf8)
+            return content
+        } catch {
+            print("Error loading file content: \(error)")
+            return nil
         }
     }
     
-    private func loadCSV(_ filename: String) -> String? {
-        guard let url = Bundle.main.url(forResource: filename, withExtension: "csv") else { return nil }
-        return try? String(contentsOf: url, encoding: .utf8)
-    }
-}
+    func defaultEntity() {
+        if entitiesRubric.isEmpty {
+            let content = loadCSVFile()!
+            let csv = CSwiftV(with: content, separator: ";", replace: "\r")
+            let keys = csv.keyedRows
+            if let keys = keys, let account = currentAccount {
+                for key in keys {
+                    addRubric(key, account: account)
+                }
+            }
+            let lhs = currentAccount!.uuid.uuidString
+            let predicate = #Predicate<EntityRubric>{ entity in entity.account!.uuid.uuidString == lhs }
 
-extension Color {
-    var swiftUIColor: SwiftUI.Color {
-        switch self {
-        case .red: return .red
-        case .blue: return .blue
-        case .green: return .green
-        case .black: return .black
-        case .purple: return .purple
-        case .orange: return .orange
-        case .brown: return .brown
-        case .gray: return .gray.opacity(0.7)
-        case .yellow: return .yellow
-        case .gray: return .gray
-        default:
-            return .black
+            let descriptor = FetchDescriptor<EntityRubric>(
+                predicate: predicate,
+                sortBy: [SortDescriptor(\.name, order: .forward)] // Trier par le nom si nécessaire
+            )
+            
+            do {
+                entitiesRubric = try modelContext.fetch(descriptor)
+            } catch {
+                print("Error fetching data from SwiftData")
+            }
         }
     }
 }

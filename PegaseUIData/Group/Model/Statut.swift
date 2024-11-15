@@ -6,10 +6,13 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @Model final class Statut {
     
     static let shared = Statut()
+    
+    init() {}
 
     enum TypeOfStatut: Int16, CaseIterable {
         case planifie = 0
@@ -18,9 +21,9 @@ import SwiftUI
 
         var label: String {
             switch self {
-            case .planifie: return Localizations.Statut.Planifie
-            case .engage: return Localizations.Statut.Engaged
-            case .realise: return Localizations.Statut.Realise
+            case .planifie: return localizeString("Sstatut.Planifie")
+            case .engage: return localizeString("Statut.Engaged")
+            case .realise: return localizeString("Statut.Realise")
             }
         }
 

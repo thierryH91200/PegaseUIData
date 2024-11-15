@@ -1,6 +1,5 @@
 rubrique;categorie;type;objectif;color
 Alimentation;Alimentation;0;100;red
-Alimentation;Alimentation;0;100;red
 Alimentation;Autres;0;100;red
 
 Animaux;Soins;0;20;blue
@@ -24,7 +23,6 @@ Divers;Vêtements;0;50;gray
 
 Impots;Impôt foncier;0;120;green
 Impots;Impôt revenus;0;110;green
-Impots;Taxe habitation;0;90;green
 Impots;Autres;0;0;green
 
 Loisirs;Cadeau;0;0;orange

@@ -76,14 +76,10 @@ extension CSV {
             }
             
             let scanner = Scanner(string: string)
-            
-            var firstLine: NSString?
-            scanner.scanUpToCharacters(from: CharacterSet.newlines, into: &firstLine)
-            
-            guard let header = firstLine else {
-                return nil }
-            
-            return self.detectConfiguration(header as String, encoding: encoding)
+            if let firstline = scanner.scanUpToCharacters(from: CharacterSet.newlines) {
+                return self.detectConfiguration(firstline as String, encoding: encoding)
+            }
+            return nil
         }
         
         /// Returns a configuration by detecting the delimeter and text encoding from a CSV string.

@@ -73,12 +73,12 @@ class  ContentView {
         let header2 = createHeader(name: "BankAccount", parent: root)
 
         // Ajout des comptes aux en-têtes
-//        header1.addToChildren(pierreAccount)
-//        header1.addToChildren(marieAccount)
-//        header1.addToChildren(carteDeCredit1)
-//        header1.addToChildren(saving)
-//        
-//        header2.addToChildren(jeanAccount)
+        header1.children?.append(pierreAccount)
+        header1.children?.append(marieAccount)
+        header1.children?.append(carteDeCredit1)
+        header1.children?.append(saving)
+        
+        header2.children?.append(jeanAccount)
 
         // Enregistrement des modifications
         do {

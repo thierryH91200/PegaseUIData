@@ -111,7 +111,7 @@ struct BankStatementTableView: View {
             Button("Annuler", role: .cancel) {}
         }
         .sheet(isPresented: $showingEditDialog) {
-            let statement = $selectedBankStatement
+            let _ = $selectedBankStatement
             //                EditBankStatementView(bankStatement: statement)
         }
     }
