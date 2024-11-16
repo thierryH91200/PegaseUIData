@@ -10,7 +10,11 @@ Statement = ok
 
 Dark/LIght toolBar = ok                             10/11/24
 
-Ajoute helper and definition for SwiftData          15//11/24
+Add helper and definition for SwiftData          15//11/24
+
+I have added a database to my application.
+I still have a few adjustments to make.”
+
 
 <p align="center">
 <img src="Doc/Capture1.png" alt="Sample">

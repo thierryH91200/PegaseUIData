@@ -48,7 +48,7 @@ final class AccountManager {
     // Contexte pour les modifications
 //    @Environment(\.modelContext) private var modelContext: ModelContext
     
-    static let shared = Account()
+    static let shared = AccountManager()
     var entities = [EntityAccount]()
     
     init() { }
@@ -110,5 +110,14 @@ final class AccountManager {
         let idNumber = entityAccount.initAccount?.codeAccount
         
         print("\(description)       : \(name) \(idName ?? "") \(idPrenom ?? "") \(idNumber ?? "")")
+    }
+}
+
+extension EntityAccount {
+    func addChild(_ child: EntityAccount) {
+        if children == nil {
+            children = []
+        }
+        children?.append(child)
     }
 }

@@ -8,13 +8,26 @@
 import SwiftUI
 import SwiftData
 
-class  ContentView {
-    @Environment(\.modelContext) private var modelContext
+@Observable
+final class  setUpInit {
     
-//    var body: some View {
-//        Text("ContentView")
-//    }
-
+    private var modelContext : ModelContext?
+    
+    static let shared = setUpInit()
+    
+    init() {
+        self.modelContext = nil
+    }
+    
+    func initializeLibrary(modelContext: ModelContext) {
+        self.modelContext = modelContext
+        let entities = AccountManager.shared.getRoot(modelContext: modelContext)
+        
+        if entities.isEmpty == true {
+            self.setupForNilLibrary()
+        }
+    }
+    
     func setupForNilLibrary() {
         // Création de l'élément racine
         let root = EntityAccount()
@@ -58,7 +71,7 @@ class  ContentView {
             numAccount: "00045703H",
             type: 2
         )
-
+        
         let jeanAccount = createAccount(
             name: "Current_account",
             icon: "icons8-museum-80",
@@ -71,7 +84,7 @@ class  ContentView {
         // Création des en-têtes
         let header1 = createHeader(name: "BankAccount", parent: root)
         let header2 = createHeader(name: "BankAccount", parent: root)
-
+        
         // Ajout des comptes aux en-têtes
         header1.children?.append(pierreAccount)
         header1.children?.append(marieAccount)
@@ -79,15 +92,15 @@ class  ContentView {
         header1.children?.append(saving)
         
         header2.children?.append(jeanAccount)
-
+        
         // Enregistrement des modifications
         do {
-            try modelContext.save()
+            try modelContext!.save()
         } catch {
             print("Erreur lors de la sauvegarde : \(error)")
         }
     }
-
+    
     private func createAccount(name: String, icon: String, idName: String, idPrenom: String, numAccount: String, type: Int) -> EntityAccount {
         
         let account = EntityAccount()
