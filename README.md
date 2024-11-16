@@ -13,7 +13,9 @@ Dark/LIght toolBar = ok                             10/11/24
 Add helper and definition for SwiftData          15//11/24
 
 I have added a database to my application.
-I still have a few adjustments to make.”
+I still have a few adjustments to make.
+Improve translation
+
 
 
 <p align="center">

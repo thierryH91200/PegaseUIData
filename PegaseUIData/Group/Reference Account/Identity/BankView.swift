@@ -19,10 +19,10 @@ struct BankView: View {
         VStack(spacing: 30) {
             if let banqueInfo = banqueInfos.first {
                 // Utilisez un Binding pour mettre à jour les données en direct
-                SectionView(title: "Banque", banqueInfo: banqueInfo)
+                SectionView(title: "Bank", banqueInfo: banqueInfo)
                 SectionView(title: "Contact", banqueInfo: banqueInfo)
             } else {
-                Text("Aucune information de banque disponible")
+                Text("No bank information available")
             }
         }
         .padding()
@@ -48,15 +48,15 @@ struct SectionView: View {
                 .padding(.bottom, 5)
 
             if title == "Banque" {
-                FieldView(label: "Banque", text: $banqueInfo.nomBanque)
-                FieldView(label: "Adresse", text: $banqueInfo.adresse)
+                FieldView(label: "Bank", text: $banqueInfo.nomBanque)
+                FieldView(label: "Adress", text: $banqueInfo.adresse)
                 FieldView(label: "Complement", text: $banqueInfo.complement)
                 FieldView(label: "CP", text: $banqueInfo.codePostal)
-                FieldView(label: "Ville", text: $banqueInfo.ville)
+                FieldView(label: "Town", text: $banqueInfo.ville)
             } else if title == "Contact" {
-                FieldView(label: "Nom", text: $banqueInfo.nomContact)
+                FieldView(label: "Name", text: $banqueInfo.nomContact)
                 FieldView(label: "Fonction", text: $banqueInfo.fonctionContact)
-                FieldView(label: "Téléphone", text: $banqueInfo.telephoneContact)
+                FieldView(label: "Phone", text: $banqueInfo.telephoneContact)
             }
         }
         .padding()

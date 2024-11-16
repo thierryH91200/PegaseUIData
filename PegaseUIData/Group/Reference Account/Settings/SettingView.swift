@@ -46,7 +46,7 @@ struct SettingTab: View {
                 }
             CheckView()
                 .tabItem {
-                    Label("Chequier", systemImage: "person")
+                    Label("Check", systemImage: "person")
                 }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

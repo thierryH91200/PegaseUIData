@@ -18,7 +18,7 @@ struct OperationView: View {
     var body: some View {
         VStack {
             // Header Section
-            Text("Operation")
+            Text("Transaction")
                 .font(.headline)
                 .padding(.top)
             
@@ -38,21 +38,21 @@ struct OperationView: View {
                 }
                 
                 HStack {
-                    Text("Intitulé")
+                    Text("Comment")
                     Spacer()
                     TextField("", text: $intitule)
                         .frame(maxWidth: 100)
                 }
                 
                 HStack {
-                    Text("Nom")
+                    Text("Name")
                     Spacer()
                     TextField("", text: $nom)
                         .frame(maxWidth: 100)
                 }
                 
                 HStack {
-                    Text("Prénom")
+                    Text("Surname")
                     Spacer()
                     TextField("", text: $prenom)
                         .frame(maxWidth: 100)

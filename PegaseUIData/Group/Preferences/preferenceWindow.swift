@@ -17,7 +17,7 @@ class PreferencesWindowController: NSWindowController, NSWindowDelegate {
         let hostingController = NSHostingController(rootView: preferencesView)
         
         let window = NSWindow(contentViewController: hostingController)
-        window.title = "Préférences"
+        window.title = "Preferences"
         window.setContentSize(NSSize(width: 400, height: 300))
         window.styleMask = [.titled, .closable, .miniaturizable]
         window.isReleasedWhenClosed = false // Garde la fenêtre en mémoire après la fermeture
@@ -47,8 +47,8 @@ struct PreferencesView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Toggle("Afficher les notifications", isOn: $showNotifications)
-            Toggle("Activer les sons", isOn: $enableSounds)
+            Toggle("Show notifications", isOn: $showNotifications)
+            Toggle("Enable sounds", isOn: $enableSounds)
             
             Spacer()
         }

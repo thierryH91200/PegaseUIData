@@ -33,17 +33,17 @@ struct Accueil: View {
         TabView {
             Account()
                 .tabItem {
-                    Label("Compte", systemImage: "house")
+                    Label("Account", systemImage: "house")
                 }
             
             Bank()
                 .tabItem {
-                    Label("Banque", systemImage: "eurosign.bank.building")
+                    Label("Bank", systemImage: "eurosign.bank.building")
                 }
             
             Identite()
                 .tabItem {
-                    Label("Identites", systemImage: "person")
+                    Label("Identities", systemImage: "person")
                 }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

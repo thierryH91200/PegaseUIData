@@ -50,28 +50,28 @@ struct BankStatementTableView: View {
             TableColumn("Start Date") { enregistrement in
                 Text(DateFormatter.shortDate.string(from: enregistrement.startDate))
             }
-            TableColumn("Start Solde") { enregistrement in
+            TableColumn("Start Balance") { enregistrement in
                 Text("€\(enregistrement.startSolde, specifier: "%.2f")")
             }
             
             TableColumn("Inter Date") { enregistrement in
                 Text(DateFormatter.shortDate.string(from: enregistrement.interDate))
             }
-            TableColumn("Inter Solde") { enregistrement in
+            TableColumn("Inter Balance") { enregistrement in
                 Text("€\(enregistrement.interSolde, specifier: "%.2f")")
             }
             
             TableColumn("End Date") { enregistrement in
                 Text(DateFormatter.shortDate.string(from: enregistrement.endDate))
             }
-            TableColumn("End Solde") { enregistrement in
+            TableColumn("End Balance") { enregistrement in
                 Text("€\(enregistrement.endSolde, specifier: "%.2f")")
             }
             
             TableColumn("CB Date") { enregistrement in
                 Text(DateFormatter.shortDate.string(from: enregistrement.cbDate))
             }
-            TableColumn("CB Solde") { enregistrement in
+            TableColumn("CB Balance") { enregistrement in
                 Text("\(enregistrement.cbSolde, specifier: "%.2f") €")
             }
             
@@ -92,23 +92,23 @@ struct BankStatementTableView: View {
         
         .frame(minWidth: 800, minHeight: 400)
         .contextMenu {
-            Button("Ajouter") {
+            Button("Add") {
                 //                addBankStatement()
             }
-            Button("Éditer") {
+            Button("Édit") {
                 //                showingEditDialog = true
                 //                selectedBankStatement = item
             }
-            Button("Supprimer") {
+            Button("Delete") {
                 //                showingDeleteAlert = true
                 //                selectedBankStatement = item
             }
         }
-        .alert("Supprimer l'enregistrement ?", isPresented: $showingDeleteAlert) {
-            Button("Supprimer", role: .destructive) {
+        .alert("Delete recording?", isPresented: $showingDeleteAlert) {
+            Button("Delete", role: .destructive) {
                 deleteBankStatement()
             }
-            Button("Annuler", role: .cancel) {}
+            Button("Cancel", role: .cancel) {}
         }
         .sheet(isPresented: $showingEditDialog) {
             let _ = $selectedBankStatement
@@ -135,14 +135,14 @@ struct EditBankStatementView: View {
     
     var body: some View {
         VStack {
-            TextField("Numéro", value: $bankStatement.num, format: .number)
+            TextField("Number", value: $bankStatement.num, format: .number)
             DatePicker("Date Début", selection: $bankStatement.startDate)
             TextField("Ancien Solde", value: $bankStatement.startSolde, format: .currency(code: "EUR"))
             // Ajoutez des champs pour les autres propriétés
             
             DragPDFView(pdfData: $bankStatement.pdfDoc)
                 .frame(width: 200, height: 200)
-            Button("Sauvegarder") {
+            Button("Save") {
                 // Fermer la vue ou une autre action
             }
         }
@@ -165,7 +165,7 @@ struct DragPDFView: View {
                 }
                 return true
             }
-            .overlay(Text("Déposez un PDF ici").foregroundColor(.white))
+            .overlay(Text("Drop a PDF here").foregroundColor(.white))
     }
 }
 
