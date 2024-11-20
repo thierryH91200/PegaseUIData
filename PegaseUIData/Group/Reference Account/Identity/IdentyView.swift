@@ -14,7 +14,7 @@ struct IdentyView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Identité")
+            Text("Identity")
                 .font(.title)
                 .padding(.bottom, 10)
             

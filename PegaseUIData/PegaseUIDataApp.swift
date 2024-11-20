@@ -12,6 +12,8 @@ import UniformTypeIdentifiers
 @main
 struct PegaseUIDataApp: App {
     
+//    @StateObject private var appInitializer = AppInitializer()
+
     @StateObject private var windowSizeManager = WindowSizeManager()
     @Environment(\.modelContext) private var modelContext
     
@@ -23,6 +25,8 @@ struct PegaseUIDataApp: App {
     
     var body: some Scene {
         WindowGroup {
+//            if appInitializer.isReady {
+
             ContentView100()
                 .modelContainer(for: [
                     EntityAccount.self,
@@ -37,10 +41,30 @@ struct PegaseUIDataApp: App {
                     EntitySchedule.self,
                     EntityTransactions.self
                 ])
+//            } else {
+//                ProgressView("Initialisation...")
+//            }
+
         }
     }
     
 }
+
+//class AppInitializer: ObservableObject {
+//    @Published var isReady = false
+//
+//    @ModelContainer(for: [MyModel.self]) var modelContainer
+//
+//    var modelContext: ModelContext {
+//        modelContainer.mainContext
+//    }
+//
+//    init() {
+//        // Effectuez toute initialisation nécessaire ici
+//        initManager.initializeLibrary(modelContext: modelContext)
+//        isReady = true
+//    }
+//}
 
 func ModelConfiguration() {
     let modelContainer: ModelContainer

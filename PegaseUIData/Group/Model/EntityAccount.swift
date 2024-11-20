@@ -15,7 +15,6 @@ import SwiftUI
     var dateEcheancier: Date = Date()
     var isAccount: Bool = false
     var isDemo: Bool = false
-    var isFolder: Bool = false
     var isHeader: Bool = false
     var isRoot: Bool = false
     var name: String = ""
@@ -54,7 +53,7 @@ final class AccountManager {
     init() { }
 
     
-    func getAllData(modelContext: ModelContext) -> [EntityAccount] {
+    func getAllData(_ modelContext: ModelContext) -> [EntityAccount] {
         do {
             // Exécution d'une requête manuelle si besoin de filtrer ou trier
             let request = FetchDescriptor<EntityAccount>()

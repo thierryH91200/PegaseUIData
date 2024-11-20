@@ -18,7 +18,7 @@ struct AccountView: View {
                     .foregroundColor(.blue)
                 
                 VStack(alignment: .leading) {
-                    Text("Report initial")
+                    Text("Initial report")
                         .font(.headline)
                     
                     HStack(spacing: 40) {
@@ -31,7 +31,7 @@ struct AccountView: View {
             
             // Références Bancaires
             VStack(alignment: .leading) {
-                Text("Références bancaires")
+                Text("Bank references")
                     .font(.headline)
                 
                 BankReferenceView()

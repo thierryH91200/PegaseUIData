@@ -21,9 +21,9 @@ import SwiftUI
     var account: EntityAccount?
     
     public init() {
-    
-    self.name = "test"
-}
+        
+        self.name = "test"
+    }
 }
 // ObservableObject
 final class ChequeBookManager {
@@ -31,18 +31,18 @@ final class ChequeBookManager {
     static let shared = ChequeBookManager()
     var entities = [EntityCarnetCheques]()
     
-//    init() {}
-
+    //    init() {}
+    
     func getAllDatas(for account: EntityAccount?, in modelContext: ModelContext) -> [EntityCarnetCheques] {
-
+        
         let ent1 = account?.uuid.uuidString
         
         let predicate1 = #Predicate<EntityCarnetCheques>{ entity in entity.account?.uuid.uuidString  == ent1}
-
+        
         let descriptor = FetchDescriptor<EntityCarnetCheques>(
             predicate: predicate1
         )
-
+        
         do {
             entities = try modelContext.fetch(descriptor)
         } catch {
@@ -57,7 +57,7 @@ final class ChequeBookManager {
         guard entities.isEmpty else { return }
         
         let entityCarnetCheques = EntityCarnetCheques()
-        entityCarnetCheques.name = localizeString("PaymentMethod.Check")
+        entityCarnetCheques.name = "Check"
         entityCarnetCheques.prefix = "CH"
         entityCarnetCheques.numPremier = 1_000
         entityCarnetCheques.numSuivant = 1_000

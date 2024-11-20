@@ -14,6 +14,7 @@ Add helper and definition for SwiftData          15//11/24
 
 I have added a database to my application.
 I still have a few adjustments to make.
+Improvement of the database                     20/11/2024
 
 
 Improve translation

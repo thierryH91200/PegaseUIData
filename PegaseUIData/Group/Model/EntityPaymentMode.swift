@@ -123,13 +123,13 @@ final class PaymentModeManager : NSObject {
         
         // Liste des noms et couleurs des méthodes de paiement
         let paymentModes = [
-            (name: localizeString("PaymentMethod.Bank_Card"), color: Color.green),
-            (name: localizeString("PaymentMethod.Check"), color: Color.yellow),
-            (name: localizeString("PaymentMethod.Cash"), color: Color.blue),
-            (name: localizeString("PaymentMethod.Prelevement"), color: Color.red),
-            (name: localizeString("PaymentMethod.Discount"), color: Color.gray),
-            (name: localizeString("PaymentMethod.RetraitEspeces"), color: Color.orange),
-            (name: localizeString("PaymentMethod.Transfers"), color: Color.brown)
+            (name: "Bank_Card", color: Color.green),
+            (name: "Check", color: Color.yellow),
+            (name: "Cash", color: Color.blue),
+            (name: "Prelevement", color: Color.red),
+            (name: "Discount", color: Color.gray),
+            (name: "RetraitEspeces", color: Color.orange),
+            (name: "Transfers", color: Color.brown)
         ]
         
         // Création des entités de mode de paiement

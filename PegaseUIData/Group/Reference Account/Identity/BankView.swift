@@ -47,7 +47,7 @@ struct SectionView: View {
                 .font(.headline)
                 .padding(.bottom, 5)
 
-            if title == "Banque" {
+            if title == "Bank" {
                 FieldView(label: "Bank", text: $banqueInfo.nomBanque)
                 FieldView(label: "Adress", text: $banqueInfo.adresse)
                 FieldView(label: "Complement", text: $banqueInfo.complement)
@@ -78,3 +78,5 @@ struct FieldView: View {
         }
     }
 }
+
+

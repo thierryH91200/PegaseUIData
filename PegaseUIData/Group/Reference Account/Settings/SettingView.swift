@@ -37,7 +37,7 @@ struct SettingTab: View {
             
             ModePaymentView()
                 .tabItem {
-                    Label("Mode de paiement", systemImage: "eurosign.bank.building")
+                    Label("Payment mode", systemImage: "eurosign.bank.building")
                 }
             
             TransactionView()

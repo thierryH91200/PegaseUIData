@@ -21,9 +21,9 @@ import SwiftData
 
         var label: String {
             switch self {
-            case .planifie: return localizeString("Sstatut.Planifie")
-            case .engage: return localizeString("Statut.Engaged")
-            case .realise: return localizeString("Statut.Realise")
+            case .planifie: return "Planifie"
+            case .engage: return "Statut.Engaged"
+            case .realise: return "Statut.Realise"
             }
         }
 

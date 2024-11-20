@@ -1,17 +1,17 @@
 import SwiftUI
 
 struct OperationView: View {
-    @State private var linkedAccount = ""
-    @State private var intitule = ""
-    @State private var nom = ""
-    @State private var prenom = ""
+    @State private var linkedAccount = " "
+    @State private var intitule = " "
+    @State private var nom = " "
+    @State private var prenom = " "
     @State private var operationDate = Date()
     @State private var mode = "Bank Card"
     @State private var number = ""
     @State private var pointingDate = Date()
     @State private var statut = "Engaged"
     @State private var bankStatement = 0
-    @State private var amount = ""
+    @State private var amount = " "
     
     let modeCreation :Bool
     
@@ -140,7 +140,7 @@ struct OperationView: View {
             }
             .padding()
         }
-        .frame(minWidth: 300, maxWidth: 400, minHeight: 600)
+//        .frame(minWidth: 300, maxWidth: 400, minHeight: 600)
     }
 }
 

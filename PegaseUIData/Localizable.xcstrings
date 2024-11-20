@@ -2,34 +2,103 @@
   "sourceLanguage" : "en",
   "strings" : {
     "" : {
-
+      "shouldTranslate" : false
     },
     "-" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "-"
+          }
+        }
+      }
     },
     "%.2f €" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.2f"
+          }
+        }
+      }
     },
     "%lld" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld"
+          }
+        }
+      }
+    },
+    "%lld Account" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld comptes"
+          }
+        }
+      }
     },
     "+" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+"
+          }
+        }
+      }
     },
     "€%.2f" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "€%.2f"
+          }
+        }
+      }
     },
     "0" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "0"
+          }
+        }
+      }
     },
     "0.00" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "0,00"
+          }
+        }
+      }
     },
     "Account" : {
-
-    },
-    "Activer les sons" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Account"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compte"
+          }
+        }
+      }
     },
     "Add" : {
       "localizations" : {
@@ -38,11 +107,44 @@
             "state" : "translated",
             "value" : "Add"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter"
+          }
         }
       }
     },
     "Add a sub-operation" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter une sous opération"
+          }
+        }
+      }
+    },
+    "Add Account" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter un compte"
+          }
+        }
+      }
+    },
+    "Add Group Account" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajoute un groupe"
+          }
+        }
+      }
     },
     "Address" : {
       "localizations" : {
@@ -51,29 +153,96 @@
             "state" : "translated",
             "value" : "Address"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Addresse"
+          }
         }
       }
     },
-    "Afficher les notifications" : {
-
+    "All" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tous"
+          }
+        }
+      }
     },
     "Amount" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Montant"
+          }
+        }
+      }
     },
-    "Ancien Solde" : {
-
-    },
-    "Aucun PDF" : {
-
+    "Apparence" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apparence"
+          }
+        }
+      }
     },
     "Bank" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Banque"
+          }
+        }
+      }
     },
     "Bank Card" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carte Bancaire"
+          }
+        }
+      }
+    },
+    "Bank references" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bank references"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Références bancaires"
+          }
+        }
+      }
     },
     "Bank statement" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bank statement"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relevé bancaire"
+          }
+        }
+      }
     },
     "Bank_Card" : {
       "extractionState" : "manual",
@@ -93,15 +262,11 @@
       }
     },
     "BankWebsiteView" : {
-
-    },
-    "Banque" : {
-      "extractionState" : "manual",
       "localizations" : {
-        "en" : {
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bank"
+            "value" : "BankWebsiteView"
           }
         }
       }
@@ -109,6 +274,12 @@
     "BIC" : {
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "BIC"
+          }
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "BIC"
@@ -134,21 +305,56 @@
       }
     },
     "CategorieBar1View" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CategorieBar1View"
+          }
+        }
+      }
     },
     "CategorieBar2View" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CategorieBar2View"
+          }
+        }
+      }
+    },
+    "Category" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Catégorie"
+          }
+        }
+      }
     },
     "CB Balance" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solde de la CB"
+          }
+        }
+      }
     },
     "CB Date" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date de la CB"
+          }
+        }
+      }
     },
-    "CheckView" : {
-
-    },
-    "Chequier" : {
+    "Check" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -159,7 +365,27 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Chéquier"
+            "value" : "Chéque"
+          }
+        }
+      }
+    },
+    "CheckView" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CheckView"
+          }
+        }
+      }
+    },
+    "Choose the color" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisir la couleur"
           }
         }
       }
@@ -171,11 +397,24 @@
             "state" : "translated",
             "value" : "Comment"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Libellé"
+          }
         }
       }
     },
     "Complement" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Complément"
+          }
+        }
+      }
     },
     "Compte" : {
       "extractionState" : "manual",
@@ -184,6 +423,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Account"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compte"
           }
         }
       }
@@ -206,6 +451,22 @@
         }
       }
     },
+    "Content pour Sidebar 2 %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Content pour Sidebar 2 %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contenu pour la sidebar 2 %@"
+          }
+        }
+      }
+    },
     "Country" : {
       "localizations" : {
         "en" : {
@@ -213,12 +474,24 @@
             "state" : "translated",
             "value" : "Country"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pays"
+          }
         }
       }
     },
     "CP" : {
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CP"
+          }
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "CP"
@@ -233,14 +506,56 @@
             "state" : "translated",
             "value" : "Creative mode"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mode création"
+          }
         }
       }
     },
-    "Date Début" : {
-
+    "Dark" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dark"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sombre"
+          }
+        }
+      }
+    },
+    "Decrease" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diminuer"
+          }
+        }
+      }
     },
     "Delete" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer"
+          }
+        }
+      }
     },
     "Delete recording?" : {
       "localizations" : {
@@ -249,24 +564,70 @@
             "state" : "translated",
             "value" : "Delete recording?"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer l’enregistrement ?"
+          }
         }
       }
     },
-    "Drop a PDF here" : {
-
-    },
-    "Édit" : {
+    "Display" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Edit"
+            "value" : "Display"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Affichage"
+          }
+        }
+      }
+    },
+    "Drop a PDF here" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Déposez un PDF ici"
+          }
+        }
+      }
+    },
+    "Edit" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editer"
           }
         }
       }
     },
     "Email" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Email"
+          }
+        }
+      }
+    },
+    "Enable sounds" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activer les sons"
+          }
+        }
+      }
     },
     "End Balance" : {
       "localizations" : {
@@ -274,6 +635,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "End Balance"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solde de fin"
           }
         }
       }
@@ -285,6 +652,12 @@
             "state" : "translated",
             "value" : "End Date"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date de fin"
+          }
         }
       }
     },
@@ -295,30 +668,104 @@
             "state" : "translated",
             "value" : "Engaged"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engagé"
+          }
+        }
+      }
+    },
+    "Find" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rechercher"
+          }
         }
       }
     },
     "IBAN" : {
-
-    },
-    "Identité" : {
       "localizations" : {
-        "en" : {
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Identity"
+            "value" : "IBAN"
           }
         }
       }
     },
     "Identities" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Identités"
+          }
+        }
+      }
+    },
+    "Identity" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Identité"
+          }
+        }
+      }
+    },
+    "Income/Expense" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revenus/Dépenses"
+          }
+        }
+      }
+    },
+    "Increase" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Augmenter"
+          }
+        }
+      }
     },
     "Indicative" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indicatif"
+          }
+        }
+      }
+    },
+    "Initial report" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repot initial"
+          }
+        }
+      }
     },
     "Inter Balance" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solde inter"
+          }
+        }
+      }
     },
     "Inter Date" : {
       "localizations" : {
@@ -327,11 +774,24 @@
             "state" : "translated",
             "value" : "Inter Date"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date inter"
+          }
         }
       }
     },
     "InternetReconciliationView" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "InternetReconciliationView"
+          }
+        }
+      }
     },
     "Key" : {
       "localizations" : {
@@ -339,6 +799,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Key"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clé"
+          }
+        }
+      }
+    },
+    "Light" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clair"
           }
         }
       }
@@ -350,23 +826,54 @@
             "state" : "translated",
             "value" : "Linked account"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compte lié"
+          }
         }
       }
     },
     "ListTransactions" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Liste des Transactions"
+          }
+        }
+      }
     },
     "Mobile" : {
-
-    },
-    "Mode de paiement" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mobile"
+          }
+        }
+      }
     },
     "ModePaiementView" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ModePaiementView"
+          }
+        }
+      }
     },
     "ModePaymentView" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ModePaymentView"
+          }
+        }
+      }
     },
     "Name" : {
       "localizations" : {
@@ -374,6 +881,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Name"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nom"
           }
         }
       }
@@ -385,18 +898,54 @@
             "state" : "translated",
             "value" : "No bank information available"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune information bancaire disponible"
+          }
         }
       }
     },
     "No chart Data available." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune donnée graphique disponible."
+          }
+        }
+      }
+    },
+    "No PDF" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun PDF"
+          }
+        }
+      }
     },
     "NotesView" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NotesView"
+          }
+        }
+      }
     },
     "Num" : {
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Num"
+          }
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Num"
@@ -415,49 +964,150 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Number"
+            "value" : "Numéro"
+          }
+        }
+      }
+    },
+    "Old Balance" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ancien solde"
           }
         }
       }
     },
     "Operation date" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date de l’opération"
+          }
+        }
+      }
     },
     "Outline View in SwiftUI" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outline View en SwiftUI"
+          }
+        }
+      }
+    },
+    "Payment mode" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mode de paiement"
+          }
+        }
+      }
+    },
+    "Payment Mode" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mode de paiement"
+          }
+        }
+      }
     },
     "Phone" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Téléphone"
+          }
+        }
+      }
     },
     "Pointing date" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date de pointage"
+          }
+        }
+      }
     },
     "Postal Code" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Code postal"
+          }
+        }
+      }
     },
     "RecetteDepenseBarView" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RecetteDepenseBarView"
+          }
+        }
+      }
     },
     "RecetteDepensePieView" : {
-
-    },
-    "Références bancaires" : {
-
-    },
-    "Report initial" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RecetteDepensePieView"
+          }
+        }
+      }
     },
     "Rubric" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rubrique"
+          }
+        }
+      }
     },
     "RubricView" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RubricView"
+          }
+        }
+      }
     },
     "RubriqueBarView" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RubriqueBarView"
+          }
+        }
+      }
     },
     "RubriquePieView" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RubriquePieView"
+          }
+        }
+      }
     },
     "Save" : {
       "localizations" : {
@@ -470,20 +1120,44 @@
       }
     },
     "SchedulerView" : {
-
-    },
-    "SideBar" : {
       "localizations" : {
-        "en" : {
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "SideBar"
+            "value" : "SchedulerView"
+          }
+        }
+      }
+    },
+    "Show inspector" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Montre l’inspecteur"
+          }
+        }
+      }
+    },
+    "Show notifications" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher les notifications"
           }
         }
       }
     },
     "Start Balance" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solde de début"
+          }
+        }
+      }
     },
     "Start Date" : {
       "localizations" : {
@@ -492,11 +1166,34 @@
             "state" : "translated",
             "value" : "Start Date"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date de Début"
+          }
+        }
+      }
+    },
+    "Statut" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Statut"
+          }
         }
       }
     },
     "Sub-operation" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sous Opérations"
+          }
+        }
+      }
     },
     "Surname" : {
       "localizations" : {
@@ -504,6 +1201,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Surname"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prénom"
           }
         }
       }
@@ -515,17 +1218,54 @@
             "state" : "translated",
             "value" : "Town"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ville"
+          }
         }
       }
     },
     "Transaction" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transaction"
+          }
+        }
+      }
     },
     "TransactionView" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TransactionView"
+          }
+        }
+      }
     },
     "TreasuryCurveView" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TreasuryCurveView"
+          }
+        }
+      }
+    },
+    "United" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unie"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

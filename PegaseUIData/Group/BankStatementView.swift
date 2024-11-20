@@ -95,7 +95,7 @@ struct BankStatementTableView: View {
             Button("Add") {
                 //                addBankStatement()
             }
-            Button("Édit") {
+            Button("Edit") {
                 //                showingEditDialog = true
                 //                selectedBankStatement = item
             }
@@ -115,29 +115,25 @@ struct BankStatementTableView: View {
             //                EditBankStatementView(bankStatement: statement)
         }
     }
+    private func addBankStatement() {
+        let newStatement = EntityBankStatement()
+        modelContext.insert(newStatement)
+    }
+
+    private func deleteBankStatement() {
+//        let statement = $selectedBankStatement
+//        modelContext.delete(statement)
+    }
 }
 
-
-//    private func addBankStatement() {
-//        let newStatement = EntityBankStatement()
-//        modelContext.insert(newStatement)
-//    }
-//
-private func deleteBankStatement() {
-//    let statement = $selectedBankStatement
-    //            modelContext.delete(statement)
-    
-}
-//}
-//
 struct EditBankStatementView: View {
     @Bindable var bankStatement: EntityBankStatement
     
     var body: some View {
         VStack {
             TextField("Number", value: $bankStatement.num, format: .number)
-            DatePicker("Date Début", selection: $bankStatement.startDate)
-            TextField("Ancien Solde", value: $bankStatement.startSolde, format: .currency(code: "EUR"))
+            DatePicker("Start Date", selection: $bankStatement.startDate)
+            TextField("Old Balance", value: $bankStatement.startSolde, format: .currency(code: "EUR"))
             // Ajoutez des champs pour les autres propriétés
             
             DragPDFView(pdfData: $bankStatement.pdfDoc)
@@ -178,7 +174,7 @@ struct PDFPreview: View {
         } else {
             Rectangle()
                 .fill(Color.gray)
-                .overlay(Text("Aucun PDF"))
+                .overlay(Text("No PDF"))
         }
     }
 }
