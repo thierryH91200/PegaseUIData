@@ -151,7 +151,7 @@ struct DragPDFView: View {
     
     var body: some View {
         Rectangle()
-            .fill(Color.red)
+//            .fill(Color.red)
             .onDrop(of: [.fileURL], isTargeted: nil) { providers in
                 guard let provider = providers.first else { return false }
                 provider.loadItem(forTypeIdentifier: "public.file-url", options: nil) { (urlData, error) in
@@ -173,7 +173,7 @@ struct PDFPreview: View {
             PDFKitRepresentedView(pdfDocument: pdfDocument)
         } else {
             Rectangle()
-                .fill(Color.gray)
+//                .fill(Color.gray)
                 .overlay(Text("No PDF"))
         }
     }

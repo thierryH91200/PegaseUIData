@@ -28,7 +28,8 @@ struct ContentView100: View {
     @State private var selection1: UUID?
     @State private var selection2: String? = "Liste des transactions"
     @State private var isVisible: Bool = true
-    
+    @State private var isToggle: Bool = false
+
     @State private var entityAccount: [EntityAccount] = []    
     @State private var inspectorIsShown: Bool = false
     
@@ -94,6 +95,12 @@ struct ContentView100: View {
                 } label: {
                     Label("Find", systemImage: "magnifyingglass")
                 }
+                
+                Button(action: {
+                    print("Paramètres ouverts")
+                }) {
+                    Label("Settings", systemImage: "gear")
+                }
             }
             ToolbarItemGroup(placement: .automatic) {
                 Menu {
@@ -107,7 +114,7 @@ struct ContentView100: View {
                         Label("Rubric", systemImage: "tag.fill")
                     }
                     Button(action: { chooseCouleur("Payment Mode") }) {
-                        Label("Payment Mode", systemImage: "creditcard.fill")
+                        Label("Payment mode", systemImage: "creditcard.fill")
                     }
                     Button(action: { chooseCouleur("Statut") }) {
                         Label("Statut", systemImage: "checkmark.circle.fill")
@@ -125,24 +132,6 @@ struct ContentView100: View {
     }
 
 }
-
-
-//
-//                Button(action: {
-//                    print("Paramètres ouverts")
-//                }) {
-//                    Label("Paramètres", systemImage: "gear")
-//                }
-
-//                Toggle(isOn: $isToggle) {
-//                    Image(systemName: "sidebar.trailing")
-//                }
-//                .toggleStyle(.button)
-//                .keyboardShortcut("r", modifiers: .command)
-////            }
-//        }
-//    }
-//
 
 // Fonction d'action pour chaque choix de couleur
 private func chooseCouleur(_ type: String) {

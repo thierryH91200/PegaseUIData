@@ -37,7 +37,7 @@ struct AccountView: View {
                 BankReferenceView()
             }
             .padding()
-            .background(Color.gray.opacity(0.1))
+//            .background(Color.gray.opacity(0.1))
             .cornerRadius(8)
             
             Spacer()

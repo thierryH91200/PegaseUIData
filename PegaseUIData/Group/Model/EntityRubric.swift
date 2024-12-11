@@ -23,7 +23,7 @@ public class EntityRubric: ObservableObject {
     @Relationship(deleteRule: .cascade) var category: [EntityCategory]?
     var account: EntityAccount?
     
-    public init( name: String, color: Color) {
+    init( name: String, color: Color) {
         self.name = name
         self.color = color
         self.uuid = UUID()
@@ -31,19 +31,17 @@ public class EntityRubric: ObservableObject {
     }
 }
 
-final class RubricManager: ObservableObject {
+final class RubricManager: NSObject {
     
     static let shared = RubricManager()
     
     // Contexte pour les modifications
+    var currentAccount: EntityAccount = EntityAccount()
+    
     @Environment(\.modelContext) private var modelContext: ModelContext
-    var currentAccount: EntityAccount?
-    
-    
+
     @Published private(set) var entitiesRubric: [EntityRubric] = []
-    
-    private init() {    }
-    
+        
     func findOrCreate(account: EntityAccount, name: String, color: Color) -> EntityRubric {
         if let existingRubric = find(account: account, name: name) {
             return existingRubric
@@ -67,8 +65,13 @@ final class RubricManager: ObservableObject {
     
     @discardableResult
     func getAllDatas(account: EntityAccount) -> [EntityRubric] {
+        
+//        guard let currentAccount = currentAccount else {
+//            print("Aucun compte sélectionné.")
+//            return []
+//        }
                 
-        let lhs = currentAccount!.uuid.uuidString
+        let lhs = currentAccount.uuid.uuidString
         let predicate = #Predicate<EntityRubric>{ entity in entity.account!.uuid.uuidString == lhs }
 
         let fetchDescriptor = FetchDescriptor<EntityRubric>(
@@ -81,16 +84,21 @@ final class RubricManager: ObservableObject {
             print("Erreur lors de la récupération des données avec SwiftData")
         }
         if entitiesRubric.isEmpty {
-            defaultEntity()
+            defaultEntity(modelContext: modelContext)
         }
         return entitiesRubric
     }
     
     fileprivate func addRubric(_ key: [String: String], account: EntityAccount) {
         if entitiesRubric.isEmpty {
+//            
+//            let entityRubric = NSEntityDescription.insertNewObject(forEntityName: "EntityRubric", into: modelContext) as! EntityRubric
+
             let name = key["rubrique"] ?? ""
-            let color = Color.init(key["color"]!)
-            
+            let color = Color.init( key["color"]!)
+//            entityRubric.color = color
+//            entityRubric.uuid = UUID()
+
             let entityRubric = findOrCreate(account: account, name: name, color: color)
             
             let categoryName = key["categorie"] ?? ""
@@ -112,15 +120,12 @@ final class RubricManager: ObservableObject {
         }
     }
     
-    
-    
     func loadCSVFile() -> String? {
         guard let url = Bundle.main.url(forResource: "rubrique", withExtension: "csv") else {
             print("Error: File not found.")
             return nil
         }
-        
-        
+
         do {
             let content = try String(contentsOf: url, encoding: .utf8)
             return content
@@ -130,17 +135,17 @@ final class RubricManager: ObservableObject {
         }
     }
     
-    func defaultEntity() {
+    func defaultEntity(modelContext: ModelContext) {
         if entitiesRubric.isEmpty {
             let content = loadCSVFile()!
             let csv = CSwiftV(with: content, separator: ";", replace: "\r")
             let keys = csv.keyedRows
-            if let keys = keys, let account = currentAccount {
+            if let keys = keys {
                 for key in keys {
-                    addRubric(key, account: account)
+                    addRubric(key, account: currentAccount)
                 }
             }
-            let lhs = currentAccount!.uuid.uuidString
+            let lhs = currentAccount.uuid.uuidString
             let predicate = #Predicate<EntityRubric>{ entity in entity.account!.uuid.uuidString == lhs }
 
             let descriptor = FetchDescriptor<EntityRubric>(

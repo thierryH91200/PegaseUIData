@@ -12,7 +12,7 @@ struct ModePaiementView: View {
     @Binding var isVisible: Bool
     
     var body: some View {
-        Text("ModePaiementView")
+        Text("ModePaymentView")
             .font(.title)
             .padding()
             .task {

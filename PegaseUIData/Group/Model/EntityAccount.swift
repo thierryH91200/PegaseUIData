@@ -42,6 +42,21 @@ import SwiftUI
     }
 }
 
+extension EntityAccount {
+    func addAccounts(_ accounts: [EntityAccount]) {
+        for account in accounts {
+            self.addChild(account)
+        }
+    }
+    
+    func addChild(_ child: EntityAccount) {
+        if children == nil {
+            children = []
+        }
+        children?.append(child)
+    }
+}
+
 final class AccountManager {
     
     // Contexte pour les modifications
@@ -52,7 +67,6 @@ final class AccountManager {
     
     init() { }
 
-    
     func getAllData(_ modelContext: ModelContext) -> [EntityAccount] {
         do {
             // Exécution d'une requête manuelle si besoin de filtrer ou trier
@@ -112,11 +126,30 @@ final class AccountManager {
     }
 }
 
-extension EntityAccount {
-    func addChild(_ child: EntityAccount) {
-        if children == nil {
-            children = []
+
+
+final class CurrrentAccountManager {
+    
+    static let shared = CurrrentAccountManager()
+    
+    // Déclaration d'une variable globale pour toutes les fonctions
+    var currentAccount: EntityAccount?
+    
+    func setAccount(_ account: EntityAccount) {
+        // Affectation d'un compte à la variable globale
+        currentAccount = account
+    }
+    
+    func fetchDataForCurrentAccount() {
+        guard let account = currentAccount else {
+            print("Aucun compte sélectionné.")
+            return
         }
-        children?.append(child)
+        print("Traitement des données pour le compte \(account.name)")
+    }
+    
+    func resetCurrentAccount() {
+        // Réinitialisation de la variable globale
+        currentAccount = nil
     }
 }

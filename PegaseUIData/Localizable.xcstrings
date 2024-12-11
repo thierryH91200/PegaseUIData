@@ -390,6 +390,16 @@
         }
       }
     },
+    "Color" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couleur"
+          }
+        }
+      }
+    },
     "Comment" : {
       "localizations" : {
         "en" : {
@@ -541,6 +551,26 @@
         }
       }
     },
+    "Default sign" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Signe par défaut"
+          }
+        }
+      }
+    },
+    "Default values ​​for transactions for this account." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valeurs par défaut pour les transactions pour ce compte."
+          }
+        }
+      }
+    },
     "Delete" : {
       "localizations" : {
         "en" : {
@@ -683,6 +713,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rechercher"
+          }
+        }
+      }
+    },
+    "First Name" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prénom"
           }
         }
       }
@@ -855,12 +895,12 @@
         }
       }
     },
-    "ModePaiementView" : {
+    "Mode" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ModePaiementView"
+            "value" : "Mode"
           }
         }
       }
@@ -1004,12 +1044,13 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "mode de paiement"
+            "value" : "Mode de paiement"
           }
         }
       }
     },
     "Payment Mode" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -1129,6 +1170,16 @@
         }
       }
     },
+    "Settings" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paramètres"
+          }
+        }
+      }
+    },
     "Show inspector" : {
       "localizations" : {
         "fr" : {
@@ -1233,16 +1284,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Transaction"
-          }
-        }
-      }
-    },
-    "TransactionView" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "TransactionView"
           }
         }
       }

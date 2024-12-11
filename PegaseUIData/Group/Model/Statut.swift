@@ -15,23 +15,23 @@ import SwiftData
     init() {}
 
     enum TypeOfStatut: Int16, CaseIterable {
-        case planifie = 0
-        case engage = 1
-        case realise = 2
+        case engaged = 0
+        case pending = 1
+        case completed = 2
 
         var label: String {
             switch self {
-            case .planifie: return "Planifie"
-            case .engage: return "Statut.Engaged"
-            case .realise: return "Statut.Realise"
+            case .engaged: return "Engaged"
+            case .pending: return "Pending"
+            case .completed: return "Completed"
             }
         }
 
         var color: Color {
             switch self {
-            case .planifie: return .black
-            case .engage: return .blue
-            case .realise: return .green
+            case .engaged: return .black
+            case .pending: return .blue
+            case .completed: return .green
             }
         }
     }
@@ -41,7 +41,7 @@ import SwiftData
         if let foundStatut = TypeOfStatut.allCases.first(where: { $0.label == statut }) {
             return foundStatut.rawValue
         }
-        return TypeOfStatut.engage.rawValue // Valeur par défaut
+        return TypeOfStatut.engaged.rawValue // Valeur par défaut
     }
 }
 

@@ -126,7 +126,7 @@ struct OperationView: View {
                     .font(.footnote)
             }
             .frame(maxWidth: .infinity, maxHeight: 100)
-            .background(Color(.white))
+//            .background(Color(rawValue: .white))
             .padding([.leading, .trailing])
             
             Spacer()

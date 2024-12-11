@@ -45,6 +45,47 @@ class ColorTransformer: ValueTransformer {
     }
 }
 
+//enum Color: String {
+//    case black
+//    case blue
+//    case brown
+//    case gray
+//    case green
+//    case orange
+//    case darkGray
+//    case purple
+//    case red
+//    case yellow
+//    
+//    var color: Color {
+//        switch self {
+//        case .red:
+//            return .red
+//        case .blue:
+//            return .blue
+//        case .green:
+//            return .green
+//        case .black:
+//            return .black
+//        case .purple:
+//            return .purple
+//        case .orange:
+//            return .orange
+//        case .brown:
+//            return .brown
+//        case .darkGray:
+//            return .darkGray
+//        case .yellow:
+//            return .yellow
+//        case .gray:
+//            return .gray
+//        }
+//    }
+//}
+
+
+
+
 extension Color {
     init?(colorName: String) {
         let color = colorName.lowercased()
@@ -77,11 +118,6 @@ extension Color {
         }
     }
 }
-
-//var stubColor: Color {
-//    return Color(colorName: concert.accentColor)!
-//}
-
 
 enum EntityColor: String, Codable {
     case black, blue, brown, gray, green, orange, darkGray, purple, red, yellow

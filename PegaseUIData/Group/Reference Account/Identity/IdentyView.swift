@@ -27,7 +27,7 @@ struct IdentyView: View {
         }
         .padding()
         .frame(width: 600)
-        .background(Color.gray.opacity(0.1))
+//        .background(Color.gray.opacity(0.1))
         .cornerRadius(10)
         .onAppear {
             // Créer un nouvel enregistrement si la base de données est vide

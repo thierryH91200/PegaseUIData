@@ -15,7 +15,6 @@ public class EntityPaymentMode {
     
     var name: String = ""
     @Attribute(.transformable(by: ColorTransformer.self)) var color: Color
-
     var uuid: UUID = UUID()
     
     var account: EntityAccount?
@@ -23,18 +22,19 @@ public class EntityPaymentMode {
     @Relationship(inverse: \EntityPreference.paymentMode) var preference: EntityPreference?
     @Relationship(inverse: \EntityTransactions.paymentMode) var transactions: [EntityTransactions]?
     
-    public init(name: String, color: Color, account: EntityAccount? = nil) {
+    init(name: String, color: Color, account: EntityAccount? = nil) {
         self.name = name
         self.color = color
-        self.account = account
         self.uuid = UUID()
+        
+        self.account = account
     }
 }
 
 final class PaymentModeManager : NSObject {
     
     static let shared = PaymentModeManager()
-    private var entitiesModePaiement = [EntityPaymentMode]()
+    var paymentModesEntities = [EntityPaymentMode]()
     
     // Contexte pour les modifications
     @Environment(\.modelContext) private var modelContext: ModelContext
@@ -68,7 +68,6 @@ final class PaymentModeManager : NSObject {
         return entity!
     }
 
-    
     func create(account: EntityAccount, name: String, color: Color) -> EntityPaymentMode {
         
         // Créez une instance de `EntityPaymentMode` avec les paramètres fournis
@@ -119,22 +118,24 @@ final class PaymentModeManager : NSObject {
 
     func defaultModePaiement() {
         // Vérifiez si `entitiesModePaiement` est vide et `currentAccount` est valide
-        guard let currentAccount = currentAccount, entitiesModePaiement.isEmpty else { return }
+        guard let currentAccount = currentAccount,
+              paymentModesEntities.isEmpty else { return }
         
         // Liste des noms et couleurs des méthodes de paiement
         let paymentModes = [
-            (name: "Bank_Card", color: Color.green),
-            (name: "Check", color: Color.yellow),
-            (name: "Cash", color: Color.blue),
-            (name: "Prelevement", color: Color.red),
-            (name: "Discount", color: Color.gray),
-            (name: "RetraitEspeces", color: Color.orange),
-            (name: "Transfers", color: Color.brown)
+            (name : "Bank_Card", color : Color.green),
+            (name : "Check", color : Color.yellow),
+            (name : "Cash", color : Color.blue),
+            (name : "Prelevement", color : Color.red),
+            (name : "Discount", color : Color.gray),
+            (name : "Cash withdrawal", color : Color.orange),
+            (name : "Transfers", color : Color.brown)
         ]
+       
         
         // Création des entités de mode de paiement
         for paymentMode in paymentModes {
-            entitiesModePaiement.append( create(account: currentAccount, name: paymentMode.name, color: paymentMode.color))
+            _ = create(account: currentAccount, name: paymentMode.name, color: paymentMode.color)
         }
         
         let lhs = currentAccount.uuid.uuidString
@@ -147,7 +148,7 @@ final class PaymentModeManager : NSObject {
         
         // Récupération des entités `EntityPaymentMode` liées au compte actuel
         do {
-            entitiesModePaiement = try modelContext.fetch(fetchDescriptor)
+            paymentModesEntities = try modelContext.fetch(fetchDescriptor)
         } catch {
             print("Erreur lors de la récupération des modes de paiement : \(error.localizedDescription)")
         }

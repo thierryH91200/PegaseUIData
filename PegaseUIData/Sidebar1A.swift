@@ -9,15 +9,14 @@ import SwiftUI
 import AppKit
 import SwiftData
 
-
-
-
 struct Sidebar1A: View {
     @Environment(\.modelContext) private var modelContext
     @Binding var selection1: UUID?
+    @State private var selectedEntity: EntityAccount? // Entité sélectionnée
+
     var body: some View {
         let entityAccounts = AccountManager.shared.getAllData( modelContext)
-
+        
         List(selection: $selection1) {
             // Pré-filtrage des sections pour éviter les calculs complexes dans ForEach
             let headerSections = entityAccounts.filter { $0.isHeader }
@@ -38,10 +37,49 @@ struct Sidebar1A: View {
         .navigationTitle("Account")
         .listStyle(SidebarListStyle())
         .frame(maxHeight: 500) // Ajustement de la hauteur
+        .onChange(of: selection1) { _, newSelection in
+            // Trouver et stocker l'entité sélectionnée
+            selectedEntity = entityAccounts.first(where: { $0.uuid == newSelection })
+            print("Selected Entity: \(String(describing: selectedEntity!.name))")
+            CurrrentAccountManager.shared.setAccount(selectedEntity!)
+        }
         Bouton()
     }
 }
 
+//struct Sidebar1A: View {
+//
+//    @Environment(\.modelContext) private var modelContext
+//    @Binding var selection1: String?
+//
+//    var body: some View {
+//
+//        let accounts = Bundle.main.decode([DatasCompte].self, from: "Account.plist" )
+//        let        entityAccounts = AccountManager.shared.getRoot(modelContext: modelContext)
+//
+//
+//       if let url = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first {
+//            let path = "Core Data SQLite file is located at: \(url.path)"
+//        }
+//
+//        List(selection: $selection1) {
+//            ForEach(entityAccounts.filter { $0.isHeader }) { section in
+//                Section(header: SectionHeader(section: section) ) {
+//                    ForEach(section.children) { child in
+//                        AccountRow(account: child)
+//                            .tag(child.name)
+//                    }
+//                }
+//            }
+//        }
+//        .navigationTitle("Account")
+//        .listStyle(SidebarListStyle())
+//        .frame(maxHeight: 500) // Pour ajuster la hauteur de la première barre latérale
+//
+//        Bouton()
+//    }
+//
+//}
 
 class BalanceManager: ObservableObject {
     @Published var balance: Double = 123.45
@@ -59,9 +97,9 @@ struct SectionHeader: View {
     var body: some View {
         
         HStack {
-            let count = section.children!.count
+            let count = section.children?.count ?? 0
 
-            Image(systemName: "folder.fill")
+            Image(systemName: section.nameImage)
                 .foregroundColor(.accentColor)
                 .font(.system(size: 36)) // Ajustez la taille ici
 
@@ -76,6 +114,7 @@ struct SectionHeader: View {
                 .font(.headline)
                 .foregroundColor(manager.balance >= 0 ? .green : .red)
                 .frame(width: 80, alignment: .trailing) // Aligne à droite avec une largeur fixe
+            
             // Boutons pour changer la balance (pour tester)
             HStack {
                 Button("Increase") { manager.balance += 100 }
@@ -95,7 +134,6 @@ struct AccountRow: View {
     var body: some View {
         HStack {
             Image(systemName: account.nameImage)
-//            Image(systemName: "pencil")
                 .foregroundColor(.blue)
                 .font(.system(size: 18)) // Ajustez la taille ici
 
@@ -111,8 +149,7 @@ struct AccountRow: View {
                     .foregroundColor(.gray)
             }
             Spacer()
-            Text( String(account.solde ?? 100.0) + " €")
-                .font(.caption)
+            Text("\(account.solde ?? 100.0, specifier: "%.2f") €")                .font(.caption)
                 .foregroundColor(.green)
                 .frame(width: 80, alignment: .trailing) // Aligne à droite avec la même largeur fixe
         }
@@ -126,15 +163,15 @@ struct Bouton: View {
     var body: some View {
         HStack {
             Button(action: {
-                print("Bouton moins appuyé")
+                print("Button minus pressed")
             }) {
                 Image(systemName: "minus.circle")
                     .font(.system(size: 16))
             }
             Spacer()
             Menu {
-                Button("Add Group Account", action: { selectedOption = "Add Group Account" })
-                Button("Add Account", action: { selectedOption = "Add Account" })
+                Button(String(localized: "Add Group Account"), action: { selectedOption = "Add Group Account" })
+                Button(String(localized:"Add Account"), action: { selectedOption = "Add Account" })
             } label: {
                 Label(selectedOption, systemImage: "ellipsis.circle")
                     .font(.system(size: 16))
@@ -178,6 +215,12 @@ struct AccountFactory {
         account.type = type
         account.uuid = UUID()
         
+        PaymentModeManager.shared.defaultModePaiement()
+        account.paymentMode = PaymentModeManager.shared.paymentModesEntities
+        
+//        RubricManager.shared.defaultEntity(modelContext: modelContext)
+//        account.rubric = RubricManager.shared.entitiesRubric
+        
         modelContext.insert(account)
         return account
     }
@@ -186,6 +229,7 @@ struct AccountFactory {
         let header = EntityAccount()
         header.isHeader = true
         header.name = name
+        header.nameImage = "folder.fill"
         header.uuid = UUID()
         header.parent = parent
         
@@ -210,18 +254,20 @@ struct initManager {
         modelContext.insert(root)
         
         // Création des comptes
-        let header1 = AccountFactory.createHeader(modelContext: modelContext, name: "Bank Account", parent: root)
-        let header2 = AccountFactory.createHeader(modelContext: modelContext, name: "Save", parent: root)
-        let header3 = AccountFactory.createHeader(modelContext: modelContext, name: "Bank Card", parent: root)
+        var name = "Bank Account"
+        let header1 = AccountFactory.createHeader(modelContext: modelContext, name: name, parent: root)
+        name = "Save"
+        let header2 = AccountFactory.createHeader(modelContext: modelContext, name: name, parent: root)
         
         let accountsConfig: [(name: String, icon: String, idName: String, idPrenom: String, numAccount: String, type: Int)] = [
-            ("Current account", "banknote", "Martin", "Pierre", "00045700E", 0),
-            ("Current account", "banknote", "Martin", "Marie", "00045701F", 0),
-            ("Credit card", "creditcard", "Martin", "Pierre", "00045702G", 1),
-            ("Credit card", "creditcard", "Durand", "Jean", "00045705K", 1),
-            ("Save",            "building.columns", "Durand", "Jean", "00045703H", 2),
-            ("Current account", "building.columns", "Durand", "Jean", "00045704J", 1)
+            ("Current account1", "banknote", "Martin", "Pierre", "00045700E", 0),
+            ("Current account2", "banknote", "Martin", "Marie", "00045701F", 0),
+            ("Credit card1"    , "creditcard", "Martin", "Pierre", "00045702G", 1),
+            ("Credit card2"    , "creditcard", "Durand", "Jean", "00045705K", 1),
+            ("Save"            , "building.columns", "Durand", "Jean", "00045703H", 2),
+            ("Current account3", "building.columns", "Durand", "Sarah", "00045704J", 1)
         ]
+
         
         for config in accountsConfig[0...3] {
             let account = AccountFactory.createAccount(
@@ -248,7 +294,7 @@ struct initManager {
             )
             header2.addChild(account)
         }
-        
+
         // Enregistrement des modifications
         saveContext(modelContext)
     }
@@ -267,37 +313,3 @@ struct initManager {
 
 
 
-//struct Sidebar1A: View {
-//
-//    @Environment(\.modelContext) private var modelContext
-//
-//    @Binding var selection1: String?
-//
-//    var body: some View {
-//
-////        let accounts = Bundle.main.decode([DatasCompte].self, from: "Account.plist" )
-//        let        entityAccounts = AccountManager.shared.getRoot(modelContext: modelContext)
-//
-//
-////        if let url = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first {
-////            let path = "Core Data SQLite file is located at: \(url.path)"
-////        }
-//
-//        List(selection: $selection1) {
-//            ForEach(entityAccounts.filter { $0.isHeader }) { section in
-//                Section(header: SectionHeader(section: section) ) {
-//                    ForEach(section.children) { child in
-//                        AccountRow(account: child)
-//                            .tag(child.name)
-//                    }
-//                }
-//            }
-//        }
-//        .navigationTitle("Account")
-//        .listStyle(SidebarListStyle())
-//        .frame(maxHeight: 500) // Pour ajuster la hauteur de la première barre latérale
-//
-//        Bouton()
-//    }
-//
-//}

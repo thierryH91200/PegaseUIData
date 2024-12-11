@@ -29,7 +29,6 @@ import SwiftUI
         self.rubric = rubric
         
         self.uuid = UUID()
-
     }
 }
 
