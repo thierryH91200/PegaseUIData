@@ -13,7 +13,8 @@ class ContentViewModel: ObservableObject {
     @Published var isInitialized = false
 
     init(modelContext: ModelContext) {
-        initManager.initializeLibrary(modelContext: modelContext)
+        InitManager.shared.configure(with: modelContext)
+        InitManager.shared.initialize()
         isInitialized = true // Marqueur pour indiquer la fin de l'initialisation
     }
 }
@@ -41,26 +42,28 @@ struct ContentView100: View {
         {
             NavigationSplitView {
                 SidebarContainer(selection1: $selection1, selection2: $selection2)
+                    .navigationSplitViewColumnWidth(min: 256, ideal: 256, max: 400)
+
             }
             content :
             {
                 Text("Content")
                 DetailContainer(selection2: $selection2, isVisible: $isVisible)
+                    .navigationSplitViewColumnWidth( min: 150, ideal: 800)
             }
             detail :
             {
                 if isVisible
                 {
-                    OperationView(modeCreation: false)
-                        .frame(width: 250, height: 600, alignment: .trailing)
-                        .alignmentGuide(.trailing) { _ in 0 }
+                    OperationDialog(modeCreation: false)
                 }
             }
-            .frame(minWidth: 800, maxWidth: .infinity) // Définit les contraintes globales du NavigationSplitView
+//            .frame(minWidth: 800, maxWidth: .infinity) // Définit les contraintes globales du NavigationSplitView
             .navigationSplitViewStyle(.balanced) // Style équilibré pour ajuster les tailles
 
             .onAppear {
-                initManager.initializeLibrary(modelContext: modelContext)
+                InitManager.shared.configure(with: modelContext)
+                InitManager.shared.initialize()
                 entityAccount = AccountManager.shared.getRoot(modelContext: modelContext)
                 AccountManager.shared.printAccount(entityAccount: entityAccount.first!, description: "Account")
             }
@@ -85,7 +88,7 @@ struct ContentView100: View {
                     Button("Light") { setAppearance(.aqua) }
                     Button("Dark") { setAppearance(.darkAqua) }
                 } label: {
-                    Label("Apparence", systemImage: "paintbrush")
+                    Label("Appearance", systemImage: "paintbrush")
                 }
                 Menu {
                     Button(action: { changeSearchFieldItem("All") }) { Text("All") }
@@ -210,16 +213,6 @@ struct DetailContainer: View {
     }
 }
 
-//struct SidebarDialogView: View {
-//    var body: some View {
-//        Spacer(minLength: 10)
-//        OperationView(modeCreation: false)
-//            .frame(minWidth: 100, idealWidth: 150, maxWidth: 200)
-//        Spacer(minLength: 10)
-//    }
-//}
-//
-
 struct Sidebar2A: View {
 
     @Binding var selection2: String?
@@ -233,7 +226,6 @@ struct Sidebar2A: View {
                 Section(section.name) {
                     ForEach(section.children) { child in
                         Label(child.name, systemImage: child.icon).tag(child.name)
-
                             .font(.system(size: 12))
                     }
                 }

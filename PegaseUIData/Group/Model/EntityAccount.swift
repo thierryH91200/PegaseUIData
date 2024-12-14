@@ -95,7 +95,7 @@ final class AccountManager {
         account.uuid           = UUID()
         
         // Crée une nouvelle identité et un compte initial pour cet EntityAccount
-        let identity = IdentityManager.shared.create(name: idName, prenom: idPrenom)
+        let identity = IdentityManager.shared.create(name: idName, surName: idPrenom)
         identity.account = account
         account.identity = identity
         
@@ -126,8 +126,6 @@ final class AccountManager {
     }
 }
 
-
-
 final class CurrrentAccountManager {
     
     static let shared = CurrrentAccountManager()
@@ -139,10 +137,14 @@ final class CurrrentAccountManager {
         // Affectation d'un compte à la variable globale
         currentAccount = account
     }
-    
+    func getAccount()->EntityAccount? {
+        // Affectation d'un compte à la variable globale
+        return currentAccount
+    }
+
     func fetchDataForCurrentAccount() {
         guard let account = currentAccount else {
-            print("Aucun compte sélectionné.")
+            print("No account selected.")
             return
         }
         print("Traitement des données pour le compte \(account.name)")

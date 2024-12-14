@@ -25,7 +25,7 @@ public class EntityPaymentMode {
     init(name: String, color: Color, account: EntityAccount? = nil) {
         self.name = name
         self.color = color
-        self.uuid = UUID()
+        self.uuid = uuid
         
         self.account = account
     }
@@ -34,16 +34,24 @@ public class EntityPaymentMode {
 final class PaymentModeManager : NSObject {
     
     static let shared = PaymentModeManager()
-    var paymentModesEntities = [EntityPaymentMode]()
+    
+    var currentAccount: EntityAccount?
+    var entities = [EntityPaymentMode]()
     
     // Contexte pour les modifications
-    @Environment(\.modelContext) private var modelContext: ModelContext
-    var currentAccount: EntityAccount?
+    var modelContext : ModelContext?
     
-    func getAllDatas(for account: EntityAccount?) -> [EntityPaymentMode] {
+    func getAllDatas(for account: EntityAccount?, context: ModelContext?) -> [EntityPaymentMode] {
+        
+        guard let modelContext1 = context else { return [] }
+        modelContext = modelContext1
+        
+        currentAccount = CurrrentAccountManager.shared.getAccount()
+        
+        guard let account = currentAccount else { return [] }
         
         // Utilisez SwiftData pour récupérer les données avec un filtre
-        let lhs = account!.uuid.uuidString
+        let lhs = account.uuid.uuidString
         let predicate = #Predicate<EntityPaymentMode>{ entity in entity.account!.uuid.uuidString == lhs }
 
         let fetchDescriptor = FetchDescriptor<EntityPaymentMode>(
@@ -52,11 +60,15 @@ final class PaymentModeManager : NSObject {
         )
         
         do {
-            return try modelContext.fetch(fetchDescriptor)
+            entities = try modelContext!.fetch(fetchDescriptor)
         } catch {
             print("Error fetching data with SwiftData")
-            return []
+            entities =  []
         }
+        for entity in entities {
+            print("\(entity.name)")
+        }
+        return entities
     }
     
     func findOrCreate ( account: EntityAccount,  name: String, color: Color, uuid: UUID) -> EntityPaymentMode {
@@ -72,14 +84,13 @@ final class PaymentModeManager : NSObject {
         
         // Créez une instance de `EntityPaymentMode` avec les paramètres fournis
         let entity = EntityPaymentMode(name: name, color: color, account: account)
-        entity.uuid = UUID()
         
         // Ajoutez l'entité au contexte
-        modelContext.insert(entity)
+        modelContext!.insert(entity)
         
         // Enregistrez le contexte pour persister les changements
         do {
-            try modelContext.save()
+            try modelContext!.save()
         } catch {
             print("Erreur lors de la sauvegarde de l'entité : \(error)")
         }
@@ -98,7 +109,7 @@ final class PaymentModeManager : NSObject {
         )
 
         do {
-            let searchResults = try modelContext.fetch(fetchDescriptor)
+            let searchResults = try modelContext!.fetch(fetchDescriptor)
             let result = searchResults.isEmpty == false ? searchResults.first : nil
             return result
         } catch {
@@ -110,35 +121,36 @@ final class PaymentModeManager : NSObject {
     // MARK: - delete ModePaiement
     func remove(entity: EntityPaymentMode)
     {
-        modelContext.undoManager?.beginUndoGrouping()
-        modelContext.undoManager?.setActionName("DeletePaymentMode")
-        modelContext.delete(entity)
-        modelContext.undoManager?.endUndoGrouping()
+        modelContext!.undoManager?.beginUndoGrouping()
+        modelContext!.undoManager?.setActionName("DeletePaymentMode")
+        modelContext!.delete(entity)
+        modelContext!.undoManager?.endUndoGrouping()
     }
 
-    func defaultModePaiement() {
+    func defaultModePaiement(for account: EntityAccount, context: ModelContext?) {
         // Vérifiez si `entitiesModePaiement` est vide et `currentAccount` est valide
-        guard let currentAccount = currentAccount,
-              paymentModesEntities.isEmpty else { return }
+        guard let modelContext1 = context else { return }
+        modelContext = modelContext1
+
+        guard entities.isEmpty else { return }
         
         // Liste des noms et couleurs des méthodes de paiement
         let paymentModes = [
-            (name : "Bank_Card", color : Color.green),
-            (name : "Check", color : Color.yellow),
-            (name : "Cash", color : Color.blue),
-            (name : "Prelevement", color : Color.red),
-            (name : "Discount", color : Color.gray),
-            (name : "Cash withdrawal", color : Color.orange),
-            (name : "Transfers", color : Color.brown)
+            (name : String(localized:"Bank Card"), color : Color.green),
+            (name : String(localized:"Check"), color : Color.yellow),
+            (name : String(localized:"Cash"), color : Color.blue),
+            (name : String(localized:"Bank withdrawal"), color : Color.red),
+            (name : String(localized:"Discount"), color : Color.gray),
+            (name : String(localized:"Cash withdrawal"), color : Color.orange),
+            (name : String(localized:"Transfers"), color : Color.brown)
         ]
        
-        
         // Création des entités de mode de paiement
         for paymentMode in paymentModes {
-            _ = create(account: currentAccount, name: paymentMode.name, color: paymentMode.color)
+            _ = create(account: account, name: paymentMode.name, color: paymentMode.color)
         }
         
-        let lhs = currentAccount.uuid.uuidString
+        let lhs = account.uuid.uuidString
         let predicate = #Predicate<EntityPaymentMode>{ entity in entity.account!.uuid.uuidString == lhs }
                 
         let fetchDescriptor = FetchDescriptor<EntityPaymentMode>(
@@ -148,7 +160,7 @@ final class PaymentModeManager : NSObject {
         
         // Récupération des entités `EntityPaymentMode` liées au compte actuel
         do {
-            paymentModesEntities = try modelContext.fetch(fetchDescriptor)
+            entities = try modelContext!.fetch(fetchDescriptor)
         } catch {
             print("Erreur lors de la récupération des modes de paiement : \(error.localizedDescription)")
         }

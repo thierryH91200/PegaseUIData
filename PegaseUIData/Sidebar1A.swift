@@ -47,39 +47,7 @@ struct Sidebar1A: View {
     }
 }
 
-//struct Sidebar1A: View {
-//
-//    @Environment(\.modelContext) private var modelContext
-//    @Binding var selection1: String?
-//
-//    var body: some View {
-//
-//        let accounts = Bundle.main.decode([DatasCompte].self, from: "Account.plist" )
-//        let        entityAccounts = AccountManager.shared.getRoot(modelContext: modelContext)
-//
-//
-//       if let url = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first {
-//            let path = "Core Data SQLite file is located at: \(url.path)"
-//        }
-//
-//        List(selection: $selection1) {
-//            ForEach(entityAccounts.filter { $0.isHeader }) { section in
-//                Section(header: SectionHeader(section: section) ) {
-//                    ForEach(section.children) { child in
-//                        AccountRow(account: child)
-//                            .tag(child.name)
-//                    }
-//                }
-//            }
-//        }
-//        .navigationTitle("Account")
-//        .listStyle(SidebarListStyle())
-//        .frame(maxHeight: 500) // Pour ajuster la hauteur de la première barre latérale
-//
-//        Bouton()
-//    }
-//
-//}
+
 
 class BalanceManager: ObservableObject {
     @Published var balance: Double = 123.45
@@ -199,117 +167,7 @@ func getSQLiteFilePath() -> String? {
     return nil
 }
 
-struct AccountFactory {
-    static func createAccount(modelContext: ModelContext, name: String, icon: String, idName: String, idPrenom: String, numAccount: String, type: Int) -> EntityAccount {
-        let account = EntityAccount()
-        account.name = name
-        account.nameImage = icon
-        account.identity = EntityIdentity(name: idName, surName: idPrenom) // Assurez-vous que `EntityIdentity` existe avec un init dédié
-        account.isAccount = true
-        
-        let initAccount = EntityInitAccount()
-        initAccount.codeAccount = numAccount
-        initAccount.account = account
-        account.initAccount = initAccount
-        
-        account.type = type
-        account.uuid = UUID()
-        
-        PaymentModeManager.shared.defaultModePaiement()
-        account.paymentMode = PaymentModeManager.shared.paymentModesEntities
-        
-//        RubricManager.shared.defaultEntity(modelContext: modelContext)
-//        account.rubric = RubricManager.shared.entitiesRubric
-        
-        modelContext.insert(account)
-        return account
-    }
-    
-    static func createHeader(modelContext: ModelContext , name: String, parent: EntityAccount) -> EntityAccount {
-        let header = EntityAccount()
-        header.isHeader = true
-        header.name = name
-        header.nameImage = "folder.fill"
-        header.uuid = UUID()
-        header.parent = parent
-        
-        modelContext.insert(header)
-        return header
-    }
-}
 
-struct initManager {
-    static func initializeLibrary(modelContext: ModelContext) /*async*/ {
-        
-        let entities = AccountManager.shared.getRoot(modelContext: modelContext)
-        if entities.isEmpty == true {
-            /*await*/ setupForNilLibrary(modelContext: modelContext)
-        }
-    }
-
-    static func setupForNilLibrary(modelContext: ModelContext) /*async*/ {
-        // Création de l'élément racine
-        let root = AccountFactory.createAccount(modelContext: modelContext, name: "Root", icon: "", idName: "", idPrenom: "", numAccount: "", type: 0)
-        root.isRoot = true
-        modelContext.insert(root)
-        
-        // Création des comptes
-        var name = "Bank Account"
-        let header1 = AccountFactory.createHeader(modelContext: modelContext, name: name, parent: root)
-        name = "Save"
-        let header2 = AccountFactory.createHeader(modelContext: modelContext, name: name, parent: root)
-        
-        let accountsConfig: [(name: String, icon: String, idName: String, idPrenom: String, numAccount: String, type: Int)] = [
-            ("Current account1", "banknote", "Martin", "Pierre", "00045700E", 0),
-            ("Current account2", "banknote", "Martin", "Marie", "00045701F", 0),
-            ("Credit card1"    , "creditcard", "Martin", "Pierre", "00045702G", 1),
-            ("Credit card2"    , "creditcard", "Durand", "Jean", "00045705K", 1),
-            ("Save"            , "building.columns", "Durand", "Jean", "00045703H", 2),
-            ("Current account3", "building.columns", "Durand", "Sarah", "00045704J", 1)
-        ]
-
-        
-        for config in accountsConfig[0...3] {
-            let account = AccountFactory.createAccount(
-                modelContext: modelContext,
-                name: config.name,
-                icon: config.icon,
-                idName: config.idName,
-                idPrenom: config.idPrenom,
-                numAccount: config.numAccount,
-                type: config.type
-            )
-            header1.addChild(account)
-        }
-        
-        for config in accountsConfig[4...5] {
-            let account = AccountFactory.createAccount(
-                modelContext: modelContext,
-                name: config.name,
-                icon: config.icon,
-                idName: config.idName,
-                idPrenom: config.idPrenom,
-                numAccount: config.numAccount,
-                type: config.type
-            )
-            header2.addChild(account)
-        }
-
-        // Enregistrement des modifications
-        saveContext(modelContext)
-    }
-    
-    static func saveContext(_ modelContext: ModelContext) {
-        let path = getSQLiteFilePath()
-        print(path!)
-        do {
-            try modelContext.save()
-            print("Sauvegarde réussie.")
-        } catch {
-            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
-        }
-    }
-}
 
 
 

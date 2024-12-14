@@ -50,24 +50,9 @@ struct PegaseUIDataApp: App {
     
 }
 
-//class AppInitializer: ObservableObject {
-//    @Published var isReady = false
-//
-//    @ModelContainer(for: [MyModel.self]) var modelContainer
-//
-//    var modelContext: ModelContext {
-//        modelContainer.mainContext
-//    }
-//
-//    init() {
-//        // Effectuez toute initialisation nécessaire ici
-//        initManager.initializeLibrary(modelContext: modelContext)
-//        isReady = true
-//    }
-//}
-
 func ModelConfiguration() {
     let modelContainer: ModelContainer
+    
     // Set up default location in Application Support directory
     let fileManager = FileManager.default
     let appSupportURL = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
@@ -99,7 +84,6 @@ func ModelConfiguration() {
     } catch {
         fatalError("Could not find/create Example folder in Application Support")
     }
-
 }
 
 class WindowSizeManager: NSObject, NSWindowDelegate, ObservableObject {

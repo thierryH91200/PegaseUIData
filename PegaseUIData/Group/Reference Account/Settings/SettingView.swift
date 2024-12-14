@@ -24,7 +24,6 @@ struct SettingView: View {
         try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 seconde de délai
         isVisible = false
     }
-
 }
 
 struct SettingTab: View {

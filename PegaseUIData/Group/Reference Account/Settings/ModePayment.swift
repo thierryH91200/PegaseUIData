@@ -32,7 +32,7 @@ struct ModePaymentView: View {
                 }
                 TableColumn("Account", value: \.account)
                 TableColumn("Surname", value: \.surname)
-                TableColumn("First Name", value: \.firstName)
+                TableColumn("First name", value: \.firstName)
                 TableColumn("Number", value: \.number)
             }
             .frame(height: 300)

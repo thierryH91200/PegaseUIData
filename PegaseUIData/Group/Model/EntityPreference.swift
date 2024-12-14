@@ -66,7 +66,7 @@ final class PreferenceManager {
             newPreference.category = categories.sorted { $0.name < $1.name }.first
         }
         
-        let paymentModes = PaymentModeManager.shared.getAllDatas(for: account)
+        let paymentModes = PaymentModeManager.shared.getAllDatas(for: account, context: modelContext)
         newPreference.paymentMode = paymentModes.first
         
         newPreference.statut = 1

@@ -38,18 +38,34 @@ import SwiftUI
 final class SchedulerManager {
 
     static let shared = SchedulerManager()
+    private var modelContext: ModelContext?
+
     private var entities = [EntitySchedule]()
+    
+    func configure(with modelContext: ModelContext) {
+        self.modelContext = modelContext
+    }
 
     // Contexte pour les modifications
-    @Environment(\.modelContext) private var modelContext: ModelContext
     var currentAccount: EntityAccount?
 
     // Suppression d'une entité
     func remove(entity: EntitySchedule) {
+        
+        guard let modelContext = modelContext else {
+            print("ModelContext non configuré. Veuillez appeler `configure` d'abord.")
+            return
+        }
+
         modelContext.delete(entity)
     }
 
     func fetchEntitySchedules() -> [EntitySchedule] {
+        
+        guard let modelContext = modelContext else {
+            print("ModelContext non configuré. Veuillez appeler `configure` d'abord.")
+            return []
+        }
         
         let lhs = currentAccount!.uuid.uuidString
 
@@ -69,6 +85,12 @@ final class SchedulerManager {
 
     // Récupérer toutes les données filtrées par compte
     func getAllDatas(for account: EntityAccount?) -> [EntitySchedule] {
+        
+        guard let modelContext = modelContext else {
+            print("ModelContext non configuré. Veuillez appeler `configure` d'abord.")
+            return []
+        }
+
                 
         let lhs = account!.uuid.uuidString
         let predicate = #Predicate<EntitySchedule>{ entity in entity.account!.uuid.uuidString == lhs }

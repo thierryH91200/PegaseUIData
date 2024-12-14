@@ -14,6 +14,19 @@
         }
       }
     },
+    "-55,00 €" : {
+      "shouldTranslate" : false
+    },
+    "(no transfer)" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(pas de transfert)"
+          }
+        }
+      }
+    },
     "%.2f €" : {
       "localizations" : {
         "fr" : {
@@ -83,6 +96,9 @@
           }
         }
       }
+    },
+    "55,00 €" : {
+      "shouldTranslate" : false
     },
     "Account" : {
       "localizations" : {
@@ -182,7 +198,7 @@
         }
       }
     },
-    "Apparence" : {
+    "Appearance" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -228,18 +244,22 @@
         }
       }
     },
-    "Bank statement" : {
+    "Bank Statement" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bank statement"
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Relevé bancaire"
+          }
+        }
+      }
+    },
+    "Bank withdrawal" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retrait bancaire"
           }
         }
       }
@@ -300,6 +320,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Annuler"
+          }
+        }
+      }
+    },
+    "Cash" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Espèces"
+          }
+        }
+      }
+    },
+    "Cash withdrawal" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retrait d'espèces"
           }
         }
       }
@@ -478,6 +518,7 @@
       }
     },
     "Country" : {
+      "comment" : "Pays",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -541,6 +582,32 @@
         }
       }
     },
+    "Date of pointing" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date of pointing"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date de pointage"
+          }
+        }
+      }
+    },
+    "Date Transaction" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date de la Transaction"
+          }
+        }
+      }
+    },
     "Decrease" : {
       "localizations" : {
         "fr" : {
@@ -599,6 +666,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Supprimer l’enregistrement ?"
+          }
+        }
+      }
+    },
+    "Discount" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remise"
           }
         }
       }
@@ -717,12 +794,22 @@
         }
       }
     },
-    "First Name" : {
+    "First name" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Prénom"
+          }
+        }
+      }
+    },
+    "Gasoline" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Essence"
           }
         }
       }
@@ -859,14 +946,8 @@
         }
       }
     },
-    "Linked account" : {
+    "Linked Account" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Linked account"
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1009,6 +1090,16 @@
         }
       }
     },
+    "OK" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
     "Old Balance" : {
       "localizations" : {
         "fr" : {
@@ -1040,17 +1131,6 @@
       }
     },
     "Payment mode" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mode de paiement"
-          }
-        }
-      }
-    },
-    "Payment Mode" : {
-      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -1200,6 +1280,16 @@
         }
       }
     },
+    "Split Transactions" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transactions fractionnées"
+          }
+        }
+      }
+    },
     "Start Balance" : {
       "localizations" : {
         "fr" : {
@@ -1284,6 +1374,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Transaction"
+          }
+        }
+      }
+    },
+    "Transfers" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transferts"
           }
         }
       }

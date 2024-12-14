@@ -1,6 +1,201 @@
-import SwiftUI
 
-struct OperationView: View {
+
+import SwiftUI
+import AppKit
+import SwiftData
+
+struct OperationDialog: View {
+    
+    @Environment(\.modelContext) private var modelContext: ModelContext
+    
+
+    let modeCreation :Bool
+    
+    var statut = ["Plannifie", "Engaged", "Executed"]
+    
+    @State private var linkedAccount = " "
+    @State private var comment = " "
+    @State private var name = " "
+    @State private var surnaame = " "
+    @State private var transactionDate = Date()
+    @State private var selectedMode = "Bank Card"
+    @State private var number = ""
+    @State private var pointingDate = Date()
+    @State private var selectedStatut = "Engaged"
+    @State private var bankStatement = 0
+    @State private var amount = " "
+    
+    var body: some View {
+        
+        let mode = PaymentModeManager.shared.getAllDatas(for: nil, context: modelContext)
+        
+        ZStack { // Permet de positionner la boîte de dialogue à droite
+            Color(NSColor.windowBackgroundColor) // Fond de fenêtre
+            
+            VStack(spacing: 0) {
+                // Titre en haut
+                Text("Transaction")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.green)
+                
+                // Contenu principal
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        // Ligne 1 : Compte lié
+                        HStack {
+                            Text("Linked Account")
+                            Spacer()
+                            Picker("", selection: .constant("")) {
+                                Text("(no transfer)").tag("")
+                            }
+                            .frame(width: 200)
+                        }
+                        
+                        Divider()
+                        
+                        // Ligne 2 : Intitulé
+                        HStack {
+                            Text("Comment")
+                            Spacer()
+                            TextField("", text: .constant(""))
+                                .textFieldStyle(.roundedBorder)
+                                .frame(width: 200)
+                        }
+                        
+                        // Ligne 3 : Nom et Prénom
+                        HStack {
+                            Text("Name")
+                            Spacer()
+                            TextField("", text: .constant(""))
+                                .textFieldStyle(.roundedBorder)
+                                .frame(width: 200)
+                        }
+                        
+                        HStack {
+                            Text("Surname")
+                            Spacer()
+                            TextField("", text: .constant(""))
+                                .textFieldStyle(.roundedBorder)
+                                .frame(width: 200)
+                        }
+                        
+                        
+                        Divider()
+                        
+                        // Ligne 4 : Date Transaction et Mode
+                        HStack {
+                            Text("Date Transaction")
+                            Spacer()
+                            DatePicker("", selection: .constant(Date()), displayedComponents: .date)
+                                .labelsHidden()
+                                .frame(width: 200)
+                        }
+                        
+                        HStack {
+                            Text("Mode")
+                            Spacer()
+                            Picker("", selection: $selectedMode) {
+                                Text("Bank Card").tag("Bank Card")
+                            }
+                            .frame(width: 200)
+                        }
+                        
+                        Divider()
+                        
+                        // Ligne 5 : Date Pointage et Statut
+                        HStack {
+                            Text("Date of pointing")
+                            Spacer()
+                            DatePicker("", selection: .constant(Date()), displayedComponents: .date)
+                                .labelsHidden()
+                                .frame(width: 200)
+                        }
+                        
+                        HStack {
+                            Text("Statut")
+                            Spacer()
+                            Picker("", selection: $selectedStatut) {
+                                ForEach(statut, id: \.self) {
+                                    Text($0).tag($0)
+                                }
+                            }
+                            .frame(width: 200)
+                        }
+                        
+                        Divider()
+                        
+                        // Ligne 6 : Relevé Bancaire
+                        HStack {
+                            Text("Bank Statement")
+                            Spacer()
+                            TextField("0", text: .constant(""))
+                                .textFieldStyle(.roundedBorder)
+                                .frame(width: 200)
+                        }
+                        Divider()
+                        
+                        
+                        // Ligne 7 : Montant
+                        HStack {
+                            Spacer()
+                            Text("55,00 €")
+                                .font(.title)
+                                .foregroundColor(.red)
+                                .padding(.trailing)
+                        }
+                        
+                        Divider()
+                        
+                        // Split Transactions
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Split Transactions")
+                                .bold()
+                            
+                            List {
+                                HStack {
+                                    Text("Gasoline")
+                                    Spacer()
+                                    Text("-55,00 €").foregroundColor(.green)
+                                }
+                            }
+                            .frame(height: 100)
+                            
+                            HStack {
+                                Button(action: {}) {
+                                    Image(systemName: "plus")
+                                }
+                                Button(action: {}) {
+                                    Image(systemName: "minus")
+                                }
+                            }
+                        }
+                        
+                        Divider()
+                    }
+                    .padding()
+                }
+                
+                // Boutons bas
+                HStack {
+                    Button("Cancel", action: {})
+                    Spacer()
+                    Button("OK", action: {})
+                        .keyboardShortcut(.defaultAction)
+                }
+                .padding()
+            }
+            .frame(minWidth: 200, idealWidth: 400, maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(NSColor.controlBackgroundColor))
+            .shadow(radius: 5) // Ajout d'une ombre pour l'esthétique
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity) // Étendre la vue sur toute la fenêtre
+    }
+}
+
+struct OperationView1: View {
     @State private var linkedAccount = " "
     @State private var intitule = " "
     @State private var nom = " "
@@ -31,7 +226,7 @@ struct OperationView: View {
             VStack(alignment: .leading, spacing: 8) {
                 // Linked Account Section
                 HStack {
-                    Text("Linked account")
+                    Text("Linked Account")
                     Spacer()
                     TextField("", text: $linkedAccount)
                         .frame(maxWidth: 100)
@@ -90,7 +285,7 @@ struct OperationView: View {
                 
                 // Bank Statement
                 HStack {
-                    Text("Bank statement")
+                    Text("Bank Statement")
                     Spacer()
                     TextField("0", value: $bankStatement, formatter: NumberFormatter())
                         .frame(maxWidth: 100)
@@ -126,7 +321,7 @@ struct OperationView: View {
                     .font(.footnote)
             }
             .frame(maxWidth: .infinity, maxHeight: 100)
-//            .background(Color(rawValue: .white))
+            //            .background(Color(rawValue: .white))
             .padding([.leading, .trailing])
             
             Spacer()
@@ -140,7 +335,7 @@ struct OperationView: View {
             }
             .padding()
         }
-//        .frame(minWidth: 300, maxWidth: 400, minHeight: 600)
+        .frame(minWidth: 300, maxWidth: 400, minHeight: 600)
     }
 }
 

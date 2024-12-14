@@ -75,8 +75,8 @@ final class IdentityManager  {
 //    init() {
 //    }
     
-    func create(name: String = "", prenom: String = "") -> EntityIdentity {
-        let entity = EntityIdentity(name: name, surName: prenom)
+    func create(name: String = "", surName: String = "") -> EntityIdentity {
+        let entity = EntityIdentity(name: name, surName: surName)
         entity.account = currentAccount
         
         // Ajout de l'entité au contexte
