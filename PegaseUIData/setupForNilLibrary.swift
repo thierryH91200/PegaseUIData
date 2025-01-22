@@ -9,39 +9,41 @@ import SwiftUI
 import SwiftData
 
 struct AccountFactory {
-    static func createAccount(modelContext: ModelContext, name: String, icon: String, idName: String, idPrenom: String, numAccount: String, type: Int) -> EntityAccount {
-        guard !name.isEmpty, !icon.isEmpty else {
-            fatalError("Nom ou icône invalide pour le compte.")
-        }
-
+    static func createAccount(modelContext: ModelContext, name: String, icon: String) -> EntityAccount {
+        
         let account = EntityAccount()
         account.name = name
-        account.nameImage = icon
-        account.identity = EntityIdentity(name: idName, surName: idPrenom)
-        account.isAccount = true
-        account.type = type
+        account.nameIcon = icon
         account.uuid = UUID()
-
+        
+        modelContext.insert(account)
+        return account
+    }
+        
+    static func createOptionAccount(modelContext: ModelContext, account : EntityAccount, idName: String, idSurName: String, numAccount: String) -> EntityAccount {
+        
+        let identity = EntityIdentity(name: idName, surName: idSurName, account: account)
+        account.identity = identity
+        
         let initAccount = EntityInitAccount()
         initAccount.codeAccount = numAccount
         initAccount.account = account
         account.initAccount = initAccount
 
-        PaymentModeManager.shared.defaultModePaiement(for: account, context: modelContext)
+        PaymentModeManager.shared.configure(with: modelContext)
+        PaymentModeManager.shared.defaultModePaiement(for: account)
         account.paymentMode = PaymentModeManager.shared.entities
-
+        
         modelContext.insert(account)
         return account
     }
 
-    static func createHeader(modelContext: ModelContext, name: String, parent: EntityAccount) -> EntityAccount {
-        let header = EntityAccount()
-        header.isHeader = true
+    static func createHeader(modelContext: ModelContext, name: String) -> EntityFolderAccount {
+        let header = EntityFolderAccount()
         header.name = name
         header.nameImage = "folder.fill"
         header.uuid = UUID()
-        header.parent = parent
-
+        
         modelContext.insert(header)
         return header
     }
@@ -51,93 +53,97 @@ struct AccountFactory {
 final class InitManager {
     
     static let shared = InitManager()
-    private var modelContext: ModelContext?
-    
-    private init() { }
-    
+        
     private enum DefaultIcons {
         static let currentAccount = "building.columns"
-        static let savings = "icons8-money-box-80"
+        static let savings = "banknote"
         static let creditCard = "creditcard"
     }
+    
+    // Contexte pour les modifications
+    var modelContext : ModelContext?
+    var validContext : ModelContext {
+        guard let context = modelContext else {
+            print("File: \(#file), Function: \(#function), line: \(#line)")
+            fatalError("ModelContext non configuré. Veuillez appeler configure.")
+        }
+        return context
+    }
+
+    private init() { }
 
     func configure(with modelContext: ModelContext) {
         self.modelContext = modelContext
     }
     
-    func initialize() /*async*/ {
-        
-        guard let modelContext = modelContext else {
-            print("ModelContext non configuré. Veuillez appeler `configure` d'abord.")
-            return
-        }
-        
-        let entities = AccountManager.shared.getRoot(modelContext: modelContext)
-        if entities.isEmpty == true {
-            /*await*/ setupDefaultLibrary()
-        }
+    func initialize() {
+        AccountManager.shared.configure(with: validContext)
+        let entities = AccountManager.shared.getRoot(modelContext: validContext)
+        guard entities.isEmpty == true else { return }
+        setupDefaultLibrary()
     }
     
-    func setupDefaultLibrary() /*async*/ {
-        
-        guard let modelContext = modelContext else {
-            print("ModelContext non configuré. Veuillez appeler `configure` d'abord.")
-            return
-        }
-
-        // Création de l'élément racine
-        let root = AccountFactory.createAccount(modelContext: modelContext, name: "Root", icon: "", idName: "", idPrenom: "", numAccount: "", type: 0)
-        root.isRoot = true
-        modelContext.insert(root)
+    func setupDefaultLibrary() {
         
         // Création des comptes
-        let header1 = AccountFactory.createHeader(modelContext: modelContext, name: "Bank Account", parent: root)
-        let header2 = AccountFactory.createHeader(modelContext: modelContext, name: "Save", parent: root)
+        let folder1 = AccountFactory.createHeader(modelContext: validContext, name: "Bank Account")
+        let folder2 = AccountFactory.createHeader(modelContext: validContext, name: "Save")
         
-        let accountsConfig: [(name: String, icon: String, idName: String, idSurname: String, numAccount: String, type: Int)] = [
-            ("Current account1", DefaultIcons.currentAccount, "Martin", "Pierre", "00045700E", 0),
-            ("Current account2", DefaultIcons.currentAccount, "Martin", "Marie", "00045701F", 0),
-            ("Credit card1"    , DefaultIcons.creditCard, "Martin", "Pierre", "00045702G", 1),
-            ("Credit card2"    , DefaultIcons.creditCard, "Durand", "Jean", "00045705K", 1),
-            ("Save"            , DefaultIcons.currentAccount, "Durand", "Jean", "00045703H", 2),
-            ("Current account3", DefaultIcons.currentAccount, "Durand", "Sarah", "00045704J", 1)
+        let accountsConfig: [(name: String, icon: String, idName: String, idSurname: String, numAccount: String)] = [
+            ("Current account1", DefaultIcons.currentAccount, "Martin", "Pierre", "00045700E"),
+            ("Current account2", DefaultIcons.currentAccount, "Martin", "Marie", "00045701F"),
+            ("Credit card1"    , DefaultIcons.creditCard, "Martin", "Pierre", "00045702G"),
+            ("Credit card2"    , DefaultIcons.creditCard, "Durand", "Jean", "00045705K"),
+            ("Save"            , DefaultIcons.currentAccount, "Durand", "Jean", "00045703H"),
+            ("Current account3", DefaultIcons.currentAccount, "Durand", "Sarah", "00045704J")
         ]
         
         for config in accountsConfig[0...3] {
-            let account = AccountFactory.createAccount(
-                modelContext: modelContext,
+            var account = AccountFactory.createAccount(
+                modelContext: validContext,
                 name: config.0,
-                icon: config.1,
+                icon: config.1 )
+            
+            account = AccountFactory.createOptionAccount(
+                modelContext: validContext,
+                account : account,
                 idName: config.2,
-                idPrenom: config.3,
-                numAccount: config.4,
-                type: config.5
+                idSurName: config.3,
+                numAccount: config.4)
+            folder1.addChild(account)
+        }
+
+        for config in accountsConfig[4...5] {
+            var account = AccountFactory.createAccount(
+                modelContext: validContext,
+                name: config.0,
+                icon: config.1
             )
-            header1.addChild(account)
+            account = AccountFactory.createOptionAccount(
+                modelContext: validContext,
+                account : account,
+                idName: config.2,
+                idSurName: config.3,
+                numAccount: config.4)
+            folder2.addChild(account)
         }
         
-        for config in accountsConfig[4...5] {
-            let account = AccountFactory.createAccount(
-                modelContext: modelContext,
-                name: config.0,
-                icon: config.1,
-                idName: config.2,
-                idPrenom: config.3,
-                numAccount: config.4,
-                type: config.5
-            )
-            header2.addChild(account)
-        }
+        // Enregistrer les dossiers
+        validContext.insert(folder1)
+        validContext.insert(folder2)
         
         // Enregistrement des modifications
-        saveContext(modelContext)
+        saveContext()
     }
     
-    func saveContext(_ modelContext: ModelContext) {
-        let path = getSQLiteFilePath()
-        print(path!)
+    func saveContext() {
+        if let path = getSQLiteFilePath() {
+            print(path)
+        } else {
+            print("Erreur : chemin SQLite introuvable.")
+        }
         do {
-            try modelContext.save()
+            try validContext.save()
             print("Sauvegarde réussie.")
         } catch {
             print("Erreur : \(error.localizedDescription)")

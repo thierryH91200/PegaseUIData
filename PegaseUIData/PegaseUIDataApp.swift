@@ -12,77 +12,59 @@ import UniformTypeIdentifiers
 @main
 struct PegaseUIDataApp: App {
     
-//    @StateObject private var appInitializer = AppInitializer()
-
     @StateObject private var windowSizeManager = WindowSizeManager()
     @Environment(\.modelContext) private var modelContext
     
     @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
+    var container: ModelContainer
+
+    let schema = Schema([
+        EntityAccount.self,
+        EntityFolderAccount.self,
+        EntityBank.self,
+        EntityBankStatement.self,
+        EntityCarnetCheques.self,
+        EntityIdentity.self,
+        EntityInitAccount.self,
+        EntityPaymentMode.self,
+        EntityPreference.self,
+        EntityRubric.self,
+        EntitySchedule.self,
+        EntityTransactions.self
+    ])
+
     init() {
         ColorTransformer.register()
+        
+        do {
+            let storeURL = URL.documentsDirectory.appending(path: "PegaseUIData.store")
+            let config = ModelConfiguration(url: storeURL)
+            container = try ModelContainer(for: schema, configurations: config)
+        } catch {
+            fatalError("Failed to configure SwiftData container.")
+        }
     }
     
     var body: some Scene {
         WindowGroup {
-//            if appInitializer.isReady {
-
             ContentView100()
-                .modelContainer(for: [
-                    EntityAccount.self,
-                    EntityBank.self,
-                    EntityBankStatement.self,
-                    EntityCarnetCheques.self,
-                    EntityIdentity.self,
-                    EntityInitAccount.self,
-                    EntityPaymentMode.self,
-                    EntityPreference.self,
-                    EntityRubric.self,
-                    EntitySchedule.self,
-                    EntityTransactions.self
-                ])
-//            } else {
-//                ProgressView("Initialisation...")
-//            }
-
         }
+        .modelContainer(container)
     }
     
+    private func defaultStoreURL() -> URL {
+        let fileManager = FileManager.default
+        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let storeURL = documentsURL.appendingPathComponent("default.store")
+        print(storeURL)
+        return storeURL
+    }
 }
 
-func ModelConfiguration() {
-    let modelContainer: ModelContainer
-    
-    // Set up default location in Application Support directory
-    let fileManager = FileManager.default
-    let appSupportURL = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-    let directoryURL = appSupportURL.appendingPathComponent("Example")
-    
-    // Set the path to the name of the store you want to set up
-    let fileURL = directoryURL.appendingPathComponent("Example.store")
-    
-    // Create a schema for your model (**Item 1**)
-    let schema = Schema([EntityAccount.self])
-    
-    do {
-        // This next line will create a new directory called Example in Application Support if one doesn't already exist, and will do nothing if one already exists, so we have a valid place to put our store
-        try fileManager.createDirectory (at: directoryURL, withIntermediateDirectories: true, attributes: nil)
-        
-        // Create our `ModelConfiguration` (**Item 3**)
-        let defaultConfiguration = ModelConfiguration("EntityAccount", schema: schema, url: fileURL)
-        
-        do {
-            // Create our `ModelContainer`
-            modelContainer = try ModelContainer(
-                for: schema,
-                migrationPlan: PegaseUIDataMigrationPlan.self,
-                configurations: defaultConfiguration
-            )
-         } catch {
-            fatalError("Could not initialise the container…")
-        }
-    } catch {
-        fatalError("Could not find/create Example folder in Application Support")
+extension ModelConfiguration {
+    static func defaultConfiguration(at url: URL) -> ModelConfiguration {
+        ModelConfiguration( url: url )
     }
 }
 

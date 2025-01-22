@@ -10,13 +10,14 @@ import Foundation
 import SwiftData
 import SwiftUI
 
-
 @Model public class EntityCategory {
 
     var name: String
     var objectif: Double = 0.0
-    var uuid: UUID = UUID()
-    
+
+    @Attribute(.unique) var uuid: UUID = UUID()
+    public var id: UUID { uuid }
+
     @Relationship(inverse: \EntitySchedule.category) var echeancier: [EntitySchedule]?
     @Relationship(inverse: \EntityPreference.category) var preference: EntityPreference?
     

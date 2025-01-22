@@ -18,12 +18,14 @@ public class EntityRubric: ObservableObject {
     @Attribute(.transformable(by: ColorTransformer.self)) var color: Color
     
     @Attribute(.ephemeral) var total: Double = 0.0
-    var uuid: UUID = UUID()
-    
+
+    @Attribute(.unique) var uuid: UUID = UUID()
+    public var id: UUID { uuid }
+
     @Relationship(deleteRule: .cascade) var category: [EntityCategory]?
     var account: EntityAccount?
     
-    init( name: String, color: Color) {
+    init( name: String, color: Color, account: EntityAccount) {
         self.name = name
         self.color = color
         self.uuid = UUID()
@@ -31,14 +33,28 @@ public class EntityRubric: ObservableObject {
     }
 }
 
-final class RubricManager: NSObject {
+final class RubricManager {
     
     static let shared = RubricManager()
     
     // Contexte pour les modifications
     var currentAccount: EntityAccount = EntityAccount()
     
-    @Environment(\.modelContext) private var modelContext: ModelContext
+    // Contexte pour les modifications
+    var modelContext : ModelContext?
+    var validContext: ModelContext {
+        guard let context = modelContext else {
+            print("File: \(#file), Function: \(#function), line: \(#line)")
+            fatalError("ModelContext non configuré. Veuillez appeler configure.")
+        }
+        return context
+    }
+
+    private init() { }
+
+    func configure(with modelContext: ModelContext) {
+        self.modelContext = modelContext
+    }
 
     @Published private(set) var entitiesRubric: [EntityRubric] = []
         
@@ -47,8 +63,8 @@ final class RubricManager: NSObject {
             return existingRubric
         }
         
-        let newRubric = EntityRubric(name: name, color: color)
-        modelContext.insert(newRubric)
+        let newRubric = EntityRubric(name: name, color: color, account: account)
+        validContext.insert(newRubric)
         
         entitiesRubric.append(newRubric)
         return newRubric
@@ -59,7 +75,7 @@ final class RubricManager: NSObject {
     }
     
     func remove(entity: EntityRubric) {
-        modelContext.delete(entity)
+        validContext.delete(entity)
         entitiesRubric.removeAll { $0.id == entity.id }
     }
     
@@ -71,20 +87,20 @@ final class RubricManager: NSObject {
 //            return []
 //        }
                 
-        let lhs = currentAccount.uuid.uuidString
-        let predicate = #Predicate<EntityRubric>{ entity in entity.account!.uuid.uuidString == lhs }
+        let lhs = currentAccount.uuid
+        let predicate = #Predicate<EntityRubric>{ entity in entity.account!.uuid == lhs }
 
         let fetchDescriptor = FetchDescriptor<EntityRubric>(
             predicate: predicate    //, // Filtrer par le compte
         )
         
         do {
-            entitiesRubric = try modelContext.fetch(fetchDescriptor)
+            entitiesRubric = try validContext.fetch(fetchDescriptor)
         } catch {
             print("Erreur lors de la récupération des données avec SwiftData")
         }
         if entitiesRubric.isEmpty {
-            defaultEntity(modelContext: modelContext)
+            defaultEntity(modelContext: validContext)
         }
         return entitiesRubric
     }
@@ -104,7 +120,7 @@ final class RubricManager: NSObject {
             let categoryName = key["categorie"] ?? ""
             let categoryObjectif = Double(key["objectif"] ?? "0.0") ?? 0.0
             let entityCategory = EntityCategory(name: categoryName, objectif: categoryObjectif, rubric: entityRubric)
-            modelContext.insert(entityCategory)
+            validContext.insert(entityCategory)
             
             entityRubric.category?.append(entityCategory)
         } else {
@@ -113,7 +129,7 @@ final class RubricManager: NSObject {
                 let categoryName = key["categorie"] ?? ""
                 let categoryObjectif = Double(key["objectif"] ?? "0.0") ?? 0.0
                 let entityCategory = EntityCategory(name: categoryName, objectif: categoryObjectif, rubric: firstRubric)
-                modelContext.insert(entityCategory)
+                validContext.insert(entityCategory)
                 
                 firstRubric.category?.append(entityCategory)
             }
@@ -145,8 +161,8 @@ final class RubricManager: NSObject {
                     addRubric(key, account: currentAccount)
                 }
             }
-            let lhs = currentAccount.uuid.uuidString
-            let predicate = #Predicate<EntityRubric>{ entity in entity.account!.uuid.uuidString == lhs }
+            let lhs = currentAccount.uuid
+            let predicate = #Predicate<EntityRubric>{ entity in entity.account!.uuid == lhs }
 
             let descriptor = FetchDescriptor<EntityRubric>(
                 predicate: predicate,
@@ -154,7 +170,7 @@ final class RubricManager: NSObject {
             )
             
             do {
-                entitiesRubric = try modelContext.fetch(descriptor)
+                entitiesRubric = try validContext.fetch(descriptor)
             } catch {
                 print("Error fetching data from SwiftData")
             }

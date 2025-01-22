@@ -23,8 +23,10 @@ import SwiftUI
     var nextOccurence: Int16 = 0
     var occurence: Int16 = 0
     var typeFrequence: Int16 = 0
-    var uuid: UUID = UUID()
-    
+
+    @Attribute(.unique) var uuid: UUID = UUID()
+    public var id: UUID { uuid }
+
     var account: EntityAccount?
     var category: EntityCategory?
     @Relationship(inverse: \EntityAccount.compteLie) var linkedAccount: EntityAccount?
@@ -38,63 +40,59 @@ import SwiftUI
 final class SchedulerManager {
 
     static let shared = SchedulerManager()
-    private var modelContext: ModelContext?
 
     private var entities = [EntitySchedule]()
-    
+    var currentAccount: EntityAccount?
+
+    // Contexte pour les modifications
+    var modelContext : ModelContext?
+    var validContext: ModelContext {
+        guard let context = modelContext else {
+            print("File: \(#file), Function: \(#function), line: \(#line)")
+            fatalError("ModelContext non configuré. Veuillez appeler configure.")
+        }
+        return context
+    }
+
+    init() { }
+
     func configure(with modelContext: ModelContext) {
         self.modelContext = modelContext
     }
 
-    // Contexte pour les modifications
-    var currentAccount: EntityAccount?
-
     // Suppression d'une entité
     func remove(entity: EntitySchedule) {
-        
-        guard let modelContext = modelContext else {
-            print("ModelContext non configuré. Veuillez appeler `configure` d'abord.")
-            return
-        }
 
-        modelContext.delete(entity)
+        validContext.delete(entity)
     }
 
     func fetchEntitySchedules() -> [EntitySchedule] {
-        
-        guard let modelContext = modelContext else {
-            print("ModelContext non configuré. Veuillez appeler `configure` d'abord.")
+        guard let lhs = currentAccount?.uuid else {
+            print("Erreur : Aucun compte actif défini.")
             return []
         }
         
-        let lhs = currentAccount!.uuid.uuidString
-
-        let predicate = #Predicate<EntitySchedule>{entity in entity.account?.uuid.uuidString == lhs}
+        let predicate = #Predicate<EntitySchedule> { entity in
+            entity.account?.uuid == lhs
+        }
         let descriptor = FetchDescriptor<EntitySchedule>(
             predicate: predicate,
-            sortBy: [SortDescriptor(\.libelle)]
+            sortBy: [SortDescriptor(\.libelle, order: .forward)]
         )
         
         do {
-            return try modelContext.fetch(descriptor)
+            return try validContext.fetch(descriptor)
         } catch {
-            print("Erreur lors de la récupération des données")
+            print("Erreur lors de la récupération des données : \(error.localizedDescription)")
             return []
         }
     }
-
+    
     // Récupérer toutes les données filtrées par compte
     func getAllDatas(for account: EntityAccount?) -> [EntitySchedule] {
         
-        guard let modelContext = modelContext else {
-            print("ModelContext non configuré. Veuillez appeler `configure` d'abord.")
-            return []
-        }
-
-                
-        let lhs = account!.uuid.uuidString
-        let predicate = #Predicate<EntitySchedule>{ entity in entity.account!.uuid.uuidString == lhs }
-            
+        let lhs = account!.uuid
+        let predicate = #Predicate<EntitySchedule>{ entity in entity.account!.uuid == lhs }
         let descriptor = FetchDescriptor<EntitySchedule>(
             predicate: predicate,
             sortBy: [SortDescriptor(\.libelle, order: .forward)]
@@ -102,12 +100,11 @@ final class SchedulerManager {
         
         do {
             // Récupérez les entités en utilisant le FetchDescriptor
-            entities = try modelContext.fetch( descriptor )
+            entities = try validContext.fetch( descriptor )
         } catch {
             print("Erreur lors de la récupération des données: \(error)")
             entities = [] // Retourne un tableau vide en cas d'erreur
         }
-        
         return entities
     }
     
@@ -138,8 +135,8 @@ final class SchedulerManager {
 
         let transaction = EntityTransactions()
         
-        transaction.dateCree = Date()
-        transaction.dateModifie = Date()
+        transaction.createAt = Date()
+        transaction.updatedAt = Date()
         transaction.dateOperation = dateValeur
         transaction.datePointage = dateValeur
         transaction.account = schedule.account
@@ -153,8 +150,8 @@ final class SchedulerManager {
 
         if let linkedAccount = schedule.linkedAccount {
             let transferTransaction = EntityTransactions()
-            transferTransaction.dateCree = transaction.dateCree
-            transferTransaction.dateModifie = transaction.dateModifie
+            transferTransaction.createAt = transaction.createAt
+            transferTransaction.updatedAt = transaction.updatedAt
             transferTransaction.dateOperation = transaction.dateOperation
             transferTransaction.datePointage = transaction.datePointage
             transferTransaction.account = linkedAccount
@@ -164,7 +161,7 @@ final class SchedulerManager {
             let paymentModeName = transferTransaction.paymentMode?.name ?? ""
             let color = transferTransaction.paymentMode?.color ?? .black
             let paymentModeUUID = transferTransaction.paymentMode?.uuid ?? UUID()
-            let paymentMode = PaymentModeManager.shared.findOrCreate(account: linkedAccount, name: paymentModeName, color: color, uuid: paymentModeUUID)
+            let paymentMode = PaymentModeManager.shared.findOrCreate(account: linkedAccount, name: paymentModeName, color: Color(color), uuid: paymentModeUUID)
             
             transferTransaction.paymentMode = paymentMode
 
@@ -180,6 +177,16 @@ final class SchedulerManager {
             
             transferTransaction.sousOperations?.append(transferSousOperation)
             transferTransaction.uuid = UUID()
+            validContext.insert(transferTransaction) // Ajout explicite dans le contexte
+
+        }
+        // Sauvegarde explicite
+        if validContext.hasChanges {
+            do {
+                try validContext.save()
+            } catch {
+                print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+            }
         }
     }
 }

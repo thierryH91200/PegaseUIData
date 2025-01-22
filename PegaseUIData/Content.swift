@@ -62,10 +62,10 @@ struct ContentView100: View {
             .navigationSplitViewStyle(.balanced) // Style équilibré pour ajuster les tailles
 
             .onAppear {
-                InitManager.shared.configure(with: modelContext)
-                InitManager.shared.initialize()
-                entityAccount = AccountManager.shared.getRoot(modelContext: modelContext)
-                AccountManager.shared.printAccount(entityAccount: entityAccount.first!, description: "Account")
+//                InitManager.shared.configure(with: modelContext)
+//                InitManager.shared.initialize()
+//                let entityAccount = AccountManager.shared.getRoot(modelContext: modelContext)
+//                AccountManager.shared.printAccount(entityAccount: entityAccount.first!, description: "Account")
             }
             
             Spacer(minLength: 10)
@@ -162,7 +162,7 @@ struct SidebarContainer: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Sidebar1A(selection1: $selection1)
+            Sidebar1A()
             Divider()
             Sidebar2A(selection2: $selection2)
         }

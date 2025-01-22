@@ -30,7 +30,10 @@ import SwiftUI
     var engage: Double = 0.0
     var prevu: Double = 0.0
     var realise: Double = 0.0
-    
+
+    @Attribute(.unique) var uuid: UUID = UUID()
+    public var id: UUID { uuid }
+
     var account: EntityAccount?
  
     public init() {
@@ -38,24 +41,37 @@ import SwiftUI
     }
 }
 
-final class InitAccountManager: NSObject {
+final class InitAccountManager {
     
     static let shared = InitAccountManager()
     private var entitiesInitAccount = [EntityInitAccount]()
     
     var currentAccount: EntityAccount?
+    
+    // Contexte pour les modifications
+    var modelContext : ModelContext?
+    var validContext: ModelContext {
+        guard let context = modelContext else {
+            print("File: \(#file), Function: \(#function), line: \(#line)")
+            fatalError("ModelContext non configuré. Veuillez appeler configure.")
+        }
+        return context
+    }
 
-    override init() {
-        currentAccount = nil
+    init() {
+    }
+
+    func configure(with modelContext: ModelContext) {
+        self.modelContext = modelContext
     }
 
     // Utiliser un seul contexte pour la gestion des données
-    func getAllDatas(for account: EntityAccount, in modelContext: ModelContext) -> EntityInitAccount {
+    func getAllDatas(for account: EntityAccount) -> EntityInitAccount {
         
         currentAccount = account
         
-        let lhs = currentAccount!.uuid.uuidString
-        let predicate = #Predicate<EntityInitAccount>{ entity in entity.account!.uuid.uuidString == lhs }
+        let lhs = currentAccount!.uuid
+        let predicate = #Predicate<EntityInitAccount>{ entity in entity.account!.uuid == lhs }
 
         let descriptor = FetchDescriptor<EntityInitAccount>(
             predicate: predicate,
@@ -63,7 +79,7 @@ final class InitAccountManager: NSObject {
         )
 
         do {
-            entitiesInitAccount = try modelContext.fetch(descriptor)
+            entitiesInitAccount = try validContext.fetch(descriptor)
         } catch {
             print("Erreur lors de la récupération des données")
         }
@@ -71,12 +87,12 @@ final class InitAccountManager: NSObject {
         if let firstEntity = entitiesInitAccount.first {
             return firstEntity
         } else {
-            return create(numAccount: "", for: account, in: modelContext)
+            return create(numAccount: "", for: account)
         }
     }
 
     // Méthode de création d'entité
-    func create(numAccount: String = "", for account: EntityAccount, in modelContext: ModelContext) -> EntityInitAccount {
+    func create(numAccount: String = "", for account: EntityAccount) -> EntityInitAccount {
         let entity = EntityInitAccount()
         entity.bic = ""
         entity.cleRib = ""
@@ -96,7 +112,7 @@ final class InitAccountManager: NSObject {
         entity.prevu = 0
         entity.realise = 0
         entity.account = account // Associe le compte à l'entité
-        modelContext.insert(entity)
+        validContext.insert(entity)
 
         entitiesInitAccount.append(entity) // Mise à jour de la liste locale
         

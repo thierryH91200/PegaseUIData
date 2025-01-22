@@ -13,20 +13,22 @@ import SwiftUI
 @Model
 class EntityBankStatement: Identifiable {
     
-    @Attribute(.unique) var id: UUID = UUID()
+    @Attribute(.unique) var uuid: UUID = UUID()
+    public var id: UUID { uuid }
+
     
     @Attribute var num        : Int
     
-    @Attribute var startDate  : Date
+    @Attribute var startDate  : Date = Date()
     @Attribute var startSolde : Double
     
-    @Attribute var interDate  : Date
+    @Attribute var interDate  : Date = Date()
     @Attribute var interSolde : Double
     
-    @Attribute var endDate    : Date
+    @Attribute var endDate    : Date = Date()
     @Attribute var endSolde   : Double
     
-    @Attribute var cbDate     : Date
+    @Attribute var cbDate     : Date = Date()
     @Attribute var cbSolde    : Double
     
     @Attribute var pdfLink    : String = ""
@@ -56,47 +58,56 @@ class EntityBankStatement: Identifiable {
         
         self.pdfLink    = pdfLink
     }
-    
-//    public init() {
-//
-//    }
 }
 
 //final class BankStatementManager: NSObject {
-    final class BankStatementManager {
-
+final class BankStatementManager {
+    
     // Contexte pour les modifications
-    @Environment(\.modelContext) private var modelContext: ModelContext
+    static let shared = BankStatementManager()
     var currentAccount: EntityAccount?
     
-    static let shared = BankStatementManager()
     private var entities = [EntityBankStatement]()
-
-//    override init() {
-//    }
+    
+    // Contexte pour les modifications
+    var modelContext : ModelContext?
+    var validContext: ModelContext {
+        guard let context = modelContext else {
+            print("File: \(#file), Function: \(#function), line: \(#line)")
+            fatalError("ModelContext non configuré. Veuillez appeler configure.")
+        }
+        return context
+    }
+    
+    private init() { }
+    
+    func configure(with modelContext: ModelContext) {
+        self.modelContext = modelContext
+    }
     
     // MARK: - Public Methods
     // Supprimer une transaction
     func remove(entity: EntityBankStatement) {
-        modelContext.undoManager?.beginUndoGrouping()
-        modelContext.undoManager?.setActionName("DeleteBankStatement")
-        modelContext.delete(entity)
-        modelContext.undoManager?.endUndoGrouping()
+        
+        validContext.undoManager?.beginUndoGrouping()
+        validContext.undoManager?.setActionName("DeleteBankStatement")
+        validContext.delete(entity)
+        validContext.undoManager?.endUndoGrouping()
     }
-
+    
     // MARK: - Public Methods
     func getAllDatas(for account: EntityAccount?) -> [EntityBankStatement] {
         
-        let lhs = account!.uuid.uuidString
-        
-        let predicate = #Predicate<EntityBankStatement>{ entity in entity.account!.uuid.uuidString  ==  lhs }
+        let lhs = account!.uuid
+       
+        let predicate = #Predicate<EntityBankStatement>{ entity in entity.account!.uuid  ==  lhs }
         let descriptor = FetchDescriptor<EntityBankStatement>(
             predicate: predicate,
             sortBy: [SortDescriptor(\.num)]
         )
-
+        
         do {
-            entities = try modelContext.fetch(descriptor)
+            entities = try validContext.fetch(descriptor)
         } catch {
             print("Erreur lors de la récupération des données avec SwiftData")
         }

@@ -25,6 +25,9 @@ public class EntityIdentity {
     var surName    : String  = ""
     var town       : String  = ""
     
+    @Attribute(.unique) var uuid: UUID = UUID()
+    public var id: UUID { uuid }
+    
     var account    : EntityAccount?
     
     public init(adress: String,
@@ -51,13 +54,13 @@ public class EntityIdentity {
         self.town = town
     }
     
-    public init(name: String, surName: String) {
+    public init(name: String, surName: String, account : EntityAccount?) {
         self.name = name
         self.surName = surName
+        self.account = account
     }
     
     init() {
-        
     }
 }
 
@@ -65,36 +68,49 @@ public class EntityIdentity {
 final class IdentityManager  {
     
     // Contexte pour les modifications
-    @Environment(\.modelContext) private var modelContext: ModelContext
     var currentAccount: EntityAccount?
 
     static let shared = IdentityManager()
     
     private var entities = [EntityIdentity]()
     
-//    init() {
-//    }
+    var modelContext : ModelContext?
+    var validContext: ModelContext {
+        guard let context = modelContext else {
+            print("File: \(#file), Function: \(#function), line: \(#line)")
+            fatalError("ModelContext non configuré. Veuillez appeler configure.")
+        }
+        return context
+    }
+
+    init() {
+    }
     
+    func configure(with modelContext: ModelContext) {
+        self.modelContext = modelContext
+    }
+
     func create(name: String = "", surName: String = "") -> EntityIdentity {
-        let entity = EntityIdentity(name: name, surName: surName)
-        entity.account = currentAccount
+
+        let entity = EntityIdentity(name: name, surName: surName, account: currentAccount)
         
         // Ajout de l'entité au contexte
-        modelContext.insert(entity)
+        validContext.insert(entity)
         return entity
     }
     
-    @discardableResult func getAllDatas() -> EntityIdentity {
+    @discardableResult
+    func getAllDatas() -> EntityIdentity {
         // Filtre pour l'entité liée à `currentAccount`
         
-        let lhs = currentAccount!.uuid.uuidString
-        let predicate = #Predicate<EntityIdentity>{ entity in entity.account!.uuid.uuidString == lhs }
+        let lhs = currentAccount!.uuid
+        let predicate = #Predicate<EntityIdentity>{ entity in entity.account!.uuid == lhs }
 
         do {
             // Utilisation de SwiftData pour récupérer les entités correspondantes
             let fetchDescriptor = FetchDescriptor<EntityIdentity>(
                 predicate: predicate)
-            entities = try modelContext.fetch(fetchDescriptor)
+            entities = try validContext.fetch(fetchDescriptor)
         } catch {
             print("Erreur lors de la récupération des données")
         }

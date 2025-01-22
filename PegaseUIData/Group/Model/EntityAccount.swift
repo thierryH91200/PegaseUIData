@@ -10,39 +10,27 @@ import Foundation
 import SwiftData
 import SwiftUI
 
-@Model public class EntityAccount {
-       
-    var dateEcheancier: Date = Date()
-    var isAccount: Bool = false
-    var isDemo: Bool = false
-    var isHeader: Bool = false
-    var isRoot: Bool = false
+@Model public class EntityFolderAccount: Identifiable  {
+    
     var name: String = ""
-    var nameImage: String = ""
-    @Attribute(.ephemeral) var solde: Double? = 0.0
-    var type: Int = 0
-    var uuid: UUID = UUID()
-    
-    var parent: EntityAccount?
-    @Relationship(deleteRule: .cascade, inverse: \EntityBank.account) var bank: EntityBank?
-    @Relationship(inverse: \EntityBankStatement.account) var bankStatement: [EntityBankStatement]?
-    @Relationship(deleteRule: .cascade, inverse: \EntityCarnetCheques.account) var carnetCheques: [EntityCarnetCheques]?
-    var children: [EntityAccount]?
-    var compteLie: EntitySchedule?
-    
-    @Relationship(deleteRule: .cascade, inverse: \EntitySchedule.account) var echeanciers: [EntitySchedule]?
-    @Relationship(deleteRule: .cascade, inverse: \EntityIdentity.account) var identity: EntityIdentity?
-    @Relationship(deleteRule: .cascade, inverse: \EntityInitAccount.account) var initAccount: EntityInitAccount?
-    @Relationship(deleteRule: .cascade, inverse: \EntityPaymentMode.account) var paymentMode: [EntityPaymentMode]?
-    @Relationship(deleteRule: .cascade, inverse: \EntityPreference.account) var preference: EntityPreference?
-    @Relationship(deleteRule: .cascade, inverse: \EntityRubric.account) var rubric: [EntityRubric]?
-    @Relationship(deleteRule: .cascade, inverse: \EntityTransactions.account) var transactions: [EntityTransactions]?
+    var nameImage: String = "folder.fill"
+    var isRoot : Bool = false
 
+    @Attribute(.unique) var uuid: UUID = UUID()
+    public var id: UUID { uuid }
+    
+    var children: [EntityAccount] = []
+    
     public init() {
+    }
+    
+    public init(name: String, isRoot: Bool, children: [EntityAccount]) {
+        self.name = name
+        self.children = children
     }
 }
 
-extension EntityAccount {
+extension EntityFolderAccount {
     func addAccounts(_ accounts: [EntityAccount]) {
         for account in accounts {
             self.addChild(account)
@@ -50,28 +38,85 @@ extension EntityAccount {
     }
     
     func addChild(_ child: EntityAccount) {
-        if children == nil {
+        if children.isEmpty == true {
             children = []
         }
-        children?.append(child)
+        children.append(child)
+    }
+}
+
+
+@Model public class EntityAccount: Identifiable {
+
+    var name: String = ""
+    var nameIcon: String = ""
+    @Attribute(.ephemeral) var solde: Double? = 0.0
+    var dateEcheancier: Date = Date().noon
+    var isDemo : Bool = false
+    
+    @Relationship(deleteRule: .cascade, inverse: \EntitySchedule.account)
+    var echeanciers: [EntitySchedule]?
+    
+    @Relationship(deleteRule: .cascade, inverse: \EntityIdentity.account)
+    var identity: EntityIdentity?
+    
+    @Relationship(deleteRule: .cascade, inverse: \EntityInitAccount.account)
+    var initAccount: EntityInitAccount?
+    
+    @Relationship(deleteRule: .cascade, inverse: \EntityPaymentMode.account)
+    var paymentMode: [EntityPaymentMode]?
+
+    @Relationship(deleteRule: .cascade, inverse: \EntityBank.account)
+    var bank: EntityBank?
+    
+    @Relationship(inverse: \EntityBankStatement.account)
+    var bankStatement: [EntityBankStatement]?
+    
+    @Relationship(deleteRule: .cascade, inverse: \EntityCarnetCheques.account)
+    var carnetCheques: [EntityCarnetCheques]?
+
+    var compteLie: EntitySchedule?
+
+    @Attribute(.unique) var uuid: UUID = UUID()
+    public var id: UUID { uuid }
+
+    public init() {
+    }
+    
+    public init(name: String, nameIcon: String) {
+        self.name = name
+        self.nameIcon = nameIcon
     }
 }
 
 final class AccountManager {
+      
+    static let shared = AccountManager()
+    var entities = [EntityFolderAccount]()
     
     // Contexte pour les modifications
-//    @Environment(\.modelContext) private var modelContext: ModelContext
-    
-    static let shared = AccountManager()
-    var entities = [EntityAccount]()
+    var modelContext : ModelContext?
+    var validContext: ModelContext {
+        guard let context = modelContext else {
+            print("File: \(#file), Function: \(#function), line: \(#line)")
+            fatalError("ModelContext non configuré. Veuillez appeler configure.")
+        }
+        return context
+    }
     
     init() { }
+    
+    @discardableResult
+    public func configure(with modelContext: ModelContext) -> Bool {
+        self.modelContext = modelContext
+        return true
+    }
 
-    func getAllData(_ modelContext: ModelContext) -> [EntityAccount] {
+    func getAllData(modelContext: ModelContext) -> [EntityFolderAccount] {
         do {
             // Exécution d'une requête manuelle si besoin de filtrer ou trier
-            let request = FetchDescriptor<EntityAccount>()
-            entities = try modelContext.fetch(request)
+            let request = FetchDescriptor<EntityFolderAccount>()
+            entities = try validContext.fetch(request)
         } catch {
             print("Erreur lors de la récupération des données avec SwiftData")
         }
@@ -83,15 +128,13 @@ final class AccountManager {
                 nameImage: String,
                 idName: String,
                 idPrenom: String,
-                numAccount: String,
-                modelContext: ModelContext) -> EntityAccount {
+                numAccount: String ) -> EntityAccount {
+        
         // Crée un nouvel objet EntityAccount
         let account            = EntityAccount()
         account.name           = nameAccount
-        account.nameImage      = nameImage
+        account.nameIcon      = nameImage
         account.dateEcheancier = Date().noon
-        account.isAccount      = true
-        account.isRoot         = false
         account.uuid           = UUID()
         
         // Crée une nouvelle identité et un compte initial pour cet EntityAccount
@@ -99,18 +142,18 @@ final class AccountManager {
         identity.account = account
         account.identity = identity
         
-        let initAccount     = InitAccountManager.shared.create(numAccount : numAccount, for: account, in: modelContext)
+        let initAccount     = InitAccountManager.shared.create(numAccount : numAccount, for: account)
         initAccount.account = account
         account.initAccount = initAccount
         
         // Ajoute le nouveau compte à la liste des entités
-        modelContext.insert(account)
+        validContext.insert(account)
         return account
     }
     
-    func getRoot(modelContext: ModelContext) -> [EntityAccount] {
-        let request = FetchDescriptor<EntityAccount>(predicate: #Predicate { $0.isRoot == true })
-        let entities = try? modelContext.fetch(request)
+    func getRoot(modelContext: ModelContext) -> [EntityFolderAccount] {
+        let request = FetchDescriptor<EntityFolderAccount>(predicate: #Predicate { $0.isRoot == false })
+        let entities = try? validContext.fetch(request)
         return entities!
     }
     
@@ -126,19 +169,44 @@ final class AccountManager {
     }
 }
 
-final class CurrrentAccountManager {
+class AccountViewModel: ObservableObject {
+    
+    @Published var items: [EntityAccount] = []
+    @Published var isLoading: Bool = false
+    
+    private let manager = AccountManager()
+    
+    init() {
+    }
+    
+    @Published var selectedAccount: EntityAccount? {
+        didSet {
+            load()
+        }
+    }
+    
+    @Published var modePayments: [EntityPaymentMode] = []
+    
+    func load() {
+    }
+    
+    func add(name: String) {
+    }
+}
+
+final class CurrrentAccountManager : ObservableObject {
     
     static let shared = CurrrentAccountManager()
     
     // Déclaration d'une variable globale pour toutes les fonctions
-    var currentAccount: EntityAccount?
+    @Published var currentAccount: EntityAccount?
     
+    // Affectation d'un compte à la variable globale
     func setAccount(_ account: EntityAccount) {
-        // Affectation d'un compte à la variable globale
         currentAccount = account
     }
+    // Recupération d'un compte
     func getAccount()->EntityAccount? {
-        // Affectation d'un compte à la variable globale
         return currentAccount
     }
 
@@ -150,8 +218,10 @@ final class CurrrentAccountManager {
         print("Traitement des données pour le compte \(account.name)")
     }
     
-    func resetCurrentAccount() {
-        // Réinitialisation de la variable globale
+    // Réinitialisation de la variable globale
+   func resetCurrentAccount() {
         currentAccount = nil
     }
 }
+
+

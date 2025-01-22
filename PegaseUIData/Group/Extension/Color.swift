@@ -45,46 +45,30 @@ class ColorTransformer: ValueTransformer {
     }
 }
 
-//enum Color: String {
-//    case black
-//    case blue
-//    case brown
-//    case gray
-//    case green
-//    case orange
-//    case darkGray
-//    case purple
-//    case red
-//    case yellow
-//    
-//    var color: Color {
-//        switch self {
-//        case .red:
-//            return .red
-//        case .blue:
-//            return .blue
-//        case .green:
-//            return .green
-//        case .black:
-//            return .black
-//        case .purple:
-//            return .purple
-//        case .orange:
-//            return .orange
-//        case .brown:
-//            return .brown
-//        case .darkGray:
-//            return .darkGray
-//        case .yellow:
-//            return .yellow
-//        case .gray:
-//            return .gray
-//        }
-//    }
-//}
+func colorFromName(_ name: String) -> NSColor {
+    switch name.lowercased() {
+    case "green": return NSColor.green
+    case "yellow": return NSColor.yellow
+    case "blue": return NSColor.blue
+    case "red": return NSColor.red
+    case "gray": return NSColor.gray
+    case "orange": return NSColor.orange
+    case "brown": return NSColor.brown
+    case "mint": return NSColor.systemMint
+    default: return NSColor.black
+    }
+}
 
-
-
+// Extension pour convertir SwiftUI Color en NSColor
+extension NSColor {
+    static func fromSwiftUIColor(_ color: Color) -> NSColor {
+        if let cgColor = color.cgColor {
+            return NSColor(cgColor: cgColor) ?? NSColor.black
+        } else {
+            return NSColor.black
+        }
+    }
+}
 
 extension Color {
     init?(colorName: String) {
@@ -119,21 +103,17 @@ extension Color {
     }
 }
 
-enum EntityColor: String, Codable {
-    case black, blue, brown, gray, green, orange, darkGray, purple, red, yellow
-    
-    var nsColor: Color {
-        switch self {
-        case .black: return .black
-        case .blue: return .blue
-        case .brown: return .brown
-        case .gray: return .gray
-        case .green: return .green
-        case .orange: return .orange
-        case .darkGray: return .gray
-        case .purple: return .purple
-        case .red: return .red
-        case .yellow: return .yellow
+extension NSColor {
+    static func fromString(_ string: String) -> NSColor {
+        switch string.lowercased() {
+        case "red": return .red
+        case "blue": return .blue
+        case "green": return .green
+        case "brown": return .brown
+        case "gray": return .gray
+        case "orange": return .orange
+        case "purple": return .purple
+        default: return .clear
         }
     }
 }

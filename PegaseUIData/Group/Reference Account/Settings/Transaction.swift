@@ -15,8 +15,6 @@ struct TransactionView: View {
     }
 }
 
-import SwiftUI
-
 struct DefaultTransactionValuesView: View {
     @State private var selectedStatus: String = "Engaged"
     @State private var selectedRubric: String = "Alimentation"

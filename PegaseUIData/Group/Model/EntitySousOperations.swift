@@ -16,6 +16,9 @@ import SwiftData
     var category: EntityCategory?
     var transaction: EntityTransactions?
    
+    @Attribute(.unique) var uuid: UUID = UUID()
+    public var id: UUID { uuid }
+
     public init() {
 
     }

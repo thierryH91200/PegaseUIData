@@ -6,9 +6,8 @@
 //
 
 import SwiftUI
-import SwiftData
 
-@Model final class Statut {
+final class Statut {
     
     static let shared = Statut()
     

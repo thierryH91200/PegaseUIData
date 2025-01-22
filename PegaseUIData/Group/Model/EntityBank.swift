@@ -21,7 +21,8 @@ import SwiftData
     var name       : String  = ""
     var phone      : String  = ""
     var town       : String  = ""
-    var uuid       : UUID    = UUID()
+    @Attribute(.unique) var uuid: UUID = UUID()
+    public var id: UUID { uuid }
     var account    : EntityAccount?
 
     init( account  : EntityAccount)  {
