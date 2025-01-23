@@ -12,7 +12,7 @@ struct BankView: View {
     @Environment(\.modelContext) var modelContext
     @Query private var banqueInfos: [BanqueInfo]
     
-    var account: EntityAccount?
+    var account = CurrrentAccountManager.shared.getAccount()!
     @State var currentAccount: EntityAccount?
     
     var body: some View {
@@ -30,7 +30,7 @@ struct BankView: View {
             // Créer un nouvel enregistrement si la base de données est vide
             if banqueInfos.isEmpty {
                 let context = modelContext
-                let newBanqueInfo = BanqueInfo(account: currentAccount!)
+                let newBanqueInfo = BanqueInfo(account: account)
                 context.insert(newBanqueInfo)
             }
         }

@@ -11,13 +11,13 @@ import SwiftData
 import SwiftUI
 
 
-@Model public class EntitySchedule {
+@Model public class EntitySchedule : Identifiable{
     var amount: Double = 0.0
     var dateCree: Date = Date()
-    var dateDebut: Date = Date()
-    var dateFin: Date = Date()
+    var dateDebut: Date
+    var dateFin: Date
     var dateModifie: Date = Date()
-    var dateValeur: Date = Date()
+    var dateValeur: Date
     var frequence: Int16 = 0
     var libelle: String = ""
     var nextOccurence: Int16 = 0
@@ -34,6 +34,9 @@ import SwiftUI
     
     public init() {
         self.libelle = ""
+        self.dateFin = Date()
+        self.dateDebut = Date()
+        self.dateValeur = Date()
     }
 }
 
@@ -58,6 +61,16 @@ final class SchedulerManager {
 
     func configure(with modelContext: ModelContext) {
         self.modelContext = modelContext
+    }
+
+    func create(account: EntityAccount?, name : String) -> EntitySchedule {
+        let entity = EntitySchedule()
+        return entity
+    }
+    
+    
+    func update(entity: EntitySchedule, name: String) {
+        entity.libelle = name
     }
 
     // Suppression d'une entité
@@ -87,6 +100,7 @@ final class SchedulerManager {
             return []
         }
     }
+    
     
     // Récupérer toutes les données filtrées par compte
     func getAllDatas(for account: EntityAccount?) -> [EntitySchedule] {

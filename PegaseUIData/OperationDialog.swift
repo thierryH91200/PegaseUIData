@@ -204,7 +204,7 @@ struct OperationDialog: View {
                     let account = CurrrentAccountManager.shared.getAccount()
                     if account != nil {
                         
-                        let modes = await PaymentModeManager.shared.getAllDatas(for: account!)
+                        let modes = PaymentModeManager.shared.getAllDatas(for: account!)
                         print(modes) // Exemple de débogage
                     }
                 }

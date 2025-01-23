@@ -42,6 +42,7 @@
       "shouldTranslate" : false
     },
     "€%.2f" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -77,6 +78,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Compte"
+          }
+        }
+      }
+    },
+    "Account: %@" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compte: %@"
           }
         }
       }
@@ -123,6 +134,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ajoute un groupe"
+          }
+        }
+      }
+    },
+    "Add Payment Mode" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter le mode de paiement"
           }
         }
       }
@@ -375,16 +396,6 @@
         }
       }
     },
-    "CheckView" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "CheckView"
-          }
-        }
-      }
-    },
     "Choose the color" : {
       "localizations" : {
         "fr" : {
@@ -571,6 +582,9 @@
         }
       }
     },
+    "Date inter" : {
+
+    },
     "Date of pointing" : {
       "localizations" : {
         "en" : {
@@ -644,6 +658,7 @@
       }
     },
     "Delete recording?" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -705,6 +720,16 @@
         }
       }
     },
+    "Edit Payment Mode" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editer le mode de paiement"
+          }
+        }
+      }
+    },
     "Email" : {
       "localizations" : {
         "fr" : {
@@ -726,6 +751,7 @@
       }
     },
     "End Balance" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -773,6 +799,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Prénom"
+          }
+        }
+      }
+    },
+    "First number" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Premier nombre"
+          }
+        }
+      }
+    },
+    "Frequency" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fréquence"
           }
         }
       }
@@ -848,6 +894,7 @@
       }
     },
     "Inter Balance" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -858,6 +905,7 @@
       }
     },
     "Inter Date" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -985,6 +1033,36 @@
         }
       }
     },
+    "nbCheques" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "nb Chéques"
+          }
+        }
+      }
+    },
+    "Next" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suivant"
+          }
+        }
+      }
+    },
+    "Next number" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Numéro suivant"
+          }
+        }
+      }
+    },
     "No bank information available" : {
       "localizations" : {
         "en" : {
@@ -1063,6 +1141,26 @@
         }
       }
     },
+    "Number of Checks" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nombre de chèques"
+          }
+        }
+      }
+    },
+    "Occurence" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Occurence"
+          }
+        }
+      }
+    },
     "OK" : {
       "localizations" : {
         "fr" : {
@@ -1074,6 +1172,7 @@
       }
     },
     "Old Balance" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -1103,6 +1202,9 @@
         }
       }
     },
+    "PDF" : {
+
+    },
     "Phone" : {
       "localizations" : {
         "fr" : {
@@ -1119,6 +1221,27 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Code postal"
+          }
+        }
+      }
+    },
+    "prefix" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "préfix"
+          }
+        }
+      }
+    },
+    "Prefix" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Préfix"
           }
         }
       }
@@ -1193,16 +1316,6 @@
         }
       }
     },
-    "SchedulerView" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "SchedulerView"
-          }
-        }
-      }
-    },
     "Settings" : {
       "localizations" : {
         "fr" : {
@@ -1233,7 +1346,17 @@
         }
       }
     },
+    "Solde fin" : {
+
+    },
+    "Solde Init" : {
+
+    },
+    "Solde inter" : {
+
+    },
     "Start Balance" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -1347,6 +1470,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unie"
+          }
+        }
+      }
+    },
+    "Value Date" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date de valeur"
           }
         }
       }

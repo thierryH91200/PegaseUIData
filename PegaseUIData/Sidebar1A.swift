@@ -39,7 +39,6 @@ struct Sidebar1A: View {
         .listStyle(SidebarListStyle())
         .frame(maxHeight: 500) // Ajustement de la hauteur
         
-        
         .onChange(of: selectedAccount) { oldAccount, newAccount in
             if let account = newAccount {
                 
@@ -48,7 +47,7 @@ struct Sidebar1A: View {
                 
                 // Exécute le code asynchrone dans une Task
                 Task {
-                    let modes = await PaymentModeManager.shared.getAllDatas(for: account)
+                    let modes = PaymentModeManager.shared.getAllDatas(for: account)
                     
                     // Mettez à jour les données sur le thread principal
                     DispatchQueue.main.async {

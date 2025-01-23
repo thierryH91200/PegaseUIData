@@ -72,8 +72,8 @@ extension EntityFolderAccount {
     @Relationship(inverse: \EntityBankStatement.account)
     var bankStatement: [EntityBankStatement]?
     
-    @Relationship(deleteRule: .cascade, inverse: \EntityCarnetCheques.account)
-    var carnetCheques: [EntityCarnetCheques]?
+    @Relationship(deleteRule: .cascade, inverse: \EntityCheckBook.account)
+    var carnetCheques: [EntityCheckBook]?
 
     var compteLie: EntitySchedule?
 

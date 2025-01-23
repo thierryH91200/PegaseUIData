@@ -19,6 +19,10 @@ struct ModePaymentView: View {
     @State private var selectedItem: EntityPaymentMode.ID? = nil
     
     @State private var modePayments: [EntityPaymentMode] = []
+    
+    @State private var isAddDialogPresented = false
+    @State private var isEditDialogPresented = false // Nouveau état pour afficher le dialog d'édition
+
 
     var body: some View {
         VStack(spacing: 10) {
@@ -38,49 +42,75 @@ struct ModePaymentView: View {
                     Text(paymentMode.account.initAccount?.codeAccount ?? "Unknown") }
             }
             .frame(height: 300)
-            
-            Spacer()
-            
             HStack {
                 Button(action: {
                     addItem(name: "Default Name", color: .blue)
                 }) {
                     Label("Add", systemImage: "plus")
-                }
-                .buttonStyle(.bordered)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
 
-                Button(action: removeSelectedItem) {
-                    Label("Delete", systemImage: "trash")
                 }
-                .buttonStyle(.bordered)
+                
+                Button(action: {
+                    isEditDialogPresented = true
+                }) {
+                    Label("Edit", systemImage: "pencil")
+                        .padding()
+                        .background(Color.green)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                }
+                .disabled(selectedItem == nil) // Désactive si aucune ligne n'est sélectionnée
+
+                Button(action: removeSelectedItem)
+                {
+                    Label("Delete", systemImage: "trash")
+                        .padding()
+                        .background(Color.red)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                }
                 .disabled(selectedItem == nil) // Désactive si aucune ligne n'est sélectionnée
             }
             .padding()
+            Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top) // Utilise tout l'espace parent et aligne en haut
         .padding()
         .onChange(of: CurrrentAccountManager.shared.currentAccount!) { old, newAccount in
             print(newAccount.name)
             // Rafraîchir `modePayments` quand le compte change
-            Task {
-                await loadData(for: newAccount)
-            }
+                
+            loadDatas(for: newAccount)
         }
         .onAppear {
             // Charger les paiements lors du premier affichage
-            
-            Task {
-                await loadData(for: account)
+                loadDatas(for: account)
+        }
+        .sheet(isPresented: $isEditDialogPresented) {
+            if let selectedID = selectedItem,
+               let selectedMode = modePayments.first(where: { $0.id == selectedID }) {
+                EditItemDialog(
+                    isPresented: $isEditDialogPresented,
+                    paymentMode: selectedMode
+                ) { updatedName, updatedColor in
+                    editItem(name: updatedName, color: updatedColor, paymentMode: selectedMode)
+                }
             }
         }
+
     }
     
-    func loadData(for account: EntityAccount) async {
+    func loadDatas(for account: EntityAccount) {
         
         PaymentModeManager.shared.configure(with: modelContext)
 
         // Chargement asynchrone des données
-        modePayments = await PaymentModeManager.shared.getAllDatas(for: account)
+//        modePayments = await PaymentModeManager.shared.getAllDatas(for: account)
+        modePayments = PaymentModeManager.shared.getAllDatas(for: account)
 
         if let firstItem = modePayments.first {
             print("First item ID: \(firstItem.id)") // Vérifie que l'ID existe
@@ -131,19 +161,115 @@ struct ModePaymentView: View {
     private func removeSelectedItem() {
         if let selectedID = selectedItem, let mode = modePayments.first(where: { $0.id == selectedID }) {
             print("Removing item with ID \(selectedID)")
-
-            // Supprimez l'entité du contexte de données
-            modelContext.delete(mode)
-
-            // Sauvegardez les changements dans le contexte
-            do {
-                try modelContext.save()
-                selectedItem = nil // Réinitialise la sélection
-            } catch {
-                print("Erreur lors de la suppression de l'entité : \(error)")
+            
+            PaymentModeManager.shared.delete(entity: mode)
+            selectedItem = nil // Réinitialise la sélection
+            
+            if let index = modePayments.firstIndex(where: { $0.id == mode.id }) {
+                modePayments.remove(at: index)
             }
+            
+            var count = modePayments.count
+            print (count)
+            
+            let account = CurrrentAccountManager.shared.getAccount()!
+            
+            loadDatas(for: account)
+            count = modePayments.count
+            print (count)
         }
     }
 }
+
+// Vue pour la boîte de dialogue d'ajout
+struct AddItemDialog: View {
+    @Binding var isPresented: Bool
+    @State private var name: String = ""
+    @State private var selectedColor: Color = .gray
+    
+    var onAdd: (String, Color) -> Void
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("Add Payment Mode")
+                .font(.headline)
+            
+            TextField("Name", text: $name)
+                .textFieldStyle(.roundedBorder)
+            
+            ColorPicker("Choose the color", selection: $selectedColor)
+            
+            HStack {
+                Button("Cancel") {
+                    isPresented = false
+                }
+                .keyboardShortcut(.cancelAction)
+                
+                Spacer()
+                
+                Button("OK") {
+                    if !name.isEmpty {
+                        onAdd(name, selectedColor)
+                        isPresented = false
+                    }
+                }
+                .keyboardShortcut(.defaultAction)
+                .disabled(name.isEmpty) // Désactive le bouton si le nom est vide
+            }
+        }
+        .padding()
+        .frame(width: 300)
+    }
+}
+
+struct EditItemDialog: View {
+    @Binding var isPresented: Bool
+    @State var name: String
+    @State var selectedColor: Color
+    
+    var onEdit: (String, Color) -> Void
+    
+    init(isPresented: Binding<Bool>, paymentMode: EntityPaymentMode, onEdit: @escaping (String, Color) -> Void) {
+        self._isPresented = isPresented
+        self._name = State(initialValue: paymentMode.name)
+        self._selectedColor = State(initialValue: Color(paymentMode.color))
+        self.onEdit = onEdit
+    }
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("Edit Payment Mode")
+                .font(.headline)
+            
+            TextField("Name", text: $name)
+                .textFieldStyle(.roundedBorder)
+            
+            ColorPicker("Choose the color", selection: $selectedColor)
+            
+            HStack {
+                Button("Cancel") {
+                    isPresented = false
+                }
+                .keyboardShortcut(.cancelAction)
+                
+                Spacer()
+                
+                Button("Save") {
+                    if !name.isEmpty {
+                        onEdit(name, selectedColor)
+                        isPresented = false
+                    }
+                }
+                .keyboardShortcut(.defaultAction)
+                .disabled(name.isEmpty)
+            }
+        }
+        .padding()
+        .frame(width: 300)
+    }
+}
+
+
+
 
 

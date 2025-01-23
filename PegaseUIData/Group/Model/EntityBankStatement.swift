@@ -16,7 +16,6 @@ class EntityBankStatement: Identifiable {
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
 
-    
     @Attribute var num        : Int
     
     @Attribute var startDate  : Date = Date()
@@ -85,6 +84,19 @@ final class BankStatementManager {
         self.modelContext = modelContext
     }
     
+    func create(account: EntityAccount?, name: Int, startDate: Date, startSolde: Double) throws -> EntityBankStatement? {
+        guard let account = account else {
+            throw PaymentModeError.accountNotFound
+        }
+                
+        let newMode = EntityBankStatement(num: name)
+        newMode.account = account
+        
+        validContext.insert(newMode)
+        try save()
+        return newMode
+    }
+
     // MARK: - Public Methods
     // Supprimer une transaction
     func remove(entity: EntityBankStatement) {
@@ -113,4 +125,14 @@ final class BankStatementManager {
         }
         return entities
     }
+    
+    func save () throws {
+        
+        do {
+            try validContext.save()
+        } catch {
+            throw PaymentModeError.saveFailed
+        }
+    }
+
 }

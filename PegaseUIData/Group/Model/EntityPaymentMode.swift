@@ -50,85 +50,6 @@ final class CacheEntry<T> {
     }
 }
 
-actor PaymentModeCache {
-    // Configuration du cache
-    private struct Config {
-        static let defaultExpirationInterval: TimeInterval = 5 * 60 // 5 minutes
-        static let maxCacheSize = 50 // Maximum d'entrées dans le cache
-        static let cleanupInterval: TimeInterval = 60 // Nettoyage toutes les minutes
-    }
-    
-    // Le cache principal utilisant NSCache pour la gestion automatique de la mémoire
-    private var cache = NSCache<NSString, CacheEntry<[EntityPaymentMode]>>()
-    private var lastCleanupTime = Date()
-    
-    init() {
-        cache.countLimit = Config.maxCacheSize
-        Task { @MainActor in
-            setupAutomaticCleanup()
-        }
-    }
-    
-    // Configuration du nettoyage automatique
-    @MainActor
-    private func setupAutomaticCleanup() {
-        Task {
-            while true {
-                await cleanup() // Add 'try?' since cleanup() is likely throwing
-                try? await Task.sleep(nanoseconds: UInt64(Config.cleanupInterval * 1_000_000_000))
-            }
-        }
-    }
-    
-    // Stockage dans le cache
-    func store(key: UUID, data: [EntityPaymentMode], expirationInterval: TimeInterval = Config.defaultExpirationInterval) {
-        let entry = CacheEntry(
-            data: data,
-            timestamp: Date(),
-            expirationInterval: expirationInterval
-        )
-        cache.setObject(entry, forKey: key.uuidString as NSString)
-    }
-    
-    // Récupération depuis le cache
-    func retrieve(key: UUID) -> [EntityPaymentMode]? {
-        guard let entry = cache.object(forKey: key.uuidString as NSString) else {
-            return nil
-        }
-        
-        // Vérifier si l'entrée est expirée
-        if entry.isExpired {
-            cache.removeObject(forKey: key.uuidString as NSString)
-            return nil
-        }
-        
-        return entry.data
-    }
-    
-    // Invalidation d'une entrée spécifique
-    func invalidate(key: UUID) {
-        cache.removeObject(forKey: key.uuidString as NSString)
-    }
-    
-    // Nettoyage complet du cache
-    func invalidateAll() {
-        cache.removeAllObjects()
-    }
-    
-    // Nettoyage automatique des entrées expirées
-    private func cleanup() {
-        let now = Date()
-        if now.timeIntervalSince(lastCleanupTime) < Config.cleanupInterval {
-            return
-        }
-        
-        // Parcourir et nettoyer les entrées expirées
-        // Note: Cette implémentation est simplifiée car NSCache ne permet pas
-        // d'itérer sur ses éléments directement
-        lastCleanupTime = now
-    }
-}
-
 
 enum PaymentModeError: Error {
     case contextNotConfigured
@@ -147,7 +68,6 @@ final class PaymentModeManager {
     static let shared = PaymentModeManager()
     
     var entities = [EntityPaymentMode]()
-    private var cache: PaymentModeCache = PaymentModeCache()
     
     // Contexte pour les modifications
     var modelContext : ModelContext?
@@ -187,13 +107,9 @@ final class PaymentModeManager {
         }
     }
 
-    func getAllDatas(for account: EntityAccount, useCache: Bool = true) async -> [EntityPaymentMode] {
+    func getAllDatas(for account: EntityAccount) -> [EntityPaymentMode] {
         let accountId = account.uuid
         
-        // Vérifier le cache si demandé
-        if useCache, let cachedData = await cache.retrieve(key: accountId) {
-            return cachedData
-        }
         
         // Sinon, charger depuis SwiftData
         let lhs = account.uuid
@@ -208,8 +124,6 @@ final class PaymentModeManager {
         
         do {
             let fetchedData = try validContext.fetch(fetchDescriptor)
-            // Mettre en cache les nouvelles données
-            await cache.store(key: accountId, data: fetchedData)
             return fetchedData
         } catch {
             print("Error fetching data with SwiftData: \(error)")
@@ -310,14 +224,6 @@ final class PaymentModeManager {
             print("Erreur lors de la récupération des modes de paiement : \(error.localizedDescription)")
         }
     }
-    
-    func clearCache(for account: EntityAccount) async {
-        await cache.invalidate(key: account.uuid)
-    }
-    
-    func clearAllCache() async {
-        await cache.invalidateAll()
-    }
 }
 
 
@@ -337,23 +243,18 @@ class PaymentModeViewModel: ObservableObject {
         self.account = account
         self.modePayments = []
         
-        Task {
-            await loadInitialData()
-        }
+        loadInitialData()
     }
     
     // MARK: Actions utilisateur :
-    @MainActor
-    private func loadInitialData() async {
-        modePayments = await manager.getAllDatas(for: account)
+    private func loadInitialData() {
+        modePayments = manager.getAllDatas(for: account)
     }
 
-    @MainActor
-    func add(name: String, color: Color) async {
+    func add(name: String, color: Color) {
         do {
             let newMode = try manager.create(account: account, name: name, color: NSColor.fromSwiftUIColor(color))
-            await manager.clearCache(for: account)
-            await reloadData()
+            reloadData()
         } catch PaymentModeError.accountNotFound {
             // Gérer l'erreur account non trouvé
             print("Erreur : compte non trouvé")
@@ -366,28 +267,26 @@ class PaymentModeViewModel: ObservableObject {
         }
     }
 
-    func delete(at index: Int) async {
+    func delete(at index: Int) {
         guard modePayments.indices.contains(index) else { return }
         let mode = modePayments[index]
         
         manager.delete(entity: mode) // Appelle la méthode sans try
-        await manager.clearCache(for: account) // Vider le cache après suppression
 
         modePayments.remove(at: index)
-        await reloadData(useCache: false)      // Recharger depuis la base de données
+        reloadData()      // Recharger depuis la base de données
     }
     
     
     // MARK: Communication avec les services ou les managers :
     @discardableResult
-    func reloadData(useCache: Bool = true) async -> [EntityPaymentMode] {
-        modePayments = await manager.getAllDatas(for: account, useCache: useCache)
+    func reloadData() -> [EntityPaymentMode] {
+        modePayments = manager.getAllDatas(for: account)
         return modePayments
     }
     
     func saveChanges() throws {
         try manager.save()
     }
-
 }
 

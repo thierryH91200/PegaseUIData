@@ -158,14 +158,11 @@ class ListTransactionsViewModel: ObservableObject {
         self.manager = manager
         self.listTransactions = []
         
-        Task {
-            await loadInitialData()
-        }
+            loadInitialData()
     }
 
-    @MainActor
-    private func loadInitialData() async {
-        listTransactions = await manager.getAllDatas(for: account)
+    private func loadInitialData() {
+        listTransactions = manager.getAllDatas(for: account)
     }
 
     
