@@ -6,8 +6,33 @@
 //
 
 import SwiftUI
+import SwiftData
+
+final class AccountInfoManager: ObservableObject {
+    @Published var account: EntityAccount?
+    @Published var initAccount: EntityInitAccount? {
+        didSet {
+            // Sauvegarder les modifications dès qu'il y a un changement
+            saveChanges()
+        }
+    }
+    
+    func saveChanges(using context: ModelContext? = nil) {
+        guard let context = context else { return }
+        
+        do {
+            try context.save()
+        } catch {
+            print("Erreur lors de la sauvegarde des modifications : \(error)")
+        }
+    }
+}
 
 struct AccountView: View {
+    
+    @Environment(\.modelContext) var modelContext
+    @EnvironmentObject var accountInfoManager: AccountInfoManager
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             // Logo et Rapport Initial
@@ -33,18 +58,28 @@ struct AccountView: View {
             VStack(alignment: .leading) {
                 Text("Bank references")
                     .font(.headline)
-                
                 BankReferenceView()
+                Spacer()
             }
             .padding()
-//            .background(Color.gray.opacity(0.1))
             .cornerRadius(8)
-            
-            Spacer()
+            .onAppear {
+            }
+            .onDisappear {
+            }
         }
         .padding()
         .frame(width: 800, height: 600)
     }
+    
+    private func saveChanges() {
+        do {
+            try modelContext.save()
+        } catch {
+            print("Erreur lors de la sauvegarde : \(error)")
+        }
+    }
+    
 }
 
 // Vue pour le rapport initial (Planned, Engaged, Executed)

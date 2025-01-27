@@ -201,7 +201,7 @@ struct OperationDialog: View {
                 Task {
                     // Maintenant, l'accès à `modelContext` est sûr ici
                     PaymentModeManager.shared.configure(with: modelContext)
-                    let account = CurrrentAccountManager.shared.getAccount()
+                    let account = CurrentAccountManager.shared.getAccount()
                     if account != nil {
                         
                         let modes = PaymentModeManager.shared.getAllDatas(for: account!)

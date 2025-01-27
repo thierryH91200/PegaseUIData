@@ -42,7 +42,7 @@ struct Sidebar1A: View {
         .onChange(of: selectedAccount) { oldAccount, newAccount in
             if let account = newAccount {
                 
-                CurrrentAccountManager.shared.setAccount(account)
+                CurrentAccountManager.shared.setAccount(account)
                 PaymentModeManager.shared.configure(with: modelContext)
                 
                 // Exécute le code asynchrone dans une Task

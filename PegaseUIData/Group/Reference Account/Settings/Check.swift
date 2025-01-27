@@ -13,7 +13,7 @@ struct CheckView: View {
     
     @Environment(\.modelContext) private var modelContext
     
-    var account = CurrrentAccountManager.shared.getAccount()!
+    var account = CurrentAccountManager.shared.getAccount()!
     @State private var carnetCheques: [EntityCheckBook] = []
        
     @State private var selectedItem: EntityCheckBook.ID?
@@ -209,7 +209,7 @@ struct AddDialogView: View {
                         numPremier: numPremier,
                         numSuivant: numSuivant,
                         prefix: prefix,
-                        account: CurrrentAccountManager.shared.getAccount()! // Associe le compte actuel
+                        account: CurrentAccountManager.shared.getAccount()! // Associe le compte actuel
                     )
                     onAdd(newCheckBook) // Appelle le callback
                     dismiss() // Ferme la boîte de dialogue

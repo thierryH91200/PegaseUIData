@@ -25,6 +25,9 @@ struct AccountFactory {
         let identity = EntityIdentity(name: idName, surName: idSurName, account: account)
         account.identity = identity
         
+        let banqueInfo = EntityBanqueInfo(account: account)
+        account.bank = banqueInfo
+        
         let initAccount = EntityInitAccount()
         initAccount.codeAccount = numAccount
         initAccount.account = account

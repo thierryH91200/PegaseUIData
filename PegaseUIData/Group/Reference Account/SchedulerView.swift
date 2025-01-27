@@ -31,9 +31,9 @@ struct Scheduler: View {
     
     @Environment(\.modelContext) private var modelContext
     
-    @ObservedObject var accountManager = CurrrentAccountManager.shared
+    @ObservedObject var accountManager = CurrentAccountManager.shared
 
-    var account = CurrrentAccountManager.shared.getAccount()!
+    var account = CurrentAccountManager.shared.getAccount()!
     @State private var scheduler: [EntitySchedule] = []
     
     @State private var selectedItem: EntitySchedule.ID?
@@ -280,7 +280,7 @@ struct AddItemDialogSchedule: View {
                             nextOccurence: nextOccurenceValue,
                             occurence: occurenceValue,
                             typeFrequence: frequencyTypeValue,
-                            account: CurrrentAccountManager.shared.getAccount()!
+                            account: CurrentAccountManager.shared.getAccount()!
                         )
                         
                         // Appelle le callback avec le nouvel élément

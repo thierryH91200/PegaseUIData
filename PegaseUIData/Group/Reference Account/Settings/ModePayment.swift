@@ -11,9 +11,9 @@ struct ModePaymentView: View {
     
     @Environment(\.modelContext) private var modelContext
     
-    @ObservedObject var accountManager = CurrrentAccountManager.shared
+    @ObservedObject var accountManager = CurrentAccountManager.shared
 
-    var account = CurrrentAccountManager.shared.getAccount()!
+    var account = CurrentAccountManager.shared.getAccount()!
 
     // Ajoutez un état pour suivre l'élément sélectionné
     @State private var selectedItem: EntityPaymentMode.ID? = nil
@@ -78,7 +78,7 @@ struct ModePaymentView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top) // Utilise tout l'espace parent et aligne en haut
         .padding()
-        .onChange(of: CurrrentAccountManager.shared.currentAccount!) { old, newAccount in
+        .onChange(of: CurrentAccountManager.shared.currentAccount!) { old, newAccount in
             print(newAccount.name)
             // Rafraîchir les données` quand le compte change
             loadDatas(for: newAccount)
@@ -167,7 +167,7 @@ struct ModePaymentView: View {
             var count = modePayments.count
             print (count)
             
-            let account = CurrrentAccountManager.shared.getAccount()!
+            let account = CurrentAccountManager.shared.getAccount()!
             
             loadDatas(for: account)
             count = modePayments.count

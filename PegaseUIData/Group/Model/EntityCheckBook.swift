@@ -80,7 +80,7 @@ final class ChequeBookManager : ObservableObject {
             numPremier: 0,
             numSuivant: 0,
             prefix: "CH",
-            account: CurrrentAccountManager.shared.getAccount()!) // Associe le compte actuel
+            account: CurrentAccountManager.shared.getAccount()!) // Associe le compte actuel
         validContext.insert(entity)
         
         // Sauvegardez le contexte

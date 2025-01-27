@@ -8,7 +8,7 @@ import SwiftUI
 import SwiftData
 
 final class IdentityInfoManager: ObservableObject {
-    @Published var account: EntityAccount?
+    @Published var currentAccount: EntityAccount?
     @Published var identity: EntityIdentity? {
         didSet {
             // Sauvegarder les modifications dès qu'il y a un changement
@@ -31,9 +31,8 @@ struct IdentyView: View {
     
     @Environment(\.modelContext) var modelContext
     @EnvironmentObject var identityInfoManager: IdentityInfoManager
+    @EnvironmentObject var currentAccountManager: CurrentAccountManager
     
-//    var account = CurrrentAccountManager.shared.getAccount()!
-
     @Query private var identityInfo: [EntityIdentity]
     
     var body: some View {
@@ -41,7 +40,14 @@ struct IdentyView: View {
             Text("Identity")
                 .font(.title)
                 .padding(.bottom, 10)
-            
+                .accessibilityLabel("Identity title")
+
+            if let account = currentAccountManager.currentAccount {
+                Text("Current Account: \(account.name)")
+            } else {
+                Text("No account selected.")
+            }
+
             VStack(alignment: .leading, spacing: 8) {
                 
                 if identityInfoManager.identity != nil {
@@ -53,11 +59,18 @@ struct IdentyView: View {
         .frame(width: 600)
         .cornerRadius(10)
         .onAppear {
+            
+            if let account = currentAccountManager.currentAccount {
+                identityInfoManager.currentAccount = account
+            }
+
             // Créer un nouvel enregistrement si la base de données est vide
             if identityInfoManager.identity == nil {
-                let account = CurrrentAccountManager.shared.getAccount()!
-                identityInfoManager.account = account
-
+                if let account = CurrentAccountManager.shared.getAccount() {
+                    identityInfoManager.currentAccount = account
+                } else {
+                    print("Aucun compte disponible.")
+                }
                 IdentityManager.shared.configure(with: modelContext)
                 let identity = IdentityManager.shared.getAllDatas()
                 identityInfoManager.identity = identity
@@ -73,7 +86,20 @@ struct IdentyView: View {
         .onDisappear {
             saveChanges()
             identityInfoManager.saveChanges(using: modelContext)
+            identityInfoManager.identity = nil
         }
+        .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
+            
+//            print("currentAccountManager.currentAccount changed to: \(String(describing: newAccount))")
+
+            if let account = newAccount {
+                identityInfoManager.identity = nil
+                identityInfoManager.currentAccount = account
+                
+                loadOrCreateIdentity(for: account)
+            }
+        }
+
         .onChange(of: identityInfoManager.identity) { old , _ in
             do {
                 try modelContext.save()
@@ -83,6 +109,19 @@ struct IdentyView: View {
         }
     }
     
+    private func loadOrCreateIdentity(for account: EntityAccount) {
+        
+        IdentityManager.shared.configure(with: modelContext)
+        if let existingIdentity = IdentityManager.shared.getAllDatas() {
+            identityInfoManager.identity = existingIdentity
+        } else {
+            let newIdentity = EntityIdentity()
+            newIdentity.account = account
+            modelContext.insert(newIdentity)
+            identityInfoManager.identity = newIdentity
+        }
+    }
+
     private func saveChanges() {
         do {
             try modelContext.save()
@@ -90,7 +129,6 @@ struct IdentyView: View {
             print("Erreur lors de la sauvegarde : \(error)")
         }
     }
-
 }
 
 struct SectionInfoView: View {
@@ -104,18 +142,12 @@ struct SectionInfoView: View {
                 .frame(width: 100, alignment: .leading)
             TextField("Name", text: $identityInfo.name)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
-                .onSubmit {
-                    saveChanges()
-                }
 
             Spacer()
             Text("Surname")
                 .frame(width: 100, alignment: .leading)
             TextField("Surname", text: $identityInfo.surName)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
-                .onSubmit {
-                    saveChanges()
-                }
         }
         
         HStack {
@@ -123,9 +155,6 @@ struct SectionInfoView: View {
                 .frame(width: 100, alignment: .leading)
             TextField("Address", text: $identityInfo.adress)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
-                .onSubmit {
-                    saveChanges()
-                }
         }
         
         HStack {
@@ -133,10 +162,6 @@ struct SectionInfoView: View {
                 .frame(width: 100, alignment: .leading)
             TextField("Complement", text: $identityInfo.complement)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
-                .onSubmit {
-                    saveChanges()
-                }
-
         }
         
         HStack {
@@ -145,19 +170,12 @@ struct SectionInfoView: View {
             TextField("Postal Code", text: $identityInfo.cp)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .frame(width: 80)
-                .onSubmit {
-                    saveChanges()
-                }
 
             Spacer()
             Text("Town")
                 .frame(width: 100, alignment: .leading)
             TextField("Town", text: $identityInfo.town)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
-                .onSubmit {
-                    saveChanges()
-                }
-
         }
         
         HStack {
@@ -165,9 +183,6 @@ struct SectionInfoView: View {
                 .frame(width: 100, alignment: .leading)
             TextField("Country", text: $identityInfo.country)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
-                .onSubmit {
-                    saveChanges()
-                }
         }
         
         HStack {
@@ -176,9 +191,6 @@ struct SectionInfoView: View {
             TextField("Phone", text: $identityInfo.phone)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .frame(width: 150)
-                .onSubmit {
-                    saveChanges()
-                }
 
             Spacer()
             Text("Mobile")
@@ -186,21 +198,15 @@ struct SectionInfoView: View {
             TextField("Mobile", text: $identityInfo.mobile)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .frame(width: 150)
-                .onSubmit {
-                    saveChanges()
-                }
-
         }
         HStack {
             Text("Email")
                 .frame(width: 100, alignment: .leading)
             TextField("Email", text: $identityInfo.email)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
-                .onSubmit {
-                    saveChanges()
-                }
-
         }
+        .onChange(of: identityInfo) {old, _ in saveChanges() }
+        Spacer()
     }
     
     private func saveChanges() {
@@ -212,3 +218,4 @@ struct SectionInfoView: View {
     }
 
 }
+

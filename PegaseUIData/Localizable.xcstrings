@@ -558,6 +558,9 @@
         }
       }
     },
+    "Current Account: %@" : {
+
+    },
     "Current account1" : {
       "localizations" : {
         "fr" : {
@@ -904,6 +907,9 @@
         }
       }
     },
+    "Identity title" : {
+
+    },
     "Income/Expense" : {
       "localizations" : {
         "fr" : {
@@ -1111,6 +1117,9 @@
           }
         }
       }
+    },
+    "No account selected." : {
+
     },
     "No bank information available" : {
       "localizations" : {

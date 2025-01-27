@@ -60,8 +60,8 @@ extension EntityFolderAccount {
     @Relationship(deleteRule: .cascade, inverse: \EntityIdentity.account)
     var identity: EntityIdentity?
     
-    @Relationship(deleteRule: .cascade, inverse: \EntityBank.account)
-    var bank: EntityBank?
+    @Relationship(deleteRule: .cascade, inverse: \EntityBanqueInfo.account)
+    var bank: EntityBanqueInfo?
     
     @Relationship(deleteRule: .cascade, inverse: \EntityInitAccount.account)
     var initAccount: EntityInitAccount?
@@ -201,17 +201,20 @@ class AccountViewModel: ObservableObject {
     }
 }
 
-final class CurrrentAccountManager : ObservableObject {
+final class CurrentAccountManager : ObservableObject {
     
-    static let shared = CurrrentAccountManager()
+    static let shared = CurrentAccountManager()
     
     // Déclaration d'une variable globale pour toutes les fonctions
     @Published var currentAccount: EntityAccount?
     
     // Affectation d'un compte à la variable globale
     func setAccount(_ account: EntityAccount) {
+
+        objectWillChange.send() // Notifie SwiftUI qu'il y a un changement
         currentAccount = account
     }
+    
     // Recupération d'un compte
     func getAccount()->EntityAccount? {
         return currentAccount
@@ -227,6 +230,7 @@ final class CurrrentAccountManager : ObservableObject {
     
     // Réinitialisation de la variable globale
    func resetCurrentAccount() {
+        objectWillChange.send() // Notifie SwiftUI qu'il y a une mise à jour
         currentAccount = nil
     }
 }

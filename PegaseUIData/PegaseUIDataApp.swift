@@ -22,7 +22,6 @@ struct PegaseUIDataApp: App {
     let schema = Schema([
         EntityAccount.self,
         EntityFolderAccount.self,
-        EntityBank.self,
         EntityBanqueInfo.self,
         EntityBankStatement.self,
         EntityCheckBook.self,

@@ -52,7 +52,7 @@ public class EntityIdentity : Identifiable{
         self.surName = surName
         self.town = town
         
-        self.account = CurrrentAccountManager.shared.getAccount()!
+        self.account = CurrentAccountManager.shared.getAccount()!
     }
     
     public init(name: String, surName: String, account : EntityAccount) {
@@ -62,7 +62,7 @@ public class EntityIdentity : Identifiable{
     }
     
     init() {
-        self.account = CurrrentAccountManager.shared.getAccount()!
+        self.account = CurrentAccountManager.shared.getAccount()!
     }
 }
 
@@ -70,7 +70,6 @@ public class EntityIdentity : Identifiable{
 final class IdentityManager  {
     
     // Contexte pour les modifications
-    var currentAccount = CurrrentAccountManager.shared.getAccount()!
 
     static let shared = IdentityManager()
     
@@ -94,6 +93,7 @@ final class IdentityManager  {
 
     func create(name: String = "", surName: String = "") -> EntityIdentity {
 
+        let currentAccount = CurrentAccountManager.shared.getAccount()!
         let entity = EntityIdentity(name: name, surName: surName, account: currentAccount)
         
         // Ajout de l'entité au contexte
@@ -105,6 +105,11 @@ final class IdentityManager  {
     func getAllDatas() -> EntityIdentity? {
         // Filtre pour l'entité liée à `currentAccount`
         
+        guard let currentAccount = CurrentAccountManager.shared.getAccount() else {
+            print("Erreur : aucun compte courant trouvé.")
+            return nil
+        }
+        
         do {
             let lhs = currentAccount.uuid
             let predicate = #Predicate<EntityIdentity>{ entity in
@@ -113,21 +118,14 @@ final class IdentityManager  {
             // Utilisation de SwiftData pour récupérer les entités correspondantes
             let fetchDescriptor = FetchDescriptor<EntityIdentity>(
                 predicate: predicate,
-                sortBy: [SortDescriptor(\.name, order: .forward)])
+                sortBy: [SortDescriptor(\.name, order: .forward)] )
             
             entities = try validContext.fetch(fetchDescriptor)
             
-            for entity in entities {
-                print("UUID récupéré : \(entity.account!.uuid)")
-            }
-            print("UUID attendu : \(currentAccount.uuid)")
-
         } catch {
             print("Erreur lors de la récupération des données : \(error.localizedDescription)")
             return nil
         }
-
-        // Retourne la première entité ou en crée une nouvelle si aucune n'existe
         return entities.first
     }
 }
