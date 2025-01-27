@@ -14,10 +14,10 @@ import SwiftUI
 @Model public class EntitySchedule : Identifiable{
     var amount: Double = 0.0
     var dateCree: Date = Date()
-    var dateDebut: Date
-    var dateFin: Date
+    var dateDebut: Date = Date()
+    var dateFin: Date = Date()
     var dateModifie: Date = Date()
-    var dateValeur: Date
+    var dateValeur: Date = Date()
     var frequence: Int16 = 0
     var libelle: String = ""
     var nextOccurence: Int16 = 0
@@ -33,18 +33,49 @@ import SwiftUI
     var paymentMode: EntityPaymentMode?
     
     public init() {
-        self.libelle = ""
-        self.dateFin = Date()
-        self.dateDebut = Date()
-        self.dateValeur = Date()
+        
     }
+
+    public init(
+        amount: Double,
+        dateValeur: Date,
+        dateDebut: Date,
+        dateFin: Date,
+        frequence: Int16,
+        libelle: String,
+        nextOccurence: Int16,
+        occurence: Int16,
+        typeFrequence: Int16,
+        account: EntityAccount ){
+            
+            self.amount = amount
+            self.libelle = libelle
+            self.dateFin = dateFin
+            self.dateDebut = dateDebut
+            self.dateValeur = dateValeur
+            self.frequence =  frequence
+            self.libelle = libelle
+            self.nextOccurence = nextOccurence
+            self.occurence = occurence
+            self.typeFrequence = typeFrequence
+            self.account = account
+    }
+}
+
+
+enum SchedulerError: Error {
+    case contextNotConfigured
+    case accountNotFound
+    case saveFailed
+    case fetchFailed
 }
 
 final class SchedulerManager {
 
     static let shared = SchedulerManager()
 
-    private var entities = [EntitySchedule]()
+    @Published var entities = [EntitySchedule]()
+    
     var currentAccount: EntityAccount?
 
     // Contexte pour les modifications
@@ -63,11 +94,14 @@ final class SchedulerManager {
         self.modelContext = modelContext
     }
 
-    func create(account: EntityAccount?, name : String) -> EntitySchedule {
+    func create(account: EntityAccount?, name : String) throws -> EntitySchedule {
         let entity = EntitySchedule()
+        validContext.insert(entity)
+        try save()
+        entities.append(entity)
+
         return entity
     }
-    
     
     func update(entity: EntitySchedule, name: String) {
         entity.libelle = name
@@ -106,7 +140,9 @@ final class SchedulerManager {
     func getAllDatas(for account: EntityAccount?) -> [EntitySchedule] {
         
         let lhs = account!.uuid
-        let predicate = #Predicate<EntitySchedule>{ entity in entity.account!.uuid == lhs }
+        let predicate = #Predicate<EntitySchedule>{ entity in
+            entity.account?.uuid == lhs
+        }
         let descriptor = FetchDescriptor<EntitySchedule>(
             predicate: predicate,
             sortBy: [SortDescriptor(\.libelle, order: .forward)]
@@ -203,4 +239,13 @@ final class SchedulerManager {
             }
         }
     }
+    func save () throws {
+        
+        do {
+            try validContext.save()
+        } catch {
+            throw SchedulerError.saveFailed
+        }
+    }
+
 }

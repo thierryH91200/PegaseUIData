@@ -20,7 +20,8 @@ struct CheckView: View {
     
     @State private var isAddDialogPresented = false
     @State private var isEditDialogPresented = false // Nouveau état pour afficher le dialog d'édition
-       
+    @State private var itemToEdit: EntityCheckBook? // État pour stocker l'élément à éditer
+
     var body: some View {
         VStack(spacing: 10) {
             Text("Account: \(account.name)")
@@ -34,11 +35,11 @@ struct CheckView: View {
                     Text(String(item.nbCheques))
                 }
 
-                TableColumn( "First number") { (item: EntityCheckBook) in
+                TableColumn( "First Number") { (item: EntityCheckBook) in
                     Text(String(item.numPremier))
                 }
                 
-                TableColumn( "Next number") { (item: EntityCheckBook) in
+                TableColumn( "Next Number") { (item: EntityCheckBook) in
                     Text(String(item.numSuivant))
                 }
                 
@@ -47,15 +48,15 @@ struct CheckView: View {
                 }
 
                 TableColumn( "Surname") { (item: EntityCheckBook) in
-                    Text(item.account.identity?.surName ?? "")
+                    Text(item.account!.identity?.surName ?? "")
                 }
                 
                 TableColumn( "Name") { item in
-                    Text(item.account.identity?.name ?? "")
+                    Text(item.account!.identity?.name ?? "")
                 }
                 
                 TableColumn( "Number") { item in
-                    Text(item.account.initAccount?.codeAccount ?? "")
+                    Text(item.account!.initAccount?.codeAccount ?? "")
                 }
             }
             .onAppear {
@@ -70,57 +71,55 @@ struct CheckView: View {
                     }
                 }
             }
+            .sheet(isPresented: $isAddDialogPresented) {
+                AddDialogView { newCheckBook in
+                    // Ajoute le nouvel élément à la liste
+                    carnetCheques.append(newCheckBook)
+                }
+            }
             
+            .sheet(item: $itemToEdit) { item in
+                // Affiche la boîte de dialogue d'édition avec l'élément sélectionné
+                EditDialogView(checkBook: Binding(
+                    get: { item },
+                    set: { updatedItem in
+                        // Met à jour l'élément dans le tableau principal
+                        if let index = carnetCheques.firstIndex(where: { $0.id == updatedItem.id }) {
+                            carnetCheques[index] = updatedItem
+                        }
+                    }
+                ))
+            }
             .frame(height: 300)
             HStack {
                 Button(action: { isAddDialogPresented = true }) {
                     Label("Add", systemImage: "plus")
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
                 }
-                .buttonStyle(.bordered)
                 
                 Button(action: { isEditDialogPresented = true }) {
                     Label("Edit", systemImage: "pencil")
+                        .padding()
+                        .background(Color.green)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
                 }
-                .buttonStyle(.bordered)
                 .disabled(selectedItem == nil) // Désactive si aucune ligne n'est sélectionnée
                 
                 Button(action: removeSelectedItem) {
                     Label("Delete", systemImage: "trash")
+                        .padding()
+                        .background(Color.red)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
                 }
-                .buttonStyle(.bordered)
                 .disabled(selectedItem == nil) // Désactive si aucune ligne n'est sélectionnée
             }
             .padding()
             Spacer()
-        }
-    }
-    private func addItem(name: String) {
-        print("account : ", account.name)
-        ChequeBookManager.shared.configure(with: modelContext)
-        let entity = ChequeBookManager.shared.create(account: account, name: name)
-
-        modelContext.insert(entity!) // Ajoutez l'entité au contexte
-        
-        do {
-            // Sauvegardez le contexte pour persister les modifications
-            try modelContext.save()
-            print("Cheque book added successfully.")
-        } catch {
-            print("Erreur lors de l'ajout de l'entité : \(error)")
-        }
-    }
-    
-    private func editItem(name: String, nbCheques: String, checkBook: EntityCheckBook) {
-        print("Editing item: \(checkBook.name)")
-        
-        // Mettre à jour les propriétés de l'élément dans SwiftData
-        ChequeBookManager.shared.configure(with: modelContext)
-        ChequeBookManager.shared.update(entity: checkBook, name: name)
-        
-        // Recharger la liste des éléments
-        if let index = carnetCheques.firstIndex(where: { $0.id == checkBook.id }) {
-            carnetCheques[index].name = name
-            carnetCheques[index].nbCheques = Int(nbCheques)!
         }
     }
     
@@ -144,103 +143,133 @@ struct CheckView: View {
 }
 
 // Vue pour la boîte de dialogue d'ajout
-struct AddItemDialogScheduler: View {
-    @Binding var isPresented: Bool
-    
+struct AddDialogView: View {
+    @Environment(\.dismiss) private var dismiss // Pour fermer la feuille
     @State private var name: String = ""
-    @State private var numPremier: String = ""
-    @State private var numSuivant: String = ""
+    @State private var nbCheques: Int = 0
+    @State private var numPremier: Int = 0
+    @State private var numSuivant: Int = 0
     @State private var prefix: String = ""
 
-    var onAdd: (String, String, String, String) -> Void
-    
+    var onAdd: (EntityCheckBook) -> Void // Callback pour transmettre l'élément ajouté
+
     var body: some View {
         VStack(spacing: 20) {
-            Text("Add Check Book")
+            Text("Add Checkbook")
                 .font(.headline)
-            
-            TextField("Name", text: $name)
-                .textFieldStyle(.roundedBorder)
-            
-            TextField("nbCheques", text: $name)
-                .textFieldStyle(.roundedBorder)
-            
-            TextField("First number", text: $numPremier)
-                .textFieldStyle(.roundedBorder)
-            
-            TextField("Next number", text: $numSuivant)
-                .textFieldStyle(.roundedBorder)
 
-            TextField("Prefix", text: $prefix)
-                .textFieldStyle(.roundedBorder)
+            HStack {
+                Text("Name")
+                    .frame(width: 100, alignment: .leading)
+                TextField("", text: $name)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+            }
 
+            HStack {
+                Text("Number of Checks")
+                    .frame(width: 100, alignment: .leading)
+                TextField("", value: $nbCheques, formatter: NumberFormatter())
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+            }
+
+                HStack {
+                    Text("First Number")
+                        .frame(width: 100, alignment: .leading)
+                    TextField("", value: $numPremier, formatter: NumberFormatter())
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                }
+
+            HStack {
+                Text("Next Number")
+                    .frame(width: 100, alignment: .leading)
+                TextField("", value: $numSuivant, formatter: NumberFormatter())
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+            }
+
+            HStack {
+                Text("Prefix")
+                    .frame(width: 100, alignment: .leading)
+                TextField("", text: $prefix)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+            }
 
             HStack {
                 Button("Cancel") {
-                    isPresented = false
+                    dismiss() // Ferme la boîte de dialogue
                 }
-                .keyboardShortcut(.cancelAction)
-                
-                Spacer()
-                
-                Button("OK") {
-                    if !name.isEmpty {
-                        onAdd(name, numPremier, numSuivant, prefix  )
-                        isPresented = false
-                    }
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .cornerRadius(8)
+
+                Button("Add") {
+                    // Crée un nouvel élément
+                    let newCheckBook = EntityCheckBook(
+                        name: name,
+                        nbCheques: nbCheques,
+                        numPremier: numPremier,
+                        numSuivant: numSuivant,
+                        prefix: prefix,
+                        account: CurrrentAccountManager.shared.getAccount()! // Associe le compte actuel
+                    )
+                    onAdd(newCheckBook) // Appelle le callback
+                    dismiss() // Ferme la boîte de dialogue
                 }
-                .keyboardShortcut(.defaultAction)
-                .disabled(name.isEmpty) // Désactive le bouton si le nom est vide
+                .padding()
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(8)
+                .disabled(name.isEmpty) // Désactive si le nom est vide
             }
         }
         .padding()
-        .frame(width: 300)
+        .frame(width: 400)
     }
 }
 
-struct EditItemDialogScheduler: View {
-    @Binding var isPresented: Bool
-    @State var name: String
-    @State var selectedColor: Color
-    
-    var onEdit: (String, Color) -> Void
-    
-    init(isPresented: Binding<Bool>, paymentMode: EntityPaymentMode, onEdit: @escaping (String, Color) -> Void) {
-        self._isPresented = isPresented
-        self._name = State(initialValue: paymentMode.name)
-        self._selectedColor = State(initialValue: Color(paymentMode.color))
-        self.onEdit = onEdit
-    }
-    
+struct EditDialogView: View {
+    @Binding var checkBook: EntityCheckBook
+    @Environment(\.dismiss) private var dismiss // Pour fermer la feuille
+
     var body: some View {
         VStack(spacing: 20) {
-            Text("Edit Payment Mode")
+            Text("Edit Checkbook")
                 .font(.headline)
             
-            TextField("Name", text: $name)
-                .textFieldStyle(.roundedBorder)
+            TextField("Name", text: $checkBook.name)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
             
-            ColorPicker("Choose the color", selection: $selectedColor)
+            TextField("Number of Checks", value: $checkBook.nbCheques, formatter: NumberFormatter())
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+            
+            TextField("First Number", value: $checkBook.numPremier, formatter: NumberFormatter())
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+            
+            TextField("Next Number", value: $checkBook.numSuivant, formatter: NumberFormatter())
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+            
+            TextField("Prefix", text: $checkBook.prefix)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
             
             HStack {
                 Button("Cancel") {
-                    isPresented = false
+                    dismiss() // Ferme la feuille
                 }
-                .keyboardShortcut(.cancelAction)
-                
-                Spacer()
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .cornerRadius(8)
                 
                 Button("Save") {
-                    if !name.isEmpty {
-                        onEdit(name, selectedColor)
-                        isPresented = false
-                    }
+                    // Sauvegarde les modifications
+                    // Vous pouvez ajouter une logique ici pour sauvegarder dans le contexte Core Data ou autre
+                    dismiss() // Ferme la feuille
                 }
-                .keyboardShortcut(.defaultAction)
-                .disabled(name.isEmpty)
+                .padding()
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(8)
             }
         }
         .padding()
-        .frame(width: 300)
+        .frame(width: 400)
     }
 }

@@ -29,13 +29,14 @@ struct BankStatementView: View {
 
 struct BankStatementTableView: View {
     @Environment(\.modelContext) private var modelContext
+    
     @State private var statements: [EntityBankStatement] = []
     @State private var selectedStatement: EntityBankStatement? // Sélectionne l'entité complète
     @State private var isEditing: Bool = false
     @State private var showEditSheet: Bool = false
     
     var body: some View {
-        VStack {
+        VStack(spacing: 10) {
             Table(statements, selection: $selectedStatement.bindingId(from: statements)) {
                 TableColumn("Num") { statement in
                     Text("\(statement.num)")
@@ -43,19 +44,19 @@ struct BankStatementTableView: View {
                 TableColumn("Start Date") { statement in
                     Text(statement.startDate, style: .date)
                 }
-                TableColumn("Solde Init") { statement in
+                TableColumn("Start Balance") { statement in
                     Text("\(statement.startSolde, specifier: "%.2f") €")
                 }
-                TableColumn("Date inter") { statement in
+                TableColumn("Inter Date") { statement in
                     Text(statement.interDate, style: .date)
                 }
-                TableColumn("Solde inter") { statement in
+                TableColumn("Inter Balance") { statement in
                     Text("\(statement.interSolde, specifier: "%.2f") €")
                 }
                 TableColumn("End Date") { statement in
                     Text(statement.endDate, style: .date)
                 }
-                TableColumn("Solde fin") { statement in
+                TableColumn("End Balance") { statement in
                     Text("\(statement.endSolde, specifier: "%.2f") €")
                 }
                 TableColumn("CB Date") { statement in
@@ -104,8 +105,6 @@ struct BankStatementTableView: View {
                         .foregroundColor(.white)
                         .cornerRadius(8)
                 }
-                .padding()
-                Spacer()
             }
             .contextMenu {
                 Button("Add") {
@@ -126,6 +125,8 @@ struct BankStatementTableView: View {
                 fetchData()
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top) // Utilise tout l'espace parent et aligne en haut
+
         .sheet(isPresented: $showEditSheet) {
             EditBankStatementView(statement: $selectedStatement, isEditing: isEditing)
         }
@@ -157,6 +158,9 @@ extension Binding where Value == EntityBankStatement? {
 }
 
 struct EditBankStatementView: View {
+    
+    @Environment(\.modelContext) var modelContext
+    
     @Binding var statement: EntityBankStatement?
     @State private var num: Int = 0
     @State private var startDate: Date = Date()
@@ -197,9 +201,6 @@ struct EditBankStatementView: View {
     }
     
     private func save() {
-        
-        @Environment(\.modelContext) var modelContext
-        
         if isEditing, let statement = statement {
             statement.num = num
             statement.startDate = startDate
@@ -207,8 +208,6 @@ struct EditBankStatementView: View {
             // Mettez à jour les autres propriétés
         } else {
             let newStatement = EntityBankStatement(num: num, startDate: startDate, startSolde: startSolde)
-            BankStatementManager.shared.configure(with: modelContext)
-//            BankStatementManager.shared.create(account: account, num: num)
             modelContext.insert(newStatement)
         }
     }

@@ -8,12 +8,17 @@
 import SwiftUI
 import SwiftData
 
+final class BanqueInfoManager: ObservableObject {
+    @Published var account: EntityAccount?
+    @Published var banqueInfo: EntityBanqueInfo?
+}
+
 struct BankView: View {
-    @Environment(\.modelContext) var modelContext
-    @Query private var banqueInfos: [BanqueInfo]
     
-    var account = CurrrentAccountManager.shared.getAccount()!
-    @State var currentAccount: EntityAccount?
+    @Environment(\.modelContext) var modelContext
+    @EnvironmentObject var banqueManager: BanqueInfoManager
+
+    @Query private var banqueInfos: [EntityBanqueInfo]
     
     var body: some View {
         VStack(spacing: 30) {
@@ -28,10 +33,14 @@ struct BankView: View {
         .padding()
         .onAppear {
             // Créer un nouvel enregistrement si la base de données est vide
-            if banqueInfos.isEmpty {
-                let context = modelContext
-                let newBanqueInfo = BanqueInfo(account: account)
-                context.insert(newBanqueInfo)
+            if banqueManager.banqueInfo == nil {
+                let account = CurrrentAccountManager.shared.getAccount()!
+                banqueManager.account = account
+
+                let newBanqueInfo = EntityBanqueInfo(account: account)
+                banqueManager.banqueInfo = newBanqueInfo
+                
+                modelContext.insert(newBanqueInfo)
             }
         }
     }
@@ -39,7 +48,7 @@ struct BankView: View {
 
 struct SectionView: View {
     let title: String
-    @Bindable var banqueInfo: BanqueInfo
+    @Bindable var banqueInfo: EntityBanqueInfo
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -48,19 +57,18 @@ struct SectionView: View {
                 .padding(.bottom, 5)
 
             if title == "Bank" {
-                FieldView(label: "Bank", text: $banqueInfo.nomBanque)
-                FieldView(label: "Adress", text: $banqueInfo.adresse)
-                FieldView(label: "Complement", text: $banqueInfo.complement)
-                FieldView(label: "CP", text: $banqueInfo.codePostal)
-                FieldView(label: "Town", text: $banqueInfo.ville)
+                FieldView(label: String(localized :"Bank"), text: $banqueInfo.nomBanque)
+                FieldView(label: String(localized :"Address"), text: $banqueInfo.adresse)
+                FieldView(label: String(localized :"Complement"), text: $banqueInfo.complement)
+                FieldView(label: String(localized :"CP"), text: $banqueInfo.codePostal)
+                FieldView(label: String(localized :"Town"), text: $banqueInfo.ville)
             } else if title == "Contact" {
-                FieldView(label: "Name", text: $banqueInfo.nomContact)
-                FieldView(label: "Fonction", text: $banqueInfo.fonctionContact)
-                FieldView(label: "Phone", text: $banqueInfo.telephoneContact)
+                FieldView(label: String(localized :"Name"), text: $banqueInfo.nomContact)
+                FieldView(label: String(localized :"Function"), text: $banqueInfo.fonctionContact)
+                FieldView(label: String(localized :"Phone"), text: $banqueInfo.telephoneContact)
             }
         }
         .padding()
-//        .background(Color.gray)
         .cornerRadius(8)
     }
 }
@@ -75,6 +83,8 @@ struct FieldView: View {
                 .frame(width: 80, alignment: .leading)
             TextField("", text: $text)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
+                .frame(width: 300, alignment: .leading)
+
         }
     }
 }

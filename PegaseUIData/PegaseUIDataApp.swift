@@ -23,6 +23,7 @@ struct PegaseUIDataApp: App {
         EntityAccount.self,
         EntityFolderAccount.self,
         EntityBank.self,
+        EntityBanqueInfo.self,
         EntityBankStatement.self,
         EntityCheckBook.self,
         EntityIdentity.self,

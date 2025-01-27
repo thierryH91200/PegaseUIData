@@ -27,11 +27,12 @@ struct SchedulerView: View {
     
 }
 
-
 struct Scheduler: View {
     
     @Environment(\.modelContext) private var modelContext
     
+    @ObservedObject var accountManager = CurrrentAccountManager.shared
+
     var account = CurrrentAccountManager.shared.getAccount()!
     @State private var scheduler: [EntitySchedule] = []
     
@@ -46,7 +47,6 @@ struct Scheduler: View {
         formatter.timeStyle = .none  // Pas d'heure
         return formatter
     }()
-
     
     var body: some View {
         VStack(spacing: 10) {
@@ -57,17 +57,21 @@ struct Scheduler: View {
                 
                 TableColumn("Value Date") { (item: EntitySchedule) in
                     let dateValeur = item.dateValeur  // Vérifiez si la date n'est pas nulle
-                        Text(dateFormatter.string(from: dateValeur))
+                    Text(dateFormatter.string(from: dateValeur))
                 }
                 
                 TableColumn("Start Date") { (item: EntitySchedule) in
                     let dateDebut = item.dateDebut  // Vérifiez si la date n'est pas nulle
-                        Text(dateFormatter.string(from: dateDebut))
+                    Text(dateFormatter.string(from: dateDebut))
                 }
                 
                 TableColumn("End Date") { (item: EntitySchedule) in
                     let dateFin = item.dateFin // Vérifiez si la date n'est pas nulle
-                        Text(dateFormatter.string(from: dateFin))
+                    Text(dateFormatter.string(from: dateFin))
+                }
+                
+                TableColumn( "Amount") { (item: EntitySchedule) in
+                    Text(String(item.amount))
                 }
                 
                 TableColumn( "Frequency") { (item: EntitySchedule) in
@@ -102,25 +106,42 @@ struct Scheduler: View {
                     if let firstItem = scheduler.first {
                         print("First item ID: \(firstItem.id)") // Vérifie que l'ID existe
                     } else {
-                        print("No items in ChequeBook")
+                        print("No items in Scheduler")
                     }
                 }
             }
             .frame(height: 300)
+            .sheet(isPresented: $isAddDialogPresented) {
+                AddItemDialogSchedule(isPresented: $isAddDialogPresented) { newScheduler in
+                    // Ajoute le nouvel élément à la liste
+                    scheduler.append(newScheduler)
+                }
+            }
+            
             HStack {
                 Button(action: { isAddDialogPresented = true }) {
                     Label("Add", systemImage: "plus")
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
                 }
-                .buttonStyle(.bordered)
                 
                 Button(action: { isEditDialogPresented = true }) {
                     Label("Edit", systemImage: "pencil")
+                        .padding()
+                        .background(Color.green)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
                 }
-                .buttonStyle(.bordered)
                 .disabled(selectedItem == nil) // Désactive si aucune ligne n'est sélectionnée
                 
                 Button(action: removeSelectedItem) {
                     Label("Delete", systemImage: "trash")
+                        .padding()
+                        .background(Color.red)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
                 }
                 .buttonStyle(.bordered)
                 .disabled(selectedItem == nil) // Désactive si aucune ligne n'est sélectionnée
@@ -130,35 +151,6 @@ struct Scheduler: View {
         }
     }
     
-    private func addItem(name: String) {
-        print("account : ", account.name)
-        SchedulerManager.shared.configure(with: modelContext)
-        let entity = SchedulerManager.shared.create(account: account, name: name)
-        
-        modelContext.insert(entity) // Ajoutez l'entité au contexte
-        
-        do {
-            // Sauvegardez le contexte pour persister les modifications
-            try modelContext.save()
-            print("Cheque book added successfully.")
-        } catch {
-            print("Erreur lors de l'ajout de l'entité : \(error)")
-        }
-    }
-    
-    private func editItem(name: String, occurence: Int16, entity: EntitySchedule) {
-        print("Editing item: \(entity.libelle)")
-        
-        // Mettre à jour les propriétés de l'élément dans SwiftData
-        SchedulerManager.shared.configure(with: modelContext)
-        SchedulerManager.shared.update(entity: entity, name: name)
-        
-        // Recharger la liste des éléments
-        if let index = scheduler.firstIndex(where: { $0.id == entity.id }) {
-            scheduler[index].libelle = name
-            scheduler[index].occurence = occurence
-        }
-    }
     
     private func removeSelectedItem() {
         
@@ -180,36 +172,87 @@ struct Scheduler: View {
 }
 
 // Vue pour la boîte de dialogue d'ajout
-struct AddItemDialogCheck: View {
+struct AddItemDialogSchedule: View {
     @Binding var isPresented: Bool
     
-    @State private var name: String = ""
-    @State private var numPremier: String = ""
-    @State private var numSuivant: String = ""
-    @State private var prefix: String = ""
+    @State private var amount: String = ""
+    @State private var dateValeur: Date = Date()
+    @State private var dateDebut: Date = Date()
+    @State private var dateFin: Date = Date()
+    @State private var frequence: String = ""
+    @State private var libelle: String = ""
+    @State private var nextOccurence: String = ""
+    @State private var occurence: String = ""
+    @State private var frequencytype: String = ""
     
-    var onAdd: (String, String, String, String) -> Void
+    var onAdd: (EntitySchedule) -> Void // Callback pour transmettre l'élément ajouté
     
     var body: some View {
         VStack(spacing: 20) {
-            Text("Add Payment Mode")
+            Text("Add Scheduler")
                 .font(.headline)
             
-            TextField("Name", text: $name)
-                .textFieldStyle(.roundedBorder)
+            HStack {
+                Text("Amount")
+                    .frame(width: 100, alignment: .leading)
+                TextField("Amount", text: $amount)
+                    .textFieldStyle(.roundedBorder)
+            }
             
-            TextField("nbCheques", text: $name)
-                .textFieldStyle(.roundedBorder)
+            HStack {
+                Text("Value Date")
+                    .frame(width: 100, alignment: .leading) // Fixe la largeur et aligne à gauche
+                    .background(Color.clear) // Optionnel : utile pour déboguer l'espace réservé
+                    .padding(.leading, 0) // Supprime tout décalage potentiel
+                DatePicker(" ", selection: $dateValeur, displayedComponents: .date)
+            }
             
-            TextField("First number", text: $numPremier)
-                .textFieldStyle(.roundedBorder)
+            HStack {
+                Text("start Date")
+                    .frame(width: 100, alignment: .leading)
+                DatePicker(" ", selection: $dateDebut, displayedComponents: .date)
+            }
             
-            TextField("Next number", text: $numSuivant)
-                .textFieldStyle(.roundedBorder)
+            HStack {
+                Text("end Date")
+                    .frame(width: 100, alignment: .leading)
+                DatePicker("", selection: $dateFin, displayedComponents: .date)
+            }
             
-            TextField("Prefix", text: $prefix)
-                .textFieldStyle(.roundedBorder)
+            HStack {
+                Text("Frequency")
+                    .frame(width: 100, alignment: .leading)
+                TextField("Frequency", text: $frequence)
+                    .textFieldStyle(.roundedBorder)
+            }
             
+            HStack {
+                Text("Comment")
+                    .frame(width: 100, alignment: .leading)
+                TextField("Comment", text: $libelle)
+                    .textFieldStyle(.roundedBorder)
+            }
+            
+            HStack {
+                Text("next Occurence")
+                    .frame(width: 100, alignment: .leading)
+                TextField("next Occurence", text: $nextOccurence)
+                    .textFieldStyle(.roundedBorder)
+            }
+            
+            HStack {
+                Text("Occurence")
+                    .frame(width: 100, alignment: .leading)
+                TextField("Occurence", text: $occurence)
+                    .textFieldStyle(.roundedBorder)
+            }
+            
+            HStack {
+                Text("Frequency type")
+                    .frame(width: 100, alignment: .leading)
+                TextField("Frequency type", text: $frequencytype)
+                    .textFieldStyle(.roundedBorder)
+            }
             
             HStack {
                 Button("Cancel") {
@@ -220,13 +263,33 @@ struct AddItemDialogCheck: View {
                 Spacer()
                 
                 Button("OK") {
-                    if !name.isEmpty {
-                        onAdd(name, numPremier, numSuivant, prefix  )
+                    if let frequenceValue = Int16(frequence),
+                       let nextOccurenceValue = Int16(nextOccurence),
+                       let occurenceValue = Int16(occurence),
+                       let frequencyTypeValue = Int16(frequencytype),
+                       let amount = Double(amount) {
+                        
+                        // Crée une nouvelle instance d'EntitySchedule
+                        let newSchedule = EntitySchedule(
+                            amount: amount,
+                            dateValeur: dateValeur.noon,
+                            dateDebut: dateDebut,
+                            dateFin: dateFin,
+                            frequence: frequenceValue,
+                            libelle: libelle,
+                            nextOccurence: nextOccurenceValue,
+                            occurence: occurenceValue,
+                            typeFrequence: frequencyTypeValue,
+                            account: CurrrentAccountManager.shared.getAccount()!
+                        )
+                        
+                        // Appelle le callback avec le nouvel élément
+                        onAdd(newSchedule)
                         isPresented = false
                     }
                 }
                 .keyboardShortcut(.defaultAction)
-                .disabled(name.isEmpty) // Désactive le bouton si le nom est vide
+                .disabled(libelle.isEmpty) // Désactive le bouton si le nom est vide
             }
         }
         .padding()
@@ -250,7 +313,7 @@ struct EditItemDialogCheck: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            Text("Edit Payment Mode")
+            Text("Edit Scheduler")
                 .font(.headline)
             
             TextField("Name", text: $name)

@@ -23,7 +23,6 @@ struct ModePaymentView: View {
     @State private var isAddDialogPresented = false
     @State private var isEditDialogPresented = false // Nouveau état pour afficher le dialog d'édition
 
-
     var body: some View {
         VStack(spacing: 10) {
             Table(modePayments, selection: $selectedItem) {
@@ -33,13 +32,13 @@ struct ModePaymentView: View {
                         .fill(Color(item.color))
                         .frame(width: 40, height: 20)
                 }
-                TableColumn("Account", value: \EntityPaymentMode.account.name)
+                TableColumn("Account", value: \EntityPaymentMode.account!.name)
                 TableColumn("Surname") { paymentMode in
-                    Text(paymentMode.account.identity?.surName ?? "Unknown") }
+                    Text(paymentMode.account!.identity?.surName ?? "Unknown") }
                 TableColumn("First name")  { paymentMode in
-                    Text(paymentMode.account.identity?.name ?? "Unknown") }
+                    Text(paymentMode.account!.identity?.name ?? "Unknown") }
                 TableColumn("Number") { paymentMode in
-                    Text(paymentMode.account.initAccount?.codeAccount ?? "Unknown") }
+                    Text(paymentMode.account!.initAccount?.codeAccount ?? "Unknown") }
             }
             .frame(height: 300)
             HStack {
@@ -51,7 +50,6 @@ struct ModePaymentView: View {
                         .background(Color.blue)
                         .foregroundColor(.white)
                         .cornerRadius(8)
-
                 }
                 
                 Button(action: {
@@ -82,8 +80,7 @@ struct ModePaymentView: View {
         .padding()
         .onChange(of: CurrrentAccountManager.shared.currentAccount!) { old, newAccount in
             print(newAccount.name)
-            // Rafraîchir `modePayments` quand le compte change
-                
+            // Rafraîchir les données` quand le compte change
             loadDatas(for: newAccount)
         }
         .onAppear {
@@ -101,7 +98,6 @@ struct ModePaymentView: View {
                 }
             }
         }
-
     }
     
     func loadDatas(for account: EntityAccount) {
@@ -109,7 +105,6 @@ struct ModePaymentView: View {
         PaymentModeManager.shared.configure(with: modelContext)
 
         // Chargement asynchrone des données
-//        modePayments = await PaymentModeManager.shared.getAllDatas(for: account)
         modePayments = PaymentModeManager.shared.getAllDatas(for: account)
 
         if let firstItem = modePayments.first {

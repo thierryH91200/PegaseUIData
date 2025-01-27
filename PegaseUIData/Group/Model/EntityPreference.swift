@@ -18,7 +18,7 @@ import SwiftUI
     var category: EntityCategory?
     var paymentMode: EntityPaymentMode?
     
-    var account: EntityAccount
+    var account: EntityAccount?
     
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
@@ -57,7 +57,7 @@ final class PreferenceManager {
         
         // Crée un prédicat pour filtrer les entités par `account`
         let lhs = account!.uuid
-        let predicate = #Predicate<EntityPreference>{ entity in entity.account.uuid == lhs }
+        let predicate = #Predicate<EntityPreference>{ entity in entity.account?.uuid == lhs }
 
         let fetchDescriptor = FetchDescriptor<EntityPreference>(
             predicate: predicate)

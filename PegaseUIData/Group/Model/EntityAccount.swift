@@ -60,15 +60,15 @@ extension EntityFolderAccount {
     @Relationship(deleteRule: .cascade, inverse: \EntityIdentity.account)
     var identity: EntityIdentity?
     
+    @Relationship(deleteRule: .cascade, inverse: \EntityBank.account)
+    var bank: EntityBank?
+    
     @Relationship(deleteRule: .cascade, inverse: \EntityInitAccount.account)
     var initAccount: EntityInitAccount?
     
     @Relationship(deleteRule: .cascade, inverse: \EntityPaymentMode.account)
     var paymentMode: [EntityPaymentMode]?
 
-    @Relationship(deleteRule: .cascade, inverse: \EntityBank.account)
-    var bank: EntityBank?
-    
     @Relationship(inverse: \EntityBankStatement.account)
     var bankStatement: [EntityBankStatement]?
     
@@ -128,7 +128,7 @@ final class AccountManager {
                 nameImage: String,
                 idName: String,
                 idPrenom: String,
-                numAccount: String ) -> EntityAccount {
+                numAccount: String ) -> EntityAccount? {
         
         // Crée un nouvel objet EntityAccount
         let account            = EntityAccount()
@@ -142,9 +142,16 @@ final class AccountManager {
         identity.account = account
         account.identity = identity
         
-        let initAccount     = InitAccountManager.shared.create(numAccount : numAccount, for: account)
-        initAccount.account = account
-        account.initAccount = initAccount
+        do {
+            // Tente de créer un compte initial
+            let initAccount = try InitAccountManager.shared.create(numAccount: numAccount, for: account)
+            initAccount.account = account
+            account.initAccount = initAccount
+        } catch {
+            // Gère les erreurs lors de la création du compte initial
+            print("Failed to create InitAccount: \(error.localizedDescription)")
+            return nil
+        }
         
         // Ajoute le nouveau compte à la liste des entités
         validContext.insert(account)

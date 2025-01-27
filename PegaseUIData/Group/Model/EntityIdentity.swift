@@ -12,28 +12,27 @@ import SwiftData
 // MARK: - Identite
 
 @Model
-public class EntityIdentity {
+public class EntityIdentity : Identifiable{
     var adress     : String  = ""
     var complement : String  = ""
     var country    : String  = ""
-    var cp         : Int32?  = 0
+    var cp         : String  = ""
     var email      : String  = ""
     var mobile     : String  = ""
-    var name       : String  = ""
+    var name       : String  = "Dupont"
     var nameImage  : String  = ""
     var phone      : String  = ""
-    var surName    : String  = ""
+    var surName    : String  = "leon"
     var town       : String  = ""
     
     @Attribute(.unique) var uuid: UUID = UUID()
-    public var id: UUID { uuid }
     
     var account    : EntityAccount?
     
     public init(adress: String,
                 complement : String,
                 country: String,
-                cp: Int32,
+                cp: String,
                 email: String,
                 mobile: String,
                 name: String,
@@ -52,15 +51,18 @@ public class EntityIdentity {
         self.phone = phone
         self.surName = surName
         self.town = town
+        
+        self.account = CurrrentAccountManager.shared.getAccount()!
     }
     
-    public init(name: String, surName: String, account : EntityAccount?) {
+    public init(name: String, surName: String, account : EntityAccount) {
         self.name = name
         self.surName = surName
         self.account = account
     }
     
     init() {
+        self.account = CurrrentAccountManager.shared.getAccount()!
     }
 }
 
@@ -68,7 +70,7 @@ public class EntityIdentity {
 final class IdentityManager  {
     
     // Contexte pour les modifications
-    var currentAccount: EntityAccount?
+    var currentAccount = CurrrentAccountManager.shared.getAccount()!
 
     static let shared = IdentityManager()
     
@@ -100,22 +102,32 @@ final class IdentityManager  {
     }
     
     @discardableResult
-    func getAllDatas() -> EntityIdentity {
+    func getAllDatas() -> EntityIdentity? {
         // Filtre pour l'entité liée à `currentAccount`
         
-        let lhs = currentAccount!.uuid
-        let predicate = #Predicate<EntityIdentity>{ entity in entity.account!.uuid == lhs }
-
         do {
+            let lhs = currentAccount.uuid
+            let predicate = #Predicate<EntityIdentity>{ entity in
+                entity.account?.uuid == lhs }
+
             // Utilisation de SwiftData pour récupérer les entités correspondantes
             let fetchDescriptor = FetchDescriptor<EntityIdentity>(
-                predicate: predicate)
+                predicate: predicate,
+                sortBy: [SortDescriptor(\.name, order: .forward)])
+            
             entities = try validContext.fetch(fetchDescriptor)
+            
+            for entity in entities {
+                print("UUID récupéré : \(entity.account!.uuid)")
+            }
+            print("UUID attendu : \(currentAccount.uuid)")
+
         } catch {
-            print("Erreur lors de la récupération des données")
+            print("Erreur lors de la récupération des données : \(error.localizedDescription)")
+            return nil
         }
-        
+
         // Retourne la première entité ou en crée une nouvelle si aucune n'existe
-        return entities.first ?? create()
+        return entities.first
     }
 }

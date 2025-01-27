@@ -13,7 +13,8 @@ import SwiftData
     
     var name: String = ""
     @Attribute(.transformable(by: ColorTransformer.self)) var color: NSColor
-    @Relationship var account: EntityAccount
+    
+    @Relationship var account: EntityAccount?
     
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
@@ -107,14 +108,12 @@ final class PaymentModeManager {
         }
     }
 
-    func getAllDatas(for account: EntityAccount) -> [EntityPaymentMode] {
-        let accountId = account.uuid
-        
+    func getAllDatas(for account: EntityAccount) -> [EntityPaymentMode] {       
         
         // Sinon, charger depuis SwiftData
         let lhs = account.uuid
         let predicate = #Predicate<EntityPaymentMode> { entity in
-            entity.account.uuid == lhs
+            entity.account?.uuid == lhs
         }
         
         let fetchDescriptor = FetchDescriptor<EntityPaymentMode>(
@@ -151,7 +150,7 @@ final class PaymentModeManager {
     func find( account: EntityAccount, name: String) -> EntityPaymentMode? {
         
         let lhs = account.uuid
-        let predicate = #Predicate<EntityPaymentMode> { $0.account.uuid == lhs && $0.name == name }
+        let predicate = #Predicate<EntityPaymentMode> { $0.account?.uuid == lhs && $0.name == name }
 
         let fetchDescriptor = FetchDescriptor<EntityPaymentMode>(
             predicate: predicate, // Filtrer par le compte
@@ -210,7 +209,7 @@ final class PaymentModeManager {
         }
                
         let lhs = account.uuid
-        let predicate = #Predicate<EntityPaymentMode>{ entity in entity.account.uuid == lhs }
+        let predicate = #Predicate<EntityPaymentMode>{ entity in entity.account?.uuid == lhs }
                 
         let fetchDescriptor = FetchDescriptor<EntityPaymentMode>(
             predicate: predicate,
@@ -238,7 +237,6 @@ class PaymentModeViewModel: ObservableObject {
     private let manager = PaymentModeManager()
     @Published var isLoading: Bool = false
 
-    
     init(account: EntityAccount) {
         self.account = account
         self.modePayments = []
@@ -253,7 +251,7 @@ class PaymentModeViewModel: ObservableObject {
 
     func add(name: String, color: Color) {
         do {
-            let newMode = try manager.create(account: account, name: name, color: NSColor.fromSwiftUIColor(color))
+            let _ = try manager.create(account: account, name: name, color: NSColor.fromSwiftUIColor(color))
             reloadData()
         } catch PaymentModeError.accountNotFound {
             // Gérer l'erreur account non trouvé

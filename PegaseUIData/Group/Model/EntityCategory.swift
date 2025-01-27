@@ -38,6 +38,7 @@ final class CategoriesManager: ObservableObject {
     static let shared = CategoriesManager()
     
     @Query private var entities: [EntityCategory] // Liste des entités chargées de manière réactive
+   
     @Environment(\.modelContext) private var modelContext: ModelContext // Contexte pour les modifications
     
     init() {}

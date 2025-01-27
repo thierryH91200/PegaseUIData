@@ -112,7 +112,7 @@ final class BankStatementManager {
         
         let lhs = account!.uuid
        
-        let predicate = #Predicate<EntityBankStatement>{ entity in entity.account!.uuid  ==  lhs }
+        let predicate = #Predicate<EntityBankStatement>{ entity in entity.account?.uuid  ==  lhs }
         let descriptor = FetchDescriptor<EntityBankStatement>(
             predicate: predicate,
             sortBy: [SortDescriptor(\.num)]
@@ -134,5 +134,4 @@ final class BankStatementManager {
             throw PaymentModeError.saveFailed
         }
     }
-
 }

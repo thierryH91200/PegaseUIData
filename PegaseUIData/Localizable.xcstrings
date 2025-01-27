@@ -4,6 +4,9 @@
     "" : {
       "shouldTranslate" : false
     },
+    " " : {
+
+    },
     "(no transfer)" : {
       "localizations" : {
         "fr" : {
@@ -40,17 +43,6 @@
         }
       },
       "shouldTranslate" : false
-    },
-    "€%.2f" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "€%.2f"
-          }
-        }
-      }
     },
     "0" : {
       "localizations" : {
@@ -128,6 +120,16 @@
         }
       }
     },
+    "Add Checkbook" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter un carnet de chéques"
+          }
+        }
+      }
+    },
     "Add Group Account" : {
       "localizations" : {
         "fr" : {
@@ -148,6 +150,16 @@
         }
       }
     },
+    "Add Scheduler" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1houe un échéancier "
+          }
+        }
+      }
+    },
     "Address" : {
       "localizations" : {
         "en" : {
@@ -159,7 +171,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Addresse"
+            "value" : "Adresse"
           }
         }
       }
@@ -170,6 +182,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tous"
+          }
+        }
+      }
+    },
+    "Amount" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Montant"
           }
         }
       }
@@ -582,9 +604,6 @@
         }
       }
     },
-    "Date inter" : {
-
-    },
     "Date of pointing" : {
       "localizations" : {
         "en" : {
@@ -657,23 +676,6 @@
         }
       }
     },
-    "Delete recording?" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Delete recording?"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Supprimer l’enregistrement ?"
-          }
-        }
-      }
-    },
     "Discount" : {
       "localizations" : {
         "fr" : {
@@ -720,12 +722,32 @@
         }
       }
     },
+    "Edit Checkbook" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edite le carnet de chéque"
+          }
+        }
+      }
+    },
     "Edit Payment Mode" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Editer le mode de paiement"
+          }
+        }
+      }
+    },
+    "Edit Scheduler" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editer l’échéancier"
           }
         }
       }
@@ -751,7 +773,6 @@
       }
     },
     "End Balance" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -763,6 +784,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Solde de fin"
+          }
+        }
+      }
+    },
+    "end Date" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date de fin"
           }
         }
       }
@@ -803,12 +834,12 @@
         }
       }
     },
-    "First number" : {
+    "First Number" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Premier nombre"
+            "value" : "Premier numéro"
           }
         }
       }
@@ -819,6 +850,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fréquence"
+          }
+        }
+      }
+    },
+    "Frequency type" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Type de fréquence"
+          }
+        }
+      }
+    },
+    "Function" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fonction"
           }
         }
       }
@@ -894,7 +945,6 @@
       }
     },
     "Inter Balance" : {
-      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -905,7 +955,6 @@
       }
     },
     "Inter Date" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1033,16 +1082,6 @@
         }
       }
     },
-    "nbCheques" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "nb Chéques"
-          }
-        }
-      }
-    },
     "Next" : {
       "localizations" : {
         "fr" : {
@@ -1053,12 +1092,22 @@
         }
       }
     },
-    "Next number" : {
+    "Next Number" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Numéro suivant"
+            "value" : "Prochain numéro"
+          }
+        }
+      }
+    },
+    "next Occurence" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prochaine occurence"
           }
         }
       }
@@ -1171,17 +1220,6 @@
         }
       }
     },
-    "Old Balance" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ancien solde"
-          }
-        }
-      }
-    },
     "Outline View in SwiftUI" : {
       "localizations" : {
         "fr" : {
@@ -1203,7 +1241,14 @@
       }
     },
     "PDF" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PDF"
+          }
+        }
+      }
     },
     "Phone" : {
       "localizations" : {
@@ -1221,17 +1266,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Code postal"
-          }
-        }
-      }
-    },
-    "prefix" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "préfix"
           }
         }
       }
@@ -1346,22 +1380,32 @@
         }
       }
     },
-    "Solde fin" : {
-
-    },
     "Solde Init" : {
-
-    },
-    "Solde inter" : {
-
-    },
-    "Start Balance" : {
-      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Solde de début"
+          }
+        }
+      }
+    },
+    "Start Balance" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solde de début"
+          }
+        }
+      }
+    },
+    "start Date" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date de début"
           }
         }
       }

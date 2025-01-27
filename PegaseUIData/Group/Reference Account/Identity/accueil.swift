@@ -63,9 +63,13 @@ struct Account: View {
 }
 
 struct Bank: View {
+    
+    @StateObject private var banqueManager = BanqueInfoManager()
+    
     var body: some View {
         VStack {
             BankView()
+                .environmentObject(banqueManager)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .layoutPriority(1) // Priorité élevée pour occuper tout l’espace disponible
         }
@@ -74,9 +78,13 @@ struct Bank: View {
 }
 
 struct Identite: View {
+    
+    @StateObject private var identityInfoManager = IdentityInfoManager()
+
     var body: some View {
         VStack {
             IdentyView()
+                .environmentObject(identityInfoManager)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .layoutPriority(1) // Priorité élevée pour occuper tout l’espace disponible
         }

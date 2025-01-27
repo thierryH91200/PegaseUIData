@@ -162,7 +162,7 @@ final class RubricManager {
                 }
             }
             let lhs = currentAccount.uuid
-            let predicate = #Predicate<EntityRubric>{ entity in entity.account!.uuid == lhs }
+            let predicate = #Predicate<EntityRubric>{ entity in entity.account?.uuid == lhs }
 
             let descriptor = FetchDescriptor<EntityRubric>(
                 predicate: predicate,

@@ -54,7 +54,6 @@ struct Sidebar1A: View {
                         withAnimation {
                             modePayments = modes
                         }
-                        print("modePayments mis à jour : \(modePayments.first?.name ?? "default")")
                     }
                 }
             } else {

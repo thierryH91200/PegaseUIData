@@ -19,10 +19,21 @@ import SwiftUI
     
     @Attribute(.unique) var uuid: UUID = UUID()
 
-    var account: EntityAccount
+    var account: EntityAccount?
     
-    public init(name: String, account: EntityAccount) {
+    public init(name: String,
+                nbCheques: Int,
+                numPremier: Int,
+                numSuivant: Int,
+                prefix: String,
+                account: EntityAccount) {
+        
         self.name = name
+        self.nbCheques = nbCheques
+        self.numPremier = numPremier
+        self.numSuivant = numSuivant
+        self.prefix = prefix
+        
         self.account = account
     }
   
@@ -61,14 +72,15 @@ final class ChequeBookManager : ObservableObject {
         self.modelContext = modelContext
     }
 
-    func create(account: EntityAccount?, name: String ) -> EntityCheckBook? {
-        guard let account = account else {
-            print("Erreur : l'account est nil.")
-            return nil
-        }
-                
+    func create(name: String ) -> EntityCheckBook? {
         // Créez une instance de EntityCarnetCheques
-        let entity = EntityCheckBook(name: name, account: account)
+        let entity = EntityCheckBook(
+            name: name,
+            nbCheques: 25,
+            numPremier: 0,
+            numSuivant: 0,
+            prefix: "CH",
+            account: CurrrentAccountManager.shared.getAccount()!) // Associe le compte actuel
         validContext.insert(entity)
         
         // Sauvegardez le contexte
@@ -96,7 +108,7 @@ final class ChequeBookManager : ObservableObject {
         guard let accountUUID = account?.uuid else { return [] }
         
         let predicate = #Predicate<EntityCheckBook> { entity in
-            entity.account.uuid == accountUUID
+            entity.account?.uuid == accountUUID
         }
         let descriptor = FetchDescriptor<EntityCheckBook>(predicate: predicate)
         
@@ -160,7 +172,7 @@ class ChequeBookViewModel: ObservableObject {
     }
     
     func add(name: String) {
-        if let newCarnet = manager.create(account: account, name: name) {
+        if let newCarnet = manager.create(name: name) {
             carnetCheques.append(newCarnet)
         }
     }
