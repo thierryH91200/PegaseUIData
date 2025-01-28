@@ -211,7 +211,6 @@ final class CurrentAccountManager : ObservableObject {
     // Affectation d'un compte à la variable globale
     func setAccount(_ account: EntityAccount) {
 
-        objectWillChange.send() // Notifie SwiftUI qu'il y a un changement
         currentAccount = account
     }
     
@@ -230,8 +229,8 @@ final class CurrentAccountManager : ObservableObject {
     
     // Réinitialisation de la variable globale
    func resetCurrentAccount() {
-        objectWillChange.send() // Notifie SwiftUI qu'il y a une mise à jour
-        currentAccount = nil
+
+       currentAccount = nil
     }
 }
 

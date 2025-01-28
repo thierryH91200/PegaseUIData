@@ -817,6 +817,56 @@
         }
       }
     },
+    "Engaged" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engagé"
+          }
+        }
+      }
+    },
+    "Enter Engaged value" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entrez la valeur engagée"
+          }
+        }
+      }
+    },
+    "Enter Executed value" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entrez la valeur réalisée"
+          }
+        }
+      }
+    },
+    "Enter planned value" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entrez la valeur planifiée"
+          }
+        }
+      }
+    },
+    "Executed" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réalisé"
+          }
+        }
+      }
+    },
     "Find" : {
       "localizations" : {
         "fr" : {
@@ -1119,7 +1169,14 @@
       }
     },
     "No account selected." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun compte de selectionné"
+          }
+        }
+      }
     },
     "No bank information available" : {
       "localizations" : {
@@ -1265,6 +1322,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Téléphone"
+          }
+        }
+      }
+    },
+    "Planned" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prévu"
           }
         }
       }

@@ -53,10 +53,14 @@ struct Accueil: View {
 
 struct Account: View {
     
-    
+    @StateObject private var currentAccountManager = CurrentAccountManager.shared
+    @StateObject private var accountInfoManager = AccountInfoManager()
+
     var body: some View {
         VStack {
             AccountView()
+                .environmentObject(accountInfoManager)
+                .environmentObject(currentAccountManager)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .layoutPriority(1) // Priorité élevée pour occuper tout l’espace disponible
         }

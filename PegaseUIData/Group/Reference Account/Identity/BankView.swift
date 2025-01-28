@@ -118,8 +118,6 @@ struct BankView: View {
             print("Erreur lors de la sauvegarde : \(error)")
         }
     }
-
-
 }
 
 struct SectionView: View {

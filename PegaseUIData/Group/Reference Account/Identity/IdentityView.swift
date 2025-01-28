@@ -90,8 +90,6 @@ struct IdentyView: View {
         }
         .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
             
-//            print("currentAccountManager.currentAccount changed to: \(String(describing: newAccount))")
-
             if let account = newAccount {
                 identityInfoManager.identity = nil
                 identityInfoManager.currentAccount = account

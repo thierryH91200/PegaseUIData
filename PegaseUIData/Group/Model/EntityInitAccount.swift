@@ -18,15 +18,15 @@ import SwiftUI
     var codeBank: String = ""
     var codeGuichet: String = ""
     
-    var iban1: String = ""
-    var iban2: String = ""
-    var iban3: String = ""
-    var iban4: String = ""
-    var iban5: String = ""
-    var iban6: String = ""
-    var iban7: String = ""
-    var iban8: String = ""
-    var iban9: String = ""
+    var iban: String = ""
+//    var iban2: String = ""
+//    var iban3: String = ""
+//    var iban4: String = ""
+//    var iban5: String = ""
+//    var iban6: String = ""
+//    var iban7: String = ""
+//    var iban8: String = ""
+//    var iban9: String = ""
 
     var engage: Double = 0.0
     var prevu: Double = 0.0
@@ -38,7 +38,7 @@ import SwiftUI
     var account: EntityAccount?
  
     public init() {
-        iban1 = "3"
+        iban = "FR76"
     }
 }
 
@@ -75,7 +75,12 @@ final class InitAccountManager {
     }
 
     // Utiliser un seul contexte pour la gestion des données
-    func getAllDatas(for account: EntityAccount) -> EntityInitAccount {
+    func getAllDatas() -> EntityInitAccount? {
+        
+        guard let account = CurrentAccountManager.shared.getAccount() else {
+            print("Erreur : aucun compte courant trouvé.")
+            return nil
+        }
 
         let lhs = account.uuid
         let predicate = #Predicate<EntityInitAccount>{ entity in entity.account?.uuid == lhs }
@@ -112,15 +117,8 @@ final class InitAccountManager {
         entity.codeAccount = numAccount
         entity.codeGuichet = ""
         entity.engage = 0
-        entity.iban1 = ""
-        entity.iban2 = ""
-        entity.iban3 = ""
-        entity.iban4 = ""
-        entity.iban5 = ""
-        entity.iban6 = ""
-        entity.iban7 = ""
-        entity.iban8 = ""
-        entity.iban9 = ""
+        entity.iban = ""
+
         entity.prevu = 0
         entity.realise = 0
         entity.account = account // Associe le compte à l'entité
@@ -135,7 +133,7 @@ final class InitAccountManager {
         validContext.delete( entityInitAccount) // Appelle la méthode sans try
         initAccount = nil
  
-        initAccount = getAllDatas(for: account!)      // Recharger depuis la base de données
+        initAccount = getAllDatas()      // Recharger depuis la base de données
     }
     func save () throws {
         
@@ -161,7 +159,7 @@ class InitAccountViewModel: ObservableObject {
     
     // MARK: Actions utilisateur :
     private func loadInitialData() {
-        initAccount = manager.getAllDatas(for: account)
+        initAccount = manager.getAllDatas()
     }
 
     func add(name: String) {
@@ -190,8 +188,8 @@ class InitAccountViewModel: ObservableObject {
     // MARK: Communication avec les services ou les managers :
     @discardableResult
     func reloadData() -> EntityInitAccount {
-        let initAccounts = manager.getAllDatas(for: account)
-        return initAccounts
+        let initAccounts = manager.getAllDatas()
+        return initAccounts!
     }
     
     func saveChanges() throws {

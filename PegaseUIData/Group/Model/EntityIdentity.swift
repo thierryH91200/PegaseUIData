@@ -70,7 +70,6 @@ public class EntityIdentity : Identifiable{
 final class IdentityManager  {
     
     // Contexte pour les modifications
-
     static let shared = IdentityManager()
     
     private var entities = [EntityIdentity]()
