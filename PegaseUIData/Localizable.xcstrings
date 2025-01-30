@@ -196,6 +196,9 @@
         }
       }
     },
+    "Annuler" : {
+
+    },
     "Appearance" : {
       "localizations" : {
         "fr" : {
@@ -205,6 +208,9 @@
           }
         }
       }
+    },
+    "Aucun PDF disponible" : {
+
     },
     "Bank" : {
       "localizations" : {
@@ -383,6 +389,7 @@
       }
     },
     "CB Balance" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -393,6 +400,7 @@
       }
     },
     "CB Date" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -607,6 +615,27 @@
         }
       }
     },
+    "Date CB" : {
+
+    },
+    "Date de début" : {
+
+    },
+    "Date de fin" : {
+
+    },
+    "Date début" : {
+
+    },
+    "Date fin" : {
+
+    },
+    "Date inter." : {
+
+    },
+    "Date intermédiaire" : {
+
+    },
     "Date of pointing" : {
       "localizations" : {
         "en" : {
@@ -679,6 +708,9 @@
         }
       }
     },
+    "Déposez votre PDF ici" : {
+
+    },
     "Discount" : {
       "localizations" : {
         "fr" : {
@@ -705,7 +737,11 @@
         }
       }
     },
+    "Document PDF" : {
+
+    },
     "Drop a PDF here" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -776,6 +812,7 @@
       }
     },
     "End Balance" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -826,6 +863,9 @@
           }
         }
       }
+    },
+    "Enregistrer" : {
+
     },
     "Enter Engaged value" : {
       "localizations" : {
@@ -990,6 +1030,9 @@
         }
       }
     },
+    "Informations générales" : {
+
+    },
     "Initial report" : {
       "localizations" : {
         "fr" : {
@@ -1001,6 +1044,7 @@
       }
     },
     "Inter Balance" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -1011,6 +1055,7 @@
       }
     },
     "Inter Date" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1122,6 +1167,12 @@
         }
       }
     },
+    "Modifier le relevé" : {
+
+    },
+    "N°" : {
+
+    },
     "Name" : {
       "localizations" : {
         "en" : {
@@ -1205,6 +1256,7 @@
       }
     },
     "No PDF" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -1224,7 +1276,11 @@
         }
       }
     },
+    "Nouveau relevé" : {
+
+    },
     "Num" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1265,6 +1321,9 @@
           }
         }
       }
+    },
+    "Numéro" : {
+
     },
     "Occurence" : {
       "localizations" : {
@@ -1307,6 +1366,7 @@
       }
     },
     "PDF" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -1426,6 +1486,12 @@
         }
       }
     },
+    "Select a statement" : {
+
+    },
+    "Selected PDF" : {
+
+    },
     "Settings" : {
       "localizations" : {
         "fr" : {
@@ -1456,7 +1522,14 @@
         }
       }
     },
+    "Solde CB" : {
+
+    },
+    "Solde final" : {
+
+    },
     "Solde Init" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -1466,7 +1539,17 @@
         }
       }
     },
+    "Solde initial" : {
+
+    },
+    "Solde inter." : {
+
+    },
+    "Solde intermédiaire" : {
+
+    },
     "Start Balance" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {

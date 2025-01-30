@@ -27,7 +27,6 @@ struct Identy: View {
     }
 }
 
-
 struct Accueil: View {
     var body: some View {
         TabView {
@@ -54,12 +53,12 @@ struct Accueil: View {
 struct Account: View {
     
     @StateObject private var currentAccountManager = CurrentAccountManager.shared
-    @StateObject private var accountInfoManager = AccountInfoManager()
+    @StateObject private var initAccountViewManager = InitAccountViewManager()
 
     var body: some View {
         VStack {
-            AccountView()
-                .environmentObject(accountInfoManager)
+            InitAccountView()
+                .environmentObject(initAccountViewManager)
                 .environmentObject(currentAccountManager)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .layoutPriority(1) // Priorité élevée pour occuper tout l’espace disponible
@@ -71,12 +70,12 @@ struct Account: View {
 struct Bank: View {
     
     @StateObject private var currentAccountManager = CurrentAccountManager.shared
-    @StateObject private var banqueManager = BanqueInfoManager()
+    @StateObject private var banqueViewManager = BanqueViewManager()
     
     var body: some View {
         VStack {
             BankView()
-                .environmentObject(banqueManager)
+                .environmentObject(banqueViewManager)
                 .environmentObject(currentAccountManager)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .layoutPriority(1) // Priorité élevée pour occuper tout l’espace disponible
@@ -87,12 +86,12 @@ struct Bank: View {
 
 struct Identite: View {
     @StateObject private var currentAccountManager = CurrentAccountManager.shared
-    @StateObject private var identityInfoManager = IdentityInfoManager()
+    @StateObject private var identityViewManager = IdentityViewManager()
 
     var body: some View {
         VStack {
-            IdentyView()
-                .environmentObject(identityInfoManager)
+            IdentityView()
+                .environmentObject(identityViewManager)
                 .environmentObject(currentAccountManager)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .layoutPriority(1) // Priorité élevée pour occuper tout l’espace disponible

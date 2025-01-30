@@ -75,7 +75,7 @@ final class IdentityManager  {
     private var entities = [EntityIdentity]()
     
     var modelContext : ModelContext?
-    var validContext: ModelContext {
+    var validContext : ModelContext {
         guard let context = modelContext else {
             print("File: \(#file), Function: \(#function), line: \(#line)")
             fatalError("ModelContext non configuré. Veuillez appeler configure.")

@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftData
 
-final class BanqueInfoManager: ObservableObject {
+final class BanqueViewManager: ObservableObject {
     @Published var currentAccount: EntityAccount?
     @Published var banqueInfo: EntityBanqueInfo? {
         didSet {
@@ -23,7 +23,7 @@ final class BanqueInfoManager: ObservableObject {
         do {
             try context.save()
         } catch {
-            print("Erreur lors de la sauvegarde des modifications : \(error)")
+            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
     }
 }
@@ -31,7 +31,7 @@ final class BanqueInfoManager: ObservableObject {
 struct BankView: View {
     
     @Environment(\.modelContext) var modelContext
-    @EnvironmentObject var banqueInfoManager: BanqueInfoManager
+    @EnvironmentObject var banqueInfoManager: BanqueViewManager
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
 
     @Query private var banqueInfos: [EntityBanqueInfo]
@@ -80,7 +80,6 @@ struct BankView: View {
 
         .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
             
-//            print("currentAccountManager.currentAccount changed to: \(String(describing: newAccount))")
 
             if let account = newAccount {
                 banqueInfoManager.banqueInfo = nil
@@ -98,24 +97,23 @@ struct BankView: View {
         }
     }
     
-    private func loadOrCreateBank(for account: EntityAccount) {
-        
+    private func loadOrCreateBank(for account: EntityAccount?) {
+        guard let account else { return }
+
         BankManager.shared.configure(with: modelContext)
-        if let existingBanque = BankManager.shared.getAllDatas() {
-            banqueInfoManager.banqueInfo = existingBanque
-        } else {
+        banqueInfoManager.banqueInfo = BankManager.shared.getAllDatas() ?? {
             let newBanqueInfo = EntityBanqueInfo()
             newBanqueInfo.account = account
             modelContext.insert(newBanqueInfo)
-            banqueInfoManager.banqueInfo = newBanqueInfo
-        }
+            return newBanqueInfo
+        }()
     }
     
     private func saveChanges() {
         do {
             try modelContext.save()
         } catch {
-            print("Erreur lors de la sauvegarde : \(error)")
+            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
     }
 }
@@ -172,7 +170,7 @@ struct FieldView: View {
         do {
             try modelContext.save()
         } catch {
-            print("Erreur lors de la sauvegarde : \(error)")
+            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
     }
 

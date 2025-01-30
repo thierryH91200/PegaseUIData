@@ -6,8 +6,28 @@
 //
 
 import SwiftUI
+import SwiftData
 
 
+final class CheckViewManager: ObservableObject {
+    @Published var currentAccount: EntityAccount?
+    @Published var identity: EntityIdentity? {
+        didSet {
+            // Sauvegarder les modifications dès qu'il y a un changement
+            saveChanges()
+        }
+    }
+    
+    func saveChanges(using context: ModelContext? = nil) {
+        guard let context = context else { return }
+
+        do {
+            try context.save()
+        } catch {
+            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+        }
+    }
+}
 
 struct CheckView: View {
     

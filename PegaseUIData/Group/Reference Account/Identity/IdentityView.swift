@@ -7,7 +7,7 @@
 import SwiftUI
 import SwiftData
 
-final class IdentityInfoManager: ObservableObject {
+final class IdentityViewManager: ObservableObject {
     @Published var currentAccount: EntityAccount?
     @Published var identity: EntityIdentity? {
         didSet {
@@ -22,15 +22,15 @@ final class IdentityInfoManager: ObservableObject {
         do {
             try context.save()
         } catch {
-            print("Erreur lors de la sauvegarde des modifications : \(error)")
+            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
     }
 }
 
-struct IdentyView: View {
+struct IdentityView: View {
     
     @Environment(\.modelContext) var modelContext
-    @EnvironmentObject var identityInfoManager: IdentityInfoManager
+    @EnvironmentObject var identityInfoManager: IdentityViewManager
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
     
     @Query private var identityInfo: [EntityIdentity]
@@ -124,7 +124,7 @@ struct IdentyView: View {
         do {
             try modelContext.save()
         } catch {
-            print("Erreur lors de la sauvegarde : \(error)")
+            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
     }
 }
@@ -211,7 +211,7 @@ struct SectionInfoView: View {
         do {
             try modelContext.save()
         } catch {
-            print("Erreur lors de la sauvegarde : \(error)")
+            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
     }
 

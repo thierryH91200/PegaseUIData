@@ -8,30 +8,15 @@
 import SwiftUI
 import SwiftData
 
-final class AccountInfoManager: ObservableObject {
+final class InitAccountViewManager: ObservableObject {
     @Published var currentAccount: EntityAccount?
-    @Published var initAccount: EntityInitAccount? {
-        didSet {
-            // Sauvegarder les modifications dès qu'il y a un changement
-            saveChanges()
-        }
-    }
-    
-    func saveChanges(using context: ModelContext? = nil) {
-        guard let context = context else { return }
-        
-        do {
-            try context.save()
-        } catch {
-            print("Erreur lors de la sauvegarde des modifications : \(error)")
-        }
-    }
+    @Published var initAccount: EntityInitAccount? 
 }
 
-struct AccountView: View {
+struct InitAccountView: View {
     
     @Environment(\.modelContext) var modelContext
-    @EnvironmentObject var accountInfoManager: AccountInfoManager
+    @EnvironmentObject var initAccountViewManager: InitAccountViewManager
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
 
     @Query private var banqueInfos: [EntityInitAccount]
@@ -39,7 +24,7 @@ struct AccountView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             // Logo et Rapport Initial
-            if let initAccount = accountInfoManager.initAccount {
+            if let initAccount = initAccountViewManager.initAccount {
                 HStack(alignment: .top) {
                     Image(systemName: "building.columns.fill")
                         .resizable()
@@ -58,7 +43,7 @@ struct AccountView: View {
             }
 
             // Références Bancaires
-            if let initAccount = accountInfoManager.initAccount {
+            if let initAccount = initAccountViewManager.initAccount {
                 VStack(alignment: .leading) {
                     Text("Bank references")
                         .font(.headline)
@@ -82,13 +67,13 @@ struct AccountView: View {
         .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
             
             if let account = newAccount {
-                accountInfoManager.initAccount = nil
-                accountInfoManager.currentAccount = account
+                initAccountViewManager.initAccount = nil
+                initAccountViewManager.currentAccount = account
                 
                 loadOrCreateIdentity(for: account)
             }
         }
-        .onChange(of: accountInfoManager.initAccount) { old , _ in
+        .onChange(of: initAccountViewManager.initAccount) { old , _ in
             do {
                 try modelContext.save()
             } catch {
@@ -105,20 +90,20 @@ struct AccountView: View {
     
     private func initializeCurrentAccount() {
         if let account = currentAccountManager.currentAccount {
-            accountInfoManager.currentAccount = account
+            initAccountViewManager.currentAccount = account
         }
     }
 
     private func createAccountIfNeeded() {
-        if accountInfoManager.initAccount == nil {
+        if initAccountViewManager.initAccount == nil {
             if let account = CurrentAccountManager.shared.getAccount() {
-                accountInfoManager.currentAccount = account
+                initAccountViewManager.currentAccount = account
             } else {
                 print("Aucun compte de disponible.")
             }
             InitAccountManager.shared.configure(with: modelContext)
             let accountInitInfo = InitAccountManager.shared.getAllDatas()
-            accountInfoManager.initAccount = accountInitInfo ?? {
+            initAccountViewManager.initAccount = accountInitInfo ?? {
                 let newInitAccount = EntityInitAccount()
                 modelContext.insert(newInitAccount)
                 return newInitAccount
@@ -128,20 +113,20 @@ struct AccountView: View {
     
     private func resetAccount() {
         saveChanges()
-        accountInfoManager.saveChanges(using: modelContext)
-        accountInfoManager.initAccount = nil
+//        initAccountViewManager.saveChanges(using: modelContext)
+        initAccountViewManager.initAccount = nil
     }
     
     private func loadOrCreateIdentity(for account: EntityAccount) {
         
         IdentityManager.shared.configure(with: modelContext)
         if let existingInitAccount = InitAccountManager.shared.getAllDatas() {
-            accountInfoManager.initAccount = existingInitAccount
+            initAccountViewManager.initAccount = existingInitAccount
         } else {
             let newInitAccount = EntityInitAccount()
             newInitAccount.account = account
             modelContext.insert(newInitAccount)
-            accountInfoManager.initAccount = newInitAccount
+            initAccountViewManager.initAccount = newInitAccount
         }
     }
 
@@ -149,7 +134,7 @@ struct AccountView: View {
         do {
             try modelContext.save()
         } catch {
-            print("Erreur lors de la sauvegarde : \(error)")
+            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
     }
 }
@@ -223,7 +208,7 @@ struct ReportView: View {
         do {
             try modelContext.save()
         } catch {
-            print("Erreur lors de la sauvegarde : \(error)")
+            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
     }
 }
@@ -300,7 +285,7 @@ struct BankReferenceView: View {
         do {
             try modelContext.save()
         } catch {
-            print("Erreur lors de la sauvegarde : \(error)")
+            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
     }
 
