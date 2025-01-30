@@ -9,12 +9,22 @@ import SwiftUI
 import SwiftData
 import UniformTypeIdentifiers
 
+
+final class StatementViewManager: ObservableObject {
+    @Published var currentAccount: EntityAccount?
+    @Published var statements: [EntityBankStatement]?
+}
+
 struct BankStatementView: View {
 
     @Binding var isVisible: Bool
+    @StateObject private var currentAccountManager = CurrentAccountManager.shared
+    @StateObject private var statementViewManager = StatementViewManager()
 
     var body: some View {
         BankStatementTableView()
+            .environmentObject(statementViewManager)
+            .environmentObject(currentAccountManager)
             .padding()
             .task {
                 await performFalseTask()
@@ -29,11 +39,14 @@ struct BankStatementView: View {
 
 struct BankStatementTableView: View {
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject var statementViewManager: StatementViewManager
+    @EnvironmentObject var currentAccountManager: CurrentAccountManager
+    
     @Query private var statements: [EntityBankStatement]
     
     @State private var showingAddSheet = false
     @State private var showingEditSheet = false
-
+    
     @State private var selection: UUID?
     @State private var selectedStatement: EntityBankStatement?
     @State private var dragOver = false
@@ -47,44 +60,86 @@ struct BankStatementTableView: View {
     
     var body: some View {
         NavigationSplitView {
-            Table(statements, selection: $selection) {
-                TableColumn("N°") { statement in
-                    Text("\(statement.num)")
-                }
-                TableColumn("Date début") { statement in
-                    Text(dateFormatter.string(from: statement.startDate))
-                }
-                TableColumn("Solde initial") { statement in
-                    Text(String(format: "%.2f €", statement.startSolde))
-                }
-                TableColumn("Date inter.") { statement in
-                    Text(dateFormatter.string(from: statement.interDate))
-                }
-                TableColumn("Solde inter.") { statement in
-                    Text(String(format: "%.2f €", statement.interSolde))
-                }
-                TableColumn("Date fin") { statement in
-                    Text(dateFormatter.string(from: statement.endDate))
-                }
-                TableColumn("Solde final") { statement in
-                    Text(String(format: "%.2f €", statement.endSolde))
-                }
-                TableColumn("Date CB") { statement in
-                    Text(dateFormatter.string(from: statement.cbDate))
-                }
-                TableColumn("Solde CB") { statement in
-                    Text(String(format: "%.2f €", statement.cbSolde))
-                }
-            }
+            BankStatementTableView1(statements: statementViewManager.statements ?? [], selection: $selection)
+//            Table(statementViewManager.statements ?? [], selection: $selection) {
+//                TableColumn("N°") { statement in
+//                    Text("\(statement.num)")
+//                }
+//                TableColumn("Date début") { statement in
+//                    Text(dateFormatter.string(from: statement.startDate))
+//                }
+//                TableColumn("Solde initial") { statement in
+//                    Text(String(format: "%.2f €", statement.startSolde))
+//                }
+//                TableColumn("Date inter.") { statement in
+//                    Text(dateFormatter.string(from: statement.interDate))
+//                }
+//                TableColumn("Solde inter.") { statement in
+//                    Text(String(format: "%.2f €", statement.interSolde))
+//                }
+//                TableColumn("Date fin") { statement in
+//                    Text(dateFormatter.string(from: statement.endDate))
+//                }
+//                TableColumn("Solde final") { statement in
+//                    Text(String(format: "%.2f €", statement.endSolde))
+//                }
+//                TableColumn("Date CB") { statement in
+//                    Text(dateFormatter.string(from: statement.cbDate))
+//                }
+//                TableColumn("Solde CB") { statement in
+//                    Text(String(format: "%.2f €", statement.cbSolde))
+//                }
+//                TableColumn( "Name") { statement in
+//                    Text(statement.accountName)
+//                }
+//                TableColumn("Surname") { statement in
+//                    Text(statement.accountSurname)
+//                }
+//
+//            }
             .frame(height: 300)
             .onChange(of: selection) { oldValue, newValue in
                 selectedStatement = nil // Désactive l’édition automatique
-
+                
                 if let selectedId = newValue,
                    let selected = statements.first(where: { $0.id == selectedId }) {
                     selectedStatement = selected
                 }
             }
+            .onAppear {
+                if let account = currentAccountManager.currentAccount {
+                    statementViewManager.currentAccount = account
+                }
+                
+                // Créer un nouvel enregistrement si la base de données est vide
+                if statementViewManager.statements == nil {
+                    if let account = CurrentAccountManager.shared.getAccount() {
+                        statementViewManager.currentAccount = account
+                    } else {
+                        print("Aucun compte disponible.")
+                    }
+                    BankStatementManager.shared.configure(with: modelContext)
+                    let statements = BankStatementManager.shared.getAllDatas()
+                    statementViewManager.statements = statements
+                    
+                    if statements == nil {
+                        
+                        let newStatements = EntityBankStatement()
+                        statementViewManager.statements!.append( newStatements   )
+                        modelContext.insert(newStatements)
+                    }
+                }
+            }
+            .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
+                
+                if let account = newAccount {
+                    statementViewManager.statements = nil
+                    statementViewManager.currentAccount = account
+                    
+                    loadOrCreate(for: account)
+                }
+            }
+            
             HStack {
                 // Bouton pour ajouter un enregistrement
                 Button(action: {
@@ -99,7 +154,7 @@ struct BankStatementTableView: View {
                 
                 // Bouton pour modifier un enregistrement
                 Button(action: {
-                        showingEditSheet = true
+                    showingEditSheet = true
                 }) {
                     Label("Edit", systemImage: "pencil")
                         .padding()
@@ -108,7 +163,7 @@ struct BankStatementTableView: View {
                         .cornerRadius(8)
                 }
                 .disabled(selectedStatement == nil) // Désactive le bouton si aucun élément n'est sélectionné
-
+                
                 // Bouton pour supprimer un enregistrement
                 Button(action: {
                     delete(selectedStatement!)
@@ -132,14 +187,27 @@ struct BankStatementTableView: View {
         }
         
         .sheet(isPresented: $showingEditSheet) {
-                StatementFormView(statement: selectedStatement)
+            StatementFormView(statement: selectedStatement)
         }
         
         .sheet(isPresented: $showingAddSheet) {
             StatementFormView(statement: nil)
         }
-        
     }
+    
+    private func loadOrCreate(for account: EntityAccount) {
+        
+        BankStatementManager.shared.configure(with: modelContext)
+        if let existing = BankStatementManager.shared.getAllDatas() {
+            statementViewManager.statements = existing
+        } else {
+            let entity = EntityBankStatement()
+            entity.account = account
+            modelContext.insert(entity)
+            statementViewManager.statements!.append( entity)
+        }
+    }
+    
     
     private func delete(_ statement: EntityBankStatement) {
         modelContext.delete(statement)
@@ -147,6 +215,41 @@ struct BankStatementTableView: View {
             selection = nil
         }
         try? modelContext.save()
+    }
+}
+
+struct BankStatementTableView1: View {
+    
+    private let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .none
+        return formatter
+    }()
+
+    var statements: [EntityBankStatement]
+    @Binding var selection: UUID?
+
+    var body: some View {
+        Table(statements, selection: $selection) {
+            
+            Group {
+                TableColumn("N°") {  (statement: EntityBankStatement) in Text("\(statement.num)") }
+                TableColumn("Start Date") { statement in Text(dateFormatter.string(from: statement.startDate)) }
+                TableColumn("Initial Balance") { statement in Text(statement.formattedStartSolde) }
+                TableColumn("Date inter.") { statement in Text(dateFormatter.string(from: statement.interDate)) }
+                TableColumn("Inter. Balance") { statement in Text(statement.formattedInterSolde) }
+            }
+            
+            Group {
+                TableColumn("End Date") {  (statement: EntityBankStatement) in Text(dateFormatter.string(from: statement.endDate)) }
+                TableColumn("End Balance") { statement in Text(String(format: "%.2f €", statement.endSolde)) }
+                TableColumn("Date CB") { statement in Text(dateFormatter.string(from: statement.cbDate)) }
+                TableColumn("CB Balance") { statement in Text(String(format: "%.2f €", statement.cbSolde)) }
+                TableColumn("Surname") { statement in Text(statement.accountSurname) }
+                TableColumn("Name") { statement in Text(statement.accountName) }
+            }
+        }
     }
 }
 
@@ -170,11 +273,11 @@ struct StatementFormView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Informations générales") {
-                    TextField("Numéro", text: $num)
+                Section("General information") {
+                    TextField("Number", text: $num)
                         .textFieldStyle(.roundedBorder)
                     
-                    DatePicker("Date de début", selection: $startDate, displayedComponents: .date)
+                    DatePicker("Start Date", selection: $startDate, displayedComponents: .date)
                     TextField("Solde initial", text: $startSolde)
                         .textFieldStyle(.roundedBorder)
                     
@@ -182,7 +285,7 @@ struct StatementFormView: View {
                     TextField("Solde intermédiaire", text: $interSolde)
                         .textFieldStyle(.roundedBorder)
                     
-                    DatePicker("Date de fin", selection: $endDate, displayedComponents: .date)
+                    DatePicker("End Date", selection: $endDate, displayedComponents: .date)
                     TextField("Solde final", text: $endSolde)
                         .textFieldStyle(.roundedBorder)
                     
@@ -197,7 +300,7 @@ struct StatementFormView: View {
                             .fill(dragOver ? Color.red.opacity(0.3) : Color.gray.opacity(0.2))
                             .frame(height: 100)
                         
-                        Text(pdfData != nil ? "Selected PDF" : "Déposez votre PDF ici")
+                        Text(pdfData != nil ? "Selected PDF" : "Drop your PDF here")
                     }
                     .onDrop(of: [UTType.pdf], delegate: PDFDropDelegate(pdfData: $pdfData, isDragOver: $dragOver))
                 }

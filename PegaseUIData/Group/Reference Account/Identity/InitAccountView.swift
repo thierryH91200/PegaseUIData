@@ -123,10 +123,10 @@ struct InitAccountView: View {
         if let existingInitAccount = InitAccountManager.shared.getAllDatas() {
             initAccountViewManager.initAccount = existingInitAccount
         } else {
-            let newInitAccount = EntityInitAccount()
-            newInitAccount.account = account
-            modelContext.insert(newInitAccount)
-            initAccountViewManager.initAccount = newInitAccount
+            let entity = EntityInitAccount()
+            entity.account = account
+            modelContext.insert(entity)
+            initAccountViewManager.initAccount = entity
         }
     }
 

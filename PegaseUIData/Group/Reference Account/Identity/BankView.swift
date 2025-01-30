@@ -85,7 +85,7 @@ struct BankView: View {
                 banqueInfoManager.banqueInfo = nil
                 banqueInfoManager.currentAccount = account
                 
-                loadOrCreateBank(for: account)
+                loadOrCreate(for: account)
             }
         }
         .onChange(of: banqueInfoManager.banqueInfo) { old , _ in
@@ -97,15 +97,15 @@ struct BankView: View {
         }
     }
     
-    private func loadOrCreateBank(for account: EntityAccount?) {
+    private func loadOrCreate(for account: EntityAccount?) {
         guard let account else { return }
 
         BankManager.shared.configure(with: modelContext)
         banqueInfoManager.banqueInfo = BankManager.shared.getAllDatas() ?? {
-            let newBanqueInfo = EntityBanqueInfo()
-            newBanqueInfo.account = account
-            modelContext.insert(newBanqueInfo)
-            return newBanqueInfo
+            let entity = EntityBanqueInfo()
+            entity.account = account
+            modelContext.insert(entity)
+            return entity
         }()
     }
     

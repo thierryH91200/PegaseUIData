@@ -67,13 +67,14 @@ struct CheckView: View {
                     Text(item.prefix)
                 }
 
+                TableColumn( "Name") { item in
+                    Text(item.account!.identity?.name ?? "")
+                }
+                
                 TableColumn( "Surname") { (item: EntityCheckBook) in
                     Text(item.account!.identity?.surName ?? "")
                 }
                 
-                TableColumn( "Name") { item in
-                    Text(item.account!.identity?.name ?? "")
-                }
                 
                 TableColumn( "Number") { item in
                     Text(item.account!.initAccount?.codeAccount ?? "")

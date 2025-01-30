@@ -389,7 +389,6 @@
       }
     },
     "CB Balance" : {
-      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -618,18 +617,6 @@
     "Date CB" : {
 
     },
-    "Date de début" : {
-
-    },
-    "Date de fin" : {
-
-    },
-    "Date début" : {
-
-    },
-    "Date fin" : {
-
-    },
     "Date inter." : {
 
     },
@@ -708,9 +695,6 @@
         }
       }
     },
-    "Déposez votre PDF ici" : {
-
-    },
     "Discount" : {
       "localizations" : {
         "fr" : {
@@ -750,6 +734,9 @@
           }
         }
       }
+    },
+    "Drop your PDF here" : {
+
     },
     "Edit" : {
       "localizations" : {
@@ -812,7 +799,6 @@
       }
     },
     "End Balance" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -967,6 +953,9 @@
         }
       }
     },
+    "General information" : {
+
+    },
     "IBAN" : {
       "localizations" : {
         "fr" : {
@@ -1030,7 +1019,7 @@
         }
       }
     },
-    "Informations générales" : {
+    "Initial Balance" : {
 
     },
     "Initial report" : {
@@ -1070,6 +1059,9 @@
           }
         }
       }
+    },
+    "Inter. Balance" : {
+
     },
     "InternetReconciliationView" : {
       "localizations" : {
@@ -1322,9 +1314,6 @@
         }
       }
     },
-    "Numéro" : {
-
-    },
     "Occurence" : {
       "localizations" : {
         "fr" : {
@@ -1540,9 +1529,6 @@
       }
     },
     "Solde initial" : {
-
-    },
-    "Solde inter." : {
 
     },
     "Solde intermédiaire" : {

@@ -13,9 +13,17 @@ import SwiftUI
 @Model
 class EntityBankStatement: Identifiable {
     
+//    var dateFormatter: DateFormatter = {
+//        let formatter = DateFormatter()
+//        formatter.dateStyle = .short
+//        formatter.timeStyle = .none
+//        return formatter
+//    }()
+
+    
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
-
+    
     @Attribute var num        : Int
     
     @Attribute var startDate  : Date = Date()
@@ -56,6 +64,35 @@ class EntityBankStatement: Identifiable {
         self.cbSolde    = cbSolde
         
         self.pdfLink    = pdfLink
+        
+        self.account = CurrentAccountManager.shared.getAccount()!
+    }
+}
+extension EntityBankStatement {
+    
+
+//    var formattedStartDate: String {
+//        dateFormatter.string(from: startDate)
+//    }
+//    
+    var formattedStartSolde: String {
+        String(format: "%.2f €", startSolde)
+    }
+//    
+//    var formattedInterDate: String {
+//        dateFormatter.string(from: interDate)
+//    }
+//    
+    var formattedInterSolde: String {
+        String(format: "%.2f €", interSolde)
+    }
+    
+    var accountName: String {
+        account?.identity?.name ?? ""
+    }
+    
+    var accountSurname: String {
+        account?.identity?.surName ?? ""
     }
 }
 
@@ -84,19 +121,21 @@ final class BankStatementManager {
         self.modelContext = modelContext
     }
     
-    func create(account: EntityAccount?, name: Int, startDate: Date, startSolde: Double) throws -> EntityBankStatement? {
-        guard let account = account else {
-            throw PaymentModeError.accountNotFound
+    func create(num: Int, startDate: Date, startSolde: Double) throws -> EntityBankStatement? {
+        
+        guard let currentAccount = CurrentAccountManager.shared.getAccount() else {
+            print("Erreur : aucun compte courant trouvé.")
+            return nil
         }
-                
-        let newMode = EntityBankStatement(num: name)
-        newMode.account = account
+        
+        let newMode = EntityBankStatement(num: num)
+        newMode.account = currentAccount
         
         validContext.insert(newMode)
         try save()
         return newMode
     }
-
+    
     // MARK: - Public Methods
     // Supprimer une transaction
     func remove(entity: EntityBankStatement) {
@@ -108,20 +147,27 @@ final class BankStatementManager {
     }
     
     // MARK: - Public Methods
-    func getAllDatas(for account: EntityAccount?) -> [EntityBankStatement] {
+    func getAllDatas() -> [EntityBankStatement]? {
         
-        let lhs = account!.uuid
-       
-        let predicate = #Predicate<EntityBankStatement>{ entity in entity.account?.uuid  ==  lhs }
-        let descriptor = FetchDescriptor<EntityBankStatement>(
-            predicate: predicate,
-            sortBy: [SortDescriptor(\.num)]
-        )
+        guard let currentAccount = CurrentAccountManager.shared.getAccount() else {
+            print("Erreur : aucun compte courant trouvé.")
+            return nil
+        }
         
         do {
+            
+            let lhs = currentAccount.uuid
+            let predicate = #Predicate<EntityBankStatement>{ entity in entity.account?.uuid  ==  lhs }
+            
+            let descriptor = FetchDescriptor<EntityBankStatement>(
+                predicate: predicate,
+                sortBy: [SortDescriptor(\.num)]
+            )
+            
             entities = try validContext.fetch(descriptor)
         } catch {
-            print("Erreur lors de la récupération des données avec SwiftData")
+            print("Erreur lors de la récupération des données : \(error.localizedDescription)")
+            return nil
         }
         return entities
     }

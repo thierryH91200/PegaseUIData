@@ -94,7 +94,7 @@ struct IdentityView: View {
                 identityInfoManager.identity = nil
                 identityInfoManager.currentAccount = account
                 
-                loadOrCreateIdentity(for: account)
+                loadOrCreate(for: account)
             }
         }
 
@@ -107,16 +107,16 @@ struct IdentityView: View {
         }
     }
     
-    private func loadOrCreateIdentity(for account: EntityAccount) {
+    private func loadOrCreate(for account: EntityAccount) {
         
         IdentityManager.shared.configure(with: modelContext)
         if let existingIdentity = IdentityManager.shared.getAllDatas() {
             identityInfoManager.identity = existingIdentity
         } else {
-            let newIdentity = EntityIdentity()
-            newIdentity.account = account
-            modelContext.insert(newIdentity)
-            identityInfoManager.identity = newIdentity
+            let entity = EntityIdentity()
+            entity.account = account
+            modelContext.insert(entity)
+            identityInfoManager.identity = entity
         }
     }
 

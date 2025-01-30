@@ -69,7 +69,7 @@ extension EntityFolderAccount {
     @Relationship(deleteRule: .cascade, inverse: \EntityPaymentMode.account)
     var paymentMode: [EntityPaymentMode]?
 
-    @Relationship(inverse: \EntityBankStatement.account)
+    @Relationship(deleteRule: .cascade, inverse: \EntityBankStatement.account)
     var bankStatement: [EntityBankStatement]?
     
     @Relationship(deleteRule: .cascade, inverse: \EntityCheckBook.account)
