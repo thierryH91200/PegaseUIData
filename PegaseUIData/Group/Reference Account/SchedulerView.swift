@@ -6,13 +6,40 @@
 //
 
 import SwiftUI
+import SwiftData
+
+final class SchedulerViewManager: ObservableObject {
+    @Published var currentAccount: EntityAccount?
+    @Published var schedulers: [EntitySchedule]? {
+        didSet {
+            // Sauvegarder les modifications dès qu'il y a un changement
+            saveChanges()
+        }
+    }
+    
+    func saveChanges(using context: ModelContext? = nil) {
+        guard let context = context else { return }
+        
+        do {
+            try context.save()
+        } catch {
+            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+        }
+    }
+}
 
 struct SchedulerView: View {
     
+    @StateObject private var currentAccountManager = CurrentAccountManager.shared
+    @StateObject private var schedulerViewManager = SchedulerViewManager()
+
     @Binding var isVisible: Bool
     
     var body: some View {
         Scheduler()
+            .environmentObject(schedulerViewManager)
+            .environmentObject(currentAccountManager)
+
             .padding()
             .task {
                 await performFalseTask()
@@ -24,22 +51,25 @@ struct SchedulerView: View {
         try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 seconde de délai
         isVisible = false
     }
-    
 }
 
 struct Scheduler: View {
     
     @Environment(\.modelContext) private var modelContext
-    
+    @EnvironmentObject var currentAccountManager : CurrentAccountManager
+    @EnvironmentObject var schedulerViewManager : SchedulerViewManager
+
     @ObservedObject var accountManager = CurrentAccountManager.shared
 
-    var account = CurrentAccountManager.shared.getAccount()!
-    @State private var scheduler: [EntitySchedule] = []
+    @State private var schedulers: [EntitySchedule] = []
     
     @State private var selectedItem: EntitySchedule.ID?
+    @State private var selectedSchedule: EntitySchedule?
     
     @State private var isAddDialogPresented = false
     @State private var isEditDialogPresented = false // Nouveau état pour afficher le dialog d'édition
+    @State private var modeCreate = false
+
     
     let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -50,76 +80,68 @@ struct Scheduler: View {
     
     var body: some View {
         VStack(spacing: 10) {
-            Text("Account: \(account.name)")
-                .font(.headline)
-            
-            Table(scheduler, selection: $selectedItem) {
-                
-                TableColumn("Value Date") { (item: EntitySchedule) in
-                    let dateValeur = item.dateValeur  // Vérifiez si la date n'est pas nulle
-                    Text(dateFormatter.string(from: dateValeur))
-                }
-                
-                TableColumn("Start Date") { (item: EntitySchedule) in
-                    let dateDebut = item.dateDebut  // Vérifiez si la date n'est pas nulle
-                    Text(dateFormatter.string(from: dateDebut))
-                }
-                
-                TableColumn("End Date") { (item: EntitySchedule) in
-                    let dateFin = item.dateFin // Vérifiez si la date n'est pas nulle
-                    Text(dateFormatter.string(from: dateFin))
-                }
-                
-                TableColumn( "Amount") { (item: EntitySchedule) in
-                    Text(String(item.amount))
-                }
-                
-                TableColumn( "Frequency") { (item: EntitySchedule) in
-                    Text(String(item.frequence))
-                }
-                
-                TableColumn( "Comment") { (item: EntitySchedule) in
-                    Text(item.libelle)
-                }
-                
-                TableColumn( "Next") { (item: EntitySchedule) in
-                    Text(String(item.nextOccurence))
-                }
-                
-                TableColumn( "Occurence") { (item: EntitySchedule) in
-                    Text(String(item.occurence))
-                }
-                
-                TableColumn( "Name") { item in
-                    Text(item.account!.identity?.name ?? "")
-                }
-                
-                TableColumn( "Number") { item in
-                    Text(item.account!.initAccount?.codeAccount ?? "")
-                }
+            if let account = schedulerViewManager.currentAccount {
+                Text("Account: \(account.name)")
+                    .font(.headline)
             }
+            SchedulerTable(schedulers: schedulers, selection: $selectedItem)
+            
             .onAppear {
-                Task {
-                    SchedulerManager.shared.configure(with: modelContext)
-                    scheduler = SchedulerManager.shared.getAllDatas(for: account)
-                    
-                    if let firstItem = scheduler.first {
-                        print("First item ID: \(firstItem.id)") // Vérifie que l'ID existe
+                if let account = currentAccountManager.currentAccount {
+                    schedulerViewManager.currentAccount = account
+                }
+                
+                // Créer un nouvel enregistrement si la base de données est vide
+                if schedulerViewManager.schedulers == nil {
+                    if let account = CurrentAccountManager.shared.getAccount() {
+                        schedulerViewManager.currentAccount = account
                     } else {
-                        print("No items in Scheduler")
+                        print("Aucun compte disponible.")
+                    }
+                    SchedulerManager.shared.configure(with: modelContext)
+                    let schedulers = SchedulerManager.shared.getAllDatas()
+                    schedulerViewManager.schedulers = schedulers
+                    
+                    if schedulers == nil {
+                        
+                        let newEntity = EntitySchedule()
+                        schedulerViewManager.schedulers!.append( newEntity   )
+                        modelContext.insert(newEntity)
                     }
                 }
             }
-            .frame(height: 300)
-            .sheet(isPresented: $isAddDialogPresented) {
-                AddItemDialogSchedule(isPresented: $isAddDialogPresented) { newScheduler in
-                    // Ajoute le nouvel élément à la liste
-                    scheduler.append(newScheduler)
+            .onChange(of: selectedItem) { oldValue, newValue in
+                selectedSchedule = nil // Désactive l’édition automatique
+                
+                if let selectedId = newValue,
+                   let selected = schedulers.first(where: { $0.id == selectedId }) {
+                    selectedSchedule = selected
+                }
+
+            }
+            .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
+                
+                if let account = newAccount {
+                    schedulerViewManager.schedulers = nil
+                    schedulerViewManager.currentAccount = account
+                    
+                    loadOrCreate(for: account)
                 }
             }
+            .frame(height: 300)
             
+            .sheet(isPresented: $isAddDialogPresented) {
+                SchedulerFormView(isPresented: $isEditDialogPresented, mode: $modeCreate, scheduler: selectedSchedule)
+            }
+            .sheet(isPresented: $isEditDialogPresented) {
+                SchedulerFormView(isPresented: $isEditDialogPresented, mode: $modeCreate, scheduler: nil)
+            }
+
             HStack {
-                Button(action: { isAddDialogPresented = true }) {
+                Button(action: {
+                    isAddDialogPresented = true
+                    modeCreate = true
+                }) {
                     Label("Add", systemImage: "plus")
                         .padding()
                         .background(Color.blue)
@@ -127,7 +149,10 @@ struct Scheduler: View {
                         .cornerRadius(8)
                 }
                 
-                Button(action: { isEditDialogPresented = true }) {
+                Button(action: {
+                    isEditDialogPresented = true
+                    modeCreate = false
+                }) {
                     Label("Edit", systemImage: "pencil")
                         .padding()
                         .background(Color.green)
@@ -136,7 +161,9 @@ struct Scheduler: View {
                 }
                 .disabled(selectedItem == nil) // Désactive si aucune ligne n'est sélectionnée
                 
-                Button(action: removeSelectedItem) {
+                Button(action: {
+                    removeSelectedItem(selectedSchedule!)
+                }) {
                     Label("Delete", systemImage: "trash")
                         .padding()
                         .background(Color.red)
@@ -152,29 +179,99 @@ struct Scheduler: View {
     }
     
     
-    private func removeSelectedItem() {
+    private func loadOrCreate(for account: EntityAccount) {
         
-        if let selectedID = selectedItem, let mode = scheduler.first(where: { $0.id == selectedID }) {
-            print("Removing item with ID \(selectedID)")
+        BankStatementManager.shared.configure(with: modelContext)
+        if let existing = SchedulerManager.shared.getAllDatas() {
+            schedulerViewManager.schedulers = existing
+        } else {
+            let entity = EntitySchedule()
+            entity.account = account
+            modelContext.insert(entity)
+            schedulerViewManager.schedulers!.append( entity)
+        }
+    }
+    
+    private func removeSelectedItem(_ scheduler: EntitySchedule) {
+        
+        modelContext.delete(scheduler)
+        if selectedItem == scheduler.id {
+            selectedItem = nil
+        }
+        try? modelContext.save()
+    }
+}
+
+struct SchedulerTable: View {
+    
+    private let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .none
+        return formatter
+    }()
+
+    var schedulers: [EntitySchedule]
+    @Binding var selection: UUID?
+
+    var body: some View {
+        
+        Table(schedulers, selection: $selection) {
             
-            // Supprimez l'entité du contexte de données
-            modelContext.delete(mode)
+            TableColumn("Value Date") { (item: EntitySchedule) in
+                let dateValeur = item.dateValeur  // Vérifiez si la date n'est pas nulle
+                Text(dateFormatter.string(from: dateValeur))
+            }
             
-            // Sauvegardez les changements dans le contexte
-            do {
-                try modelContext.save()
-                selectedItem = nil // Réinitialise la sélection
-            } catch {
-                print("Erreur lors de la suppression de l'entité : \(error)")
+            TableColumn("Start Date") { (item: EntitySchedule) in
+                let dateDebut = item.dateDebut  // Vérifiez si la date n'est pas nulle
+                Text(dateFormatter.string(from: dateDebut))
+            }
+            
+            TableColumn("End Date") { (item: EntitySchedule) in
+                let dateFin = item.dateFin // Vérifiez si la date n'est pas nulle
+                Text(dateFormatter.string(from: dateFin))
+            }
+            
+            TableColumn( "Amount") { (item: EntitySchedule) in
+                Text(String(item.amount))
+            }
+            
+            TableColumn( "Frequency") { (item: EntitySchedule) in
+                Text(String(item.frequence))
+            }
+            
+            TableColumn( "Comment") { (item: EntitySchedule) in
+                Text(item.libelle)
+            }
+            
+            TableColumn( "Next") { (item: EntitySchedule) in
+                Text(String(item.nextOccurence))
+            }
+            
+            TableColumn( "Occurence") { (item: EntitySchedule) in
+                Text(String(item.occurence))
+            }
+            
+            TableColumn( "Name") { item in
+                Text(item.account!.identity?.name ?? "")
+            }
+            
+            TableColumn( "Number") { item in
+                Text(item.account!.initAccount?.codeAccount ?? "")
             }
         }
     }
 }
 
 // Vue pour la boîte de dialogue d'ajout
-struct AddItemDialogSchedule: View {
-    @Binding var isPresented: Bool
+struct SchedulerFormView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
     
+    @Binding var isPresented: Bool
+    @Binding var mode: Bool
+    let scheduler: EntitySchedule?
     @State private var amount: String = ""
     @State private var dateValeur: Date = Date()
     @State private var dateDebut: Date = Date()
@@ -185,11 +282,9 @@ struct AddItemDialogSchedule: View {
     @State private var occurence: String = ""
     @State private var frequencytype: String = ""
     
-    var onAdd: (EntitySchedule) -> Void // Callback pour transmettre l'élément ajouté
-    
     var body: some View {
         VStack(spacing: 20) {
-            Text("Add Scheduler")
+            Text(mode ? "Ad Scheduler" : "Edit Scheduler")
                 .font(.headline)
             
             HStack {
@@ -204,17 +299,17 @@ struct AddItemDialogSchedule: View {
                     .frame(width: 100, alignment: .leading) // Fixe la largeur et aligne à gauche
                     .background(Color.clear) // Optionnel : utile pour déboguer l'espace réservé
                     .padding(.leading, 0) // Supprime tout décalage potentiel
-                DatePicker(" ", selection: $dateValeur, displayedComponents: .date)
+                DatePicker("", selection: $dateValeur, displayedComponents: .date)
             }
             
             HStack {
-                Text("start Date")
+                Text("Start Date")
                     .frame(width: 100, alignment: .leading)
-                DatePicker(" ", selection: $dateDebut, displayedComponents: .date)
+                DatePicker("", selection: $dateDebut, displayedComponents: .date)
             }
             
             HStack {
-                Text("end Date")
+                Text("End Date")
                     .frame(width: 100, alignment: .leading)
                 DatePicker("", selection: $dateFin, displayedComponents: .date)
             }
@@ -234,7 +329,7 @@ struct AddItemDialogSchedule: View {
             }
             
             HStack {
-                Text("next Occurence")
+                Text("Next occurence")
                     .frame(width: 100, alignment: .leading)
                 TextField("next Occurence", text: $nextOccurence)
                     .textFieldStyle(.roundedBorder)
@@ -253,94 +348,67 @@ struct AddItemDialogSchedule: View {
                 TextField("Frequency type", text: $frequencytype)
                     .textFieldStyle(.roundedBorder)
             }
-            
-            HStack {
-                Button("Cancel") {
-                    isPresented = false
-                }
-                .keyboardShortcut(.cancelAction)
-                
-                Spacer()
-                
-                Button("OK") {
-                    if let frequenceValue = Int16(frequence),
-                       let nextOccurenceValue = Int16(nextOccurence),
-                       let occurenceValue = Int16(occurence),
-                       let frequencyTypeValue = Int16(frequencytype),
-                       let amount = Double(amount) {
-                        
-                        // Crée une nouvelle instance d'EntitySchedule
-                        let newSchedule = EntitySchedule(
-                            amount: amount,
-                            dateValeur: dateValeur.noon,
-                            dateDebut: dateDebut,
-                            dateFin: dateFin,
-                            frequence: frequenceValue,
-                            libelle: libelle,
-                            nextOccurence: nextOccurenceValue,
-                            occurence: occurenceValue,
-                            typeFrequence: frequencyTypeValue,
-                            account: CurrentAccountManager.shared.getAccount()!
-                        )
-                        
-                        // Appelle le callback avec le nouvel élément
-                        onAdd(newSchedule)
-                        isPresented = false
-                    }
-                }
-                .keyboardShortcut(.defaultAction)
-                .disabled(libelle.isEmpty) // Désactive le bouton si le nom est vide
-            }
         }
-        .padding()
         .frame(width: 300)
-    }
-}
-
-struct EditItemDialogCheck: View {
-    @Binding var isPresented: Bool
-    @State var name: String
-    @State var selectedColor: Color
-    
-    var onEdit: (String, Color) -> Void
-    
-    init(isPresented: Binding<Bool>, paymentMode: EntityPaymentMode, onEdit: @escaping (String, Color) -> Void) {
-        self._isPresented = isPresented
-        self._name = State(initialValue: paymentMode.name)
-        self._selectedColor = State(initialValue: Color(paymentMode.color))
-        self.onEdit = onEdit
-    }
-    
-    var body: some View {
-        VStack(spacing: 20) {
-            Text("Edit Scheduler")
-                .font(.headline)
-            
-            TextField("Name", text: $name)
-                .textFieldStyle(.roundedBorder)
-            
-            ColorPicker("Choose the color", selection: $selectedColor)
-            
-            HStack {
+        .padding()
+        .navigationTitle(scheduler == nil ? "New scheduler" : "Edit scheduler")
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") {
-                    isPresented = false
+                    dismiss()
                 }
-                .keyboardShortcut(.cancelAction)
-                
-                Spacer()
-                
+            }
+            ToolbarItem(placement: .confirmationAction) {
                 Button("Save") {
-                    if !name.isEmpty {
-                        onEdit(name, selectedColor)
-                        isPresented = false
-                    }
+                    save()
+                    dismiss()
                 }
-                .keyboardShortcut(.defaultAction)
-                .disabled(name.isEmpty)
             }
         }
-        .padding()
-        .frame(width: 300)
+        .onAppear {
+            if let scheduler = scheduler {
+                amount = String(scheduler.amount)
+                dateValeur = scheduler.dateValeur
+                dateDebut = scheduler.dateDebut
+                dateFin = scheduler.dateFin
+                frequence = String(scheduler.frequence)
+                libelle = scheduler.libelle
+                occurence = String(scheduler.occurence)
+                frequencytype = String(scheduler.typeFrequence)
+            }
+        }
+
+    }
+
+    private func save() {
+        
+        let newItem: EntitySchedule
+        
+        if let existingStatement = scheduler {
+            newItem = existingStatement
+        } else {
+            newItem = EntitySchedule()
+            modelContext.insert(newItem)
+        }
+        if let frequence = Int16(frequence),
+           let nextOccurence = Int16(nextOccurence),
+           let occurence = Int16(occurence),
+           let frequencyTypeValue = Int16(frequencytype),
+           let amount = Double(amount) {
+            
+            newItem.amount = amount
+            newItem.dateValeur = dateValeur.noon
+            newItem.dateDebut = dateDebut.noon
+            newItem.dateFin = dateFin.noon
+            newItem.frequence = frequence
+            newItem.libelle = libelle
+            newItem.nextOccurence = nextOccurence
+            newItem.occurence = occurence
+            newItem.typeFrequence = frequencyTypeValue
+            newItem.account = CurrentAccountManager.shared.getAccount()!
+            
+            try? modelContext.save()
+        }
     }
 }
 

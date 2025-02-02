@@ -6,26 +6,47 @@
 //
 
 import SwiftUI
+import SwiftData
+
+final class ModePaiementViewManager: ObservableObject {
+    @Published var currentAccount: EntityAccount?
+    @Published var modePayments: [EntityPaymentMode]? {
+        didSet {
+            // Sauvegarder les modifications dès qu'il y a un changement
+            saveChanges()
+        }
+    }
+    
+    func saveChanges(using context: ModelContext? = nil) {
+        guard let context = context else { return }
+        
+        do {
+            try context.save()
+        } catch {
+            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+        }
+    }
+}
 
 struct ModePaymentView: View {
     
     @Environment(\.modelContext) private var modelContext
-    
-    @ObservedObject var accountManager = CurrentAccountManager.shared
-
-    var account = CurrentAccountManager.shared.getAccount()!
+    @EnvironmentObject var currentAccountManager : CurrentAccountManager
+    @EnvironmentObject var modePaiementViewManager : ModePaiementViewManager
 
     // Ajoutez un état pour suivre l'élément sélectionné
     @State private var selectedItem: EntityPaymentMode.ID? = nil
+    @State private var selectedMode: EntityPaymentMode?
     
-    @State private var modePayments: [EntityPaymentMode] = []
+    @Query private var modePayments: [EntityPaymentMode] = []
     
     @State private var isAddDialogPresented = false
-    @State private var isEditDialogPresented = false // Nouveau état pour afficher le dialog d'édition
-
+    @State private var isEditDialogPresented = false
+    @State private var modeCreate = false
+    
     var body: some View {
         VStack(spacing: 10) {
-            Table(modePayments, selection: $selectedItem) {
+            Table(modePaiementViewManager.modePayments ?? [], selection: $selectedItem) {
                 TableColumn("Name", value: \EntityPaymentMode.name)
                 TableColumn("Color") { item in
                     Rectangle()
@@ -41,9 +62,64 @@ struct ModePaymentView: View {
                     Text(paymentMode.account!.initAccount?.codeAccount ?? "Unknown") }
             }
             .frame(height: 300)
+            .onChange(of: selectedItem) { oldValue, newValue in
+                selectedMode = nil // Désactive l’édition automatique
+                selectedItem = nil
+                
+                if let selectedId = newValue,
+                   let selected = modePayments.first(where: { $0.id == selectedId }) {
+                    selectedMode = selected
+                    selectedItem = selected.id
+                } else {
+                    print("Aucun élément sélectionné dans ModePaymentView / onCchange")
+                }
+            }
+            .onChange(of: currentAccountManager.currentAccount ) { old, newAccount in
+                // Rafraîchir les données` quand le compte change
+                if let account = newAccount {
+                    modePaiementViewManager.modePayments = nil
+                    modePaiementViewManager.currentAccount = account
+                    selectedMode = nil
+                    selectedItem = nil
+                    loadOrCreate(for: account)
+                }
+            }
+            
+            .onAppear {
+                Task {
+                    
+                    if let account = currentAccountManager.currentAccount {
+                        modePaiementViewManager.currentAccount = account
+                    } else {
+                        print("Aucun compte disponible.")
+                    }
+                    
+                    // Créer un nouvel enregistrement si la base de données est vide
+                    if modePaiementViewManager.modePayments == nil {
+                        if let account = CurrentAccountManager.shared.getAccount() {
+                            modePaiementViewManager.currentAccount = account
+                        } else {
+                            print("Aucun compte disponible.")
+                        }
+                        ChequeBookManager.shared.configure(with: modelContext)
+                        let modePayments = PaymentModeManager.shared.getAllDatas(for:  modePaiementViewManager.currentAccount)
+                        modePaiementViewManager.modePayments = modePayments
+                        
+                        if modePayments == nil {
+                            
+                            let entity = EntityPaymentMode(name: "test", color: .blue, account: nil)
+                            modePaiementViewManager.modePayments!.append( entity   )
+                            modelContext.insert(entity)
+                        }
+                    }
+                }
+            }
+            
             HStack {
                 Button(action: {
-                    addItem(name: "Default Name", color: .blue)
+                    isAddDialogPresented = true
+                    modeCreate = true
+                    
                 }) {
                     Label("Add", systemImage: "plus")
                         .padding()
@@ -54,6 +130,7 @@ struct ModePaymentView: View {
                 
                 Button(action: {
                     isEditDialogPresented = true
+                    modeCreate = false
                 }) {
                     Label("Edit", systemImage: "pencil")
                         .padding()
@@ -62,7 +139,7 @@ struct ModePaymentView: View {
                         .cornerRadius(8)
                 }
                 .disabled(selectedItem == nil) // Désactive si aucune ligne n'est sélectionnée
-
+                
                 Button(action: removeSelectedItem)
                 {
                     Label("Delete", systemImage: "trash")
@@ -78,193 +155,117 @@ struct ModePaymentView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top) // Utilise tout l'espace parent et aligne en haut
         .padding()
-        .onChange(of: CurrentAccountManager.shared.currentAccount!) { old, newAccount in
-            print(newAccount.name)
-            // Rafraîchir les données` quand le compte change
-            loadDatas(for: newAccount)
-        }
-        .onAppear {
-            // Charger les paiements lors du premier affichage
-                loadDatas(for: account)
-        }
+        
         .sheet(isPresented: $isEditDialogPresented) {
-            if let selectedID = selectedItem,
-               let selectedMode = modePayments.first(where: { $0.id == selectedID }) {
-                EditItemDialog(
-                    isPresented: $isEditDialogPresented,
-                    paymentMode: selectedMode
-                ) { updatedName, updatedColor in
-                    editItem(name: updatedName, color: updatedColor, paymentMode: selectedMode)
-                }
-            }
+            ModePaiementFormView(isPresented: $isEditDialogPresented, mode: $modeCreate, modePaiement: nil)
+        }
+        .sheet(isPresented: $isAddDialogPresented) {
+            ModePaiementFormView(isPresented: $isAddDialogPresented, mode: $modeCreate, modePaiement: nil)
         }
     }
-    
-    func loadDatas(for account: EntityAccount) {
-        
-        PaymentModeManager.shared.configure(with: modelContext)
-
-        // Chargement asynchrone des données
-        modePayments = PaymentModeManager.shared.getAllDatas(for: account)
-
-        if let firstItem = modePayments.first {
-            print("First item ID: \(firstItem.id)") // Vérifie que l'ID existe
-        } else {
-            print("No items in modePayments")
-        }
-    }
-
-    private func addItem(name: String, color: Color) {
-        print("account : ", account.name)
-        PaymentModeManager.shared.configure(with: modelContext)
-        let viewModel = PaymentModeViewModel(account: account)
-        let account = viewModel.account
-        
-        do {
-            // Essayez de créer l'entité
-            if let entity = try PaymentModeManager.shared.create(account: account, name: name, color: NSColor.fromSwiftUIColor(color)){
-                
-                // Ajoutez l'entité au contexte
-                modelContext.insert(entity)
-            } else {
-                print("Erreur : L'entité n'a pas pu être créée.")
-            }
-
-            // Sauvegardez le contexte pour persister les modifications
-            try modelContext.save()
-            print("Payment mode added successfully.")
-        } catch {
-            // Gérer l'erreur en cas d'échec
-            print("Erreur lors de l'ajout de l'entité : \(error)")
-        }
-    }
-
-    private func editItem(name: String, color: Color, paymentMode: EntityPaymentMode) {
-        print("Editing item: \(paymentMode.name)")
-        
-        // Mettre à jour les propriétés de l'élément dans SwiftData
-        PaymentModeManager.shared.configure(with: modelContext)
-        PaymentModeManager.shared.update(entity: paymentMode, name: name, color: NSColor.fromSwiftUIColor(color))
-        
-        // Recharger la liste des éléments
-        if let index = modePayments.firstIndex(where: { $0.id == paymentMode.id }) {
-            modePayments[index].name = name
-            modePayments[index].color = NSColor.fromSwiftUIColor(color) // Assumez que vous stockez une couleur NSColor
-        }
-    }
-    
+       
     private func removeSelectedItem() {
-        if let selectedID = selectedItem, let mode = modePayments.first(where: { $0.id == selectedID }) {
-            print("Removing item with ID \(selectedID)")
-            
-            PaymentModeManager.shared.delete(entity: mode)
-            selectedItem = nil // Réinitialise la sélection
-            
-            if let index = modePayments.firstIndex(where: { $0.id == mode.id }) {
-                modePayments.remove(at: index)
-            }
-            
-            var count = modePayments.count
-            print (count)
-            
-            let account = CurrentAccountManager.shared.getAccount()!
-            
-            loadDatas(for: account)
-            count = modePayments.count
-            print (count)
+        //        modelContext.delete(selectedItem!)
+        //        if selectedItem == selectedItem!.id {
+        //            selectedItem = nil
+        //        }
+        //        try? modelContext.save()
+    }
+    
+    private func loadOrCreate(for account: EntityAccount?) {
+        guard let account else { return }
+        
+        PaymentModeManager.shared.configure(with: modelContext)
+        if let existing = PaymentModeManager.shared.getAllDatas(for : account) {
+            modePaiementViewManager.modePayments = existing
+        } else {
+            let entity = EntityPaymentMode(name: "Test", color: .blue)
+            entity.account = account
+            modelContext.insert(entity)
+            modePaiementViewManager.modePayments!.append( entity)
         }
     }
 }
 
 // Vue pour la boîte de dialogue d'ajout
-struct AddItemDialog: View {
+struct ModePaiementFormView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
+    
     @Binding var isPresented: Bool
+    @Binding var mode: Bool
+    let modePaiement: EntityPaymentMode?
     @State private var name: String = ""
     @State private var selectedColor: Color = .gray
     
-    var onAdd: (String, Color) -> Void
-    
     var body: some View {
-        VStack(spacing: 20) {
-            Text("Add Payment Mode")
-                .font(.headline)
+        VStack(spacing: 0) {
+            Rectangle()
+                .fill(mode ? Color.blue : Color.green)
+                .frame(height: 10)
             
-            TextField("Name", text: $name)
-                .textFieldStyle(.roundedBorder)
-            
-            ColorPicker("Choose the color", selection: $selectedColor)
-            
-            HStack {
-                Button("Cancel") {
-                    isPresented = false
-                }
-                .keyboardShortcut(.cancelAction)
+            // Contenu principal
+            VStack(spacing: 20) {
                 
-                Spacer()
+                Text(mode ? "Add Payment Mode" : "Edit Payment Mode")
+                    .font(.headline)
+                    .padding(.top, 10) // Ajoute un peu d'espace après le bandeau
                 
-                Button("OK") {
-                    if !name.isEmpty {
-                        onAdd(name, selectedColor)
+                
+                TextField("Name", text: $name)
+                    .textFieldStyle(.roundedBorder)
+                
+                ColorPicker("Choose the color", selection: $selectedColor)
+            }
+            .padding()
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
                         isPresented = false
+                        dismiss()
                     }
                 }
-                .keyboardShortcut(.defaultAction)
-                .disabled(name.isEmpty) // Désactive le bouton si le nom est vide
-            }
-        }
-        .padding()
-        .frame(width: 300)
-    }
-}
-
-struct EditItemDialog: View {
-    @Binding var isPresented: Bool
-    @State var name: String
-    @State var selectedColor: Color
-    
-    var onEdit: (String, Color) -> Void
-    
-    init(isPresented: Binding<Bool>, paymentMode: EntityPaymentMode, onEdit: @escaping (String, Color) -> Void) {
-        self._isPresented = isPresented
-        self._name = State(initialValue: paymentMode.name)
-        self._selectedColor = State(initialValue: Color(paymentMode.color))
-        self.onEdit = onEdit
-    }
-    
-    var body: some View {
-        VStack(spacing: 20) {
-            Text("Edit Payment Mode")
-                .font(.headline)
-            
-            TextField("Name", text: $name)
-                .textFieldStyle(.roundedBorder)
-            
-            ColorPicker("Choose the color", selection: $selectedColor)
-            
-            HStack {
-                Button("Cancel") {
-                    isPresented = false
-                }
-                .keyboardShortcut(.cancelAction)
-                
-                Spacer()
-                
-                Button("Save") {
-                    if !name.isEmpty {
-                        onEdit(name, selectedColor)
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
                         isPresented = false
+                        save()
+                        dismiss()
                     }
                 }
-                .keyboardShortcut(.defaultAction)
-                .disabled(name.isEmpty)
             }
+            // Bandeau du bas
+            .frame(width: 300)
+            
+            Rectangle()
+                .fill(mode ? Color.blue : Color.green)
+                .frame(height: 10)
+            
+                .onAppear {
+                    if let modePaiement = modePaiement {
+                        name = modePaiement.name
+                        selectedColor = Color(modePaiement.color)
+                    }
+                }
         }
-        .padding()
-        .frame(width: 300)
+    }
+    
+    private func save() {
+        let newItem: EntityPaymentMode
+        
+        if let existing = modePaiement {
+            newItem = existing
+        } else {
+            let color = NSColor.fromSwiftUIColor(selectedColor)
+            newItem = EntityPaymentMode(name: name, color: color)
+            modelContext.insert(newItem)
+        }
+        
+        newItem.name = name
+        newItem.color = NSColor.fromSwiftUIColor(selectedColor)
+        newItem.account = CurrentAccountManager.shared.getAccount()!
+        
+        try? modelContext.save()
     }
 }
-
-
-
 
 

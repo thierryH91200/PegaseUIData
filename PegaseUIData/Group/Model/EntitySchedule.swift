@@ -137,9 +137,15 @@ final class SchedulerManager {
     
     
     // Récupérer toutes les données filtrées par compte
-    func getAllDatas(for account: EntityAccount?) -> [EntitySchedule] {
+    func getAllDatas() -> [EntitySchedule]? {
         
-        let lhs = account!.uuid
+
+        guard let currentAccount = CurrentAccountManager.shared.getAccount() else {
+            print("Erreur : aucun compte courant trouvé.")
+            return nil
+        }
+
+        let lhs = currentAccount.uuid
         let predicate = #Predicate<EntitySchedule>{ entity in
             entity.account?.uuid == lhs
         }
@@ -153,7 +159,7 @@ final class SchedulerManager {
             entities = try validContext.fetch( descriptor )
         } catch {
             print("Erreur lors de la récupération des données: \(error)")
-            entities = [] // Retourne un tableau vide en cas d'erreur
+            return nil // Retourne nil en cas d'erreur
         }
         return entities
     }

@@ -22,7 +22,9 @@ Add view mode payment                           20/01/25
 
 Add bank statement                              30/01/25
 
-Improve translation
+Improve translation                             02/02/25
+
+OMprove change account                          02/02/25
 
 
 

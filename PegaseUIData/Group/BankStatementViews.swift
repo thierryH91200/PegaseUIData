@@ -22,7 +22,7 @@ struct BankStatementView: View {
     @StateObject private var statementViewManager = StatementViewManager()
 
     var body: some View {
-        BankStatementTableView()
+        BankStatementListView()
             .environmentObject(statementViewManager)
             .environmentObject(currentAccountManager)
             .padding()
@@ -37,15 +37,15 @@ struct BankStatementView: View {
     }
 }
 
-struct BankStatementTableView: View {
+struct BankStatementListView: View {
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject var statementViewManager: StatementViewManager
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
+    @EnvironmentObject var statementViewManager: StatementViewManager
     
-    @Query private var statements: [EntityBankStatement]
+//    @Query private var statements: [EntityBankStatement]
     
-    @State private var showingAddSheet = false
-    @State private var showingEditSheet = false
+    @State private var isAddDialogPresented = false
+    @State private var isEditDialogPresented = false
     
     @State private var selection: UUID?
     @State private var selectedStatement: EntityBankStatement?
@@ -60,52 +60,8 @@ struct BankStatementTableView: View {
     
     var body: some View {
         NavigationSplitView {
-            BankStatementTableView1(statements: statementViewManager.statements ?? [], selection: $selection)
-//            Table(statementViewManager.statements ?? [], selection: $selection) {
-//                TableColumn("N°") { statement in
-//                    Text("\(statement.num)")
-//                }
-//                TableColumn("Date début") { statement in
-//                    Text(dateFormatter.string(from: statement.startDate))
-//                }
-//                TableColumn("Solde initial") { statement in
-//                    Text(String(format: "%.2f €", statement.startSolde))
-//                }
-//                TableColumn("Date inter.") { statement in
-//                    Text(dateFormatter.string(from: statement.interDate))
-//                }
-//                TableColumn("Solde inter.") { statement in
-//                    Text(String(format: "%.2f €", statement.interSolde))
-//                }
-//                TableColumn("Date fin") { statement in
-//                    Text(dateFormatter.string(from: statement.endDate))
-//                }
-//                TableColumn("Solde final") { statement in
-//                    Text(String(format: "%.2f €", statement.endSolde))
-//                }
-//                TableColumn("Date CB") { statement in
-//                    Text(dateFormatter.string(from: statement.cbDate))
-//                }
-//                TableColumn("Solde CB") { statement in
-//                    Text(String(format: "%.2f €", statement.cbSolde))
-//                }
-//                TableColumn( "Name") { statement in
-//                    Text(statement.accountName)
-//                }
-//                TableColumn("Surname") { statement in
-//                    Text(statement.accountSurname)
-//                }
-//
-//            }
+            BankStatementTable(statements: statementViewManager.statements ?? [], selection: $selection)
             .frame(height: 300)
-            .onChange(of: selection) { oldValue, newValue in
-                selectedStatement = nil // Désactive l’édition automatique
-                
-                if let selectedId = newValue,
-                   let selected = statements.first(where: { $0.id == selectedId }) {
-                    selectedStatement = selected
-                }
-            }
             .onAppear {
                 if let account = currentAccountManager.currentAccount {
                     statementViewManager.currentAccount = account
@@ -130,6 +86,15 @@ struct BankStatementTableView: View {
                     }
                 }
             }
+            .onChange(of: selection) { oldValue, newValue in
+                selectedStatement = nil // Désactive l’édition automatique
+                
+                if let selectedId = newValue,
+                   let selected = statementViewManager.statements!.first(where: { $0.id == selectedId }) {
+                    selectedStatement = selected
+                }
+            }
+
             .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
                 
                 if let account = newAccount {
@@ -143,7 +108,7 @@ struct BankStatementTableView: View {
             HStack {
                 // Bouton pour ajouter un enregistrement
                 Button(action: {
-                    showingAddSheet = true
+                    isAddDialogPresented = true
                 }) {
                     Label("Add", systemImage: "plus")
                         .padding()
@@ -154,7 +119,7 @@ struct BankStatementTableView: View {
                 
                 // Bouton pour modifier un enregistrement
                 Button(action: {
-                    showingEditSheet = true
+                    isEditDialogPresented = true
                 }) {
                     Label("Edit", systemImage: "pencil")
                         .padding()
@@ -186,11 +151,11 @@ struct BankStatementTableView: View {
             }
         }
         
-        .sheet(isPresented: $showingEditSheet) {
+        .sheet(isPresented: $isEditDialogPresented) {
             StatementFormView(statement: selectedStatement)
         }
         
-        .sheet(isPresented: $showingAddSheet) {
+        .sheet(isPresented: $isAddDialogPresented) {
             StatementFormView(statement: nil)
         }
     }
@@ -208,7 +173,6 @@ struct BankStatementTableView: View {
         }
     }
     
-    
     private func delete(_ statement: EntityBankStatement) {
         modelContext.delete(statement)
         if selection == statement.id {
@@ -218,7 +182,7 @@ struct BankStatementTableView: View {
     }
 }
 
-struct BankStatementTableView1: View {
+struct BankStatementTable: View {
     
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -236,14 +200,14 @@ struct BankStatementTableView1: View {
             Group {
                 TableColumn("N°") {  (statement: EntityBankStatement) in Text("\(statement.num)") }
                 TableColumn("Start Date") { statement in Text(dateFormatter.string(from: statement.startDate)) }
-                TableColumn("Initial Balance") { statement in Text(statement.formattedStartSolde) }
-                TableColumn("Date inter.") { statement in Text(dateFormatter.string(from: statement.interDate)) }
-                TableColumn("Inter. Balance") { statement in Text(statement.formattedInterSolde) }
+                TableColumn("Initial balance") { statement in Text(statement.formattedStartSolde) }
+                TableColumn("Inter Date") { statement in Text(dateFormatter.string(from: statement.interDate)) }
+                TableColumn("Inter balance") { statement in Text(statement.formattedInterSolde) }
             }
             
             Group {
                 TableColumn("End Date") {  (statement: EntityBankStatement) in Text(dateFormatter.string(from: statement.endDate)) }
-                TableColumn("End Balance") { statement in Text(String(format: "%.2f €", statement.endSolde)) }
+                TableColumn("End balance") { statement in Text(String(format: "%.2f €", statement.endSolde)) }
                 TableColumn("Date CB") { statement in Text(dateFormatter.string(from: statement.cbDate)) }
                 TableColumn("CB Balance") { statement in Text(String(format: "%.2f €", statement.cbSolde)) }
                 TableColumn("Surname") { statement in Text(statement.accountSurname) }
@@ -278,19 +242,19 @@ struct StatementFormView: View {
                         .textFieldStyle(.roundedBorder)
                     
                     DatePicker("Start Date", selection: $startDate, displayedComponents: .date)
-                    TextField("Solde initial", text: $startSolde)
+                    TextField("Initial balance", text: $startSolde)
                         .textFieldStyle(.roundedBorder)
                     
-                    DatePicker("Date intermédiaire", selection: $interDate, displayedComponents: .date)
-                    TextField("Solde intermédiaire", text: $interSolde)
+                    DatePicker("Inter Date", selection: $interDate, displayedComponents: .date)
+                    TextField("Inter balance", text: $interSolde)
                         .textFieldStyle(.roundedBorder)
                     
                     DatePicker("End Date", selection: $endDate, displayedComponents: .date)
-                    TextField("Solde final", text: $endSolde)
+                    TextField("Final balance", text: $endSolde)
                         .textFieldStyle(.roundedBorder)
                     
-                    DatePicker("Date CB", selection: $cbDate, displayedComponents: .date)
-                    TextField("Solde CB", text: $cbSolde)
+                    DatePicker("CB Date", selection: $cbDate, displayedComponents: .date)
+                    TextField("CB Balance", text: $cbSolde)
                         .textFieldStyle(.roundedBorder)
                 }
                 
@@ -306,16 +270,16 @@ struct StatementFormView: View {
                 }
             }
             .padding()
-            .navigationTitle(statement == nil ? "Nouveau relevé" : "Modifier le relevé")
+            .navigationTitle(statement == nil ? "New statement" : "Edit statement")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Annuler") {
+                    Button("Cancel") {
                         dismiss()
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Enregistrer") {
-                        saveStatement()
+                    Button("Save") {
+                        save()
                         dismiss()
                     }
                 }
@@ -337,26 +301,28 @@ struct StatementFormView: View {
         }
     }
     
-    private func saveStatement() {
-        let newStatement: EntityBankStatement
+    private func save() {
+        let newItem: EntityBankStatement
+        
         if let existingStatement = statement {
-            newStatement = existingStatement
+            newItem = existingStatement
         } else {
-            newStatement = EntityBankStatement()
-            modelContext.insert(newStatement)
+            newItem = EntityBankStatement()
+            modelContext.insert(newItem)
         }
         
-        newStatement.num = Int(num) ?? 0
-        newStatement.startDate = startDate
-        newStatement.startSolde = Double(startSolde) ?? 0.0
-        newStatement.interDate = interDate
-        newStatement.interSolde = Double(interSolde) ?? 0.0
-        newStatement.endDate = endDate
-        newStatement.endSolde = Double(endSolde) ?? 0.0
-        newStatement.cbDate = cbDate
-        newStatement.cbSolde = Double(cbSolde) ?? 0.0
-        newStatement.pdfDoc = pdfData
-        
+        newItem.num = Int(num) ?? 0
+        newItem.startDate = startDate
+        newItem.startSolde = Double(startSolde) ?? 0.0
+        newItem.interDate = interDate
+        newItem.interSolde = Double(interSolde) ?? 0.0
+        newItem.endDate = endDate
+        newItem.endSolde = Double(endSolde) ?? 0.0
+        newItem.cbDate = cbDate
+        newItem.cbSolde = Double(cbSolde) ?? 0.0
+        newItem.pdfDoc = pdfData
+        newItem.account = CurrentAccountManager.shared.getAccount()!
+
         try? modelContext.save()
     }
 }
@@ -407,7 +373,7 @@ struct StatementDetailView: View {
             if let pdfData = statement.pdfDoc {
                 PDFKitView(data: pdfData)
             } else {
-                Text("Aucun PDF disponible")
+                Text("No PDF available")
             }
         }
         .padding()

@@ -21,7 +21,7 @@ struct DefaultTransactionValuesView: View {
     @State private var selectedMode: String = "Bank Card"
     @State private var selectedCategory: String = "Alimentation"
     
-    let statusOptions = ["Engaged", "Pending", "Completed"]
+    let statusOptions = [String(localized :"Engaged"), String(localized :"Pending"), String(localized :"Completed")]
     let rubricOptions = ["Alimentation", "Transport", "Loisirs"]
     let modeOptions = ["Bank Card", "Cash", "Transfer"]
     let categoryOptions = ["Alimentation", "Loisirs", "Autres"]
@@ -74,14 +74,13 @@ struct DefaultTransactionValuesView: View {
                 Spacer()
                 Text("Default sign")
                 Rectangle()
-//                    .fill(Color.red)
+                    .fill(Color.red)
                     .frame(width: 30, height: 5)
                 Spacer()
             }
             .padding(.bottom)
         }
         .padding()
-//        .background(Color.gray)
         .cornerRadius(10)
         .shadow(radius: 5)
         .padding()

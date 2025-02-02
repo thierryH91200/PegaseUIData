@@ -69,20 +69,10 @@ class EntityBankStatement: Identifiable {
     }
 }
 extension EntityBankStatement {
-    
 
-//    var formattedStartDate: String {
-//        dateFormatter.string(from: startDate)
-//    }
-//    
     var formattedStartSolde: String {
         String(format: "%.2f €", startSolde)
     }
-//    
-//    var formattedInterDate: String {
-//        dateFormatter.string(from: interDate)
-//    }
-//    
     var formattedInterSolde: String {
         String(format: "%.2f €", interSolde)
     }

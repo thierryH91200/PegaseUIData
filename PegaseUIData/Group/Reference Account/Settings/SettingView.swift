@@ -27,6 +27,12 @@ struct SettingView: View {
 }
 
 struct SettingTab: View {
+    
+    @StateObject private var currentAccountManager = CurrentAccountManager.shared
+    @StateObject private var chequeViewManager = CheckViewManager()
+    @StateObject private var modePaiementViewManager = ModePaiementViewManager()
+
+    
     var body: some View {
         TabView {
             RubricView()
@@ -35,6 +41,9 @@ struct SettingTab: View {
                 }
             
             ModePaymentView()
+                .environmentObject(currentAccountManager)
+                .environmentObject(modePaiementViewManager)
+
                 .tabItem {
                     Label("Payment mode", systemImage: "eurosign.bank.building")
                 }
@@ -43,7 +52,7 @@ struct SettingTab: View {
                 .tabItem {
                     Label("Transaction", systemImage: "person")
                 }
-            CheckView()
+            ChequeVIew1()
                 .tabItem {
                     Label("Check", systemImage: "person")
                 }
@@ -52,4 +61,22 @@ struct SettingTab: View {
         .layoutPriority(1) // Priorité élevée pour occuper tout l’espace disponible
     }
 }
+
+
+struct ChequeVIew1: View {
+    @StateObject private var currentAccountManager = CurrentAccountManager.shared
+    @StateObject private var chequeViewManager = CheckViewManager()
+
+    var body: some View {
+        VStack {
+            CheckView()
+                .environmentObject(currentAccountManager)
+                .environmentObject(chequeViewManager)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .layoutPriority(1) // Priorité élevée pour occuper tout l’espace disponible
+        }
+        .padding()
+    }
+}
+
 

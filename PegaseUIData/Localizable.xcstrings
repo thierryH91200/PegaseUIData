@@ -4,9 +4,6 @@
     "" : {
       "shouldTranslate" : false
     },
-    " " : {
-
-    },
     "(no transfer)" : {
       "localizations" : {
         "fr" : {
@@ -84,6 +81,9 @@
         }
       }
     },
+    "Ad Scheduler" : {
+
+    },
     "Add" : {
       "localizations" : {
         "en" : {
@@ -121,6 +121,7 @@
       }
     },
     "Add Checkbook" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -129,6 +130,9 @@
           }
         }
       }
+    },
+    "Add CheckBook" : {
+
     },
     "Add Group Account" : {
       "localizations" : {
@@ -151,6 +155,7 @@
       }
     },
     "Add Scheduler" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -196,9 +201,6 @@
         }
       }
     },
-    "Annuler" : {
-
-    },
     "Appearance" : {
       "localizations" : {
         "fr" : {
@@ -208,9 +210,6 @@
           }
         }
       }
-    },
-    "Aucun PDF disponible" : {
-
     },
     "Bank" : {
       "localizations" : {
@@ -399,7 +398,6 @@
       }
     },
     "CB Date" : {
-      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -471,6 +469,16 @@
         }
       }
     },
+    "Completed" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réalisé"
+          }
+        }
+      }
+    },
     "Compte" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -523,7 +531,7 @@
       }
     },
     "Country" : {
-      "comment" : "Pays",
+      "comment" : "Country",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -566,7 +574,14 @@
       }
     },
     "Current Account: %@" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compte courant: %@"
+          }
+        }
+      }
     },
     "Current account1" : {
       "localizations" : {
@@ -615,13 +630,14 @@
       }
     },
     "Date CB" : {
-
-    },
-    "Date inter." : {
-
-    },
-    "Date intermédiaire" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date de la CB"
+          }
+        }
+      }
     },
     "Date of pointing" : {
       "localizations" : {
@@ -722,10 +738,16 @@
       }
     },
     "Document PDF" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Document PDF"
+          }
+        }
+      }
     },
-    "Drop a PDF here" : {
-      "extractionState" : "stale",
+    "Drop your PDF here" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -734,9 +756,6 @@
           }
         }
       }
-    },
-    "Drop your PDF here" : {
-
     },
     "Edit" : {
       "localizations" : {
@@ -748,7 +767,11 @@
         }
       }
     },
+    "Edit checkBook" : {
+
+    },
     "Edit Checkbook" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -757,6 +780,9 @@
           }
         }
       }
+    },
+    "Edit CheckBook" : {
+
     },
     "Edit Payment Mode" : {
       "localizations" : {
@@ -768,12 +794,25 @@
         }
       }
     },
-    "Edit Scheduler" : {
+    "Edit scheduler" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Editer l’échéancier"
+          }
+        }
+      }
+    },
+    "Edit Scheduler" : {
+
+    },
+    "Edit statement" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editer le relevé"
           }
         }
       }
@@ -798,28 +837,12 @@
         }
       }
     },
-    "End Balance" : {
+    "End balance" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "End Balance"
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Solde de fin"
-          }
-        }
-      }
-    },
-    "end Date" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Date de fin"
           }
         }
       }
@@ -849,9 +872,6 @@
           }
         }
       }
-    },
-    "Enregistrer" : {
-
     },
     "Enter Engaged value" : {
       "localizations" : {
@@ -889,6 +909,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Réalisé"
+          }
+        }
+      }
+    },
+    "Final balance" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solde final"
           }
         }
       }
@@ -954,7 +984,14 @@
       }
     },
     "General information" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "informations générales"
+          }
+        }
+      }
     },
     "IBAN" : {
       "localizations" : {
@@ -1019,8 +1056,15 @@
         }
       }
     },
-    "Initial Balance" : {
-
+    "Initial balance" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solde init"
+          }
+        }
+      }
     },
     "Initial report" : {
       "localizations" : {
@@ -1032,8 +1076,7 @@
         }
       }
     },
-    "Inter Balance" : {
-      "extractionState" : "stale",
+    "Inter balance" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -1044,7 +1087,6 @@
       }
     },
     "Inter Date" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1059,9 +1101,6 @@
           }
         }
       }
-    },
-    "Inter. Balance" : {
-
     },
     "InternetReconciliationView" : {
       "localizations" : {
@@ -1159,11 +1198,15 @@
         }
       }
     },
-    "Modifier le relevé" : {
-
-    },
     "N°" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "N°"
+          }
+        }
+      }
     },
     "Name" : {
       "localizations" : {
@@ -1177,6 +1220,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nom"
+          }
+        }
+      }
+    },
+    "New checkBook" : {
+
+    },
+    "New scheduler" : {
+
+    },
+    "New statement" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nouveau relevé"
           }
         }
       }
@@ -1202,6 +1261,16 @@
       }
     },
     "next Occurence" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prochaine occurence"
+          }
+        }
+      }
+    },
+    "Next occurence" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -1247,13 +1316,12 @@
         }
       }
     },
-    "No PDF" : {
-      "extractionState" : "stale",
+    "No PDF available" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aucun PDF"
+            "value" : "Aucun PDF disponible"
           }
         }
       }
@@ -1264,26 +1332,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "NotesView"
-          }
-        }
-      }
-    },
-    "Nouveau relevé" : {
-
-    },
-    "Num" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Num"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Num"
           }
         }
       }
@@ -1354,13 +1402,12 @@
         }
       }
     },
-    "PDF" : {
-      "extractionState" : "stale",
+    "Pending" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PDF"
+            "value" : "En attente"
           }
         }
       }
@@ -1476,10 +1523,24 @@
       }
     },
     "Select a statement" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sélectionné un relevé"
+          }
+        }
+      }
     },
     "Selected PDF" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sélectionné un PDF"
+          }
+        }
+      }
     },
     "Settings" : {
       "localizations" : {
@@ -1507,50 +1568,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Afficher les notifications"
-          }
-        }
-      }
-    },
-    "Solde CB" : {
-
-    },
-    "Solde final" : {
-
-    },
-    "Solde Init" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Solde de début"
-          }
-        }
-      }
-    },
-    "Solde initial" : {
-
-    },
-    "Solde intermédiaire" : {
-
-    },
-    "Start Balance" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Solde de début"
-          }
-        }
-      }
-    },
-    "start Date" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Date de début"
           }
         }
       }

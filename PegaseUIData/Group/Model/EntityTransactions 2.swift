@@ -93,9 +93,10 @@ final class ListTransactionsManager {
     }
 
     func getAllDatas(for account: EntityAccount, ascending: Bool = true) -> [EntityTransactions] {
-        let currentAccount = account
-        self.ascending = ascending
 
+        let currentAccount = CurrentAccountManager.shared.getAccount()!
+        self.ascending = ascending
+        
         // Création du prédicat pour filtrer les transactions par compte
         let currentAccountID = currentAccount.uuid
         let predicate = #Predicate<EntityTransactions> {
@@ -119,7 +120,7 @@ final class ListTransactionsManager {
             return []
         }
 
-        // Ajuster les dates si le compte est en mode démo
+        // Ajuste les dates si le compte est en mode démo
         if currentAccount.isDemo {
             adjustDate(for: currentAccount)
         }
@@ -150,10 +151,10 @@ final class ListTransactionsManager {
 
 class ListTransactionsViewModel: ObservableObject {
     @Published var account: EntityAccount
-    @Published var listTransactions: [EntityPaymentMode]
-    private let manager: PaymentModeManager
+    @Published var listTransactions: [EntityTransactions]
+    private let manager: ListTransactionsManager
     
-    init(account: EntityAccount, manager: PaymentModeManager) {
+    init(account: EntityAccount, manager: ListTransactionsManager) {
         self.account = account
         self.manager = manager
         self.listTransactions = []

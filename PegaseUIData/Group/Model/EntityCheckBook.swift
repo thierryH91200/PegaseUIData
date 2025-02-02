@@ -18,6 +18,7 @@ import SwiftUI
     var prefix: String = "CH"
     
     @Attribute(.unique) var uuid: UUID = UUID()
+    public var id: UUID { uuid }
 
     var account: EntityAccount?
     
@@ -37,8 +38,19 @@ import SwiftUI
         self.account = account
     }
   
-    init( account: EntityAccount) {
-        self.account = account
+    init() {
+        self.account = CurrentAccountManager.shared.getAccount()
+    }
+}
+
+extension EntityCheckBook {
+
+    var accountName: String {
+        account?.identity?.name ?? ""
+    }
+    
+    var accountSurname: String {
+        account?.identity?.surName ?? ""
     }
 }
 
@@ -72,14 +84,19 @@ final class ChequeBookManager : ObservableObject {
         self.modelContext = modelContext
     }
 
-    func create(name: String ) -> EntityCheckBook? {
+    @discardableResult
+    func create(name: String,
+                nbCheques: Int = 25,
+                numPremier: Int = 1,
+                numSuivant: Int = 1,
+                prefix: String = "CH") -> EntityCheckBook? {
         // Créez une instance de EntityCarnetCheques
         let entity = EntityCheckBook(
             name: name,
-            nbCheques: 25,
-            numPremier: 0,
-            numSuivant: 0,
-            prefix: "CH",
+            nbCheques: nbCheques,
+            numPremier: numPremier,
+            numSuivant: numSuivant,
+            prefix: prefix,
             account: CurrentAccountManager.shared.getAccount()!) // Associe le compte actuel
         validContext.insert(entity)
         
@@ -87,6 +104,31 @@ final class ChequeBookManager : ObservableObject {
         save()
         
         return entity
+    }
+
+    func getAllDatas() -> [EntityCheckBook]? {
+        
+        guard let account = CurrentAccountManager.shared.getAccount() else {
+            print("Erreur : aucun compte courant trouvé.")
+            return nil
+        }
+
+        let lhs = account.uuid
+        let predicate = #Predicate<EntityCheckBook> { entity in
+            entity.account?.uuid == lhs
+        }
+        let descriptor = FetchDescriptor<EntityCheckBook>(
+            predicate: predicate,
+            sortBy: [SortDescriptor(\.name, order: .forward)]
+        )
+        
+        do {
+            entities = try validContext.fetch(descriptor)
+        } catch {
+            print("Error fetching data from SwiftData: \(error)")
+            return nil
+        }
+        return entities
     }
 
     func update(entity: EntityCheckBook, name: String) {
@@ -104,28 +146,11 @@ final class ChequeBookManager : ObservableObject {
         save()
     }
 
-    func getAllDatas(for account: EntityAccount?) async -> [EntityCheckBook] {
-        guard let accountUUID = account?.uuid else { return [] }
-        
-        let predicate = #Predicate<EntityCheckBook> { entity in
-            entity.account?.uuid == accountUUID
-        }
-        let descriptor = FetchDescriptor<EntityCheckBook>(predicate: predicate)
-        
-        do {
-            entities = try validContext.fetch(descriptor)
-        } catch {
-            print("Error fetching data from SwiftData: \(error)")
-        }
-        
-        defaultCarnetCheques(for: account!)
-        return entities
-    }
     
     private func defaultCarnetCheques(for account: EntityAccount) {
         guard entities.isEmpty else { return }
         
-        let entityCarnetCheques = EntityCheckBook(account: account)
+        let entityCarnetCheques = EntityCheckBook()
         entityCarnetCheques.name = "Check"
         entityCarnetCheques.prefix = "CH"
         entityCarnetCheques.numPremier = 1
@@ -168,7 +193,7 @@ class ChequeBookViewModel: ObservableObject {
     
     @MainActor
     private func loadInitialData() async {
-        carnetCheques = await manager.getAllDatas(for: account)
+        carnetCheques = manager.getAllDatas() ?? []
     }
     
     func add(name: String) {
@@ -185,6 +210,6 @@ class ChequeBookViewModel: ObservableObject {
     }
     
     func reloadData() async {
-        carnetCheques = await manager.getAllDatas(for: account)
+        carnetCheques = manager.getAllDatas() ?? []
     }
 }

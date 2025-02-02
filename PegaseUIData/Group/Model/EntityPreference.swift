@@ -88,7 +88,7 @@ final class PreferenceManager {
         
         let paymentModes = PaymentModeManager.shared.getAllDatas(for: account)
         
-        newPreference.paymentMode = paymentModes.first!
+        newPreference.paymentMode = paymentModes?.first!
         
         newPreference.statut = 1
         newPreference.signe = true

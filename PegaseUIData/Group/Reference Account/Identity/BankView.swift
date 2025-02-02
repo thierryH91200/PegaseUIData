@@ -31,8 +31,8 @@ final class BanqueViewManager: ObservableObject {
 struct BankView: View {
     
     @Environment(\.modelContext) var modelContext
-    @EnvironmentObject var banqueInfoManager: BanqueViewManager
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
+    @EnvironmentObject var banqueInfoManager: BanqueViewManager
 
     @Query private var banqueInfos: [EntityBanqueInfo]
     
@@ -60,6 +60,7 @@ struct BankView: View {
                 } else {
                     print("Aucun compte disponible.")
                 }
+                
                 BankManager.shared.configure(with: modelContext)
                 let banqueInfo = BankManager.shared.getAllDatas()
                 banqueInfoManager.banqueInfo = banqueInfo
@@ -79,8 +80,7 @@ struct BankView: View {
         }
 
         .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
-            
-
+    
             if let account = newAccount {
                 banqueInfoManager.banqueInfo = nil
                 banqueInfoManager.currentAccount = account

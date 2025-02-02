@@ -205,7 +205,7 @@ struct OperationDialog: View {
                     if account != nil {
                         
                         let modes = PaymentModeManager.shared.getAllDatas(for: account!)
-                        print(modes) // Exemple de débogage
+                        print(modes!) // Exemple de débogage
                     }
                 }
             }

@@ -30,8 +30,8 @@ final class IdentityViewManager: ObservableObject {
 struct IdentityView: View {
     
     @Environment(\.modelContext) var modelContext
-    @EnvironmentObject var identityInfoManager: IdentityViewManager
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
+    @EnvironmentObject var identityViewManager: IdentityViewManager
     
     @Query private var identityInfo: [EntityIdentity]
     
@@ -50,8 +50,8 @@ struct IdentityView: View {
 
             VStack(alignment: .leading, spacing: 8) {
                 
-                if identityInfoManager.identity != nil {
-                    SectionInfoView(identityInfo: identityInfoManager.identity!)
+                if identityViewManager.identity != nil {
+                    SectionInfoView(identityInfo: identityViewManager.identity!)
                 }
             }
         }
@@ -61,44 +61,44 @@ struct IdentityView: View {
         .onAppear {
             
             if let account = currentAccountManager.currentAccount {
-                identityInfoManager.currentAccount = account
+                identityViewManager.currentAccount = account
             }
 
             // Créer un nouvel enregistrement si la base de données est vide
-            if identityInfoManager.identity == nil {
+            if identityViewManager.identity == nil {
                 if let account = CurrentAccountManager.shared.getAccount() {
-                    identityInfoManager.currentAccount = account
+                    identityViewManager.currentAccount = account
                 } else {
                     print("Aucun compte disponible.")
                 }
                 IdentityManager.shared.configure(with: modelContext)
                 let identity = IdentityManager.shared.getAllDatas()
-                identityInfoManager.identity = identity
+                identityViewManager.identity = identity
 
                 if identity == nil {
                     
                     let newIdentityInfo = EntityIdentity()
-                    identityInfoManager.identity = newIdentityInfo
+                    identityViewManager.identity = newIdentityInfo
                     modelContext.insert(newIdentityInfo)
                 }
             }
         }
         .onDisappear {
             saveChanges()
-            identityInfoManager.saveChanges(using: modelContext)
-            identityInfoManager.identity = nil
+            identityViewManager.saveChanges(using: modelContext)
+            identityViewManager.identity = nil
         }
         .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
             
             if let account = newAccount {
-                identityInfoManager.identity = nil
-                identityInfoManager.currentAccount = account
+                identityViewManager.identity = nil
+                identityViewManager.currentAccount = account
                 
                 loadOrCreate(for: account)
             }
         }
 
-        .onChange(of: identityInfoManager.identity) { old , _ in
+        .onChange(of: identityViewManager.identity) { old , _ in
             do {
                 try modelContext.save()
             } catch {
@@ -111,12 +111,12 @@ struct IdentityView: View {
         
         IdentityManager.shared.configure(with: modelContext)
         if let existingIdentity = IdentityManager.shared.getAllDatas() {
-            identityInfoManager.identity = existingIdentity
+            identityViewManager.identity = existingIdentity
         } else {
             let entity = EntityIdentity()
             entity.account = account
             modelContext.insert(entity)
-            identityInfoManager.identity = entity
+            identityViewManager.identity = entity
         }
     }
 

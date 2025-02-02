@@ -22,7 +22,7 @@ import SwiftData
     init(name: String, color: NSColor, account: EntityAccount? = nil ) {
         self.name = name
         self.color = color
-        self.account = account!
+        self.account = account
     }
 
     // Implémentez `Hashable`
@@ -108,8 +108,18 @@ final class PaymentModeManager {
         }
     }
 
-    func getAllDatas(for account: EntityAccount) -> [EntityPaymentMode] {       
+    func getAllDatas(for account: EntityAccount?) -> [EntityPaymentMode]? {
         
+        guard let account = account else {
+            return []
+
+        }
+        
+//        guard let account = CurrentAccountManager.shared.getAccount() else {
+//            print("Erreur : aucun compte courant trouvé.")
+//            return []
+//        }
+
         // Sinon, charger depuis SwiftData
         let lhs = account.uuid
         let predicate = #Predicate<EntityPaymentMode> { entity in
@@ -234,7 +244,7 @@ final class PaymentModeManager {
 class PaymentModeViewModel: ObservableObject {
     @Published var account: EntityAccount
     @Published var modePayments: [EntityPaymentMode]
-    private let manager = PaymentModeManager()
+    private let manager = PaymentModeManager.shared
     @Published var isLoading: Bool = false
 
     init(account: EntityAccount) {
@@ -246,7 +256,7 @@ class PaymentModeViewModel: ObservableObject {
     
     // MARK: Actions utilisateur :
     private func loadInitialData() {
-        modePayments = manager.getAllDatas(for: account)
+        modePayments = manager.getAllDatas(for: account)!
     }
 
     func add(name: String, color: Color) {
@@ -279,7 +289,7 @@ class PaymentModeViewModel: ObservableObject {
     // MARK: Communication avec les services ou les managers :
     @discardableResult
     func reloadData() -> [EntityPaymentMode] {
-        modePayments = manager.getAllDatas(for: account)
+        modePayments = manager.getAllDatas(for: account)!
         return modePayments
     }
     

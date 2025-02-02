@@ -52,7 +52,7 @@ struct Sidebar1A: View {
                     // Mettez à jour les données sur le thread principal
                     DispatchQueue.main.async {
                         withAnimation {
-                            modePayments = modes
+                            modePayments = modes!
                         }
                     }
                 }
