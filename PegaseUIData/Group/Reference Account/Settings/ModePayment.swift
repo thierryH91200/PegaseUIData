@@ -46,31 +46,19 @@ struct ModePaymentView: View {
     
     var body: some View {
         VStack(spacing: 10) {
-            Table(modePaiementViewManager.modePayments ?? [], selection: $selectedItem) {
-                TableColumn("Name", value: \EntityPaymentMode.name)
-                TableColumn("Color") { item in
-                    Rectangle()
-                        .fill(Color(item.color))
-                        .frame(width: 40, height: 20)
-                }
-                TableColumn("Account", value: \EntityPaymentMode.account!.name)
-                TableColumn("Surname") { paymentMode in
-                    Text(paymentMode.account!.identity?.surName ?? "Unknown") }
-                TableColumn("First name")  { paymentMode in
-                    Text(paymentMode.account!.identity?.name ?? "Unknown") }
-                TableColumn("Number") { paymentMode in
-                    Text(paymentMode.account!.initAccount?.codeAccount ?? "Unknown") }
-            }
-            .frame(height: 300)
-            .onChange(of: selectedItem) { oldValue, newValue in
-                selectedMode = nil // Désactive l’édition automatique
-                selectedItem = nil
+            ModePaiementTable(modePayments: modePaiementViewManager.modePayments ?? [], selection: $selectedItem)
+                .frame(height: 300)
+            
+            .onChange(of: selectedMode) { oldValue, newValue in
                 
                 if let selectedId = newValue,
-                   let selected = modePayments.first(where: { $0.id == selectedId }) {
-                    selectedMode = selected
+                   let selected = modePayments.first(where: { $0.uuid == selectedMode?.uuid }) {
                     selectedItem = selected.id
+                    selectedMode = selected
                 } else {
+                    selectedMode = nil // Désactive l’édition automatique
+                    selectedItem = nil
+
                     print("Aucun élément sélectionné dans ModePaymentView / onCchange")
                 }
             }
@@ -80,35 +68,33 @@ struct ModePaymentView: View {
                     modePaiementViewManager.modePayments = nil
                     modePaiementViewManager.currentAccount = account
                     selectedMode = nil
-                    selectedItem = nil
                     loadOrCreate(for: account)
                 }
             }
             
             .onAppear {
                 Task {
-                    
                     if let account = currentAccountManager.currentAccount {
                         modePaiementViewManager.currentAccount = account
                     } else {
                         print("Aucun compte disponible.")
                     }
                     
-                    // Créer un nouvel enregistrement si la base de données est vide
-                    if modePaiementViewManager.modePayments == nil {
+                    // Vérifier si la liste est vide plutôt que `nil`
+                    if modePaiementViewManager.modePayments?.isEmpty ?? true {
                         if let account = CurrentAccountManager.shared.getAccount() {
                             modePaiementViewManager.currentAccount = account
                         } else {
                             print("Aucun compte disponible.")
                         }
+                        
                         ChequeBookManager.shared.configure(with: modelContext)
-                        let modePayments = PaymentModeManager.shared.getAllDatas(for:  modePaiementViewManager.currentAccount)
+                        let modePayments = PaymentModeManager.shared.getAllDatas(for: modePaiementViewManager.currentAccount)
                         modePaiementViewManager.modePayments = modePayments
                         
-                        if modePayments == nil {
-                            
+                        if modePayments?.isEmpty ?? true {
                             let entity = EntityPaymentMode(name: "test", color: .blue, account: nil)
-                            modePaiementViewManager.modePayments!.append( entity   )
+                            modePaiementViewManager.modePayments?.append(entity)
                             modelContext.insert(entity)
                         }
                     }
@@ -138,9 +124,12 @@ struct ModePaymentView: View {
                         .foregroundColor(.white)
                         .cornerRadius(8)
                 }
-                .disabled(selectedItem == nil) // Désactive si aucune ligne n'est sélectionnée
+                .disabled(selectedMode == nil) // Désactive si aucune ligne n'est sélectionnée
                 
-                Button(action: removeSelectedItem)
+                Button(action: {
+                    removeSelectedItem()
+                    refreshData()
+                })
                 {
                     Label("Delete", systemImage: "trash")
                         .padding()
@@ -148,7 +137,7 @@ struct ModePaymentView: View {
                         .foregroundColor(.white)
                         .cornerRadius(8)
                 }
-                .disabled(selectedItem == nil) // Désactive si aucune ligne n'est sélectionnée
+                .disabled(selectedMode == nil) // Désactive si aucune ligne n'est sélectionnée
             }
             .padding()
             Spacer()
@@ -165,11 +154,26 @@ struct ModePaymentView: View {
     }
        
     private func removeSelectedItem() {
-        //        modelContext.delete(selectedItem!)
-        //        if selectedItem == selectedItem!.id {
-        //            selectedItem = nil
-        //        }
-        //        try? modelContext.save()
+        guard let selectedMode = selectedMode,
+              let selectedMode = modePayments.first(where: { $0.id == selectedMode.id }) else {
+            return
+        }
+
+        modelContext.delete(selectedMode)
+        self.selectedMode = nil
+        self.selectedItem = nil
+
+        
+        do {
+            try modelContext.save()
+        } catch {
+            print("Erreur lors de la suppression : \(error.localizedDescription)")
+        }
+    }
+    
+    func refreshData() {
+        guard let account = currentAccountManager.currentAccount else { return }
+        modePaiementViewManager.modePayments = PaymentModeManager.shared.getAllDatas(for: account)
     }
     
     private func loadOrCreate(for account: EntityAccount?) {
@@ -187,10 +191,41 @@ struct ModePaymentView: View {
     }
 }
 
+struct ModePaiementTable: View {
+    
+    var modePayments: [EntityPaymentMode]
+    @Binding var selection: EntityPaymentMode.ID?
+    
+    var body: some View {
+        
+        VStack(spacing: 10) {
+            Table(modePayments, selection: $selection) {
+                TableColumn("Name", value: \EntityPaymentMode.name)
+                TableColumn("Color") { item in
+                    Rectangle()
+                        .fill(Color(item.color))
+                        .frame(width: 40, height: 20)
+                }
+                TableColumn("Account", value: \EntityPaymentMode.account!.name)
+                TableColumn("Surname") { paymentMode in
+                    Text(paymentMode.account?.identity?.surName ?? "Unknown")
+                }
+                TableColumn("First name")  { paymentMode in
+                    Text(paymentMode.account?.identity?.name ?? "Unknown")
+                }
+                TableColumn("Number") { paymentMode in
+                    Text(paymentMode.account?.initAccount?.codeAccount ?? "Unknown")
+                }
+            }
+        }
+    }
+}
+
 // Vue pour la boîte de dialogue d'ajout
 struct ModePaiementFormView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var modePaiementViewManager: ModePaiementViewManager
     
     @Binding var isPresented: Bool
     @Binding var mode: Bool
@@ -258,6 +293,7 @@ struct ModePaiementFormView: View {
             let color = NSColor.fromSwiftUIColor(selectedColor)
             newItem = EntityPaymentMode(name: name, color: color)
             modelContext.insert(newItem)
+            modePaiementViewManager.modePayments?.append(newItem) // ✅ Ajouter à la liste
         }
         
         newItem.name = name

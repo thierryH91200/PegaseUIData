@@ -23,10 +23,15 @@ import SwiftUI
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
 
-    public init(account: EntityAccount, category: EntityCategory? = nil, paymentMode: EntityPaymentMode? = nil ) {
-        self.account = account
+    public init(account: EntityAccount,
+                category: EntityCategory? = nil,
+                paymentMode: EntityPaymentMode? = nil ) {
         self.category = category
         self.paymentMode = paymentMode
+        self.statut = 0
+        self.signe = true
+        
+        self.account = account
     }
 }
 
@@ -81,8 +86,8 @@ final class PreferenceManager {
         
         let newPreference = EntityPreference(account: account)
         
-        if let rubric = RubricManager.shared.getAllDatas(account: account).sorted(by: { $0.name < $1.name }).first,
-           let categories = rubric.category {
+        if let rubric = RubricManager.shared.getAllDatas(account: account).sorted(by: { $0.name < $1.name }).first {
+           let categories = rubric.categorie
             newPreference.category = categories.sorted { $0.name < $1.name }.first!
         }
         

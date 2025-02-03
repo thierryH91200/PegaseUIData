@@ -284,7 +284,7 @@ struct SchedulerFormView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            Text(mode ? "Ad Scheduler" : "Edit Scheduler")
+            Text(mode ? "Add Scheduler" : "Edit Scheduler")
                 .font(.headline)
             
             HStack {

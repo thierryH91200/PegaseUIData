@@ -293,7 +293,7 @@ struct CheckBookFormView: View {
                 Spacer()
             }
             .padding()
-            .navigationTitle(checkBook == nil ? "New checkBook" : "Edit checkBook")
+            .navigationTitle(checkBook == nil ? "New checkBook" : "Edit CheckBook")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {

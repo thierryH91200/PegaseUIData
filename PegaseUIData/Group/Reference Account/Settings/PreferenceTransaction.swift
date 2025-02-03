@@ -6,16 +6,34 @@
 //
 
 import SwiftUI
+import SwiftData
 
-
-struct TransactionView: View {
+final class PreferenceViewManager: ObservableObject {
+    @Published var currentAccount: EntityAccount?
+    @Published var preferenceTransacrion: EntityPreference? {
+        didSet {
+            // Sauvegarder les modifications dès qu'il y a un changement
+            saveChanges()
+        }
+    }
+    
+    func saveChanges(using context: ModelContext? = nil) {
+        guard let context = context else { return }
         
-    var body: some View {
-        DefaultTransactionValuesView()
+        do {
+            try context.save()
+        } catch {
+            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+        }
     }
 }
 
-struct DefaultTransactionValuesView: View {
+
+struct PreferenceTransactionView: View {
+    @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject var currentAccountManager : CurrentAccountManager
+    @EnvironmentObject var preferenceViewManager : PreferenceViewManager
+
     @State private var selectedStatus: String = "Engaged"
     @State private var selectedRubric: String = "Alimentation"
     @State private var selectedMode: String = "Bank Card"
@@ -23,7 +41,7 @@ struct DefaultTransactionValuesView: View {
     
     let statusOptions = [String(localized :"Engaged"), String(localized :"Pending"), String(localized :"Completed")]
     let rubricOptions = ["Alimentation", "Transport", "Loisirs"]
-    let modeOptions = ["Bank Card", "Cash", "Transfer"]
+    @State private var modeOptions = [String]()
     let categoryOptions = ["Alimentation", "Loisirs", "Autres"]
     
     var body: some View {
@@ -34,7 +52,6 @@ struct DefaultTransactionValuesView: View {
             
             HStack(spacing: 30) {
                 VStack(alignment: .leading) {
-                    Text("Statut")
                     Picker("Statut", selection: $selectedStatus) {
                         ForEach(statusOptions, id: \.self) {
                             Text($0)
@@ -42,7 +59,6 @@ struct DefaultTransactionValuesView: View {
                     }
                     .pickerStyle(MenuPickerStyle())
                     
-                    Text("Mode")
                     Picker("Mode", selection: $selectedMode) {
                         ForEach(modeOptions, id: \.self) {
                             Text($0)
@@ -52,7 +68,6 @@ struct DefaultTransactionValuesView: View {
                 }
                 
                 VStack(alignment: .leading) {
-                    Text("Rubric")
                     Picker("Rubric", selection: $selectedRubric) {
                         ForEach(rubricOptions, id: \.self) {
                             Text($0)
@@ -60,7 +75,6 @@ struct DefaultTransactionValuesView: View {
                     }
                     .pickerStyle(MenuPickerStyle())
                     
-                    Text("Category")
                     Picker("Category", selection: $selectedCategory) {
                         ForEach(categoryOptions, id: \.self) {
                             Text($0)
@@ -69,7 +83,9 @@ struct DefaultTransactionValuesView: View {
                     .pickerStyle(MenuPickerStyle())
                 }
             }
-            
+            .frame(width: 600)
+            Spacer()
+
             HStack {
                 Spacer()
                 Text("Default sign")
@@ -81,6 +97,20 @@ struct DefaultTransactionValuesView: View {
             .padding(.bottom)
         }
         .padding()
+        .onAppear {
+            Task {
+
+                if let account = currentAccountManager.currentAccount {
+                    PaymentModeManager.shared.configure(with: modelContext)
+                    modeOptions = PaymentModeManager.shared.getAllNames(for: account)
+                    selectedMode = modeOptions.first!
+                } else {
+                    print("Aucun compte disponible.")
+                }
+                
+            }
+        }
+
         .cornerRadius(10)
         .shadow(radius: 5)
         .padding()

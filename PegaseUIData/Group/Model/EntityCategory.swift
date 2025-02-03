@@ -59,7 +59,7 @@ final class CategoriesManager: ObservableObject {
 
     func findWithRubric(account: EntityAccount, rubric: EntityRubric, name: String) -> EntityCategory? {
         // Supposons que 'category' soit un tableau d'EntityCategory
-        let categories = rubric.category ?? [] // Accès direct, sans conversion
+        let categories = rubric.categorie       // Accès direct, sans conversion
         return categories.first { $0.name == name } ?? categories.first
     }
     

@@ -171,7 +171,7 @@ final class SchedulerManager {
         let rubricName = schedule.category?.rubric?.name ?? ""
         let color = schedule.category?.rubric?.color ?? .black
 //        let rubricUUID = schedule.category?.rubric?.uuid ?? UUID()
-        let rubric = RubricManager.shared.findOrCreate(account: schedule.account!, name: rubricName, color: color)
+        let rubric = RubricManager.shared.findOrCreate(account: schedule.account!, name: rubricName, color: NSColor.blue)
         
         let categoryName = schedule.category?.name ?? ""
         let objectif = schedule.category?.objectif ?? 0.0

@@ -41,6 +41,9 @@
       },
       "shouldTranslate" : false
     },
+    "🎯 %@" : {
+
+    },
     "0" : {
       "localizations" : {
         "fr" : {
@@ -81,9 +84,6 @@
         }
       }
     },
-    "Ad Scheduler" : {
-
-    },
     "Add" : {
       "localizations" : {
         "en" : {
@@ -120,26 +120,22 @@
         }
       }
     },
-    "Add Checkbook" : {
-      "extractionState" : "stale",
+    "Add CheckBook" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ajouter un carnet de chéques"
+            "value" : "Ajouter un carnet de chèques"
           }
         }
       }
-    },
-    "Add CheckBook" : {
-
     },
     "Add Group Account" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ajoute un groupe"
+            "value" : "Ajoute un groupe de compte"
           }
         }
       }
@@ -155,15 +151,7 @@
       }
     },
     "Add Scheduler" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1houe un échéancier "
-          }
-        }
-      }
+
     },
     "Address" : {
       "localizations" : {
@@ -767,22 +755,15 @@
         }
       }
     },
-    "Edit checkBook" : {
-
-    },
-    "Edit Checkbook" : {
-      "extractionState" : "stale",
+    "Edit CheckBook" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Edite le carnet de chéque"
+            "value" : "Editer le carnet de chéque"
           }
         }
       }
-    },
-    "Edit CheckBook" : {
-
     },
     "Edit Payment Mode" : {
       "localizations" : {
@@ -805,7 +786,14 @@
       }
     },
     "Edit Scheduler" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editer l’écheancier"
+          }
+        }
+      }
     },
     "Edit statement" : {
       "localizations" : {
@@ -1024,7 +1012,14 @@
       }
     },
     "Identity title" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Titre identité"
+          }
+        }
+      }
     },
     "Income/Expense" : {
       "localizations" : {
@@ -1225,10 +1220,24 @@
       }
     },
     "New checkBook" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nouveau carnet de chèques"
+          }
+        }
+      }
     },
     "New scheduler" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nouveau échéancier"
+          }
+        }
+      }
     },
     "New statement" : {
       "localizations" : {
@@ -1483,6 +1492,7 @@
       }
     },
     "RubricView" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
