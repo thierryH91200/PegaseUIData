@@ -24,7 +24,7 @@ import SwiftUI
     var rubric: EntityRubric?
     @Relationship(inverse: \EntitySousOperations.category) var sousOperations: [EntitySousOperations]?
     
-    public init(name: String, objectif : Double, rubric: EntityRubric? = nil) {
+    public init(name: String, objectif : Double, rubric: EntityRubric) {
         self.name = name
         self.objectif = objectif
         self.rubric = rubric
@@ -43,11 +43,14 @@ final class CategoriesManager: ObservableObject {
     
     init() {}
     
-    func findOrCreate(account: EntityAccount, name: String, objectif: Double) -> EntityCategory {
+    func findOrCreate(account: EntityAccount,
+                      name: String,
+                      objectif: Double,
+                      rubric: EntityRubric ) -> EntityCategory {
         if let existingCategory = find(account: account, name: name) {
             return existingCategory
         } else {
-            let newCategory = EntityCategory(name: name, objectif: objectif)
+            let newCategory = EntityCategory(name: name, objectif: objectif, rubric: rubric)
             modelContext.insert(newCategory) // Ajoute l'entité au contexte
             return newCategory
         }

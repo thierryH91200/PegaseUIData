@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftData
 
-final class PreferenceViewManager: ObservableObject {
+final class PreferenceDataManager: ObservableObject {
     @Published var currentAccount: EntityAccount?
     @Published var preferenceTransacrion: EntityPreference? {
         didSet {
@@ -17,22 +17,26 @@ final class PreferenceViewManager: ObservableObject {
         }
     }
     
-    func saveChanges(using context: ModelContext? = nil) {
-        guard let context = context else { return }
-        
+    private var modelContext: ModelContext?
+    
+    func configure(with context: ModelContext) {
+        self.modelContext = context
+    }
+    
+    func saveChanges() {
+       
         do {
-            try context.save()
+            try modelContext?.save()
         } catch {
             print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
     }
 }
 
-
 struct PreferenceTransactionView: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var currentAccountManager : CurrentAccountManager
-    @EnvironmentObject var preferenceViewManager : PreferenceViewManager
+    @EnvironmentObject var dataManager : PreferenceDataManager
 
     @State private var selectedStatus: String = "Engaged"
     @State private var selectedRubric: String = "Alimentation"

@@ -27,13 +27,13 @@ import SwiftUI
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
 
-    var account: EntityAccount?
+    var account: EntityAccount
     var category: EntityCategory?
     @Relationship(inverse: \EntityAccount.compteLie) var linkedAccount: EntityAccount?
     var paymentMode: EntityPaymentMode?
     
     public init() {
-        
+        self.account = CurrentAccountManager.shared.getAccount()!
     }
 
     public init(
@@ -120,7 +120,7 @@ final class SchedulerManager {
         }
         
         let predicate = #Predicate<EntitySchedule> { entity in
-            entity.account?.uuid == lhs
+            entity.account.uuid == lhs
         }
         let descriptor = FetchDescriptor<EntitySchedule>(
             predicate: predicate,
@@ -147,7 +147,7 @@ final class SchedulerManager {
 
         let lhs = currentAccount.uuid
         let predicate = #Predicate<EntitySchedule>{ entity in
-            entity.account?.uuid == lhs
+            entity.account.uuid == lhs
         }
         let descriptor = FetchDescriptor<EntitySchedule>(
             predicate: predicate,
@@ -171,12 +171,16 @@ final class SchedulerManager {
         let rubricName = schedule.category?.rubric?.name ?? ""
         let color = schedule.category?.rubric?.color ?? .black
 //        let rubricUUID = schedule.category?.rubric?.uuid ?? UUID()
-        let rubric = RubricManager.shared.findOrCreate(account: schedule.account!, name: rubricName, color: NSColor.blue)
+        let rubric = RubricManager.shared.findOrCreate(account: schedule.account, name: rubricName, color: NSColor.blue)
         
         let categoryName = schedule.category?.name ?? ""
         let objectif = schedule.category?.objectif ?? 0.0
 //        let categoryUUID = schedule.category?.uuid ?? UUID()
-        let category = CategoriesManager.shared.findOrCreate(account: schedule.account!, name: categoryName, objectif: objectif)
+        let category = CategoriesManager.shared.findOrCreate(
+            account: schedule.account,
+            name: categoryName,
+            objectif: objectif,
+            rubric: rubric)
         
         sousOperation.category = category
         sousOperation.category?.rubric = rubric
@@ -224,7 +228,11 @@ final class SchedulerManager {
             let rubric = RubricManager.shared.findOrCreate(account: linkedAccount, name: paymentModeName, color: .black)
             let categoryName = schedule.category?.name ?? "nil"
             let objectif = schedule.category?.objectif ?? 0.0
-            let category = CategoriesManager.shared.findOrCreate(account: linkedAccount, name: categoryName, objectif: objectif)
+            let category = CategoriesManager.shared.findOrCreate(
+                account: linkedAccount,
+                name: categoryName,
+                objectif: objectif,
+                rubric: rubric)
             
             let transferSousOperation = EntitySousOperations()
             transferSousOperation.category = category

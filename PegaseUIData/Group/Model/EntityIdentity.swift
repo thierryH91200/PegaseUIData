@@ -27,7 +27,7 @@ public class EntityIdentity : Identifiable{
     
     @Attribute(.unique) var uuid: UUID = UUID()
     
-    var account    : EntityAccount?
+    var account    : EntityAccount
     
     public init(adress: String,
                 complement : String,
@@ -112,7 +112,7 @@ final class IdentityManager  {
         do {
             let lhs = currentAccount.uuid
             let predicate = #Predicate<EntityIdentity>{ entity in
-                entity.account?.uuid == lhs }
+                entity.account.uuid == lhs }
 
             // Utilisation de SwiftData pour récupérer les entités correspondantes
             let fetchDescriptor = FetchDescriptor<EntityIdentity>(

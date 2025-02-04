@@ -10,20 +10,40 @@ import SwiftData
 import UniformTypeIdentifiers
 
 
-final class StatementViewManager: ObservableObject {
+final class StatementDataManager: ObservableObject {
     @Published var currentAccount: EntityAccount?
-    @Published var statements: [EntityBankStatement]?
+    @Published var statements: [EntityBankStatement]? {
+        didSet {
+            // Sauvegarder les modifications dès qu'il y a un changement
+            saveChanges()
+        }
+    }
+    
+    private var modelContext: ModelContext?
+    
+    func configure(with context: ModelContext) {
+        self.modelContext = context
+    }
+    
+    func saveChanges() {
+       
+        do {
+            try modelContext?.save()
+        } catch {
+            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+        }
+    }
 }
 
 struct BankStatementView: View {
 
     @Binding var isVisible: Bool
     @StateObject private var currentAccountManager = CurrentAccountManager.shared
-    @StateObject private var statementViewManager = StatementViewManager()
+    @StateObject private var statementDataManager = StatementDataManager()
 
     var body: some View {
         BankStatementListView()
-            .environmentObject(statementViewManager)
+            .environmentObject(statementDataManager)
             .environmentObject(currentAccountManager)
             .padding()
             .task {
@@ -40,7 +60,7 @@ struct BankStatementView: View {
 struct BankStatementListView: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
-    @EnvironmentObject var statementViewManager: StatementViewManager
+    @EnvironmentObject var statementViewManager: StatementDataManager
     
 //    @Query private var statements: [EntityBankStatement]
     

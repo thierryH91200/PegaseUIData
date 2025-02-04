@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 
-final class CheckViewManager: ObservableObject {
+final class CheckDataManager: ObservableObject {
     @Published var currentAccount: EntityAccount?
     @Published var checkBooks: [EntityCheckBook]? {
         didSet {
@@ -18,11 +18,16 @@ final class CheckViewManager: ObservableObject {
         }
     }
     
-    func saveChanges(using context: ModelContext? = nil) {
-        guard let context = context else { return }
-        
+    private var modelContext: ModelContext?
+    
+    func configure(with context: ModelContext) {
+        self.modelContext = context
+    }
+    
+    func saveChanges() {
+       
         do {
-            try context.save()
+            try modelContext?.save()
         } catch {
             print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
@@ -33,7 +38,7 @@ struct CheckView: View {
     
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var currentAccountManager : CurrentAccountManager
-    @EnvironmentObject var checkViewManager : CheckViewManager
+    @EnvironmentObject var dataManager : CheckDataManager
         
     // Ajoutez un état pour suivre l'élément sélectionné
     @State private var selectedItem: EntityCheckBook.ID? = nil
@@ -47,11 +52,11 @@ struct CheckView: View {
     
     var body: some View {
         VStack(spacing: 10) {
-            if let account = checkViewManager.currentAccount {
+            if let account = dataManager.currentAccount {
                 Text("Account: \(account.name)")
                     .font(.headline)
             }
-            CheckBookTable(checkBooks: checkViewManager.checkBooks ?? [], selection: $selectedItem )
+            CheckBookTable(checkBooks: dataManager.checkBooks ?? [], selection: $selectedItem )
                 .frame(height: 300)
             
                 .onChange(of: selectedItem) { oldValue, newValue in
@@ -70,8 +75,8 @@ struct CheckView: View {
                 .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
                     
                     if let account = newAccount {
-                        checkViewManager.checkBooks = nil
-                        checkViewManager.currentAccount = account
+                        dataManager.checkBooks = nil
+                        dataManager.currentAccount = account
                         selectedCheck = nil
                         selectedItem = nil
                         loadOrCreate(for: account)
@@ -79,29 +84,32 @@ struct CheckView: View {
                 }
             
                 .onAppear {
+                    
+                    dataManager.configure(with: modelContext)
+
                     Task {
                         
                         if let account = currentAccountManager.currentAccount {
-                            checkViewManager.currentAccount = account
+                            dataManager.currentAccount = account
                         } else {
                             print("Aucun compte disponible.")
                         }
                         
                         // Créer un nouvel enregistrement si la base de données est vide
-                        if checkViewManager.checkBooks == nil {
+                        if dataManager.checkBooks == nil {
                             if let account = CurrentAccountManager.shared.getAccount() {
-                                checkViewManager.currentAccount = account
+                                dataManager.currentAccount = account
                             } else {
                                 print("Aucun compte disponible.")
                             }
                             ChequeBookManager.shared.configure(with: modelContext)
                             let checkBooks = ChequeBookManager.shared.getAllDatas()
-                            checkViewManager.checkBooks = checkBooks
+                            dataManager.checkBooks = checkBooks
                             
                             if checkBooks == nil {
                                 
                                 let entity = EntityCheckBook()
-                                checkViewManager.checkBooks!.append( entity   )
+                                dataManager.checkBooks!.append( entity   )
                                 modelContext.insert(entity)
                             }
                         }
@@ -175,12 +183,12 @@ struct CheckView: View {
         
         ChequeBookManager.shared.configure(with: modelContext)
         if let existing = ChequeBookManager.shared.getAllDatas() {
-            checkViewManager.checkBooks = existing
+            dataManager.checkBooks = existing
         } else {
             let entity = EntityCheckBook()
             entity.account = account
             modelContext.insert(entity)
-            checkViewManager.checkBooks!.append( entity)
+            dataManager.checkBooks!.append( entity)
         }
     }
 }
@@ -231,7 +239,7 @@ struct CheckBookTable: View {
 struct CheckBookFormView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject var checkViewManager: CheckViewManager
+    @EnvironmentObject var checkViewManager: CheckDataManager
     
     @Binding var isPresented: Bool
     @Binding var mode: Bool

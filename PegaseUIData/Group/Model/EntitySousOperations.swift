@@ -22,5 +22,4 @@ import SwiftData
     public init() {
 
     }
-    
 }

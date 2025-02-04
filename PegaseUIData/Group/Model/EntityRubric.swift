@@ -23,27 +23,15 @@ public class EntityRubric: Identifiable {
     public var id: UUID { uuid }
     
     @Relationship(deleteRule: .cascade) var categorie : [EntityCategory] = []
-    var account: EntityAccount?
+    var account: EntityAccount
     
-    init( name: String, color: NSColor) {
+    init( name: String, color: NSColor, account: EntityAccount) {
         self.name = name
         self.color = color
         self.categorie = []
         self.uuid = UUID()
-        self.account = CurrentAccountManager.shared.getAccount()!
+        self.account = account
     }
-}
-
-struct Category {
-    let name: String
-    let type: Int
-    let objectif: Int
-}
-
-struct Rubrique {
-    let name: String
-    let color: NSColor
-    var categories: [Category]
 }
 
 final class RubricManager {
@@ -75,7 +63,7 @@ final class RubricManager {
             return existingRubric
         }
         
-        let newRubric = EntityRubric(name: name, color: color)
+        let newRubric = EntityRubric(name: name, color: color, account: account)
         validContext.insert(newRubric)
         
         entitiesRubric.append(newRubric)
@@ -83,7 +71,7 @@ final class RubricManager {
     }
     
     func find(account: EntityAccount, name: String) -> EntityRubric? {
-        let result = entitiesRubric.first { $0.account?.id == account.id && $0.name == name }
+        let result = entitiesRubric.first { $0.account.id == account.id && $0.name == name }
         return result
     }
     
@@ -93,77 +81,31 @@ final class RubricManager {
     }
     
     @discardableResult
-    func getAllDatas(account: EntityAccount) -> [EntityRubric] {
+    func getAllDatas() -> [EntityRubric] {
         
-        //        guard let currentAccount = currentAccount else {
-        //            print("Aucun compte sélectionné.")
-        //            return []
-        //        }
+        let account = CurrentAccountManager.shared.getAccount()!
         
-        let lhs = currentAccount.uuid
-        let predicate = #Predicate<EntityRubric>{ entity in entity.account!.uuid == lhs }
+        let lhs = account.uuid
+        let predicate = #Predicate<EntityRubric>{ entity in entity.account.uuid == lhs }
         
         let fetchDescriptor = FetchDescriptor<EntityRubric>(
-            predicate: predicate
+            predicate: predicate,
+            sortBy: [SortDescriptor(\EntityRubric.name, order: .forward)]
         )
         
         do {
             entitiesRubric = try validContext.fetch(fetchDescriptor)
+
         } catch {
-            print("Erreur lors de la récupération des données avec SwiftData")
+            print("Erreur lors de la récupération des données : \(error.localizedDescription)")
+
         }
         if entitiesRubric.isEmpty {
-            defaultEntity(modelContext: validContext)
+            defaultEntity()
         }
         return entitiesRubric
     }
-    
-    fileprivate func addRubric(_ key: [String: String], account: EntityAccount) {
         
-        if entitiesRubric.isEmpty {
-            
-            //            let entityRubric = NSEntityDescription.insertNewObject(forEntityName: "EntityRubric", into: modelContext) as! EntityRubric
-            
-            let name = key["rubrique"] ?? ""
-            let color = Color( key["color"]!)
-            
-            let entityRubric = findOrCreate(account: account, name: name, color: NSColor.fromSwiftUIColor(color))
-            
-            let categoryName = key["categorie"] ?? ""
-            let categoryObjectif = Double(key["objectif"] ?? "0.0") ?? 0.0
-            let entityCategory = EntityCategory(name: categoryName, objectif: categoryObjectif, rubric: entityRubric)
-            validContext.insert(entityCategory)
-            
-            entityRubric.categorie.append(entityCategory)
-            do {
-                try save()
-            } catch {
-                print("erreur '", error, "'")
-            }
-            
-        } else {
-            // Adds category to the first rubric in the list
-            if let firstRubric = entitiesRubric.first {
-                let categoryName = key["categorie"] ?? ""
-                let categoryObjectif = Double(key["objectif"] ?? "0.0") ?? 0.0
-                let entityCategory = EntityCategory(name: categoryName, objectif: categoryObjectif, rubric: firstRubric)
-                validContext.insert(entityCategory)
-                
-                firstRubric.categorie.append(entityCategory)
-            }
-        }
-    }
-    
-    func loadCSVFile()  {
-        guard let url = Bundle.main.url(forResource: "rubrique", withExtension: "csv") else {
-            print("Error: File not found.")
-            return
-        }
-        
-        importCSV(from: url)
-    }
-    
-    
     func importCSV(from fileURL: URL) {
         guard let content = try? String(contentsOf: fileURL, encoding: .utf8) else {
             print("Erreur de lecture du fichier")
@@ -172,6 +114,8 @@ final class RubricManager {
 
         let lines = content.components(separatedBy: .newlines).filter { !$0.isEmpty }
         guard !lines.isEmpty else { return }
+        
+        let account = CurrentAccountManager.shared.getAccount()! // ✅ Récupérer une seule fois le compte
 
         var currentRubric: EntityRubric?
 
@@ -193,7 +137,8 @@ final class RubricManager {
                         validContext.insert(rubric)
                     }
                     // Créer une nouvelle rubrique
-                    currentRubric = EntityRubric(name: rubriqueName, color: nscolor)
+                    currentRubric = EntityRubric(name: rubriqueName, color: nscolor, account: account)
+                    validContext.insert(currentRubric!)
                 }
 
                 // Ajouter une catégorie
@@ -209,10 +154,19 @@ final class RubricManager {
             validContext.insert(rubric)
         }
 
-        try? validContext.save() // Sauvegarder dans SwiftData
+        do {
+            try validContext.save()
+        } catch {
+            print("Erreur lors de la sauvegarde : \(error)")
+        }
     }
     
-    func defaultEntity(modelContext: ModelContext) {
+    func defaultEntity() {
+        guard let url = Bundle.main.url(forResource: "rubrique", withExtension: "csv") else {
+            print("Error: File not found.")
+            return
+        }
+        importCSV(from: url)
     }
     
     func save () throws {

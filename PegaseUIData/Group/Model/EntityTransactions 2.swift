@@ -67,7 +67,7 @@ final class ListTransactionsManager {
         let accountID = account.id
         let descriptor = FetchDescriptor<EntityTransactions>(
             predicate: #Predicate<EntityTransactions> { transaction in
-                transaction.account?.id == accountID
+                transaction.account.id == accountID
             },
             sortBy: [SortDescriptor(\EntityTransactions.dateOperation, order: .reverse)]  // Optional: sort by date
         )
@@ -100,7 +100,7 @@ final class ListTransactionsManager {
         // Création du prédicat pour filtrer les transactions par compte
         let currentAccountID = currentAccount.uuid
         let predicate = #Predicate<EntityTransactions> {
-            $0.account?.uuid == currentAccountID
+            $0.account.uuid == currentAccountID
         }
 
         // Création du FetchDescriptor avec les tri par datePointage et dateOperation

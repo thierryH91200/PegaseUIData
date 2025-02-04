@@ -7,7 +7,7 @@
 import SwiftUI
 import SwiftData
 
-final class IdentityViewManager: ObservableObject {
+final class IdentityDataManager: ObservableObject {
     @Published var currentAccount: EntityAccount?
     @Published var identity: EntityIdentity? {
         didSet {
@@ -16,11 +16,16 @@ final class IdentityViewManager: ObservableObject {
         }
     }
     
-    func saveChanges(using context: ModelContext? = nil) {
-        guard let context = context else { return }
-
+    private var modelContext: ModelContext?
+    
+    func configure(with context: ModelContext) {
+        self.modelContext = context
+    }
+    
+    func saveChanges() {
+       
         do {
-            try context.save()
+            try modelContext?.save()
         } catch {
             print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
@@ -31,7 +36,7 @@ struct IdentityView: View {
     
     @Environment(\.modelContext) var modelContext
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
-    @EnvironmentObject var identityViewManager: IdentityViewManager
+    @EnvironmentObject var dataManager: IdentityDataManager
     
     @Query private var identityInfo: [EntityIdentity]
     
@@ -50,8 +55,8 @@ struct IdentityView: View {
 
             VStack(alignment: .leading, spacing: 8) {
                 
-                if identityViewManager.identity != nil {
-                    SectionInfoView(identityInfo: identityViewManager.identity!)
+                if dataManager.identity != nil {
+                    SectionInfoView(identityInfo: dataManager.identity!)
                 }
             }
         }
@@ -60,45 +65,47 @@ struct IdentityView: View {
         .cornerRadius(10)
         .onAppear {
             
+            dataManager.configure(with: modelContext)
+            
             if let account = currentAccountManager.currentAccount {
-                identityViewManager.currentAccount = account
+                dataManager.currentAccount = account
             }
 
             // Créer un nouvel enregistrement si la base de données est vide
-            if identityViewManager.identity == nil {
+            if dataManager.identity == nil {
                 if let account = CurrentAccountManager.shared.getAccount() {
-                    identityViewManager.currentAccount = account
+                    dataManager.currentAccount = account
                 } else {
                     print("Aucun compte disponible.")
                 }
                 IdentityManager.shared.configure(with: modelContext)
                 let identity = IdentityManager.shared.getAllDatas()
-                identityViewManager.identity = identity
+                dataManager.identity = identity
 
                 if identity == nil {
                     
                     let newIdentityInfo = EntityIdentity()
-                    identityViewManager.identity = newIdentityInfo
+                    dataManager.identity = newIdentityInfo
                     modelContext.insert(newIdentityInfo)
                 }
             }
         }
         .onDisappear {
             saveChanges()
-            identityViewManager.saveChanges(using: modelContext)
-            identityViewManager.identity = nil
+            dataManager.saveChanges()
+            dataManager.identity = nil
         }
         .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
             
             if let account = newAccount {
-                identityViewManager.identity = nil
-                identityViewManager.currentAccount = account
+                dataManager.identity = nil
+                dataManager.currentAccount = account
                 
                 loadOrCreate(for: account)
             }
         }
 
-        .onChange(of: identityViewManager.identity) { old , _ in
+        .onChange(of: dataManager.identity) { old , _ in
             do {
                 try modelContext.save()
             } catch {
@@ -111,12 +118,12 @@ struct IdentityView: View {
         
         IdentityManager.shared.configure(with: modelContext)
         if let existingIdentity = IdentityManager.shared.getAllDatas() {
-            identityViewManager.identity = existingIdentity
+            dataManager.identity = existingIdentity
         } else {
             let entity = EntityIdentity()
             entity.account = account
             modelContext.insert(entity)
-            identityViewManager.identity = entity
+            dataManager.identity = entity
         }
     }
 

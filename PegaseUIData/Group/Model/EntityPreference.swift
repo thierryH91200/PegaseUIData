@@ -18,7 +18,7 @@ import SwiftUI
     var category: EntityCategory?
     var paymentMode: EntityPaymentMode?
     
-    var account: EntityAccount?
+    var account: EntityAccount
     
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
@@ -62,7 +62,7 @@ final class PreferenceManager {
         
         // Crée un prédicat pour filtrer les entités par `account`
         let lhs = account!.uuid
-        let predicate = #Predicate<EntityPreference>{ entity in entity.account?.uuid == lhs }
+        let predicate = #Predicate<EntityPreference>{ entity in entity.account.uuid == lhs }
 
         let fetchDescriptor = FetchDescriptor<EntityPreference>(
             predicate: predicate)
@@ -86,7 +86,7 @@ final class PreferenceManager {
         
         let newPreference = EntityPreference(account: account)
         
-        if let rubric = RubricManager.shared.getAllDatas(account: account).sorted(by: { $0.name < $1.name }).first {
+        if let rubric = RubricManager.shared.getAllDatas().sorted(by: { $0.name < $1.name }).first {
            let categories = rubric.categorie
             newPreference.category = categories.sorted { $0.name < $1.name }.first!
         }

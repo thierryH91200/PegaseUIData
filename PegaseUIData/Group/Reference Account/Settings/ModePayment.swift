@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftData
 
-final class ModePaiementViewManager: ObservableObject {
+final class ModePaiementDataManager: ObservableObject {
     @Published var currentAccount: EntityAccount?
     @Published var modePayments: [EntityPaymentMode]? {
         didSet {
@@ -17,11 +17,16 @@ final class ModePaiementViewManager: ObservableObject {
         }
     }
     
-    func saveChanges(using context: ModelContext? = nil) {
-        guard let context = context else { return }
-        
+    private var modelContext: ModelContext?
+    
+    func configure(with context: ModelContext) {
+        self.modelContext = context
+    }
+    
+    func saveChanges() {
+       
         do {
-            try context.save()
+            try modelContext?.save()
         } catch {
             print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
@@ -32,7 +37,7 @@ struct ModePaymentView: View {
     
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var currentAccountManager : CurrentAccountManager
-    @EnvironmentObject var modePaiementViewManager : ModePaiementViewManager
+    @EnvironmentObject var dataManager : ModePaiementDataManager
 
     // Ajoutez un état pour suivre l'élément sélectionné
     @State private var selectedItem: EntityPaymentMode.ID? = nil
@@ -46,7 +51,7 @@ struct ModePaymentView: View {
     
     var body: some View {
         VStack(spacing: 10) {
-            ModePaiementTable(modePayments: modePaiementViewManager.modePayments ?? [], selection: $selectedItem)
+            ModePaiementTable(modePayments: dataManager.modePayments ?? [], selection: $selectedItem)
                 .frame(height: 300)
             
             .onChange(of: selectedMode) { oldValue, newValue in
@@ -65,36 +70,40 @@ struct ModePaymentView: View {
             .onChange(of: currentAccountManager.currentAccount ) { old, newAccount in
                 // Rafraîchir les données` quand le compte change
                 if let account = newAccount {
-                    modePaiementViewManager.modePayments = nil
-                    modePaiementViewManager.currentAccount = account
+                    dataManager.modePayments = nil
+                    dataManager.currentAccount = account
                     selectedMode = nil
                     loadOrCreate(for: account)
                 }
             }
             
             .onAppear {
+
+                dataManager.configure(with: modelContext)
+
                 Task {
                     if let account = currentAccountManager.currentAccount {
-                        modePaiementViewManager.currentAccount = account
+                        dataManager.currentAccount = account
                     } else {
                         print("Aucun compte disponible.")
                     }
                     
                     // Vérifier si la liste est vide plutôt que `nil`
-                    if modePaiementViewManager.modePayments?.isEmpty ?? true {
+                    if dataManager.modePayments?.isEmpty ?? true {
                         if let account = CurrentAccountManager.shared.getAccount() {
-                            modePaiementViewManager.currentAccount = account
+                            dataManager.currentAccount = account
                         } else {
                             print("Aucun compte disponible.")
                         }
                         
-                        ChequeBookManager.shared.configure(with: modelContext)
-                        let modePayments = PaymentModeManager.shared.getAllDatas(for: modePaiementViewManager.currentAccount)
-                        modePaiementViewManager.modePayments = modePayments
+                        PaymentModeManager.shared.configure(with: modelContext)
+                        let modePayments = PaymentModeManager.shared.getAllDatas(for: dataManager.currentAccount)
+                        dataManager.modePayments = modePayments
                         
                         if modePayments?.isEmpty ?? true {
-                            let entity = EntityPaymentMode(name: "test", color: .blue, account: nil)
-                            modePaiementViewManager.modePayments?.append(entity)
+                            let account = dataManager.currentAccount!
+                            let entity = EntityPaymentMode(name: "test", color: .blue, account: account)
+                            dataManager.modePayments?.append(entity)
                             modelContext.insert(entity)
                         }
                     }
@@ -163,7 +172,6 @@ struct ModePaymentView: View {
         self.selectedMode = nil
         self.selectedItem = nil
 
-        
         do {
             try modelContext.save()
         } catch {
@@ -173,7 +181,7 @@ struct ModePaymentView: View {
     
     func refreshData() {
         guard let account = currentAccountManager.currentAccount else { return }
-        modePaiementViewManager.modePayments = PaymentModeManager.shared.getAllDatas(for: account)
+        dataManager.modePayments = PaymentModeManager.shared.getAllDatas(for: account)
     }
     
     private func loadOrCreate(for account: EntityAccount?) {
@@ -181,12 +189,12 @@ struct ModePaymentView: View {
         
         PaymentModeManager.shared.configure(with: modelContext)
         if let existing = PaymentModeManager.shared.getAllDatas(for : account) {
-            modePaiementViewManager.modePayments = existing
+            dataManager.modePayments = existing
         } else {
-            let entity = EntityPaymentMode(name: "Test", color: .blue)
+            let entity = EntityPaymentMode(name: "Test", color: .blue, account: account)
             entity.account = account
             modelContext.insert(entity)
-            modePaiementViewManager.modePayments!.append( entity)
+            dataManager.modePayments!.append( entity)
         }
     }
 }
@@ -206,15 +214,15 @@ struct ModePaiementTable: View {
                         .fill(Color(item.color))
                         .frame(width: 40, height: 20)
                 }
-                TableColumn("Account", value: \EntityPaymentMode.account!.name)
+                TableColumn("Account", value: \EntityPaymentMode.account.name)
                 TableColumn("Surname") { paymentMode in
-                    Text(paymentMode.account?.identity?.surName ?? "Unknown")
+                    Text(paymentMode.account.identity?.surName ?? "Unknown")
                 }
                 TableColumn("First name")  { paymentMode in
-                    Text(paymentMode.account?.identity?.name ?? "Unknown")
+                    Text(paymentMode.account.identity?.name ?? "Unknown")
                 }
                 TableColumn("Number") { paymentMode in
-                    Text(paymentMode.account?.initAccount?.codeAccount ?? "Unknown")
+                    Text(paymentMode.account.initAccount?.codeAccount ?? "Unknown")
                 }
             }
         }
@@ -225,7 +233,7 @@ struct ModePaiementTable: View {
 struct ModePaiementFormView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject var modePaiementViewManager: ModePaiementViewManager
+    @EnvironmentObject var modePaiementViewManager: ModePaiementDataManager
     
     @Binding var isPresented: Bool
     @Binding var mode: Bool
@@ -286,12 +294,13 @@ struct ModePaiementFormView: View {
     
     private func save() {
         let newItem: EntityPaymentMode
+        let account = modePaiementViewManager.currentAccount
         
         if let existing = modePaiement {
             newItem = existing
         } else {
             let color = NSColor.fromSwiftUIColor(selectedColor)
-            newItem = EntityPaymentMode(name: name, color: color)
+            newItem = EntityPaymentMode(name: name, color: color, account: account!)
             modelContext.insert(newItem)
             modePaiementViewManager.modePayments?.append(newItem) // ✅ Ajouter à la liste
         }

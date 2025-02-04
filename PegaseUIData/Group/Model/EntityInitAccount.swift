@@ -35,10 +35,11 @@ import SwiftUI
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
 
-    var account: EntityAccount?
+    var account: EntityAccount
  
     public init() {
-        iban = "FR76"
+        self.iban = "FR76"
+        self.account = CurrentAccountManager.shared.getAccount()!
     }
 }
 
@@ -83,7 +84,7 @@ final class InitAccountManager {
         }
 
         let lhs = account.uuid
-        let predicate = #Predicate<EntityInitAccount>{ entity in entity.account?.uuid == lhs }
+        let predicate = #Predicate<EntityInitAccount>{ entity in entity.account.uuid == lhs }
 
         let descriptor = FetchDescriptor<EntityInitAccount>(
             predicate: predicate,

@@ -9,48 +9,153 @@
 import SwiftUI
 import SwiftData
 
+final class RubricDataManager: ObservableObject {
+    @Published var currentAccount: EntityAccount?
+    @Published var rubrics: [EntityRubric] = []
+    
+    private var modelContext: ModelContext?
+    
+    func configure(with context: ModelContext) {
+        self.modelContext = context
+    }
+    
+    func saveChanges() {
+       
+        do {
+            try modelContext?.save()
+        } catch {
+            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+        }
+    }
+}
 
 
 struct RubricView: View {
     
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject var currentAccountManager : CurrentAccountManager
+    @EnvironmentObject var dataManager : RubricDataManager
     
-    @Query(sort: \EntityRubric.name) private var rubriques: [EntityRubric]
+    @Query(filter: #Predicate<EntityRubric> { $0.account == CurrentAccountManager.shared.currentAccount },
+           sort: \.name)
+    private var rubriques: [EntityRubric]
+    
     @State private var expandedRubriques: [String: Bool] = [:]
     @State private var selectedCategory: EntityCategory?
-
+    @State private var selectedRubrique: EntityRubric?
+    
+    @State private var isAddDialogRubricPresented = false
+    @State private var isEditDialogRubricPresented = false
+    @State private var isAddDialogCategoryPresented = false
+    @State private var isEditDialogCategoryPresented = false
+    @State private var modeCreate = false
+    
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
                 ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 0) {
+                    LazyVStack(alignment: .leading, spacing: 2) {
                         rubricList()
                             .padding(.vertical, 0)
                     }
                     .padding(10)
                 }
+                
+                .onChange(of: selectedCategory) { oldValue, newValue in
+                }
+                
+                .onChange(of: currentAccountManager.currentAccount ) { old, newAccount in
+                }
+                
                 .onAppear {
-                    RubricManager.shared.configure(with: modelContext)
+                    dataManager.configure(with: modelContext)
                     
-                    if let url = Bundle.main.url(forResource: "rubrique", withExtension: "csv") {
-                        RubricManager.shared.importCSV(from: url)
-                    }
+                    RubricManager.shared.configure(with: modelContext)
+                    RubricManager.shared.getAllDatas()
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 .background(Color.white)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 .shadow(radius: 3)
-
+                
                 Spacer(minLength: 0)
+                
+                HStack {
+                    Button(action: {
+                        isAddDialogCategoryPresented = true
+                        modeCreate = true
+                    }) {
+                        Label("Add", systemImage: "plus")
+                            .padding()
+                            .background(Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                    }
+                    
+                    Button(action: {
+                        isEditDialogCategoryPresented = true
+                        modeCreate = false
+                    }) {
+                        Label("Edit", systemImage: "pencil")
+                            .padding()
+                            .background(Color.green)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                    }
+                    .disabled(selectedCategory == nil) // Désactive si aucune ligne n'est sélectionnée
+                    
+                    Button(action: {
+                        removeCategorySelectedItem()
+                        refreshData()
+                    })
+                    {
+                        Label("Delete", systemImage: "trash")
+                            .padding()
+                            .background(Color.red)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                    }
+                    .disabled(selectedCategory == nil) // Désactive si aucune ligne n'est sélectionnée
+                }
+                .padding()
+                Spacer()
             }
             .frame(width: 400, height: 500)
             .padding()
-            .background(Color.gray.opacity(0.2))
             .position(x: geometry.size.width / 2, y: 0)
             .offset(y: 350) // Ajustez cette valeur selon vos besoins
+            
+            .sheet(isPresented: $isAddDialogRubricPresented) {
+                RubricFormView(isPresented: $isAddDialogRubricPresented, mode: $modeCreate, rubric: nil)
+            }
+            .sheet(isPresented: $isEditDialogRubricPresented) {
+                RubricFormView(isPresented: $isEditDialogRubricPresented, mode: $modeCreate, rubric: selectedRubrique)
+            }
+            .sheet(isPresented: $isAddDialogCategoryPresented) {
+                CategoryFormView(isPresented: $isAddDialogCategoryPresented, mode: $modeCreate, rubric: nil, category: nil)
+            }
+            .sheet(isPresented: $isEditDialogCategoryPresented) {
+                let rubric = selectedCategory!.rubric
+                CategoryFormView(isPresented: $isEditDialogCategoryPresented, mode: $modeCreate, rubric: rubric, category: selectedCategory)
+            }
         }
     }
-
+    private func removeCategorySelectedItem() {
+    }
+    
+    func refreshData() {
+    }
+    
+    private func removeRubric(_ rubric: EntityRubric) {
+        modelContext.delete(rubric)
+        refreshData()
+    }
+    
+    private func removeCategory(_ category: EntityCategory) {
+        modelContext.delete(category)
+        refreshData()
+    }
+    
     // Fonction séparée pour générer la liste des rubriques
     @ViewBuilder
     private func rubricList() -> some View {
@@ -59,31 +164,56 @@ struct RubricView: View {
                 isExpanded: Binding(
                     get: { expandedRubriques[rubrique.name] ?? true },
                     set: { expandedRubriques[rubrique.name] = $0 }
-                ),
-                content: {
+                )
+            ) {
+                VStack(spacing: 0) {
                     ForEach(rubrique.categorie, id: \.name) { category in
                         categoryRow(category)
-                            .padding(.vertical, 0) // Supprimer l'espace inutile
                     }
-                },
-                label: {
-                    HStack {
-                        Text(rubrique.name)
-                            .font(.system(size: 13, weight: .bold))
-                            .foregroundColor(Color(rubrique.color))
-                            .frame(height: 20)
-                        Spacer()
-                        Rectangle()
-                            .fill(Color(rubrique.color))
-                            .frame(width: 40, height: 10)
-                    }
-                    .padding(.vertical, 2) // Réduire l'espace au-dessus et en dessous
                 }
-            )
-            .padding(.vertical, 0)
+            } label: {
+                HStack {
+                    Text(rubrique.name)
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundColor(Color(rubrique.color))
+                        .frame(height: 20)
+                    Spacer()
+                    Rectangle()
+                        .fill(Color(rubrique.color))
+                        .frame(width: 40, height: 10)
+                }
+                .padding(.vertical, 2)
+                .background(selectedRubrique?.name == rubrique.name ? Color.blue.opacity(0.3) : Color.clear) // ✅ Sélection uniquement sur la rubrique
+                .onTapGesture {
+                    selectedRubrique = rubrique
+                    selectedCategory = nil
+                }
+            }
+            .contextMenu {
+                Button(action: {
+                    isAddDialogRubricPresented = true
+                    modeCreate = true
+                }) {
+                    Label("Ajouter une rubrique", systemImage: "plus")
+                }
+                
+                Button(action: {
+                    isEditDialogRubricPresented = true
+                    modeCreate = false
+                }) {
+                    Label("Éditer la rubrique", systemImage: "pencil")
+                }
+                
+                Button(action: {
+                    removeRubric(rubrique)
+                }) {
+                    Label("Delete the rubric", systemImage: "trash")
+                        .foregroundColor(.red)
+                }
+            }
         }
     }
-
+    
     // Fonction pour afficher chaque catégorie avec une ligne HStack
     @ViewBuilder
     private func categoryRow(_ category: EntityCategory) -> some View {
@@ -98,8 +228,197 @@ struct RubricView: View {
         .frame(height: 18)
         .background(selectedCategory?.name == category.name ? Color.blue.opacity(0.3) : Color.clear)
         .onTapGesture {
+            selectedRubrique = nil
             selectedCategory = category
         }
+        .contextMenu {  // Ajout du menu contextuel
+            Button(action: {
+                isAddDialogCategoryPresented = true
+                modeCreate = true
+            }) {
+                Label("Ajouter une catégorie", systemImage: "plus")
+            }
+            
+            Button(action: {
+                isEditDialogCategoryPresented = true
+                modeCreate = false
+            }) {
+                Label("Éditer la catégorie", systemImage: "pencil")
+            }
+            
+            Button(action: {
+                removeCategory(category)
+            }) {
+                Label("REmove the categorie", systemImage: "trash")
+                    .foregroundColor(.red)
+            }
+        }
+    }
+}
+
+struct RubricFormView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var rubricViewManager: RubricDataManager
+    
+    @Binding var isPresented: Bool
+    @Binding var mode: Bool
+    let rubric: EntityRubric?
+    @State private var name: String = ""
+    @State private var selectedColor: Color = .gray
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            Rectangle()
+                .fill(mode ? Color.blue : Color.green)
+                .frame(height: 10)
+            
+            // Contenu principal
+            VStack(spacing: 20) {
+                
+                Text(mode ? "Add Rubric" : "Edit Rubric")
+                    .font(.headline)
+                    .padding(.top, 10) // Ajoute un peu d'espace après le bandeau
+                
+                
+                TextField("Name", text: $name)
+                    .textFieldStyle(.roundedBorder)
+                
+                ColorPicker("Choose the color", selection: $selectedColor)
+            }
+            .padding()
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        isPresented = false
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        isPresented = false
+                        save()
+                        dismiss()
+                    }
+                }
+            }
+            // Bandeau du bas
+            .frame(width: 300)
+            
+            Rectangle()
+                .fill(mode ? Color.blue : Color.green)
+                .frame(height: 10)
+            
+                .onAppear {
+                    if let rubric = rubric {
+                        name = rubric.name
+                        selectedColor = Color(rubric.color)
+                    }
+                }
+        }
+    }
+    
+    private func save() {
+        let newItem: EntityRubric
+        let account = rubricViewManager.currentAccount!
+        
+        if let existing = rubric {
+            newItem = existing
+        } else {
+            let color = NSColor.fromSwiftUIColor(selectedColor)
+            newItem = EntityRubric(name: name, color: color, account: account)
+            modelContext.insert(newItem)
+            //            rubricViewManager.rubrics.append(newItem) // ✅ Ajouter à la liste
+        }
+        
+        newItem.name = name
+        newItem.color = NSColor.fromSwiftUIColor(selectedColor)
+        newItem.account = CurrentAccountManager.shared.getAccount()!
+        
+        try? modelContext.save()
+    }
+}
+
+struct CategoryFormView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var rubricViewManager: RubricDataManager
+    
+    @Binding var isPresented: Bool
+    @Binding var mode: Bool
+    let rubric: EntityRubric?
+    let category: EntityCategory?
+    @State private var name: String = ""
+    @State private var objectif: String = ""
+    @State private var selectedColor: Color = .gray
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            Rectangle()
+                .fill(mode ? Color.blue : Color.green)
+                .frame(height: 10)
+            
+            // Contenu principal
+            VStack(spacing: 20) {
+                
+                Text(mode ? "Add Category" : "Edit Category")
+                    .font(.headline)
+                    .padding(.top, 10) // Ajoute un peu d'espace après le bandeau
+                
+                TextField("Name", text: $name)
+                    .textFieldStyle(.roundedBorder)
+                
+                TextField("Objectif", text: $objectif)
+                    .textFieldStyle(.roundedBorder)
+            }
+            .padding()
+            Rectangle()
+                .fill(mode ? Color.blue : Color.green)
+                .frame(height: 10)
+            
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel") {
+                            isPresented = false
+                            dismiss()
+                        }
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Save") {
+                            isPresented = false
+                            save()
+                            dismiss()
+                        }
+                    }
+                }
+            // Bandeau du bas
+                .frame(width: 300)
+            
+                .onAppear {
+                    if let category = category {
+                        name = category.name
+                        objectif = String(category.objectif)
+                    }
+                }
+        }
+    }
+    
+    private func save() {
+        let newItem: EntityCategory
+        
+        
+        if let existing = category {
+            newItem = existing
+        } else {
+            newItem = EntityCategory(name: name, objectif: Double(objectif) ?? 0.0, rubric: rubric!)
+            modelContext.insert(newItem)
+            //            rubricViewManager.rubrics.append(newItem) // ✅ Ajouter à la liste
+        }
+        
+        newItem.name = name
+        newItem.objectif = Double(objectif) ?? 0.0
+        
+        try? modelContext.save()
     }
 }
 

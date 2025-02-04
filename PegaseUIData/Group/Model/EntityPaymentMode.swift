@@ -14,12 +14,12 @@ import SwiftData
     var name: String = ""
     @Attribute(.transformable(by: ColorTransformer.self)) var color: NSColor
     
-    @Relationship var account: EntityAccount?
+    @Relationship var account: EntityAccount
     
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
     
-    init(name: String, color: NSColor, account: EntityAccount? = nil ) {
+    init(name: String, color: NSColor, account: EntityAccount ) {
         self.name = name
         self.color = color
         self.account = account
@@ -112,12 +112,11 @@ final class PaymentModeManager {
         
         guard let account = account else {
             return []
-
         }
 
         let lhs = account.uuid
         let predicate = #Predicate<EntityPaymentMode> { entity in
-            entity.account?.uuid == lhs
+            entity.account.uuid == lhs
         }
         
         let fetchDescriptor = FetchDescriptor<EntityPaymentMode>(
@@ -140,7 +139,7 @@ final class PaymentModeManager {
         let accountID = account.uuid
         let descriptor = FetchDescriptor<EntityPaymentMode>(
             predicate: #Predicate<EntityPaymentMode> { mode in
-                mode.account?.uuid == accountID
+                mode.account.uuid == accountID
             },
             sortBy: [SortDescriptor(\EntityPaymentMode.name, order: .forward)]
         )
@@ -183,7 +182,7 @@ final class PaymentModeManager {
     func find( account: EntityAccount, name: String) -> EntityPaymentMode? {
         
         let lhs = account.uuid
-        let predicate = #Predicate<EntityPaymentMode> { $0.account?.uuid == lhs && $0.name == name }
+        let predicate = #Predicate<EntityPaymentMode> { $0.account.uuid == lhs && $0.name == name }
 
         let fetchDescriptor = FetchDescriptor<EntityPaymentMode>(
             predicate: predicate, // Filtrer par le compte
@@ -242,7 +241,7 @@ final class PaymentModeManager {
         }
                
         let lhs = account.uuid
-        let predicate = #Predicate<EntityPaymentMode>{ entity in entity.account?.uuid == lhs }
+        let predicate = #Predicate<EntityPaymentMode>{ entity in entity.account.uuid == lhs }
                 
         let fetchDescriptor = FetchDescriptor<EntityPaymentMode>(
             predicate: predicate,

@@ -53,7 +53,7 @@ struct Accueil: View {
 struct Account: View {
     
     @StateObject private var currentAccountManager = CurrentAccountManager.shared
-    @StateObject private var initAccountViewManager = InitAccountViewManager()
+    @StateObject private var initAccountViewManager = InitAccountDataManager()
 
     var body: some View {
         VStack {
@@ -70,7 +70,7 @@ struct Account: View {
 struct Bank: View {
     
     @StateObject private var currentAccountManager = CurrentAccountManager.shared
-    @StateObject private var banqueViewManager = BanqueViewManager()
+    @StateObject private var banqueViewManager = BankDataManager()
     
     var body: some View {
         VStack {
@@ -86,7 +86,7 @@ struct Bank: View {
 
 struct Identite: View {
     @StateObject private var currentAccountManager = CurrentAccountManager.shared
-    @StateObject private var identityViewManager = IdentityViewManager()
+    @StateObject private var identityViewManager = IdentityDataManager()
 
     var body: some View {
         VStack {

@@ -30,13 +30,13 @@ import SwiftData
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
 
-    var account: EntityAccount?
+    var account: EntityAccount
     var paymentMode: EntityPaymentMode?
     var sousOperations: [EntitySousOperations]?
 //    @Relationship(inverse: \EntityTransactions.operationLiee) var operationLiee: EntityTransactions?
 
     public init() {
-
+        self.account = CurrentAccountManager.shared.getAccount()!
     }
 }
 

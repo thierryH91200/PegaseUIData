@@ -41,7 +41,7 @@ class EntityBankStatement: Identifiable {
     @Attribute var pdfLink    : String = ""
     @Attribute(.externalStorage) var pdfDoc: Data?
     
-    var account: EntityAccount?
+    var account: EntityAccount
     
     init(num       : Int  = 0,
          startDate : Date = Date(), startSolde : Double = 0.0,
@@ -78,11 +78,11 @@ extension EntityBankStatement {
     }
     
     var accountName: String {
-        account?.identity?.name ?? ""
+        account.identity?.name ?? ""
     }
     
     var accountSurname: String {
-        account?.identity?.surName ?? ""
+        account.identity?.surName ?? ""
     }
 }
 
@@ -147,7 +147,7 @@ final class BankStatementManager {
         do {
             
             let lhs = currentAccount.uuid
-            let predicate = #Predicate<EntityBankStatement>{ entity in entity.account?.uuid  ==  lhs }
+            let predicate = #Predicate<EntityBankStatement>{ entity in entity.account.uuid  ==  lhs }
             
             let descriptor = FetchDescriptor<EntityBankStatement>(
                 predicate: predicate,

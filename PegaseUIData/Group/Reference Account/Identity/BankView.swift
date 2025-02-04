@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftData
 
-final class BanqueViewManager: ObservableObject {
+final class BankDataManager: ObservableObject {
     @Published var currentAccount: EntityAccount?
     @Published var banqueInfo: EntityBanqueInfo? {
         didSet {
@@ -17,11 +17,16 @@ final class BanqueViewManager: ObservableObject {
         }
     }
     
-    func saveChanges(using context: ModelContext? = nil) {
-        guard let context = context else { return }
-        
+    private var modelContext: ModelContext?
+    
+    func configure(with context: ModelContext) {
+        self.modelContext = context
+    }
+    
+    func saveChanges() {
+       
         do {
-            try context.save()
+            try modelContext?.save()
         } catch {
             print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
@@ -32,13 +37,13 @@ struct BankView: View {
     
     @Environment(\.modelContext) var modelContext
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
-    @EnvironmentObject var banqueInfoManager: BanqueViewManager
+    @EnvironmentObject var dataManager: BankDataManager
 
     @Query private var banqueInfos: [EntityBanqueInfo]
     
     var body: some View {
         VStack(spacing: 30) {
-            if let banqueInfo = banqueInfoManager.banqueInfo {
+            if let banqueInfo = dataManager.banqueInfo {
                 // Utilisez un Binding pour mettre à jour les données en direct
                 SectionView(title: "Bank", banqueInfo: banqueInfo)
                 SectionView(title: "Contact", banqueInfo: banqueInfo)
@@ -49,46 +54,49 @@ struct BankView: View {
         }
         .padding()
         .onAppear {
+            
+            dataManager.configure(with: modelContext)
+
             if let account = currentAccountManager.currentAccount {
-                banqueInfoManager.currentAccount = account
+                dataManager.currentAccount = account
             }
 
             // Créer un nouvel enregistrement si la base de données est vide
-            if banqueInfoManager.banqueInfo == nil {
+            if dataManager.banqueInfo == nil {
                 if let account = CurrentAccountManager.shared.getAccount() {
-                    banqueInfoManager.currentAccount = account
+                    dataManager.currentAccount = account
                 } else {
                     print("Aucun compte disponible.")
                 }
                 
                 BankManager.shared.configure(with: modelContext)
                 let banqueInfo = BankManager.shared.getAllDatas()
-                banqueInfoManager.banqueInfo = banqueInfo
+                dataManager.banqueInfo = banqueInfo
 
                 if banqueInfo == nil {
                     
                     let newbanqueInfo = EntityBanqueInfo()
-                    banqueInfoManager.banqueInfo = newbanqueInfo
+                    dataManager.banqueInfo = newbanqueInfo
                     modelContext.insert(newbanqueInfo)
                 }
             }
         }
         .onDisappear {
             saveChanges()
-            banqueInfoManager.saveChanges(using: modelContext)
-            banqueInfoManager.banqueInfo = nil
+            dataManager.saveChanges()
+            dataManager.banqueInfo = nil
         }
 
         .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
     
             if let account = newAccount {
-                banqueInfoManager.banqueInfo = nil
-                banqueInfoManager.currentAccount = account
+                dataManager.banqueInfo = nil
+                dataManager.currentAccount = account
                 
                 loadOrCreate(for: account)
             }
         }
-        .onChange(of: banqueInfoManager.banqueInfo) { old , _ in
+        .onChange(of: dataManager.banqueInfo) { old , _ in
             do {
                 try modelContext.save()
             } catch {
@@ -101,7 +109,7 @@ struct BankView: View {
         guard let account else { return }
 
         BankManager.shared.configure(with: modelContext)
-        banqueInfoManager.banqueInfo = BankManager.shared.getAllDatas() ?? {
+        dataManager.banqueInfo = BankManager.shared.getAllDatas() ?? {
             let entity = EntityBanqueInfo()
             entity.account = account
             modelContext.insert(entity)

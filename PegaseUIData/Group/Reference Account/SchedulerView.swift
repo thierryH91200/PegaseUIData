@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftData
 
-final class SchedulerViewManager: ObservableObject {
+final class SchedulerDataManager: ObservableObject {
     @Published var currentAccount: EntityAccount?
     @Published var schedulers: [EntitySchedule]? {
         didSet {
@@ -16,12 +16,17 @@ final class SchedulerViewManager: ObservableObject {
             saveChanges()
         }
     }
+
+    private var modelContext: ModelContext?
     
-    func saveChanges(using context: ModelContext? = nil) {
-        guard let context = context else { return }
-        
+    func configure(with context: ModelContext) {
+        self.modelContext = context
+    }
+    
+    func saveChanges() {
+       
         do {
-            try context.save()
+            try modelContext?.save()
         } catch {
             print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
@@ -31,13 +36,13 @@ final class SchedulerViewManager: ObservableObject {
 struct SchedulerView: View {
     
     @StateObject private var currentAccountManager = CurrentAccountManager.shared
-    @StateObject private var schedulerViewManager = SchedulerViewManager()
+    @StateObject private var schedulerDataManager = SchedulerDataManager()
 
     @Binding var isVisible: Bool
     
     var body: some View {
         Scheduler()
-            .environmentObject(schedulerViewManager)
+            .environmentObject(schedulerDataManager)
             .environmentObject(currentAccountManager)
 
             .padding()
@@ -57,7 +62,7 @@ struct Scheduler: View {
     
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var currentAccountManager : CurrentAccountManager
-    @EnvironmentObject var schedulerViewManager : SchedulerViewManager
+    @EnvironmentObject var schedulerDataManager : SchedulerDataManager
 
     @ObservedObject var accountManager = CurrentAccountManager.shared
 
@@ -80,7 +85,7 @@ struct Scheduler: View {
     
     var body: some View {
         VStack(spacing: 10) {
-            if let account = schedulerViewManager.currentAccount {
+            if let account = schedulerDataManager.currentAccount {
                 Text("Account: \(account.name)")
                     .font(.headline)
             }
@@ -88,24 +93,24 @@ struct Scheduler: View {
             
             .onAppear {
                 if let account = currentAccountManager.currentAccount {
-                    schedulerViewManager.currentAccount = account
+                    schedulerDataManager.currentAccount = account
                 }
                 
                 // Créer un nouvel enregistrement si la base de données est vide
-                if schedulerViewManager.schedulers == nil {
+                if schedulerDataManager.schedulers == nil {
                     if let account = CurrentAccountManager.shared.getAccount() {
-                        schedulerViewManager.currentAccount = account
+                        schedulerDataManager.currentAccount = account
                     } else {
                         print("Aucun compte disponible.")
                     }
                     SchedulerManager.shared.configure(with: modelContext)
                     let schedulers = SchedulerManager.shared.getAllDatas()
-                    schedulerViewManager.schedulers = schedulers
+                    schedulerDataManager.schedulers = schedulers
                     
                     if schedulers == nil {
                         
                         let newEntity = EntitySchedule()
-                        schedulerViewManager.schedulers!.append( newEntity   )
+                        schedulerDataManager.schedulers!.append( newEntity   )
                         modelContext.insert(newEntity)
                     }
                 }
@@ -122,8 +127,8 @@ struct Scheduler: View {
             .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
                 
                 if let account = newAccount {
-                    schedulerViewManager.schedulers = nil
-                    schedulerViewManager.currentAccount = account
+                    schedulerDataManager.schedulers = nil
+                    schedulerDataManager.currentAccount = account
                     
                     loadOrCreate(for: account)
                 }
@@ -183,12 +188,12 @@ struct Scheduler: View {
         
         BankStatementManager.shared.configure(with: modelContext)
         if let existing = SchedulerManager.shared.getAllDatas() {
-            schedulerViewManager.schedulers = existing
+            schedulerDataManager.schedulers = existing
         } else {
             let entity = EntitySchedule()
             entity.account = account
             modelContext.insert(entity)
-            schedulerViewManager.schedulers!.append( entity)
+            schedulerDataManager.schedulers!.append( entity)
         }
     }
     
@@ -254,11 +259,11 @@ struct SchedulerTable: View {
             }
             
             TableColumn( "Name") { item in
-                Text(item.account!.identity?.name ?? "")
+                Text(item.account.identity?.name ?? "")
             }
             
             TableColumn( "Number") { item in
-                Text(item.account!.initAccount?.codeAccount ?? "")
+                Text(item.account.initAccount?.codeAccount ?? "")
             }
         }
     }

@@ -30,13 +30,17 @@ struct SettingTab: View {
     
     @StateObject private var currentAccountManager = CurrentAccountManager.shared
     
-    @StateObject private var chequeViewManager = CheckViewManager()
-    @StateObject private var modePaiementViewManager = ModePaiementViewManager()
-    @StateObject private var preferenceViewManager = PreferenceViewManager()
+    @StateObject private var chequeViewManager       = CheckDataManager()
+    @StateObject private var modePaiementViewManager = ModePaiementDataManager()
+    @StateObject private var rubricDataManager       = RubricDataManager()
+    @StateObject private var dataManager   = PreferenceDataManager()
 
     var body: some View {
         TabView {
             RubricView()
+                .environmentObject(currentAccountManager)
+                .environmentObject(rubricDataManager)
+
                 .tabItem {
                     Label("Rubric", systemImage: "house")
                 }
@@ -51,7 +55,7 @@ struct SettingTab: View {
             
             PreferenceTransactionView()
                 .environmentObject(currentAccountManager)
-                .environmentObject(preferenceViewManager)
+                .environmentObject(dataManager)
                 .tabItem {
                     Label("Transaction", systemImage: "person")
                 }

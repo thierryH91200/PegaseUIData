@@ -27,7 +27,7 @@ public class EntityBanqueInfo : Identifiable{
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
     
-    var account    : EntityAccount?
+    var account    : EntityAccount
     
     init(account: EntityAccount)  {
         self.account = account
@@ -103,7 +103,7 @@ final class BankManager {
 
         let lhs = account.uuid
         let predicate = #Predicate<EntityBanqueInfo> { entity in
-            entity.account?.uuid == lhs
+            entity.account.uuid == lhs
         }
         
         let fetchDescriptor = FetchDescriptor<EntityBanqueInfo>(
