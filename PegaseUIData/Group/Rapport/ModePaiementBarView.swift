@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-struct ModePaiementView: View {
+struct ModePaiementBarView: View {
     
     @Binding var isVisible: Bool
     
     var body: some View {
-        Text("ModePaymentView")
+        Text("ModePaiementBarView")
             .font(.title)
             .padding()
             .task {

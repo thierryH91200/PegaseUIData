@@ -43,6 +43,11 @@ struct BankView: View {
     
     var body: some View {
         VStack(spacing: 30) {
+            if let account = dataManager.currentAccount {
+                Text("Account: \(account.name)")
+                    .font(.headline)
+            }
+
             if let banqueInfo = dataManager.banqueInfo {
                 // Utilisez un Binding pour mettre à jour les données en direct
                 SectionView(title: "Bank", banqueInfo: banqueInfo)

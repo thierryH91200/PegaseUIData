@@ -51,6 +51,12 @@ struct ModePaymentView: View {
     
     var body: some View {
         VStack(spacing: 10) {
+            
+            if let account = dataManager.currentAccount {
+                Text("Account: \(account.name)")
+                    .font(.headline)
+            }
+
             ModePaiementTable(modePayments: dataManager.modePayments ?? [], selection: $selectedItem)
                 .frame(height: 300)
             
@@ -79,34 +85,19 @@ struct ModePaymentView: View {
             
             .onAppear {
 
-                dataManager.configure(with: modelContext)
-
                 Task {
+                    dataManager.configure(with: modelContext)
+
                     if let account = currentAccountManager.currentAccount {
                         dataManager.currentAccount = account
                     } else {
                         print("Aucun compte disponible.")
                     }
                     
-                    // Vérifier si la liste est vide plutôt que `nil`
-                    if dataManager.modePayments?.isEmpty ?? true {
-                        if let account = CurrentAccountManager.shared.getAccount() {
-                            dataManager.currentAccount = account
-                        } else {
-                            print("Aucun compte disponible.")
-                        }
-                        
-                        PaymentModeManager.shared.configure(with: modelContext)
-                        let modePayments = PaymentModeManager.shared.getAllDatas(for: dataManager.currentAccount)
-                        dataManager.modePayments = modePayments
-                        
-                        if modePayments?.isEmpty ?? true {
-                            let account = dataManager.currentAccount!
-                            let entity = EntityPaymentMode(name: "test", color: .blue, account: account)
-                            dataManager.modePayments?.append(entity)
-                            modelContext.insert(entity)
-                        }
-                    }
+            
+                    PaymentModeManager.shared.configure(with: modelContext)
+                    let modePayments = PaymentModeManager.shared.getAllDatas(for: dataManager.currentAccount)
+                    dataManager.modePayments = modePayments
                 }
             }
             
@@ -154,12 +145,13 @@ struct ModePaymentView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top) // Utilise tout l'espace parent et aligne en haut
         .padding()
         
-        .sheet(isPresented: $isEditDialogPresented) {
-            ModePaiementFormView(isPresented: $isEditDialogPresented, mode: $modeCreate, modePaiement: nil)
-        }
         .sheet(isPresented: $isAddDialogPresented) {
             ModePaiementFormView(isPresented: $isAddDialogPresented, mode: $modeCreate, modePaiement: nil)
         }
+        .sheet(isPresented: $isEditDialogPresented) {
+            ModePaiementFormView(isPresented: $isEditDialogPresented, mode: $modeCreate, modePaiement: selectedMode)
+        }
+
     }
        
     private func removeSelectedItem() {
@@ -253,7 +245,6 @@ struct ModePaiementFormView: View {
                 Text(mode ? "Add Payment Mode" : "Edit Payment Mode")
                     .font(.headline)
                     .padding(.top, 10) // Ajoute un peu d'espace après le bandeau
-                
                 
                 TextField("Name", text: $name)
                     .textFieldStyle(.roundedBorder)

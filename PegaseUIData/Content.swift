@@ -185,7 +185,7 @@ struct DetailContainer: View {
         // Rapport
         "Categorie Bar1"         : { isVisible in AnyView(CategorieBar1View(isVisible         : isVisible)) },
         "Categorie Bar2"         : { isVisible in AnyView(CategorieBar2View(isVisible         : isVisible)) },
-        "Mode de paiement"       : { isVisible in AnyView(ModePaiementView(isVisible          : isVisible)) },
+        "Mode de paiement"       : { isVisible in AnyView(ModePaiementBarView(isVisible       : isVisible)) },
         "Recette Depense Bar"    : { isVisible in AnyView(RecetteDepenseBarView(isVisible     : isVisible)) },
         "Recette Depense Pie"    : { isVisible in AnyView(RecetteDepensePieView(isVisible     : isVisible)) },
         "Rubrique Bar"           : { isVisible in AnyView(RubriqueBarView(isVisible           : isVisible)) },

@@ -142,7 +142,7 @@ struct OperationDialog: View {
                         HStack {
                             Text("Bank Statement")
                             Spacer()
-                            TextField("0", value: $bankStatement, formatter: numberFormatter)
+                            TextField("", value: $bankStatement, formatter: numberFormatter)
                                 .textFieldStyle(.roundedBorder)
                                 .frame(width: 200)
                         }

@@ -43,6 +43,7 @@ struct InitAccountView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
+            
             // Logo et Rapport Initial
             if let initAccount = dataManager.initAccount {
                 HStack(alignment: .top) {

@@ -31,9 +31,9 @@ struct SettingTab: View {
     @StateObject private var currentAccountManager = CurrentAccountManager.shared
     
     @StateObject private var chequeViewManager       = CheckDataManager()
-    @StateObject private var modePaiementViewManager = ModePaiementDataManager()
+    @StateObject private var modePaiementDataManager = ModePaiementDataManager()
     @StateObject private var rubricDataManager       = RubricDataManager()
-    @StateObject private var dataManager   = PreferenceDataManager()
+    @StateObject private var preferenceDataManager   = PreferenceDataManager()
 
     var body: some View {
         TabView {
@@ -47,7 +47,7 @@ struct SettingTab: View {
             
             ModePaymentView()
                 .environmentObject(currentAccountManager)
-                .environmentObject(modePaiementViewManager)
+                .environmentObject(modePaiementDataManager)
 
                 .tabItem {
                     Label("Payment mode", systemImage: "eurosign.bank.building")
@@ -55,7 +55,7 @@ struct SettingTab: View {
             
             PreferenceTransactionView()
                 .environmentObject(currentAccountManager)
-                .environmentObject(dataManager)
+                .environmentObject(preferenceDataManager)
                 .tabItem {
                     Label("Transaction", systemImage: "person")
                 }

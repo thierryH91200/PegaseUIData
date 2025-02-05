@@ -39,11 +39,11 @@ struct BankStatementView: View {
 
     @Binding var isVisible: Bool
     @StateObject private var currentAccountManager = CurrentAccountManager.shared
-    @StateObject private var statementDataManager = StatementDataManager()
+    @StateObject private var dataManager = StatementDataManager()
 
     var body: some View {
         BankStatementListView()
-            .environmentObject(statementDataManager)
+            .environmentObject(dataManager)
             .environmentObject(currentAccountManager)
             .padding()
             .task {
@@ -60,7 +60,7 @@ struct BankStatementView: View {
 struct BankStatementListView: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
-    @EnvironmentObject var statementViewManager: StatementDataManager
+    @EnvironmentObject var dataManager: StatementDataManager
     
 //    @Query private var statements: [EntityBankStatement]
     
@@ -80,37 +80,36 @@ struct BankStatementListView: View {
     
     var body: some View {
         NavigationSplitView {
-            BankStatementTable(statements: statementViewManager.statements ?? [], selection: $selection)
+            if let account = dataManager.currentAccount {
+                Text("Account: \(account.name)")
+                    .font(.headline)
+            }
+
+            BankStatementTable(statements: dataManager.statements ?? [], selection: $selection)
             .frame(height: 300)
             .onAppear {
                 if let account = currentAccountManager.currentAccount {
-                    statementViewManager.currentAccount = account
+                    dataManager.currentAccount = account
                 }
                 
                 // Créer un nouvel enregistrement si la base de données est vide
-                if statementViewManager.statements == nil {
+                if dataManager.statements == nil {
                     if let account = CurrentAccountManager.shared.getAccount() {
-                        statementViewManager.currentAccount = account
+                        dataManager.currentAccount = account
                     } else {
                         print("Aucun compte disponible.")
                     }
                     BankStatementManager.shared.configure(with: modelContext)
                     let statements = BankStatementManager.shared.getAllDatas()
-                    statementViewManager.statements = statements
-                    
-                    if statements == nil {
-                        
-                        let newStatements = EntityBankStatement()
-                        statementViewManager.statements!.append( newStatements   )
-                        modelContext.insert(newStatements)
-                    }
+                    dataManager.statements = statements
                 }
             }
+            
             .onChange(of: selection) { oldValue, newValue in
                 selectedStatement = nil // Désactive l’édition automatique
                 
                 if let selectedId = newValue,
-                   let selected = statementViewManager.statements!.first(where: { $0.id == selectedId }) {
+                   let selected = dataManager.statements!.first(where: { $0.id == selectedId }) {
                     selectedStatement = selected
                 }
             }
@@ -118,8 +117,8 @@ struct BankStatementListView: View {
             .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
                 
                 if let account = newAccount {
-                    statementViewManager.statements = nil
-                    statementViewManager.currentAccount = account
+                    dataManager.statements = nil
+                    dataManager.currentAccount = account
                     
                     loadOrCreate(for: account)
                 }
@@ -184,12 +183,12 @@ struct BankStatementListView: View {
         
         BankStatementManager.shared.configure(with: modelContext)
         if let existing = BankStatementManager.shared.getAllDatas() {
-            statementViewManager.statements = existing
+            dataManager.statements = existing
         } else {
             let entity = EntityBankStatement()
             entity.account = account
             modelContext.insert(entity)
-            statementViewManager.statements!.append( entity)
+            dataManager.statements!.append( entity)
         }
     }
     

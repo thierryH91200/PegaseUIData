@@ -42,18 +42,14 @@
       "shouldTranslate" : false
     },
     "🎯 %@" : {
-
-    },
-    "0" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "0"
+            "value" : "🎯 🎯 %@"
           }
         }
-      },
-      "shouldTranslate" : false
+      }
     },
     "55,00 €" : {
       "shouldTranslate" : false
@@ -120,9 +116,6 @@
         }
       }
     },
-    "Add Category" : {
-
-    },
     "Add CheckBook" : {
       "localizations" : {
         "fr" : {
@@ -153,11 +146,35 @@
         }
       }
     },
-    "Add Rubric" : {
-
-    },
     "Add Scheduler" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter un écheancier"
+          }
+        }
+      }
+    },
+    "Add the category" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter une catégorie"
+          }
+        }
+      }
+    },
+    "Add the rubric" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter une rubrique"
+          }
+        }
+      }
     },
     "Address" : {
       "localizations" : {
@@ -174,12 +191,6 @@
           }
         }
       }
-    },
-    "Ajouter une catégorie" : {
-
-    },
-    "Ajouter une rubrique" : {
-
     },
     "All" : {
       "localizations" : {
@@ -712,7 +723,14 @@
       }
     },
     "Delete the rubric" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer la catégotie"
+          }
+        }
+      }
     },
     "Discount" : {
       "localizations" : {
@@ -770,9 +788,6 @@
         }
       }
     },
-    "Edit Category" : {
-
-    },
     "Edit CheckBook" : {
       "localizations" : {
         "fr" : {
@@ -794,7 +809,14 @@
       }
     },
     "Edit Rubric" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editer la rubrique"
+          }
+        }
+      }
     },
     "Edit scheduler" : {
       "localizations" : {
@@ -826,11 +848,25 @@
         }
       }
     },
-    "Éditer la catégorie" : {
-
+    "Edit the category" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editer la catégorie"
+          }
+        }
+      }
     },
-    "Éditer la rubrique" : {
-
+    "Edit the rubric" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editer la rubrique"
+          }
+        }
+      }
     },
     "Email" : {
       "localizations" : {
@@ -1200,12 +1236,12 @@
         }
       }
     },
-    "ModePaymentView" : {
+    "ModePaiementBarView" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ModePaymentView"
+            "value" : "ModePaiementBarView"
           }
         }
       }
@@ -1399,7 +1435,14 @@
       }
     },
     "Objectif" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Objectif"
+          }
+        }
+      }
     },
     "Occurence" : {
       "localizations" : {
@@ -1511,8 +1554,15 @@
         }
       }
     },
-    "REmove the categorie" : {
-
+    "Remove the category" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprime la catégorie"
+          }
+        }
+      }
     },
     "Rubric" : {
       "localizations" : {
