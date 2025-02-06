@@ -278,6 +278,16 @@
         }
       }
     },
+    "Bank website" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Site web de la banque"
+          }
+        }
+      }
+    },
     "Bank withdrawal" : {
       "localizations" : {
         "fr" : {
@@ -358,6 +368,16 @@
         }
       }
     },
+    "Cash Flow Curve" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Courbe de la trésorerie"
+          }
+        }
+      }
+    },
     "Cash withdrawal" : {
       "localizations" : {
         "fr" : {
@@ -394,6 +414,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Catégorie"
+          }
+        }
+      }
+    },
+    "Category Bar1" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Categorie Bar1"
+          }
+        }
+      }
+    },
+    "Category Bar2" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Categoriey Bar2"
           }
         }
       }
@@ -1160,6 +1200,16 @@
         }
       }
     },
+    "Internet rapprochement" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapprochement internet"
+          }
+        }
+      }
+    },
     "InternetReconciliationView" : {
       "localizations" : {
         "fr" : {
@@ -1202,6 +1252,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Compte lié"
+          }
+        }
+      }
+    },
+    "List of Transactions" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "liste des opérations"
           }
         }
       }
@@ -1398,6 +1458,16 @@
         }
       }
     },
+    "Notes" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notes"
+          }
+        }
+      }
+    },
     "NotesView" : {
       "localizations" : {
         "fr" : {
@@ -1474,7 +1544,7 @@
         }
       }
     },
-    "Payment mode" : {
+    "Payment method" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -1554,6 +1624,26 @@
         }
       }
     },
+    "Recipe / Expense Bar" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dépense / recette bar"
+          }
+        }
+      }
+    },
+    "Recipe / Expense Pie" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dépense / recette pie"
+          }
+        }
+      }
+    },
     "Remove the category" : {
       "localizations" : {
         "fr" : {
@@ -1570,6 +1660,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rubrique"
+          }
+        }
+      }
+    },
+    "Rubric Bar" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rubric bar"
+          }
+        }
+      }
+    },
+    "Rubric Pie" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rubric pie"
           }
         }
       }
@@ -1600,6 +1710,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sauver"
+          }
+        }
+      }
+    },
+    "Scheduler" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Echéancier"
           }
         }
       }

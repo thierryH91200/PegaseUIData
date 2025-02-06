@@ -24,14 +24,48 @@ Add bank statement                              30/01/25
 
 Improve translation                             02/02/25
 
-OMprove change account                          02/02/25
+Improve change account                          02/02/25
 
 Add rubric                                      03/02/25
+
+Improve alot of things                          05/02/25
+
+Add check                                       05/02/25
+
+Add scheduler                                   05/02/25
 
 
 
 <p align="center">
 <img src="Doc/Capture1.png" alt="Sample">
+<p align="center">
+<em>Init</em>
+</p>
+</p>
+
+<p align="center">
+<img src="Doc/Capture2.png" alt="Sample">
+<p align="center">
+<em>Init</em>
+</p>
+</p>
+
+<p align="center">
+<img src="Doc/Capture3.png" alt="Sample">
+<p align="center">
+<em>Init</em>
+</p>
+</p>
+
+<p align="center">
+<img src="Doc/Capture4.png" alt="Sample">
+<p align="center">
+<em>Init</em>
+</p>
+</p>
+
+<p align="center">
+<img src="Doc/Capture5.png" alt="Sample">
 <p align="center">
 <em>Init</em>
 </p>

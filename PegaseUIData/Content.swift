@@ -117,7 +117,7 @@ struct ContentView100: View {
                         Label("Rubric", systemImage: "tag.fill")
                     }
                     Button(action: { chooseCouleur("Payment Mode") }) {
-                        Label("Payment mode", systemImage: "creditcard.fill")
+                        Label("Payment method", systemImage: "creditcard.fill")
                     }
                     Button(action: { chooseCouleur("Statut") }) {
                         Label("Statut", systemImage: "checkmark.circle.fill")
@@ -175,26 +175,26 @@ struct DetailContainer: View {
     @Binding var isVisible: Bool
 
     let detailViews: [String: (Binding<Bool>) -> AnyView] = [
-        "Liste des transactions" : { isVisible in AnyView(ListTransactions(isVisible           : isVisible)) },
-        "Courbe de trésorerie"   : { isVisible in AnyView(TreasuryCurveView(isVisible          : isVisible)) },
-        "Site Web de la banque"  : { isVisible in AnyView(BankWebsiteView(isVisible            : isVisible)) },
-        "Rapprochement internet" : { isVisible in AnyView(InternetReconciliationView(isVisible : isVisible)) },
-        "Relevé bancaire"        : { isVisible in AnyView(BankStatementView(isVisible          : isVisible)) },
-        "Notes"                  : { isVisible in AnyView(NotesView(isVisible                  : isVisible)) },
+        String(localized: "List of Transactions") : { isVisible in AnyView(ListTransactions(isVisible           : isVisible)) },
+        String(localized: "Cash Flow Curve")   : { isVisible in AnyView(TreasuryCurveView(isVisible          : isVisible)) },
+        String(localized: "Bank website")  : { isVisible in AnyView(BankWebsiteView(isVisible            : isVisible)) },
+        String(localized: "Internet rapprochement") : { isVisible in AnyView(InternetReconciliationView(isVisible : isVisible)) },
+        String(localized: "Bank Statement")        : { isVisible in AnyView(BankStatementView(isVisible          : isVisible)) },
+        String(localized: "Notes")                  : { isVisible in AnyView(NotesView(isVisible                  : isVisible)) },
 
         // Rapport
-        "Categorie Bar1"         : { isVisible in AnyView(CategorieBar1View(isVisible         : isVisible)) },
-        "Categorie Bar2"         : { isVisible in AnyView(CategorieBar2View(isVisible         : isVisible)) },
-        "Mode de paiement"       : { isVisible in AnyView(ModePaiementBarView(isVisible       : isVisible)) },
-        "Recette Depense Bar"    : { isVisible in AnyView(RecetteDepenseBarView(isVisible     : isVisible)) },
-        "Recette Depense Pie"    : { isVisible in AnyView(RecetteDepensePieView(isVisible     : isVisible)) },
-        "Rubrique Bar"           : { isVisible in AnyView(RubriqueBarView(isVisible           : isVisible)) },
-        "Rubrique Pie"           : { isVisible in AnyView(RubriquePieView(isVisible           : isVisible)) },
+        String(localized: "Category Bar1")        : { isVisible in AnyView(CategorieBar1View(isVisible         : isVisible)) },
+        String(localized: "Category Bar2" )        : { isVisible in AnyView(CategorieBar2View(isVisible         : isVisible)) },
+        String(localized: "Payment method" )      : { isVisible in AnyView(ModePaiementBarView(isVisible       : isVisible)) },
+        String(localized: "Recipe / Expense Bar")    : { isVisible in AnyView(RecetteDepenseBarView(isVisible     : isVisible)) },
+        String(localized: "Recipe / Expense Pie" )   : { isVisible in AnyView(RecetteDepensePieView(isVisible     : isVisible)) },
+        String(localized: "Rubric Bar")           : { isVisible in AnyView(RubriqueBarView(isVisible           : isVisible)) },
+        String(localized: "Rubric Pie" )          : { isVisible in AnyView(RubriquePieView(isVisible           : isVisible)) },
 
         // Reglage
-        "Identité"               : {  isVisible in AnyView(Identy(isVisible                   : isVisible)) },
-        "Echeancier"             : {  isVisible in AnyView(SchedulerView(isVisible            : isVisible)) },
-        "Réglage"                : {  isVisible in AnyView(SettingView(isVisible              : isVisible)) }
+        String(localized: "Identity")               : {  isVisible in AnyView(Identy(isVisible                   : isVisible)) },
+        String(localized: "Scheduler" )            : {  isVisible in AnyView(SchedulerView(isVisible            : isVisible)) },
+        String(localized: "Settings" )               : {  isVisible in AnyView(SettingView(isVisible              : isVisible)) }
     ]
 
     var body: some View {

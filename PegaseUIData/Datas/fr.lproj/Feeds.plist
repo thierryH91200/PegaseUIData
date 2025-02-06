@@ -179,7 +179,7 @@
 				<key>icon</key>
 				<string>calendar</string>
 				<key>name</key>
-				<string>Echeancier</string>
+				<string>Echéancier</string>
 				<key>id</key>
 				<string>7900BB24-560A-46E5-872D-8FB684A97AAC</string>
 			</dict>
@@ -189,7 +189,7 @@
 				<key>icon</key>
 				<string>bookmark</string>
 				<key>name</key>
-				<string>Réglage</string>
+				<string>Paramètres</string>
 				<key>id</key>
 				<string>64B530A8-1033-4A87-A413-FDAC6AB0B1B5</string>
 			</dict>

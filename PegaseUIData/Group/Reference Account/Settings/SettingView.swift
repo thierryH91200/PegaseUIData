@@ -50,7 +50,7 @@ struct SettingTab: View {
                 .environmentObject(modePaiementDataManager)
 
                 .tabItem {
-                    Label("Payment mode", systemImage: "eurosign.bank.building")
+                    Label("Payment method", systemImage: "eurosign.bank.building")
                 }
             
             PreferenceTransactionView()

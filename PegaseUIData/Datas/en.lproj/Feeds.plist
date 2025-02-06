@@ -57,7 +57,7 @@
 				<key>icon</key>
 				<string>note.text</string>
 				<key>name</key>
-				<string>Bank statement</string>
+				<string>Bank Statement</string>
 				<key>id</key>
 				<string>38E12B07-27D7-4476-B62A-64403027871A</string>
 			</dict>
@@ -179,7 +179,7 @@
 				<key>icon</key>
 				<string>calendar</string>
 				<key>name</key>
-				<string>Schedule</string>
+				<string>Scheduler</string>
 				<key>id</key>
 				<string>7900BB24-560A-46E5-872D-8FB684A97AAC</string>
 			</dict>
