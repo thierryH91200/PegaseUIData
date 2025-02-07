@@ -26,10 +26,10 @@ final class CheckDataManager: ObservableObject {
     
     func saveChanges() {
         guard let modelContext = modelContext else {
-            print("Le contexte de modèle est indisponible.")
+            print("Le contexte de modèle n'est pas initialisé.")
             return
         }
-       
+        
         do {
             try modelContext.save()
         } catch {
@@ -43,11 +43,11 @@ struct CheckView: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var currentAccountManager : CurrentAccountManager
     @EnvironmentObject var dataManager : CheckDataManager
-        
+    
     // Ajoutez un état pour suivre l'élément sélectionné
     @State private var selectedItem: EntityCheckBook.ID? = nil
     @State private var selectedCheck: EntityCheckBook?
-      
+    
     @State private var isAddDialogPresented = false
     @State private var isEditDialogPresented = false
     @State private var modeCreate = false
@@ -62,36 +62,32 @@ struct CheckView: View {
             CheckBookTable(checkBooks: dataManager.checkBooks ?? [], selection: $selectedItem )
                 .frame(height: 300)
             
-            .onChange(of: selectedItem) { oldValue, newValue in
+                .onChange(of: selectedItem) { oldValue, newValue in
                     
-                if let selected = newValue {
-                    selectedItem = selected
-                    selectedCheck    =  dataManager.checkBooks!.first(where: { $0.id == selected })
-                    
-                    print("Sélectionné : \(selectedCheck?.name ?? "Aucun")") // ✅ Vérifie que l'élément est bien sélectionné
-
-                } else {
-                    selectedCheck = nil // Désactive l’édition automatique
-                    selectedItem = nil
-                    
-                    print("Aucun élément sélectionné dans CheckView/onChange")
+                    if let selected = newValue {
+                        selectedItem = selected
+                        selectedCheck    =  dataManager.checkBooks!.first(where: { $0.id == selected })
+                    } else {
+                        selectedCheck = nil // Désactive l’édition automatique
+                        selectedItem = nil
+                        
+                    }
                 }
-            }
             
-            .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
-                
-                if let account = newAccount {
-                    dataManager.checkBooks = nil
-                    dataManager.currentAccount = account
-                    selectedCheck = nil
-                    selectedItem = nil
-                    refreshData()
+                .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
+                    
+                    if let account = newAccount {
+                        dataManager.checkBooks = nil
+                        dataManager.currentAccount = account
+                        selectedCheck = nil
+                        selectedItem = nil
+                        refreshData()
+                    }
                 }
-            }
             
-            .onAppear {
-                setupDataManager()
-            }
+                .onAppear {
+                    setupDataManager()
+                }
             
             HStack {
                 Button(action: {
@@ -140,7 +136,6 @@ struct CheckView: View {
             .sheet(isPresented: $isAddDialogPresented) {
                 CheckBookFormView(isPresented: $isAddDialogPresented, mode: $modeCreate, checkBook: nil)
             }
-            
             .padding()
             Spacer()
         }
@@ -149,14 +144,14 @@ struct CheckView: View {
     private func setupDataManager() {
         ChequeBookManager.shared.configure(with: modelContext)
         dataManager.configure(with: modelContext)
-
+        
         if let account = currentAccountManager.currentAccount {
             dataManager.currentAccount = account
             dataManager.checkBooks = ChequeBookManager.shared.getAllDatas()
         }
     }
     
-
+    
     private func delete() {
         
         if let modeToDelete = selectedCheck {
@@ -171,7 +166,6 @@ struct CheckView: View {
     private func refreshData() {
         dataManager.checkBooks = ChequeBookManager.shared.getAllDatas()
     }
-
 }
 
 struct CheckBookTable: View {
@@ -307,14 +301,11 @@ struct CheckBookFormView: View {
         }
         .onAppear {
             if let checkBook = checkBook {
-                print("Chargement de l'élément à éditer : \(checkBook.name)")
                 name = checkBook.name
                 nbCheques = checkBook.nbCheques
                 numPremier = checkBook.numPremier
                 numSuivant = checkBook.numSuivant
                 prefix = checkBook.prefix
-            } else {
-                print("appear checkBook is empty")
             }
         }
     }
@@ -333,7 +324,6 @@ struct CheckBookFormView: View {
                 updateCheckBook(existingItem)
             }
         }
-        
         try? modelContext.save()
     }
     

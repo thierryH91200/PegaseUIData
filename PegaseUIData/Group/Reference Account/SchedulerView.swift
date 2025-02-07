@@ -9,8 +9,6 @@ import SwiftUI
 import SwiftData
 
 
-
-
 final class SchedulerDataManager: ObservableObject {
     @Published var currentAccount: EntityAccount?
     @Published var schedulers: [EntitySchedule]? {
@@ -66,7 +64,7 @@ struct Scheduler: View {
     
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var currentAccountManager : CurrentAccountManager
-    @EnvironmentObject var schedulerDataManager : SchedulerDataManager
+    @EnvironmentObject var dataManager : SchedulerDataManager
 
     @ObservedObject var accountManager = CurrentAccountManager.shared
 
@@ -89,12 +87,12 @@ struct Scheduler: View {
     
     var body: some View {
         VStack(spacing: 10) {
-            if let account = schedulerDataManager.currentAccount {
+            if let account = dataManager.currentAccount {
                 Text("Account: \(account.name)")
                     .font(.headline)
             }
             
-            SchedulerTable(schedulers: schedulerDataManager.schedulers ?? [], selection: $selectedItem)
+            SchedulerTable(schedulers: dataManager.schedulers ?? [], selection: $selectedItem)
                 .frame(height: 300)
 
             .onAppear {
@@ -105,7 +103,7 @@ struct Scheduler: View {
 
                 if let selected = newValue {
                     selectedItem = selected
-                    if let schedulers = schedulerDataManager.schedulers {
+                    if let schedulers = dataManager.schedulers {
                         selectedSchedule = schedulers.first(where: { $0.id == selected })
                     }
                 } else {
@@ -116,8 +114,8 @@ struct Scheduler: View {
             .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
                 
                 if let account = newAccount {
-                    schedulerDataManager.schedulers = nil
-                    schedulerDataManager.currentAccount = account
+                    dataManager.schedulers = nil
+                    dataManager.currentAccount = account
                     selectedSchedule = nil
                     selectedItem = nil
                     selected = nil
@@ -178,18 +176,18 @@ struct Scheduler: View {
     }
     
     private func affectSelect () {
-        if let schedulers = schedulerDataManager.schedulers {
+        if let schedulers = dataManager.schedulers {
             selectedSchedule = schedulers.first(where: { $0.id == selectedItem })
         }
     }
     
     private func setupDataManager() {
         SchedulerManager.shared.configure(with: modelContext)
-        schedulerDataManager.configure(with: modelContext)
+        dataManager.configure(with: modelContext)
 
         if let account = currentAccountManager.currentAccount {
-            schedulerDataManager.currentAccount = account
-            schedulerDataManager.schedulers = SchedulerManager.shared.getAllDatas()
+            dataManager.currentAccount = account
+            dataManager.schedulers = SchedulerManager.shared.getAllDatas()
         }
     }
     
@@ -204,7 +202,7 @@ struct Scheduler: View {
         }
     }
     private func refreshData() {
-        schedulerDataManager.schedulers = SchedulerManager.shared.getAllDatas()
+        dataManager.schedulers = SchedulerManager.shared.getAllDatas()
     }
 
 }
@@ -386,6 +384,7 @@ struct SchedulerFormView: View {
                 dateFin = scheduler.dateFin
                 frequence = String(scheduler.frequence)
                 libelle = scheduler.libelle
+                nextOccurence = String(scheduler.nextOccurence)
                 occurence = String(scheduler.occurence)
                 frequencytype = String(scheduler.typeFrequence)
             }

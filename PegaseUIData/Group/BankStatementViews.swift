@@ -61,9 +61,7 @@ struct BankStatementListView: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
     @EnvironmentObject var dataManager: StatementDataManager
-    
-    //    @Query private var statements: [EntityBankStatement]
-    
+        
     @State private var isAddDialogPresented = false
     @State private var isEditDialogPresented = false
     
