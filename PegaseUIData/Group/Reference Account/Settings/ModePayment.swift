@@ -23,10 +23,15 @@ final class ModePaiementDataManager: ObservableObject {
         self.modelContext = context
     }
     
+    /// Sauvegarde les changements dans le contexte SwiftData
     func saveChanges() {
-       
+        guard let modelContext = modelContext else {
+            print("Le contexte de modèle est indisponible.")
+            return
+        }
+
         do {
-            try modelContext?.save()
+            try modelContext.save()
         } catch {
             print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
@@ -43,8 +48,6 @@ struct ModePaymentView: View {
     @State private var selectedItem: EntityPaymentMode.ID? = nil
     @State private var selectedMode: EntityPaymentMode?
     
-    @Query private var modePayments: [EntityPaymentMode] = []
-    
     @State private var isAddDialogPresented = false
     @State private var isEditDialogPresented = false
     @State private var modeCreate = false
@@ -52,20 +55,24 @@ struct ModePaymentView: View {
     var body: some View {
         VStack(spacing: 10) {
             
+            // Affiche le nom du compte courant s'il existe
             if let account = dataManager.currentAccount {
                 Text("Account: \(account.name)")
                     .font(.headline)
             }
 
+            // Affiche le tableau des modes de paiement
             ModePaiementTable(modePayments: dataManager.modePayments ?? [], selection: $selectedItem)
                 .frame(height: 300)
             
-            .onChange(of: selectedMode) { oldValue, newValue in
+            // Met à jour la sélection
+           .onChange(of: selectedItem) { oldValue, newValue in
                 
-                if let selectedId = newValue,
-                   let selected = modePayments.first(where: { $0.uuid == selectedMode?.uuid }) {
-                    selectedItem = selected.id
-                    selectedMode = selected
+                if let selected = newValue {
+                    selectedItem = selected
+                    selectedMode = dataManager.modePayments!.first(where: { $0.id == selected })
+                    print("Sélectionné : \(selectedMode?.name ?? "Aucun")") // ✅ Vérifie que l'élément est bien sélectionné
+
                 } else {
                     selectedMode = nil // Désactive l’édition automatique
                     selectedItem = nil
@@ -73,32 +80,21 @@ struct ModePaymentView: View {
                     print("Aucun élément sélectionné dans ModePaymentView / onCchange")
                 }
             }
+            
+            // Recharge les données lorsqu'un nouveau compte est sélectionné
             .onChange(of: currentAccountManager.currentAccount ) { old, newAccount in
-                // Rafraîchir les données` quand le compte change
                 if let account = newAccount {
                     dataManager.modePayments = nil
                     dataManager.currentAccount = account
                     selectedMode = nil
-                    loadOrCreate(for: account)
+                    selectedItem = nil
+                    refreshData()
                 }
             }
             
+            // Charge les données au démarrage de la vue
             .onAppear {
-
-                Task {
-                    dataManager.configure(with: modelContext)
-
-                    if let account = currentAccountManager.currentAccount {
-                        dataManager.currentAccount = account
-                    } else {
-                        print("Aucun compte disponible.")
-                    }
-                    
-            
-                    PaymentModeManager.shared.configure(with: modelContext)
-                    let modePayments = PaymentModeManager.shared.getAllDatas(for: dataManager.currentAccount)
-                    dataManager.modePayments = modePayments
-                }
+                setupDataManager()
             }
             
             HStack {
@@ -114,13 +110,15 @@ struct ModePaymentView: View {
                         .cornerRadius(8)
                 }
                 
+                // Boutons d'action (Ajouter, Modifier, Supprimer)
                 Button(action: {
                     isEditDialogPresented = true
                     modeCreate = false
                 }) {
                     Label("Edit", systemImage: "pencil")
                         .padding()
-                        .background(Color.green)
+                        .background(selectedItem == nil ? Color.gray : Color.green) // Fond gris si désactivé
+                        .opacity(selectedItem == nil ? 0.6 : 1) // Opacité réduite si désactivé
                         .foregroundColor(.white)
                         .cornerRadius(8)
                 }
@@ -133,7 +131,8 @@ struct ModePaymentView: View {
                 {
                     Label("Delete", systemImage: "trash")
                         .padding()
-                        .background(Color.red)
+                        .background(selectedItem == nil ? Color.gray : Color.red) // Fond gris si désactivé
+                        .opacity(selectedItem == nil ? 0.6 : 1) // Opacité réduite si désactivé
                         .foregroundColor(.white)
                         .cornerRadius(8)
                 }
@@ -145,49 +144,36 @@ struct ModePaymentView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top) // Utilise tout l'espace parent et aligne en haut
         .padding()
         
+        // Formulaire d'ajout et de modification
         .sheet(isPresented: $isAddDialogPresented) {
             ModePaiementFormView(isPresented: $isAddDialogPresented, mode: $modeCreate, modePaiement: nil)
         }
         .sheet(isPresented: $isEditDialogPresented) {
             ModePaiementFormView(isPresented: $isEditDialogPresented, mode: $modeCreate, modePaiement: selectedMode)
         }
-
     }
-       
-    private func removeSelectedItem() {
-        guard let selectedMode = selectedMode,
-              let selectedMode = modePayments.first(where: { $0.id == selectedMode.id }) else {
-            return
+    
+    private func setupDataManager() {
+        PaymentModeManager.shared.configure(with: modelContext)
+        dataManager.configure(with: modelContext)
+        if let account = currentAccountManager.currentAccount {
+            dataManager.currentAccount = account
+            dataManager.modePayments = PaymentModeManager.shared.getAllDatas(for: account)
         }
+    }
 
-        modelContext.delete(selectedMode)
-        self.selectedMode = nil
-        self.selectedItem = nil
-
-        do {
-            try modelContext.save()
-        } catch {
-            print("Erreur lors de la suppression : \(error.localizedDescription)")
+    private func removeSelectedItem() {
+        if let modeToDelete = selectedMode {
+            modelContext.delete(modeToDelete)  // Suppression de l'élément du contexte
+            selectedMode = nil  // Réinitialisation de la sélection
+            selectedItem = nil
+            try? modelContext.save()  // Sauvegarde du contexte après suppression
         }
     }
     
-    func refreshData() {
+    private func refreshData() {
         guard let account = currentAccountManager.currentAccount else { return }
         dataManager.modePayments = PaymentModeManager.shared.getAllDatas(for: account)
-    }
-    
-    private func loadOrCreate(for account: EntityAccount?) {
-        guard let account else { return }
-        
-        PaymentModeManager.shared.configure(with: modelContext)
-        if let existing = PaymentModeManager.shared.getAllDatas(for : account) {
-            dataManager.modePayments = existing
-        } else {
-            let entity = EntityPaymentMode(name: "Test", color: .blue, account: account)
-            entity.account = account
-            modelContext.insert(entity)
-            dataManager.modePayments!.append( entity)
-        }
     }
 }
 
@@ -278,6 +264,8 @@ struct ModePaiementFormView: View {
                     if let modePaiement = modePaiement {
                         name = modePaiement.name
                         selectedColor = Color(modePaiement.color)
+                    } else {
+                        selectedColor = .blue // Mettre une couleur par défaut sympa
                     }
                 }
         }

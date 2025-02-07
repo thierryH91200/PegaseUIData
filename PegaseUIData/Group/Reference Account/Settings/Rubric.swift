@@ -123,7 +123,8 @@ struct RubricView: View {
                         let label = selectedRubric != nil ? "Edit Rubric" : "Edit Category"
                         Label(label, systemImage: "pencil")
                             .padding()
-                            .background(Color.green)
+                            .background((selectedRubric == nil && selectedCategory == nil) ? Color.gray : Color.green) // Fond gris si désactivé
+                            .opacity((selectedRubric == nil && selectedCategory == nil) ? 0.6 : 1) // Opacité réduite si désactivé
                             .foregroundColor(.white)
                             .cornerRadius(8)
                             .fixedSize() // Ajuste automatiquement la taille au contenu
@@ -139,7 +140,8 @@ struct RubricView: View {
                         let label = selectedRubric != nil ? "Delete Rubric" : "Delete Category"
                         Label(label, systemImage: "trash")
                             .padding()
-                            .background(Color.red)
+                            .background((selectedRubric == nil && selectedCategory == nil) ? Color.gray : Color.red) // Fond gris si désactivé
+                            .opacity((selectedRubric == nil && selectedCategory == nil) ? 0.6 : 1) // Opacité réduite si désactivé
                             .foregroundColor(.white)
                             .cornerRadius(8)
                             .fixedSize() // Ajuste automatiquement la taille au contenu

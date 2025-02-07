@@ -25,9 +25,13 @@ final class CheckDataManager: ObservableObject {
     }
     
     func saveChanges() {
+        guard let modelContext = modelContext else {
+            print("Le contexte de modèle est indisponible.")
+            return
+        }
        
         do {
-            try modelContext?.save()
+            try modelContext.save()
         } catch {
             print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
@@ -43,9 +47,7 @@ struct CheckView: View {
     // Ajoutez un état pour suivre l'élément sélectionné
     @State private var selectedItem: EntityCheckBook.ID? = nil
     @State private var selectedCheck: EntityCheckBook?
-    
-    @Query private var carnetCheques: [EntityCheckBook] = []
-    
+      
     @State private var isAddDialogPresented = false
     @State private var isEditDialogPresented = false
     @State private var modeCreate = false
@@ -56,65 +58,40 @@ struct CheckView: View {
                 Text("Account: \(account.name)")
                     .font(.headline)
             }
+            
             CheckBookTable(checkBooks: dataManager.checkBooks ?? [], selection: $selectedItem )
                 .frame(height: 300)
             
-                .onChange(of: selectedItem) { oldValue, newValue in
+            .onChange(of: selectedItem) { oldValue, newValue in
+                    
+                if let selected = newValue {
+                    selectedItem = selected
+                    selectedCheck    =  dataManager.checkBooks!.first(where: { $0.id == selected })
+                    
+                    print("Sélectionné : \(selectedCheck?.name ?? "Aucun")") // ✅ Vérifie que l'élément est bien sélectionné
+
+                } else {
                     selectedCheck = nil // Désactive l’édition automatique
                     selectedItem = nil
                     
-                    if let selectedId = newValue,
-                       let selected = carnetCheques.first(where: { $0.id == selectedId }) {
-                        selectedCheck = selected
-                        selectedItem = selected.id
-                    } else {
-                        print("Aucun élément sélectionné dans CheckView/onChange")
-                    }
+                    print("Aucun élément sélectionné dans CheckView/onChange")
                 }
+            }
             
-                .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
-                    
-                    if let account = newAccount {
-                        dataManager.checkBooks = nil
-                        dataManager.currentAccount = account
-                        selectedCheck = nil
-                        selectedItem = nil
-                        loadOrCreate(for: account)
-                    }
+            .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
+                
+                if let account = newAccount {
+                    dataManager.checkBooks = nil
+                    dataManager.currentAccount = account
+                    selectedCheck = nil
+                    selectedItem = nil
+                    refreshData()
                 }
+            }
             
-                .onAppear {
-                    
-                    dataManager.configure(with: modelContext)
-
-                    Task {
-                        
-                        if let account = currentAccountManager.currentAccount {
-                            dataManager.currentAccount = account
-                        } else {
-                            print("Aucun compte disponible.")
-                        }
-                        
-                        // Créer un nouvel enregistrement si la base de données est vide
-                        if dataManager.checkBooks == nil {
-                            if let account = CurrentAccountManager.shared.getAccount() {
-                                dataManager.currentAccount = account
-                            } else {
-                                print("Aucun compte disponible.")
-                            }
-                            ChequeBookManager.shared.configure(with: modelContext)
-                            let checkBooks = ChequeBookManager.shared.getAllDatas()
-                            dataManager.checkBooks = checkBooks
-                            
-                            if checkBooks == nil {
-                                
-                                let entity = EntityCheckBook()
-                                dataManager.checkBooks!.append( entity   )
-                                modelContext.insert(entity)
-                            }
-                        }
-                    }
-                }
+            .onAppear {
+                setupDataManager()
+            }
             
             HStack {
                 Button(action: {
@@ -136,7 +113,8 @@ struct CheckView: View {
                 }) {
                     Label("Edit", systemImage: "pencil")
                         .padding()
-                        .background(Color.green)
+                        .background(selectedItem == nil ? Color.gray : Color.green) // Fond gris si désactivé
+                        .opacity(selectedItem == nil ? 0.6 : 1) // Opacité réduite si désactivé
                         .foregroundColor(.white)
                         .cornerRadius(8)
                 }
@@ -147,7 +125,8 @@ struct CheckView: View {
                 ) {
                     Label("Delete", systemImage: "trash")
                         .padding()
-                        .background(Color.red)
+                        .background(selectedItem == nil ? Color.gray : Color.red) // Fond gris si désactivé
+                        .opacity(selectedItem == nil ? 0.6 : 1) // Opacité réduite si désactivé
                         .foregroundColor(.white)
                         .cornerRadius(8)
                 }
@@ -167,30 +146,32 @@ struct CheckView: View {
         }
     }
     
-    private func delete() {
-        guard let selectedCheck else { return }
-        modelContext.delete(selectedCheck)
-        
-        if selectedItem == selectedCheck.id {
-            selectedItem = nil
+    private func setupDataManager() {
+        ChequeBookManager.shared.configure(with: modelContext)
+        dataManager.configure(with: modelContext)
+
+        if let account = currentAccountManager.currentAccount {
+            dataManager.currentAccount = account
+            dataManager.checkBooks = ChequeBookManager.shared.getAllDatas()
         }
-        
-        try? modelContext.save()
     }
     
-    private func loadOrCreate(for account: EntityAccount?) {
-        guard let account else { return }
+
+    private func delete() {
         
-        ChequeBookManager.shared.configure(with: modelContext)
-        if let existing = ChequeBookManager.shared.getAllDatas() {
-            dataManager.checkBooks = existing
-        } else {
-            let entity = EntityCheckBook()
-            entity.account = account
-            modelContext.insert(entity)
-            dataManager.checkBooks!.append( entity)
+        if let modeToDelete = selectedCheck {
+            modelContext.delete(modeToDelete)  // Suppression de l'élément du contexte
+            selectedCheck = nil  // Réinitialisation de la sélection
+            selectedItem = nil
+            try? modelContext.save()  // Sauvegarde du contexte après suppression
+            refreshData()
         }
     }
+    
+    private func refreshData() {
+        dataManager.checkBooks = ChequeBookManager.shared.getAllDatas()
+    }
+
 }
 
 struct CheckBookTable: View {

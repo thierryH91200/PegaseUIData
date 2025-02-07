@@ -8,10 +8,14 @@
 import SwiftUI
 import SwiftData
 
+
+
+
 final class SchedulerDataManager: ObservableObject {
     @Published var currentAccount: EntityAccount?
     @Published var schedulers: [EntitySchedule]? {
         didSet {
+            guard modelContext != nil else { return }
             // Sauvegarder les modifications dès qu'il y a un changement
             saveChanges()
         }
@@ -69,12 +73,12 @@ struct Scheduler: View {
     @State private var schedulers: [EntitySchedule] = []
     
     @State private var selectedItem: EntitySchedule.ID?
+    @State private var selected: EntitySchedule?
     @State private var selectedSchedule: EntitySchedule?
     
     @State private var isAddDialogPresented = false
     @State private var isEditDialogPresented = false // Nouveau état pour afficher le dialog d'édition
     @State private var modeCreate = false
-
     
     let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -89,59 +93,38 @@ struct Scheduler: View {
                 Text("Account: \(account.name)")
                     .font(.headline)
             }
-            SchedulerTable(schedulers: schedulers, selection: $selectedItem)
             
-            .onAppear {
-                if let account = currentAccountManager.currentAccount {
-                    schedulerDataManager.currentAccount = account
-                }
-                
-                // Créer un nouvel enregistrement si la base de données est vide
-                if schedulerDataManager.schedulers == nil {
-                    if let account = CurrentAccountManager.shared.getAccount() {
-                        schedulerDataManager.currentAccount = account
-                    } else {
-                        print("Aucun compte disponible.")
-                    }
-                    SchedulerManager.shared.configure(with: modelContext)
-                    let schedulers = SchedulerManager.shared.getAllDatas()
-                    schedulerDataManager.schedulers = schedulers
-                    
-                    if schedulers == nil {
-                        
-                        let newEntity = EntitySchedule()
-                        schedulerDataManager.schedulers!.append( newEntity   )
-                        modelContext.insert(newEntity)
-                    }
-                }
-            }
-            .onChange(of: selectedItem) { oldValue, newValue in
-                selectedSchedule = nil // Désactive l’édition automatique
-                
-                if let selectedId = newValue,
-                   let selected = schedulers.first(where: { $0.id == selectedId }) {
-                    selectedSchedule = selected
-                }
+            SchedulerTable(schedulers: schedulerDataManager.schedulers ?? [], selection: $selectedItem)
+                .frame(height: 300)
 
+            .onAppear {
+                setupDataManager()
+            }
+            
+            .onChange(of: selectedItem) { oldValue, newValue in
+
+                if let selected = newValue {
+                    selectedItem = selected
+                    if let schedulers = schedulerDataManager.schedulers {
+                        selectedSchedule = schedulers.first(where: { $0.id == selected })
+                    }
+                } else {
+                    selectedSchedule = nil // Désactive l’édition automatique
+                    selectedItem = nil
+                }
             }
             .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
                 
                 if let account = newAccount {
                     schedulerDataManager.schedulers = nil
                     schedulerDataManager.currentAccount = account
-                    
-                    loadOrCreate(for: account)
+                    selectedSchedule = nil
+                    selectedItem = nil
+                    selected = nil
+                    refreshData()
                 }
             }
-            .frame(height: 300)
-            
-            .sheet(isPresented: $isAddDialogPresented) {
-                SchedulerFormView(isPresented: $isEditDialogPresented, mode: $modeCreate, scheduler: selectedSchedule)
-            }
-            .sheet(isPresented: $isEditDialogPresented) {
-                SchedulerFormView(isPresented: $isEditDialogPresented, mode: $modeCreate, scheduler: nil)
-            }
-
+                       
             HStack {
                 Button(action: {
                     isAddDialogPresented = true
@@ -155,23 +138,26 @@ struct Scheduler: View {
                 }
                 
                 Button(action: {
+                    affectSelect()
                     isEditDialogPresented = true
                     modeCreate = false
                 }) {
                     Label("Edit", systemImage: "pencil")
                         .padding()
-                        .background(Color.green)
+                        .background(selectedItem == nil ? Color.gray : Color.green) // Fond gris si désactivé
+                        .opacity(selectedItem == nil ? 0.6 : 1) // Opacité réduite si désactivé
                         .foregroundColor(.white)
                         .cornerRadius(8)
                 }
                 .disabled(selectedItem == nil) // Désactive si aucune ligne n'est sélectionnée
                 
                 Button(action: {
-                    removeSelectedItem(selectedSchedule!)
+                    delete()
                 }) {
                     Label("Delete", systemImage: "trash")
                         .padding()
-                        .background(Color.red)
+                        .background(selectedItem == nil ? Color.gray : Color.red) // Fond gris si désactivé
+                        .opacity(selectedItem == nil ? 0.6 : 1) // Opacité réduite si désactivé
                         .foregroundColor(.white)
                         .cornerRadius(8)
                 }
@@ -181,30 +167,46 @@ struct Scheduler: View {
             .padding()
             Spacer()
         }
-    }
-    
-    
-    private func loadOrCreate(for account: EntityAccount) {
         
-        BankStatementManager.shared.configure(with: modelContext)
-        if let existing = SchedulerManager.shared.getAllDatas() {
-            schedulerDataManager.schedulers = existing
-        } else {
-            let entity = EntitySchedule()
-            entity.account = account
-            modelContext.insert(entity)
-            schedulerDataManager.schedulers!.append( entity)
+        .sheet(isPresented: $isAddDialogPresented) {
+            SchedulerFormView(isPresented: $isAddDialogPresented, mode: $modeCreate, scheduler: $selected)
+        }
+        
+        .sheet(isPresented: $isEditDialogPresented) {
+            SchedulerFormView(isPresented: $isEditDialogPresented, mode: $modeCreate, scheduler: $selectedSchedule)
         }
     }
     
-    private func removeSelectedItem(_ scheduler: EntitySchedule) {
+    private func affectSelect () {
+        if let schedulers = schedulerDataManager.schedulers {
+            selectedSchedule = schedulers.first(where: { $0.id == selectedItem })
+        }
+    }
+    
+    private func setupDataManager() {
+        SchedulerManager.shared.configure(with: modelContext)
+        schedulerDataManager.configure(with: modelContext)
+
+        if let account = currentAccountManager.currentAccount {
+            schedulerDataManager.currentAccount = account
+            schedulerDataManager.schedulers = SchedulerManager.shared.getAllDatas()
+        }
+    }
+    
+    private func delete() {
         
-        modelContext.delete(scheduler)
-        if selectedItem == scheduler.id {
+        if let modeToDelete = selectedSchedule {
+            modelContext.delete(modeToDelete)  // Suppression de l'élément du contexte
+            selectedSchedule = nil  // Réinitialisation de la sélection
             selectedItem = nil
+            try? modelContext.save()  // Sauvegarde du contexte après suppression
+            refreshData()
         }
-        try? modelContext.save()
     }
+    private func refreshData() {
+        schedulerDataManager.schedulers = SchedulerManager.shared.getAllDatas()
+    }
+
 }
 
 struct SchedulerTable: View {
@@ -273,10 +275,13 @@ struct SchedulerTable: View {
 struct SchedulerFormView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    
+    @EnvironmentObject var schedulerDataManager: SchedulerDataManager
+
     @Binding var isPresented: Bool
     @Binding var mode: Bool
-    let scheduler: EntitySchedule?
+    
+    @Binding var scheduler: EntitySchedule?
+        
     @State private var amount: String = ""
     @State private var dateValeur: Date = Date()
     @State private var dateDebut: Date = Date()
@@ -357,6 +362,9 @@ struct SchedulerFormView: View {
         .frame(width: 300)
         .padding()
         .navigationTitle(scheduler == nil ? "New scheduler" : "Edit scheduler")
+        .onChange(of: scheduler) { oldValue, newValue in
+            print("scheduler a changé : \(oldValue?.libelle ?? "nil") -> \(newValue?.libelle ?? "nil")")
+        }
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") {

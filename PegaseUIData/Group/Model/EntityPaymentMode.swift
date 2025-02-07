@@ -104,7 +104,6 @@ final class PaymentModeManager {
             try save()
         } catch {
             print("Failed to save updates: \(error.localizedDescription)")
-            // Ajoutez ici une gestion d'erreur supplémentaire si nécessaire
         }
     }
 
@@ -148,8 +147,7 @@ final class PaymentModeManager {
         do {
             // Fetch transactions with error handling
             let entityModes = try validContext.fetch(descriptor)
-            
-    
+
             names = entityModes.compactMap { $0.name }
             
             // Return unique comments

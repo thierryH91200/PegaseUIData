@@ -26,7 +26,7 @@ final class StatementDataManager: ObservableObject {
     }
     
     func saveChanges() {
-       
+        
         do {
             try modelContext?.save()
         } catch {
@@ -36,11 +36,11 @@ final class StatementDataManager: ObservableObject {
 }
 
 struct BankStatementView: View {
-
+    
     @Binding var isVisible: Bool
     @StateObject private var currentAccountManager = CurrentAccountManager.shared
     @StateObject private var dataManager = StatementDataManager()
-
+    
     var body: some View {
         BankStatementListView()
             .environmentObject(dataManager)
@@ -62,13 +62,14 @@ struct BankStatementListView: View {
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
     @EnvironmentObject var dataManager: StatementDataManager
     
-//    @Query private var statements: [EntityBankStatement]
+    //    @Query private var statements: [EntityBankStatement]
     
     @State private var isAddDialogPresented = false
     @State private var isEditDialogPresented = false
     
-    @State private var selection: UUID?
-    @State private var selectedStatement: EntityBankStatement?
+    @State private var selectedItem: EntityBankStatement.ID?
+    @State private var selectedStatement : EntityBankStatement?
+    
     @State private var dragOver = false
     
     private let dateFormatter: DateFormatter = {
@@ -84,45 +85,50 @@ struct BankStatementListView: View {
                 Text("Account: \(account.name)")
                     .font(.headline)
             }
-
-            BankStatementTable(statements: dataManager.statements ?? [], selection: $selection)
-            .frame(height: 300)
-            .onAppear {
-                if let account = currentAccountManager.currentAccount {
-                    dataManager.currentAccount = account
-                }
-                
-                // Créer un nouvel enregistrement si la base de données est vide
-                if dataManager.statements == nil {
-                    if let account = CurrentAccountManager.shared.getAccount() {
-                        dataManager.currentAccount = account
-                    } else {
-                        print("Aucun compte disponible.")
-                    }
-                    BankStatementManager.shared.configure(with: modelContext)
-                    let statements = BankStatementManager.shared.getAllDatas()
-                    dataManager.statements = statements
-                }
-            }
             
-            .onChange(of: selection) { oldValue, newValue in
-                selectedStatement = nil // Désactive l’édition automatique
-                
-                if let selectedId = newValue,
-                   let selected = dataManager.statements!.first(where: { $0.id == selectedId }) {
-                    selectedStatement = selected
-                }
-            }
-
-            .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
-                
-                if let account = newAccount {
-                    dataManager.statements = nil
-                    dataManager.currentAccount = account
+            BankStatementTable(statements: dataManager.statements ?? [], selection: $selectedItem)
+                .frame(height: 300)
+                .onAppear {
+                    if let account = currentAccountManager.currentAccount {
+                        dataManager.currentAccount = account
+                    }
                     
-                    loadOrCreate(for: account)
+                    // Créer un nouvel enregistrement si la base de données est vide
+                    if dataManager.statements == nil {
+                        if let account = CurrentAccountManager.shared.getAccount() {
+                            dataManager.currentAccount = account
+                        } else {
+                            print("Aucun compte disponible.")
+                        }
+                        BankStatementManager.shared.configure(with: modelContext)
+                        let statements = BankStatementManager.shared.getAllDatas()
+                        dataManager.statements = statements
+                    }
                 }
-            }
+            
+                .onChange(of: selectedItem) { oldValue, newValue in
+                    if let selected = newValue {
+                        selectedItem = selected
+                        selectedStatement =  dataManager.statements!.first(where: { $0.id == selected })
+
+                    } else {
+                        selectedStatement = nil // Désactive l’édition automatique
+                        selectedItem = nil
+                        
+                        print("Aucun élément sélectionné dans CheckView/onChange")
+                    }
+                }
+            
+                .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
+                    
+                    if let account = newAccount {
+                        dataManager.statements = nil
+                        dataManager.currentAccount = account
+                        selectedStatement = nil
+                        selectedItem = nil
+                        refreshData()
+                    }
+                }
             
             HStack {
                 // Bouton pour ajouter un enregistrement
@@ -142,7 +148,8 @@ struct BankStatementListView: View {
                 }) {
                     Label("Edit", systemImage: "pencil")
                         .padding()
-                        .background(Color.green)
+                        .background(selectedStatement == nil ? Color.gray : Color.green) // Fond gris si désactivé
+                        .opacity(selectedStatement == nil ? 0.6 : 1) // Opacité réduite si désactivé
                         .foregroundColor(.white)
                         .cornerRadius(8)
                 }
@@ -150,11 +157,12 @@ struct BankStatementListView: View {
                 
                 // Bouton pour supprimer un enregistrement
                 Button(action: {
-                    delete(selectedStatement!)
+                    delete()
                 }) {
                     Label("Delete", systemImage: "trash")
                         .padding()
-                        .background(Color.red)
+                        .background(selectedStatement == nil ? Color.gray : Color.red) // Fond gris si désactivé
+                        .opacity(selectedStatement == nil ? 0.6 : 1) // Opacité réduite si désactivé
                         .foregroundColor(.white)
                         .cornerRadius(8)
                 }
@@ -178,26 +186,19 @@ struct BankStatementListView: View {
             StatementFormView(statement: nil)
         }
     }
-    
-    private func loadOrCreate(for account: EntityAccount) {
         
-        BankStatementManager.shared.configure(with: modelContext)
-        if let existing = BankStatementManager.shared.getAllDatas() {
-            dataManager.statements = existing
-        } else {
-            let entity = EntityBankStatement()
-            entity.account = account
-            modelContext.insert(entity)
-            dataManager.statements!.append( entity)
+    private func delete() {
+        if let modeToDelete = selectedStatement {
+            modelContext.delete(modeToDelete)  // Suppression de l'élément du contexte
+            selectedStatement = nil  // Réinitialisation de la sélection
+            selectedItem = nil
+            try? modelContext.save()  // Sauvegarde du contexte après suppression
+            refreshData()
         }
     }
     
-    private func delete(_ statement: EntityBankStatement) {
-        modelContext.delete(statement)
-        if selection == statement.id {
-            selection = nil
-        }
-        try? modelContext.save()
+    private func refreshData() {
+        dataManager.statements = BankStatementManager.shared.getAllDatas()
     }
 }
 
@@ -209,10 +210,10 @@ struct BankStatementTable: View {
         formatter.timeStyle = .none
         return formatter
     }()
-
+    
     var statements: [EntityBankStatement]
-    @Binding var selection: UUID?
-
+    @Binding var selection: EntityBankStatement.ID?
+    
     var body: some View {
         Table(statements, selection: $selection) {
             
@@ -341,7 +342,7 @@ struct StatementFormView: View {
         newItem.cbSolde = Double(cbSolde) ?? 0.0
         newItem.pdfDoc = pdfData
         newItem.account = CurrentAccountManager.shared.getAccount()!
-
+        
         try? modelContext.save()
     }
 }
@@ -367,7 +368,7 @@ struct PDFDropDelegate: DropDelegate {
         
         guard let provider = info.itemProviders(for: [UTType.pdf]).first else { return false }
         
-       let _ = provider.loadItem(forTypeIdentifier: UTType.pdf.identifier) { (urlData, error) in
+        let _ = provider.loadItem(forTypeIdentifier: UTType.pdf.identifier) { (urlData, error) in
             if let url = urlData as? URL {
                 do {
                     let data = try Data(contentsOf: url)
