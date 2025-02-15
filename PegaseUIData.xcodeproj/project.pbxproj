@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0359AE602CD7BB8900687E3F /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 0359AE5F2CD7BB8900687E3F /* README.md */; };
 		037066232CD7FECA0071312A /* README_fr.md in Resources */ = {isa = PBXBuildFile; fileRef = 037066222CD7FECA0071312A /* README_fr.md */; };
+		03B7EC4C2D60E56D0039F3DA /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = 03B7EC4B2D60E56D0039F3DA /* DGCharts */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03B7EC4C2D60E56D0039F3DA /* DGCharts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -110,6 +112,7 @@
 			);
 			name = PegaseUIData;
 			packageProductDependencies = (
+				03B7EC4B2D60E56D0039F3DA /* DGCharts */,
 			);
 			productName = PegaseUIData;
 			productReference = 039B4BA92CD78949002203D9 /* PegaseUIData.app */;
@@ -141,6 +144,9 @@
 			);
 			mainGroup = 039B4BA02CD78949002203D9;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				03B7EC4A2D60E56D0039F3DA /* XCRemoteSwiftPackageReference "Charts" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 039B4BAA2CD78949002203D9 /* Products */;
 			projectDirPath = "";
@@ -390,6 +396,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		03B7EC4A2D60E56D0039F3DA /* XCRemoteSwiftPackageReference "Charts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ChartsOrg/Charts";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		03B7EC4B2D60E56D0039F3DA /* DGCharts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03B7EC4A2D60E56D0039F3DA /* XCRemoteSwiftPackageReference "Charts" */;
+			productName = DGCharts;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 039B4BA12CD78949002203D9 /* Project object */;
 }

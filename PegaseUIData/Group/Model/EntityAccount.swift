@@ -5,7 +5,6 @@
 //  Created by Thierry hentic on 03/11/2024.
 //
 //
-
 import Foundation
 import SwiftData
 import SwiftUI
@@ -62,6 +61,9 @@ extension EntityFolderAccount {
     
     @Relationship(deleteRule: .cascade, inverse: \EntityBanqueInfo.account)
     var bank: EntityBanqueInfo?
+    
+    @Relationship(deleteRule: .cascade, inverse: \EntityPreference.account)
+    var preference: EntityPreference?
     
     @Relationship(deleteRule: .cascade, inverse: \EntityInitAccount.account)
     var initAccount: EntityInitAccount?

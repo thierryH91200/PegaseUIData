@@ -39,8 +39,15 @@ final class CategoriesManager: ObservableObject {
     
     @Query private var entities: [EntityCategory] // Liste des entités chargées de manière réactive
    
-    @Environment(\.modelContext) private var modelContext: ModelContext // Contexte pour les modifications
-    
+    var modelContext : ModelContext?
+    var validContext: ModelContext {
+        guard let context = modelContext else {
+            print("File: \(#file), Function: \(#function), line: \(#line)")
+            fatalError("ModelContext non configuré. Veuillez appeler configure.")
+        }
+        return context
+    }
+
     init() {}
     
     func findOrCreate(account: EntityAccount,
@@ -51,7 +58,7 @@ final class CategoriesManager: ObservableObject {
             return existingCategory
         } else {
             let newCategory = EntityCategory(name: name, objectif: objectif, rubric: rubric)
-            modelContext.insert(newCategory) // Ajoute l'entité au contexte
+            validContext.insert(newCategory) // Ajoute l'entité au contexte
             return newCategory
         }
     }
@@ -67,6 +74,6 @@ final class CategoriesManager: ObservableObject {
     }
     
     func remove(entity: EntityCategory) {
-        modelContext.delete(entity) // Supprime l'entité via le contexte
+        validContext.delete(entity) // Supprime l'entité via le contexte
     }
 }

@@ -30,6 +30,11 @@ final class ListTransactionsManager {
     }
 
     init() { }
+    
+    func configure(with modelContext: ModelContext) {
+        self.modelContext = modelContext
+    }
+
 
     // delete Transaction
     func remove(entity: EntityTransactions)
@@ -92,9 +97,12 @@ final class ListTransactionsManager {
         }
     }
 
-    func getAllDatas(for account: EntityAccount, ascending: Bool = true) -> [EntityTransactions] {
+    func getAllDatas( ascending: Bool = true) -> [EntityTransactions] {
 
-        let currentAccount = CurrentAccountManager.shared.getAccount()!
+        let currentAccount = CurrentAccountManager.shared.getAccount()
+        guard let currentAccount = currentAccount else {
+            return []
+        }
         self.ascending = ascending
         
         // Création du prédicat pour filtrer les transactions par compte
@@ -124,7 +132,6 @@ final class ListTransactionsManager {
         if currentAccount.isDemo {
             adjustDate(for: currentAccount)
         }
-        
         return entities
     }
 
@@ -163,7 +170,7 @@ class ListTransactionsViewModel: ObservableObject {
     }
 
     private func loadInitialData() {
-        listTransactions = manager.getAllDatas(for: account)
+        listTransactions = manager.getAllDatas()
     }
 
     

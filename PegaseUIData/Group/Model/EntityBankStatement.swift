@@ -68,6 +68,7 @@ class EntityBankStatement: Identifiable {
         self.account = CurrentAccountManager.shared.getAccount()!
     }
 }
+
 extension EntityBankStatement {
 
     var formattedStartSolde: String {

@@ -135,28 +135,12 @@ final class PaymentModeManager {
     func getAllNames(for account: EntityAccount) -> [String] {
         var names = [String]()
         
-        let accountID = account.uuid
-        let descriptor = FetchDescriptor<EntityPaymentMode>(
-            predicate: #Predicate<EntityPaymentMode> { mode in
-                mode.account.uuid == accountID
-            },
-            sortBy: [SortDescriptor(\EntityPaymentMode.name, order: .forward)]
-        )
-
-        // Fetch les transactions liées à l'account
-        do {
-            // Fetch transactions with error handling
-            let entityModes = try validContext.fetch(descriptor)
-
-            names = entityModes.compactMap { $0.name }
-            
-            // Return unique comments
-            return names.uniqueElements
-        } catch {
-            print( error )
-            return []
-            // Or handle the error as needed for your use case
+        let modePqyments =  getAllDatas(for: account)
+        
+        for modePayment in modePqyments ?? [] {
+            names.append(modePayment.name)
         }
+        return names
     }
 
 

@@ -56,9 +56,11 @@ struct SettingTab: View {
             PreferenceTransactionView()
                 .environmentObject(currentAccountManager)
                 .environmentObject(preferenceDataManager)
+            
                 .tabItem {
                     Label("Transaction", systemImage: "person")
                 }
+            
             CheckView()
                 .environmentObject(currentAccountManager)
                 .environmentObject(chequeViewManager)

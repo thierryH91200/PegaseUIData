@@ -172,6 +172,13 @@ struct RubricView: View {
         }
     }
     private func removeCategorySelectedItem() {
+        if selectedRubric != nil {
+            modelContext.delete(selectedRubric!)
+        } else {
+            modelContext.delete(selectedCategory!)
+
+        }
+
     }
     
     func refreshData() {

@@ -40,7 +40,7 @@ final class PreferenceManager {
     
     static let shared = PreferenceManager()
 
-    private var entityPreference = [EntityPreference]()
+    var entityPreference : [EntityPreference]?
     
     // Contexte pour les modifications
     var modelContext : ModelContext?
@@ -57,32 +57,9 @@ final class PreferenceManager {
     func configure(with modelContext: ModelContext) {
         self.modelContext = modelContext
     }
-
-    func getAllDatas(for account: EntityAccount?) async -> EntityPreference? {
-        
-        // Crée un prédicat pour filtrer les entités par `account`
-        let lhs = account!.uuid
-        let predicate = #Predicate<EntityPreference>{ entity in entity.account.uuid == lhs }
-
-        let fetchDescriptor = FetchDescriptor<EntityPreference>(
-            predicate: predicate)
-        
-        do {
-            entityPreference = try validContext.fetch(fetchDescriptor)
-        } catch {
-            print("Erreur lors de la récupération des données")
-        }
-        
-        // Si aucun résultat, crée une nouvelle entité liée au compte actuel
-        if entityPreference.isEmpty {
-            return await create(account: account!)!
-        }
-        
-        return entityPreference.first!
-    }
     
-    // MARK: - Create
-    func create(account: EntityAccount) async -> EntityPreference? {
+    // MARK: - default
+    func defaultPref(account: EntityAccount) -> EntityPreference? {
         
         let newPreference = EntityPreference(account: account)
         
@@ -100,13 +77,38 @@ final class PreferenceManager {
         newPreference.account = account
         
         validContext.insert(newPreference) // Ajoute l'objet au contexte SwiftData
-        entityPreference.append(newPreference) // Mise à jour de la liste locale
+//        entityPreference.append(newPreference) // Mise à jour de la liste locale
         
         saveContext()
         
         return newPreference
     }
+
+
+    func getAllDatas(for account: EntityAccount?) -> EntityPreference? {
+        
+        // Crée un prédicat pour filtrer les entités par `account`
+        let lhs = account!.uuid
+        let predicate = #Predicate<EntityPreference>{ entity in entity.account.uuid == lhs }
+
+        let fetchDescriptor = FetchDescriptor<EntityPreference>(
+            predicate: predicate)
+        
+        do {
+            entityPreference = try validContext.fetch(fetchDescriptor)
+        } catch {
+            print("Erreur lors de la récupération des données")
+        }
+        
+        // Si aucun résultat, crée une nouvelle entité liée au compte actuel
+        if ((entityPreference?.isEmpty) != nil) {
+            return defaultPref(account: account!)!
+        }
+        
+        return entityPreference?.first!
+    }
     
+
     func saveContext() {
 
         let path = getSQLiteFilePath()

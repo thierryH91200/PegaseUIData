@@ -71,7 +71,7 @@ struct ModePaymentView: View {
                 if let selected = newValue {
                     selectedItem = selected
                     selectedMode = dataManager.modePayments!.first(where: { $0.id == selected })
-                    print("Sélectionné : \(selectedMode?.name ?? "Aucun")") // ✅ Vérifie que l'élément est bien sélectionné
+                    print("Sélectionné : \(selectedMode?.name ?? "Aucun")") 
 
                 } else {
                     selectedMode = nil // Désactive l’édition automatique

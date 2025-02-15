@@ -21,16 +21,18 @@ struct PegaseUIDataApp: App {
 
     let schema = Schema([
         EntityAccount.self,
-        EntityFolderAccount.self,
-        EntityBanqueInfo.self,
         EntityBankStatement.self,
+        EntityBanqueInfo.self,
+        EntityCategory.self,
         EntityCheckBook.self,
+        EntityFolderAccount.self,
         EntityIdentity.self,
         EntityInitAccount.self,
         EntityPaymentMode.self,
         EntityPreference.self,
         EntityRubric.self,
         EntitySchedule.self,
+        EntitySousOperations.self,
         EntityTransactions.self
     ])
 
@@ -47,7 +49,8 @@ struct PegaseUIDataApp: App {
     }
     
     var body: some Scene {
-        WindowGroup {
+        Window("Storm Viewer", id: "main") {
+//        WindowGroup {
             ContentView100()
         }
         .modelContainer(container)

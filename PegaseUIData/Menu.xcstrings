@@ -1,0 +1,166 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Bank Statement" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relevé bancaire"
+          }
+        }
+      }
+    },
+    "Bank website" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Site Web de la banque"
+          }
+        }
+      }
+    },
+    "Cash Flow Curve" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Courbe de trésorerie"
+          }
+        }
+      }
+    },
+    "Category Bar1" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Categorie Bar1"
+          }
+        }
+      }
+    },
+    "Category Bar2" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Categorie Bar2"
+          }
+        }
+      }
+    },
+    "Identity" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Identité"
+          }
+        }
+      }
+    },
+    "Internet rapprochement" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapprochement internet"
+          }
+        }
+      }
+    },
+    "List of Transactions" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Liste des transactions"
+          }
+        }
+      }
+    },
+    "Notes" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notes"
+          }
+        }
+      }
+    },
+    "Payment method" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mode de paiement"
+          }
+        }
+      }
+    },
+    "Recipe / Expense Bar" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recette Depense Bar"
+          }
+        }
+      }
+    },
+    "Recipe / Expense Pie" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recette Depense Pie"
+          }
+        }
+      }
+    },
+    "Rubric Bar" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rubrique Bar"
+          }
+        }
+      }
+    },
+    "Rubric Pie" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rubrique Pie"
+          }
+        }
+      }
+    },
+    "Scheduler" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Echéancier"
+          }
+        }
+      }
+    },
+    "Settings" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paramètres"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

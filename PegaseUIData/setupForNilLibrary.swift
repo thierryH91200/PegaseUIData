@@ -37,6 +37,10 @@ struct AccountFactory {
         PaymentModeManager.shared.defaultModePaiement(for: account)
         account.paymentMode = PaymentModeManager.shared.entities
         
+        PreferenceManager.shared.configure(with: modelContext)
+        PreferenceManager.shared.defaultPref(account: account)
+        account.preference = PreferenceManager.shared.entityPreference?.first
+        
         modelContext.insert(account)
         return account
     }

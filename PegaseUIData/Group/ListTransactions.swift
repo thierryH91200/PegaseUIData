@@ -19,7 +19,7 @@ struct ListTransactions: View {
                 .task {
                     await performTrueTask()
                 }
-            OutlineViewWrapper()
+            OutlineViewWithColumnsDemo()
                 .frame(minWidth: 200, minHeight: 300)
         }
     }
