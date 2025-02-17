@@ -19,14 +19,12 @@ struct TreasuryCurveView: View {
             .task {
                 await performFalseTask()
             }
-
     }
     private func performFalseTask() async {
         // Exécuter une tâche asynchrone (par exemple, un délai)
         try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 seconde de délai
         isVisible = false
     }
-
 }
 
 struct DGLineChartView: NSViewRepresentable {
@@ -34,7 +32,7 @@ struct DGLineChartView: NSViewRepresentable {
 
     func makeNSView(context: Context) -> LineChartView {
         let chartView = LineChartView()
-        chartView.noDataText = "Aucune donnée disponible"
+        chartView.noDataText = String(localized:"No chart data available.")
         
         let dataSet = LineChartDataSet(entries: entries, label: "Évolution Mensuelle")
         dataSet.colors = [NSUIColor.systemBlue]
@@ -59,7 +57,6 @@ struct DGLineChartView: NSViewRepresentable {
     }
 }
 
-
 struct TreasuryCurve: View {
     var lineDataEntries: [ChartDataEntry] = [
         ChartDataEntry(x: 1.0, y: 200.0),
@@ -71,11 +68,11 @@ struct TreasuryCurve: View {
 
     var body: some View {
         VStack {
-            Text("Graphique en Lignes des Ventes")
+            Text("Sales Line Chart")
                 .font(.headline)
                 .padding()
             DGLineChartView(entries: lineDataEntries)
-                .frame(width: 600, height: 400)
+                .frame(width: .infinity, height: 400)
                 .padding()
             Spacer()
         }

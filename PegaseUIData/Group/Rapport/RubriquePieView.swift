@@ -8,7 +8,6 @@
 import SwiftUI
 import DGCharts
 
-
 struct RubriquePieView: View {
     
     @Binding var isVisible: Bool
@@ -25,7 +24,6 @@ struct RubriquePieView: View {
         try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 seconde de délai
         isVisible = false
     }
-
 }
 
 struct DGPieChart1View1: NSViewRepresentable {
@@ -33,7 +31,7 @@ struct DGPieChart1View1: NSViewRepresentable {
 
     func makeNSView(context: Context) -> PieChartView {
         let chartView = PieChartView()
-        chartView.noDataText = "Aucune donnée disponible"
+        chartView.noDataText = String(localized:"No chart data available.")
         
         let dataSet = PieChartDataSet(entries: entries, label: "Répartition des Dépenses")
         dataSet.colors = ChartColorTemplates.vordiplom() + ChartColorTemplates.joyful()
@@ -73,6 +71,7 @@ struct RubriquePie: View {
             DGPieChartView(entries: pieDataEntries)
                 .frame(width: 600, height: 400)
                 .padding()
+            Spacer()
         }
     }
 }

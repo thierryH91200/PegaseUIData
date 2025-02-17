@@ -95,7 +95,7 @@ struct ColumnHeaderView: View {
 
     var body: some View {
         HStack(spacing: 0) {  // Ajouter spacing: 0
-            Text("Nom")
+            Text("Name")
                 .font(.headline)
                 .frame(width: widths.name, height: 25, alignment: .center)
             
@@ -111,7 +111,7 @@ struct ColumnHeaderView: View {
                 widths.resizeColumn(\.details1, by: dragWidth)
             }
 
-            Text("Date Pointage")
+            Text("Date of pointing")
                 .font(.headline)
                 .frame(width: widths.details2, height: 25, alignment: .center)
             

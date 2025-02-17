@@ -49,7 +49,7 @@ struct PegaseUIDataApp: App {
     }
     
     var body: some Scene {
-        Window("Storm Viewer", id: "main") {
+        Window("Pegase", id: "main") {
 //        WindowGroup {
             ContentView100()
         }

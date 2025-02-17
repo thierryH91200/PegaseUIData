@@ -32,7 +32,7 @@ struct DGBarChart5View5: NSViewRepresentable {
     
     func makeNSView(context: Context) -> BarChartView {
         let chartView = BarChartView()
-        chartView.noDataText = "Aucune donnée disponible"
+        chartView.noDataText = String(localized:"No chart data available.")
         
         let dataSet = BarChartDataSet(entries: entries, label: "Categorie Bar1")
         dataSet.colors = ChartColorTemplates.colorful()
@@ -69,7 +69,7 @@ struct RubriqueBar: View {
                 .font(.headline)
                 .padding()
             DGBarChart2View2(entries: dataEntries)
-                .frame(width: 600, height: 400)
+                .frame(width: .infinity, height: 400)
                 .padding()
             Spacer()
         }

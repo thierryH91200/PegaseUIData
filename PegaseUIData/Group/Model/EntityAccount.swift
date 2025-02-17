@@ -94,7 +94,7 @@ extension EntityFolderAccount {
 final class AccountManager {
       
     static let shared = AccountManager()
-    var entities = [EntityFolderAccount]()
+    var entities = [EntityAccount]()
     
     // Contexte pour les modifications
     var modelContext : ModelContext?
@@ -114,10 +114,10 @@ final class AccountManager {
         return true
     }
 
-    func getAllData(modelContext: ModelContext) -> [EntityFolderAccount] {
+    func getAllData() -> [EntityAccount] {
         do {
             // Exécution d'une requête manuelle si besoin de filtrer ou trier
-            let request = FetchDescriptor<EntityFolderAccount>()
+            let request = FetchDescriptor<EntityAccount>()
             entities = try validContext.fetch(request)
         } catch {
             print("Erreur lors de la récupération des données avec SwiftData")

@@ -200,6 +200,7 @@ struct CheckBookFormView: View {
     
     @Binding var isPresented: Bool
     @Binding var mode: Bool
+    
     let checkBook: EntityCheckBook?
     @State private var name: String = ""
     @State private var nbCheques: Int = 0

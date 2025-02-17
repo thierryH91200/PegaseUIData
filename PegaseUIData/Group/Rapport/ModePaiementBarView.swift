@@ -32,7 +32,7 @@ struct DGBarChart3View3: NSViewRepresentable {
     
     func makeNSView(context: Context) -> BarChartView {
         let chartView = BarChartView()
-        chartView.noDataText = "Aucune donnée disponible"
+        chartView.noDataText = String(localized:"No chart data available.")
         
         let dataSet = BarChartDataSet(entries: entries, label: "Categorie Bar1")
         dataSet.colors = ChartColorTemplates.colorful()

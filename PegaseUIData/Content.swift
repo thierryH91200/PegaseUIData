@@ -47,7 +47,6 @@ struct ContentView100: View {
             }
             content :
             {
-                Text("Content")
                 DetailContainer(selection2: $selection2, isVisible: $isVisible)
                     .navigationSplitViewColumnWidth( min: 150, ideal: 800)
             }

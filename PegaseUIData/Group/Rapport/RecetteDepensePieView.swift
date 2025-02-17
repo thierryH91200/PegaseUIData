@@ -31,7 +31,7 @@ struct DGPieChartView: NSViewRepresentable {
 
     func makeNSView(context: Context) -> PieChartView {
         let chartView = PieChartView()
-        chartView.noDataText = "Aucune donnée disponible"
+        chartView.noDataText = String(localized:"No chart data available.")
         
         let dataSet = PieChartDataSet(entries: entries, label: "Répartition des Dépenses")
         dataSet.colors = ChartColorTemplates.vordiplom() + ChartColorTemplates.joyful()
@@ -71,6 +71,7 @@ struct RecetteDepensePie: View {
             DGPieChartView(entries: pieDataEntries)
                 .frame(width: 600, height: 400)
                 .padding()
+            Spacer()
         }
     }
 }

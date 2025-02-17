@@ -293,7 +293,14 @@
       }
     },
     "bankStatement" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bankStatement"
+          }
+        }
+      }
     },
     "BankWebsiteView" : {
       "localizations" : {
@@ -359,21 +366,24 @@
       }
     },
     "CategorieBar1View1" : {
-
-    },
-    "CategorieBar2View" : {
-      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "CategorieBar2View"
+            "value" : "CategorieBar1View1"
           }
         }
       }
     },
     "CategorieBar2View2" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CategorieBar2View2"
+          }
+        }
+      }
     },
     "Category" : {
       "localizations" : {
@@ -552,7 +562,14 @@
       }
     },
     "Create" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Création"
+          }
+        }
+      }
     },
     "Current Account: %@" : {
       "localizations" : {
@@ -635,9 +652,6 @@
           }
         }
       }
-    },
-    "Date Pointage" : {
-
     },
     "Date Transaction" : {
       "localizations" : {
@@ -997,11 +1011,15 @@
         }
       }
     },
-    "Graphique en Lignes des Ventes" : {
-
-    },
     "Hello" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bonjour"
+          }
+        }
+      }
     },
     "IBAN" : {
       "localizations" : {
@@ -1120,15 +1138,11 @@
       }
     },
     "InternetReconciliationView" : {
-
-    },
-    "InternetReconciliationView ok" : {
-      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "InternetReconciliationView ok"
+            "value" : "InternetReconciliationView"
           }
         }
       }
@@ -1169,16 +1183,6 @@
         }
       }
     },
-    "ListTransactions" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ListTransactions"
-          }
-        }
-      }
-    },
     "Mobile" : {
       "localizations" : {
         "fr" : {
@@ -1189,29 +1193,15 @@
         }
       }
     },
-    "Mode" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mode"
-          }
-        }
-      }
-    },
-    "ModePaiementBarView" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ModePaiementBarView"
-          }
-        }
-      }
-    },
     "ModePaiementView" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ModePaiementView"
+          }
+        }
+      }
     },
     "N°" : {
       "localizations" : {
@@ -1335,12 +1325,12 @@
         }
       }
     },
-    "No chart Data available." : {
+    "No chart data available." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aucune donnée graphique disponible."
+            "value" : "Aucune donnée disponible"
           }
         }
       }
@@ -1354,9 +1344,6 @@
           }
         }
       }
-    },
-    "Nom" : {
-
     },
     "NotesView" : {
       "localizations" : {
@@ -1444,6 +1431,16 @@
         }
       }
     },
+    "Pegase" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pegase"
+          }
+        }
+      }
+    },
     "Phone" : {
       "localizations" : {
         "fr" : {
@@ -1463,9 +1460,6 @@
           }
         }
       }
-    },
-    "Plannifie" : {
-
     },
     "Postal Code" : {
       "localizations" : {
@@ -1487,27 +1481,12 @@
         }
       }
     },
-    "RecetteDepenseBarView" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "RecetteDepenseBarView"
-          }
-        }
-      }
-    },
     "RecetteDepensePie" : {
-
-    },
-    "RecetteDepensePieView" : {
-      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "RecetteDepensePieView"
+            "value" : "RecetteDepensePie"
           }
         }
       }
@@ -1532,24 +1511,12 @@
         }
       }
     },
-    "RubriqueBarView" : {
-      "extractionState" : "stale",
+    "Sales Line Chart" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "RubriqueBarView"
-          }
-        }
-      }
-    },
-    "RubriquePieView" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "RubriquePieView"
+            "value" : "Graphique en Lignes des Ventes"
           }
         }
       }
@@ -1640,9 +1607,6 @@
         }
       }
     },
-    "Storm Viewer" : {
-
-    },
     "Sub-operation" : {
       "localizations" : {
         "fr" : {
@@ -1654,7 +1618,14 @@
       }
     },
     "SubOperationView" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SubOperationView"
+          }
+        }
+      }
     },
     "Surname" : {
       "localizations" : {
