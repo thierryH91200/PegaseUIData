@@ -40,36 +40,28 @@ Add scheduler                                   05/02/25
 <p align="center">
 <img src="Doc/Capture1.png" alt="Sample">
 <p align="center">
-<em>Général</em>
-</p>
-</p>
-
-
-<p align="center">
-<img src="Doc/Capture2.png" alt="Sample">
-<p align="center">
-<em>Général</em>
+<em>List</em>
 </p>
 </p>
 
 <p align="center">
 <img src="Doc/Capture3.png" alt="Sample">
 <p align="center">
-<em>Init</em>
+<em>Bank statement</em>
 </p>
 </p>
 
 <p align="center">
 <img src="Doc/Capture4.png" alt="Sample">
 <p align="center">
-<em>Init</em>
+<em>Scheduler</em>
 </p>
 </p>
 
 <p align="center">
 <img src="Doc/Capture5.png" alt="Sample">
 <p align="center">
-<em>Init</em>
+<em>Payment method</em>
 </p>
 </p>
 
@@ -83,6 +75,6 @@ Add scheduler                                   05/02/25
 <p align="center">
 <img src="Doc/Capture7.png" alt="Sample">
 <p align="center">
-<em>Général</em>
+<em>Category Bar</em>
 </p>
 </p>

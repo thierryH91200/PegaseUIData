@@ -81,11 +81,18 @@ final class RubricManager {
     }
     
     @discardableResult
-    func getAllDatas() -> [EntityRubric] {
+    func getAllDatas(account: EntityAccount? = nil) -> [EntityRubric] {
         
-        let account = CurrentAccountManager.shared.getAccount()!
+        var currentAccount : EntityAccount?
         
-        let lhs = account.uuid
+        if account == nil  {
+            currentAccount = CurrentAccountManager.shared.getAccount()!
+        }
+        else {
+            currentAccount = account
+        }
+        
+        let lhs = currentAccount!.uuid
         let predicate = #Predicate<EntityRubric>{ entity in entity.account.uuid == lhs }
         
         let fetchDescriptor = FetchDescriptor<EntityRubric>(
@@ -101,12 +108,12 @@ final class RubricManager {
 
         }
         if entitiesRubric.isEmpty {
-            defaultEntity()
+            defaultRubric(for : currentAccount!  )
         }
         return entitiesRubric
     }
         
-    func importCSV(from fileURL: URL) {
+    func importCSV(from fileURL: URL, account: EntityAccount) {
         guard let content = try? String(contentsOf: fileURL, encoding: .utf8) else {
             print("Erreur de lecture du fichier")
             return
@@ -115,7 +122,7 @@ final class RubricManager {
         let lines = content.components(separatedBy: .newlines).filter { !$0.isEmpty }
         guard !lines.isEmpty else { return }
         
-        let account = CurrentAccountManager.shared.getAccount()! // ✅ Récupérer une seule fois le compte
+        let account = account // ✅ Récupérer une seule fois le compte
 
         var currentRubric: EntityRubric?
 
@@ -161,12 +168,12 @@ final class RubricManager {
         }
     }
     
-    func defaultEntity() {
+    func defaultRubric(for account: EntityAccount) {
         guard let url = Bundle.main.url(forResource: "rubrique", withExtension: "csv") else {
             print("Error: File not found.")
             return
         }
-        importCSV(from: url)
+        importCSV(from: url, account: account)
     }
     
     func save () throws {

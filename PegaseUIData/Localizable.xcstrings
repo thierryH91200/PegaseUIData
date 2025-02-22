@@ -153,6 +153,16 @@
         }
       }
     },
+    "Add Sub-operation" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajoute une sous opération"
+          }
+        }
+      }
+    },
     "Add the category" : {
       "localizations" : {
         "fr" : {
@@ -261,6 +271,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Références bancaires"
+          }
+        }
+      }
+    },
+    "Bank statement" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relevé Bancaire"
           }
         }
       }
@@ -1577,6 +1597,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Afficher les notifications"
+          }
+        }
+      }
+    },
+    "Split Transactions" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sous opérations"
           }
         }
       }

@@ -49,9 +49,11 @@ extension EntityFolderAccount {
 
     var name: String = ""
     var nameIcon: String = ""
-    @Attribute(.ephemeral) var solde: Double? = 0.0
+//    @Attribute(.ephemeral) var solde: Double? = 0.0
     var dateEcheancier: Date = Date().noon
     var isDemo : Bool = false
+    var isAccount : Bool = true
+
     
     @Relationship(deleteRule: .cascade, inverse: \EntitySchedule.account)
     var echeanciers: [EntitySchedule]?
@@ -70,14 +72,20 @@ extension EntityFolderAccount {
     
     @Relationship(deleteRule: .cascade, inverse: \EntityPaymentMode.account)
     var paymentMode: [EntityPaymentMode]?
-
+    
     @Relationship(deleteRule: .cascade, inverse: \EntityBankStatement.account)
     var bankStatement: [EntityBankStatement]?
+    
+    @Relationship(deleteRule: .cascade, inverse: \EntityRubric.account)
+    var rubric: [EntityRubric]?
     
     @Relationship(deleteRule: .cascade, inverse: \EntityCheckBook.account)
     var carnetCheques: [EntityCheckBook]?
 
     var compteLie: EntitySchedule?
+    
+    @Relationship(deleteRule: .cascade, inverse: \EntityTransactions.account)
+    var transactions: [EntityTransactions]?
 
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
@@ -88,6 +96,22 @@ extension EntityFolderAccount {
     public init(name: String, nameIcon: String) {
         self.name = name
         self.nameIcon = nameIcon
+    }
+}
+
+extension EntityAccount {
+    @Transient
+    var solde: Double
+    {
+        guard isAccount == true else { return 0.0 }
+        
+        var balance = 0.0
+        if let transactions = transactions {
+            for transaction in transactions {
+                balance += transaction.amount
+            }
+        }
+        return balance
     }
 }
 
@@ -113,7 +137,13 @@ final class AccountManager {
         self.modelContext = modelContext
         return true
     }
-
+    
+    /**
+      An example of using the attention field
+     
+      - Attention: What I if told you
+      you read this line wrong?
+     */
     func getAllData() -> [EntityAccount] {
         do {
             // Exécution d'une requête manuelle si besoin de filtrer ou trier

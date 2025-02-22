@@ -28,7 +28,7 @@ struct AccountFactory {
         let banqueInfo = EntityBanqueInfo(account: account)
         account.bank = banqueInfo
         
-        let initAccount = EntityInitAccount()
+        let initAccount = EntityInitAccount(account: account)
         initAccount.codeAccount = numAccount
         initAccount.account = account
         account.initAccount = initAccount
@@ -37,9 +37,14 @@ struct AccountFactory {
         PaymentModeManager.shared.defaultModePaiement(for: account)
         account.paymentMode = PaymentModeManager.shared.entities
         
+        RubricManager.shared.configure(with: modelContext)  
+        RubricManager.shared.defaultRubric(for: account)
+        let rubric = RubricManager.shared.getAllDatas(account: account)
+        account.rubric = rubric
+
         PreferenceManager.shared.configure(with: modelContext)
-        PreferenceManager.shared.defaultPref(account: account)
-        account.preference = PreferenceManager.shared.entityPreference?.first
+        let entityPreference = PreferenceManager.shared.defaultPref(account: account)
+        account.preference = entityPreference
         
         modelContext.insert(account)
         return account

@@ -28,7 +28,7 @@ import SwiftUI
                 paymentMode: EntityPaymentMode? = nil ) {
         self.category = category
         self.paymentMode = paymentMode
-        self.statut = 0
+        self.statut = 1
         self.signe = true
         
         self.account = account
@@ -63,9 +63,11 @@ final class PreferenceManager {
         
         let newPreference = EntityPreference(account: account)
         
-        if let rubric = RubricManager.shared.getAllDatas().sorted(by: { $0.name < $1.name }).first {
-           let categories = rubric.categorie
-            newPreference.category = categories.sorted { $0.name < $1.name }.first!
+        if newPreference.category == nil,
+            let rubric = RubricManager.shared.getAllDatas(account: account).sorted(by: { $0.name < $1.name }).first {
+            if let category = rubric.categorie.sorted(by: { $0.name < $1.name }).first {
+                newPreference.category = category
+            }
         }
         
         let paymentModes = PaymentModeManager.shared.getAllDatas(for: account)
@@ -77,13 +79,12 @@ final class PreferenceManager {
         newPreference.account = account
         
         validContext.insert(newPreference) // Ajoute l'objet au contexte SwiftData
-//        entityPreference.append(newPreference) // Mise à jour de la liste locale
+        //        entityPreference.append(newPreference) // Mise à jour de la liste locale
         
         saveContext()
         
         return newPreference
     }
-
 
     func getAllDatas(for account: EntityAccount?) -> EntityPreference? {
         

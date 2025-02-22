@@ -37,9 +37,9 @@ import SwiftUI
 
     var account: EntityAccount
  
-    public init() {
+    public init(account : EntityAccount) {
         self.iban = "FR76"
-        self.account = CurrentAccountManager.shared.getAccount()!
+        self.account = account
     }
 }
 
@@ -111,7 +111,7 @@ final class InitAccountManager {
 
     // Méthode de création d'entité
     func create(numAccount: String = "", for account: EntityAccount) throws -> EntityInitAccount {
-        let entity = EntityInitAccount()
+        let entity = EntityInitAccount(account: account)
         entity.bic = ""
         entity.cleRib = ""
         entity.codeBank = ""
