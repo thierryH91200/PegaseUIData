@@ -5,8 +5,6 @@
 //  Created by Thierry hentic on 22/02/2025.
 //
 
-
-
 import SwiftUI
 import AppKit
 import SwiftData
@@ -22,18 +20,21 @@ struct SubOperation: Identifiable {
 struct OperationDialog: View {
     
     @Environment(\.modelContext) private var modelContext: ModelContext
+    @Environment(\.dismiss) private var dismiss
 
     @ObservedObject var paymentModeManager = ModeManager()
     @ObservedObject var rubricManager = RubriqueManager()
+    
+//    @StateObject private var accountManager = AccountManager.shared
 
-    @State private var entityAccounts : [EntityAccount]
+    @State private var entityAccounts : [EntityAccount] = []
     var entityRubric : [EntityRubric]?
     var entityCategorie : [EntityCategory]?
 
     @State private var linkedAccount: String = ""
-    @State private var comment = " "
-    @State private var name = " "
-    @State private var surname = " "
+    @State private var comment = ""
+    @State private var name = ""
+    @State private var surname = ""
 
     @State private var transactionDate: Date = Date()
     @State private var entityPaymentMode : [EntityPaymentMode] = []
@@ -58,7 +59,6 @@ struct OperationDialog: View {
     
     init(modeCreation: Bool) {
         self.modeCreate = modeCreation
-        //        selectedAccount = CurrentAccountManager.shared.getAccount()
         entityAccounts =  []
     }
 
@@ -71,6 +71,10 @@ struct OperationDialog: View {
                 .frame(maxWidth: .infinity)
                 .padding()
                 .background(Color.green)
+                .accessibilityLabel(modeCreate ?
+                    String(localized: "Create new operation screen") :
+                    String(localized: "Edit operation screen"))
+
             
             if selectedAccount != nil {
                 TransactionFormViewModel(
@@ -86,11 +90,14 @@ struct OperationDialog: View {
                     selectedMode: selectedMode,
                     selectAccount: selectedAccount
                 )
+                .accessibilityElement(children: .contain)
+                .accessibilityLabel(String(localized: "Transaction form section"))
             }
 
             // Split Transactions
             Text(String(localized:"Split Transactions"))
                 .font(.headline)
+                .accessibilityAddTraits(.isHeader)
 
             List {
                 ForEach(subOperations) { subOperation in
@@ -99,6 +106,9 @@ struct OperationDialog: View {
                         Spacer()
                         Text(subOperation.amount)
                             .foregroundColor(.red)
+                            .accessibilityLabel(String(localized: "Amount"))
+                            .accessibilityValue(subOperation.amount)
+
                         Spacer().frame(width: 20)
                         Button(action: {
                             currentSubOperation = subOperation
@@ -106,6 +116,9 @@ struct OperationDialog: View {
                         }) {
                             Image(systemName: "pencil")
                         }
+                        .accessibilityLabel(String(localized: "Edit sub-operation"))
+                        .accessibilityHint(String(localized: "Double tap to edit \(subOperation.comment)"))
+
                         Button(action: {
                             if let index = subOperations.firstIndex(where: { $0.id == subOperation.id }) {
                                 subOperations.remove(at: index)
@@ -113,19 +126,22 @@ struct OperationDialog: View {
                         }) {
                             Image(systemName: "trash")
                         }
+                        .accessibilityLabel(String(localized: "Delete sub-operation"))
+                        .accessibilityHint(String(localized: "Double tap to delete \(subOperation.comment)"))
                     }
                 }
             }
             .onAppear {
                 Task {
                     do {
+                        AccountManager.shared.configure(with: modelContext)
+                        entityAccounts = AccountManager.shared.getAllData()
                         try await configurePaymentModes()
                     } catch {
                         print("Failed to configure payment modes: \(error)")
                     }
                 }
             }
-
 
             HStack {
                 Button(action: {
@@ -143,7 +159,7 @@ struct OperationDialog: View {
             // Buttons
             HStack {
                 Button(action: {
-                    // Cancel action
+                    dismiss() // Ferme la vue
                 }) {
                     Text("Cancel")
                         .frame(width: 100)
@@ -152,6 +168,8 @@ struct OperationDialog: View {
                         .background(Color.gray)
                         .cornerRadius(5)
                 }
+                .accessibilityLabel(String(localized: "Cancel operation"))
+                .accessibilityHint(String(localized: "Double tap to discard changes and close"))
 
                 Button(action: {
                     // OK action
@@ -163,6 +181,8 @@ struct OperationDialog: View {
                         .background(Color.green)
                         .cornerRadius(5)
                 }
+                .accessibilityLabel(String(localized: "Save operation"))
+                .accessibilityHint(String(localized: "Double tap to save all changes"))
             }
         }
         .padding()
@@ -184,7 +204,11 @@ struct OperationDialog: View {
         
         PaymentModeManager.shared.configure(with: modelContext)
         if let account = CurrentAccountManager.shared.getAccount() {
-            entityPaymentMode = PaymentModeManager.shared.getAllDatas(for: account)!
+            if let modes = PaymentModeManager.shared.getAllDatas(for: account) {
+                entityPaymentMode = modes
+            } else {
+                entityPaymentMode = [] // Évite un crash
+            }
         }
     }
 }
@@ -219,11 +243,29 @@ struct SubOperationDialog: View {
 
             TextField("Comment", text: $comment)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
+                .accessibilityLabel(String(localized: "Comment field"))
+                .accessibilityHint(String(localized: "Enter a description for this sub-operation"))
 
             FormField(label: "Rubric") {
                 Picker("", selection: $selectedRubric) {
                     ForEach(entityRubric, id: \.self) { rubric in
                         Text(rubric.name).tag(rubric)
+                    }
+                }
+                .accessibilityLabel(String(localized: "Rubric selection"))
+                .accessibilityHint(String(localized: "Choose a rubric for categorizing this sub-operation"))
+                .onChange(of: selectedRubric) { oldRubric, newRubric in
+                    if let newRubric = newRubric {
+                        // Met à jour la liste des catégories en fonction de la rubrique sélectionnée
+                        entityCategorie = newRubric.categorie.sorted { $0.name < $1.name }
+                        // Réinitialise la sélection de catégorie si elle ne fait plus partie des catégories disponibles
+                        if let selected = selectedCategorie,
+                           !entityCategorie.contains(where: { $0 == selected }) {
+                            selectedCategorie = entityCategorie.first
+                        }
+                    } else {
+                        entityCategorie = []
+                        selectedCategorie = nil
                     }
                 }
             }
@@ -234,21 +276,32 @@ struct SubOperationDialog: View {
                         Text(category.name).tag(category)
                     }
                 }
+                .accessibilityLabel(String(localized: "Category selection"))
+                .accessibilityHint(String(localized: "Choose a category within the selected rubric"))
             }
 
             TextField("Amount", text: $amount)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
+                .accessibilityLabel(String(localized: "Amount field"))
+                .accessibilityHint(String(localized: "Enter the amount for this sub-operation"))
+                .accessibilityValue(amount.isEmpty ?
+                    String(localized: "No amount entered") :
+                    amount)
+
 
             HStack {
                 Button(action: {
-                    isShowingDialog = false
+                    dismiss()
                 }) {
                     Text("Cancel")
+                        .frame(width: 100)
                         .foregroundColor(.white)
                         .padding()
                         .background(Color.gray)
                         .cornerRadius(5)
                 }
+                .accessibilityLabel(String(localized: "Cancel sub-operation"))
+                .accessibilityHint(String(localized: "Double tap to discard changes"))
 
                 Button(action: {
                     if var subOp = subOperation {
@@ -257,12 +310,17 @@ struct SubOperationDialog: View {
                         subOp.category = category
                         subOp.amount = amount
                         onSave(subOp)
+                        dismiss() // Ferme la vue après sauvegarde
+
                     } else {
                         let newSubOp = SubOperation(comment: comment, rubrique: rubrique, category: category, amount: amount)
                         onSave(newSubOp)
+                        dismiss() // Ferme la vue après sauvegarde
+
                     }
                 }) {
                     Text("OK")
+                        .frame(width: 100)
                         .foregroundColor(.white)
                         .padding()
                         .background(Color.green)
@@ -273,7 +331,6 @@ struct SubOperationDialog: View {
         .padding()
         .onAppear {
             configureForm()
-
         }
     }
     
@@ -294,9 +351,9 @@ struct SubOperationDialog: View {
                 
                 if let preference = entityPreference, let rubricIndex = entityRubric.firstIndex(where: { $0 == preference.category?.rubric }) {
                     selectedRubric = entityRubric[rubricIndex]
-                    let entityCategory = entityRubric[rubricIndex].categorie.sorted { $0.name < $1.name }
-                    if let categoryIndex = entityCategory.firstIndex(where: { $0 === preference.category }) {
-                        selectedCategorie = entityCategory[categoryIndex]
+                    entityCategorie = entityRubric[rubricIndex].categorie.sorted { $0.name < $1.name }
+                    if let categoryIndex = entityCategorie.firstIndex(where: { $0 === preference.category }) {
+                        selectedCategorie = entityCategorie[categoryIndex]
                     }
                 }
             } catch {

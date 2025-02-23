@@ -93,16 +93,6 @@
         }
       }
     },
-    "Add a sub-operation" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ajouter une sous opération"
-          }
-        }
-      }
-    },
     "Add Account" : {
       "localizations" : {
         "fr" : {
@@ -215,6 +205,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Montant"
+          }
+        }
+      }
+    },
+    "Amount field" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Champ du montant"
           }
         }
       }
@@ -365,6 +365,12 @@
         }
       }
     },
+    "Cancel operation" : {
+
+    },
+    "Cancel sub-operation" : {
+
+    },
     "Cash" : {
       "localizations" : {
         "fr" : {
@@ -415,6 +421,9 @@
         }
       }
     },
+    "Category selection" : {
+
+    },
     "CB Balance" : {
       "localizations" : {
         "fr" : {
@@ -447,6 +456,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Chéque"
+          }
+        }
+      }
+    },
+    "Choose a category within the selected rubric" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisissez une catégorie dans la rubrique sélectionnée"
+          }
+        }
+      }
+    },
+    "Choose a rubric for categorizing this sub-operation" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisissez une rubrique pour catégoriser cette sous-opération"
           }
         }
       }
@@ -486,6 +515,9 @@
           }
         }
       }
+    },
+    "Comment field" : {
+
     },
     "Complement" : {
       "localizations" : {
@@ -591,6 +623,9 @@
         }
       }
     },
+    "Create new operation screen" : {
+
+    },
     "Current Account: %@" : {
       "localizations" : {
         "fr" : {
@@ -693,6 +728,19 @@
         }
       }
     },
+    "Default sign" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Signe par défaut"
+          }
+        }
+      }
+    },
+    "Default values ​​for transactions for this account." : {
+
+    },
     "Delete" : {
       "localizations" : {
         "en" : {
@@ -708,6 +756,9 @@
           }
         }
       }
+    },
+    "Delete sub-operation" : {
+
     },
     "Delete the rubric" : {
       "localizations" : {
@@ -755,6 +806,21 @@
         }
       }
     },
+    "Double tap to delete %@" : {
+
+    },
+    "Double tap to discard changes" : {
+
+    },
+    "Double tap to discard changes and close" : {
+
+    },
+    "Double tap to edit %@" : {
+
+    },
+    "Double tap to save all changes" : {
+
+    },
     "Drop your PDF here" : {
       "localizations" : {
         "fr" : {
@@ -784,6 +850,9 @@
           }
         }
       }
+    },
+    "Edit operation screen" : {
+
     },
     "Edit Payment Mode" : {
       "localizations" : {
@@ -831,6 +900,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Editer le relevé"
+          }
+        }
+      }
+    },
+    "Edit sub-operation" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editer la sous opération"
           }
         }
       }
@@ -911,6 +990,9 @@
         }
       }
     },
+    "Enter a description for this sub-operation" : {
+
+    },
     "Enter Engaged value" : {
       "localizations" : {
         "fr" : {
@@ -937,6 +1019,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Entrez la valeur planifiée"
+          }
+        }
+      }
+    },
+    "Enter the amount for this sub-operation" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entrez le montant de cette sous-opération"
           }
         }
       }
@@ -1027,16 +1119,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "informations générales"
-          }
-        }
-      }
-    },
-    "Hello" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bonjour"
           }
         }
       }
@@ -1213,6 +1295,16 @@
         }
       }
     },
+    "Mode" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mode"
+          }
+        }
+      }
+    },
     "ModePaiementView" : {
       "localizations" : {
         "fr" : {
@@ -1325,6 +1417,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aucun compte de selectionné"
+          }
+        }
+      }
+    },
+    "No amount entered" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun montant saisi"
           }
         }
       }
@@ -1481,6 +1583,16 @@
         }
       }
     },
+    "Plannifie" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PLannifié"
+          }
+        }
+      }
+    },
     "Postal Code" : {
       "localizations" : {
         "fr" : {
@@ -1531,6 +1643,9 @@
         }
       }
     },
+    "Rubric selection" : {
+
+    },
     "Sales Line Chart" : {
       "localizations" : {
         "fr" : {
@@ -1550,6 +1665,9 @@
           }
         }
       }
+    },
+    "Save operation" : {
+
     },
     "Select a statement" : {
       "localizations" : {
@@ -1637,26 +1755,6 @@
         }
       }
     },
-    "Sub-operation" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sous Opérations"
-          }
-        }
-      }
-    },
-    "SubOperationView" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "SubOperationView"
-          }
-        }
-      }
-    },
     "Surname" : {
       "localizations" : {
         "en" : {
@@ -1698,6 +1796,9 @@
           }
         }
       }
+    },
+    "Transaction form section" : {
+
     },
     "Transfers" : {
       "localizations" : {

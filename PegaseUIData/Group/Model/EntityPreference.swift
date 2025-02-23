@@ -35,11 +35,17 @@ import SwiftUI
     }
 }
 
+protocol PreferenceManaging {
+    func defaultPref(account: EntityAccount) -> EntityPreference?
+    func getAllDatas(for account: EntityAccount?) -> EntityPreference?
+    func saveContext()
+}
+
 //@Observable
-final class PreferenceManager {
+final class PreferenceManager: PreferenceManaging {
     
     static let shared = PreferenceManager()
-
+    
     var entityPreference : [EntityPreference]?
     
     // Contexte pour les modifications
@@ -51,9 +57,9 @@ final class PreferenceManager {
         }
         return context
     }
-
+    
     private init() { }
-
+    
     func configure(with modelContext: ModelContext) {
         self.modelContext = modelContext
     }
@@ -64,61 +70,56 @@ final class PreferenceManager {
         let newPreference = EntityPreference(account: account)
         
         if newPreference.category == nil,
-            let rubric = RubricManager.shared.getAllDatas(account: account).sorted(by: { $0.name < $1.name }).first {
+           let rubric = RubricManager.shared.getAllDatas(account: account).sorted(by: { $0.name < $1.name }).first {
             if let category = rubric.categorie.sorted(by: { $0.name < $1.name }).first {
                 newPreference.category = category
             }
         }
         
         let paymentModes = PaymentModeManager.shared.getAllDatas(for: account)
-        
-        newPreference.paymentMode = paymentModes?.first!
+        newPreference.paymentMode = paymentModes?.first ?? nil
         
         newPreference.statut = 1
         newPreference.signe = true
         newPreference.account = account
         
-        validContext.insert(newPreference) // Ajoute l'objet au contexte SwiftData
-        //        entityPreference.append(newPreference) // Mise à jour de la liste locale
+        validContext.insert(newPreference)
+        entityPreference?.append(newPreference) // Mise à jour du cache local
         
         saveContext()
         
         return newPreference
     }
-
+    
     func getAllDatas(for account: EntityAccount?) -> EntityPreference? {
-        
-        // Crée un prédicat pour filtrer les entités par `account`
-        let lhs = account!.uuid
-        let predicate = #Predicate<EntityPreference>{ entity in entity.account.uuid == lhs }
-
-        let fetchDescriptor = FetchDescriptor<EntityPreference>(
-            predicate: predicate)
+        guard let account = account else {
+            print("Erreur : Account est nil")
+            return nil
+        }
+        let accountID = account.uuid
+        let predicate = #Predicate<EntityPreference> { entity in entity.account.uuid == accountID }
+        let fetchDescriptor = FetchDescriptor<EntityPreference>(predicate: predicate)
         
         do {
             entityPreference = try validContext.fetch(fetchDescriptor)
         } catch {
-            print("Erreur lors de la récupération des données")
+            print("Erreur lors de la récupération des données : \(error.localizedDescription)")
         }
-        
-        // Si aucun résultat, crée une nouvelle entité liée au compte actuel
-        if ((entityPreference?.isEmpty) != nil) {
-            return defaultPref(account: account!)!
-        }
-        
-        return entityPreference?.first!
+        return entityPreference?.first ?? defaultPref(account: account)
     }
     
-
     func saveContext() {
-
-        let path = getSQLiteFilePath()
-        print(path!)
+        if let path = getSQLiteFilePath() {
+            print("Base de données SQLite : \(path)")
+        } else {
+            print("Erreur : Impossible de récupérer le chemin SQLite")
+        }
+        
         do {
             try validContext.save()
             print("Sauvegarde réussie.")
         } catch {
-            print("Erreur : \(error.localizedDescription)")
+            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
     }
 }

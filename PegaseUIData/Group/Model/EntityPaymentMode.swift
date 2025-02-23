@@ -135,9 +135,9 @@ final class PaymentModeManager {
     func getAllNames(for account: EntityAccount) -> [String] {
         var names = [String]()
         
-        let modePqyments =  getAllDatas(for: account)
+        let modePayments =  getAllDatas(for: account)
         
-        for modePayment in modePqyments ?? [] {
+        for modePayment in modePayments ?? [] {
             names.append(modePayment.name)
         }
         return names

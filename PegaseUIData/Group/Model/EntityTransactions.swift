@@ -9,7 +9,6 @@
 import Foundation
 import SwiftData
 
-
 @Model public class EntityTransactions {
     var createAt: Date? = Date(timeIntervalSinceReferenceDate: 526815360.000000)
     var updatedAt: Date? = Date(timeIntervalSinceReferenceDate: 526815360.000000)
