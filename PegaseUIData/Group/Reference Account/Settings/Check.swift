@@ -52,7 +52,7 @@ struct CheckView: View {
     
     @State private var isAddDialogPresented = false
     @State private var isEditDialogPresented = false
-    @State private var modeCreate = false
+    @State private var isModeCreate = false
     
     var body: some View {
         VStack(spacing: 10) {
@@ -87,7 +87,7 @@ struct CheckView: View {
             HStack {
                 Button(action: {
                     isAddDialogPresented = true
-                    modeCreate = true
+                    isModeCreate = true
                 }) {
                     Label("Add", systemImage: "plus")
                         .buttonStyle(.borderedProminent)
@@ -95,7 +95,7 @@ struct CheckView: View {
                 
                 Button(action: {
                     isEditDialogPresented = true
-                    modeCreate = false
+                    isModeCreate = false
                 }) {
                     Label("Edit", systemImage: "pencil")
                         .buttonStyle(.bordered)
@@ -112,10 +112,10 @@ struct CheckView: View {
             
             // Feuilles modales pour l'ajout/modification
             .sheet(isPresented: $isEditDialogPresented) {
-                CheckBookFormView(isPresented: $isEditDialogPresented, mode: $modeCreate, checkBook: selectedCheck)
+                CheckBookFormView(isPresented: $isEditDialogPresented, isModeCreate: $isModeCreate, checkBook: selectedCheck)
             }
             .sheet(isPresented: $isAddDialogPresented) {
-                CheckBookFormView(isPresented: $isAddDialogPresented, mode: $modeCreate, checkBook: nil)
+                CheckBookFormView(isPresented: $isAddDialogPresented, isModeCreate: $isModeCreate, checkBook: nil)
             }
             .padding()
             Spacer()
@@ -199,7 +199,7 @@ struct CheckBookFormView: View {
     @EnvironmentObject var checkViewManager: CheckDataManager
     
     @Binding var isPresented: Bool
-    @Binding var mode: Bool
+    @Binding var isModeCreate: Bool
     
     let checkBook: EntityCheckBook?
     @State private var name: String = ""
@@ -212,12 +212,12 @@ struct CheckBookFormView: View {
         VStack(spacing: 0) { // Spacing à 0 pour que les bandeaux soient collés au contenu
             // Bandeau du haut
             Rectangle()
-                .fill(mode ? Color.blue : Color.green)
+                .fill(isModeCreate ? Color.blue : Color.green)
                 .frame(height: 10)
             
             // Contenu principal
             VStack(spacing: 20) {
-                Text(mode ? "Add CheckBook" : "Edit CheckBook")
+                Text(isModeCreate ? "Add CheckBook" : "Edit CheckBook")
                     .font(.headline)
                     .padding(.top, 10) // Ajoute un peu d'espace après le bandeau
                 
@@ -279,7 +279,7 @@ struct CheckBookFormView: View {
             
             // Bandeau du bas
             Rectangle()
-                .fill(mode ? Color.blue : Color.green)
+                .fill(isModeCreate ? Color.blue : Color.green)
                 .frame(height: 10)
         }
         .onAppear {
@@ -294,7 +294,7 @@ struct CheckBookFormView: View {
     }
     
     private func save() {
-        if mode { // Création
+        if isModeCreate { // Création
             let newItem = EntityCheckBook()
             updateCheckBook(newItem)
             if let account = CurrentAccountManager.shared.getAccount() {

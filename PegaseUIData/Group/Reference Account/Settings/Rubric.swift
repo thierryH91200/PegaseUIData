@@ -157,17 +157,17 @@ struct RubricView: View {
             .offset(y: 350) // Ajustez cette valeur selon vos besoins
             
             .sheet(isPresented: $isAddDialogRubricPresented) {
-                RubricFormView(isPresented: $isAddDialogRubricPresented, mode: $modeCreate, rubric: nil)
+                RubricFormView(isPresented: $isAddDialogRubricPresented, isMode: $modeCreate, rubric: nil)
             }
             .sheet(isPresented: $isEditDialogRubricPresented) {
-                RubricFormView(isPresented: $isEditDialogRubricPresented, mode: $modeCreate, rubric: selectedRubric)
+                RubricFormView(isPresented: $isEditDialogRubricPresented, isMode: $modeCreate, rubric: selectedRubric)
             }
             .sheet(isPresented: $isAddDialogCategoryPresented) {
-                CategoryFormView(isPresented: $isAddDialogCategoryPresented, mode: $modeCreate, rubric: nil, category: nil)
+                CategoryFormView(isPresented: $isAddDialogCategoryPresented, isModeCreate: $modeCreate, rubric: nil, category: nil)
             }
             .sheet(isPresented: $isEditDialogCategoryPresented) {
                 let rubric = selectedCategory!.rubric
-                CategoryFormView(isPresented: $isEditDialogCategoryPresented, mode: $modeCreate, rubric: rubric, category: selectedCategory)
+                CategoryFormView(isPresented: $isEditDialogCategoryPresented, isModeCreate: $modeCreate, rubric: rubric, category: selectedCategory)
             }
         }
     }
@@ -302,7 +302,7 @@ struct RubricFormView: View {
     @EnvironmentObject var rubricViewManager: RubricDataManager
     
     @Binding var isPresented: Bool
-    @Binding var mode: Bool
+    @Binding var isMode: Bool
     let rubric: EntityRubric?
     @State private var name: String = ""
     @State private var selectedColor: Color = .gray
@@ -310,13 +310,13 @@ struct RubricFormView: View {
     var body: some View {
         VStack(spacing: 0) {
             Rectangle()
-                .fill(mode ? Color.blue : Color.green)
+                .fill(isMode ? Color.blue : Color.green)
                 .frame(height: 10)
             
             // Contenu principal
             VStack(spacing: 20) {
                 
-                Text(mode ? "Add the rubric" : "Edit Rubric")
+                Text(isMode ? "Add the rubric" : "Edit Rubric")
                     .font(.headline)
                     .padding(.top, 10) // Ajoute un peu d'espace après le bandeau
                 
@@ -346,7 +346,7 @@ struct RubricFormView: View {
             .frame(width: 300)
             
             Rectangle()
-                .fill(mode ? Color.blue : Color.green)
+                .fill(isMode ? Color.blue : Color.green)
                 .frame(height: 10)
             
                 .onAppear {
@@ -385,7 +385,7 @@ struct CategoryFormView: View {
     @EnvironmentObject var rubricViewManager: RubricDataManager
     
     @Binding var isPresented: Bool
-    @Binding var mode: Bool
+    @Binding var isModeCreate: Bool
     let rubric: EntityRubric?
     let category: EntityCategory?
     @State private var name: String = ""
@@ -395,13 +395,13 @@ struct CategoryFormView: View {
     var body: some View {
         VStack(spacing: 0) {
             Rectangle()
-                .fill(mode ? Color.blue : Color.green)
+                .fill(isModeCreate ? Color.blue : Color.green)
                 .frame(height: 10)
             
             // Contenu principal
             VStack(spacing: 20) {
                 
-                Text(mode ? "Add the category" : "Edit the category")
+                Text(isModeCreate ? "Add the category" : "Edit the category")
                     .font(.headline)
                     .padding(.top, 10) // Ajoute un peu d'espace après le bandeau
                 
@@ -413,7 +413,7 @@ struct CategoryFormView: View {
             }
             .padding()
             Rectangle()
-                .fill(mode ? Color.blue : Color.green)
+                .fill(isModeCreate ? Color.blue : Color.green)
                 .frame(height: 10)
             
                 .toolbar {

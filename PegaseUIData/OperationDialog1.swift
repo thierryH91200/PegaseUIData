@@ -4,6 +4,8 @@ import SwiftUI
 import AppKit
 import SwiftData
 
+// MARK: - Managers
+
 // PaymentModeManager et RubricManager comme ObservableObject
 class ModeManager: ObservableObject {
     @Published var names: [String] = []
@@ -14,7 +16,6 @@ class RubriqueManager: ObservableObject {
     @Published var rubrics: [String] = []
 }
 
-
 // MARK: - TransactionFormViewModel
 struct TransactionFormViewModel: View {
     @Binding var linkedAccount: [EntityAccount]
@@ -24,41 +25,44 @@ struct TransactionFormViewModel: View {
     @Binding var pointingDate: Date
     @Binding var statut: [String]
     @Binding var bankStatement: Int
+    @Binding var checkNumber: Int
     @Binding var amount: String
     
     @Binding var selectedBankStatement: String?
     @Binding var selectedStatut: String
-    @State var selectedMode: EntityPaymentMode?
-    @State var selectAccount : EntityAccount?
+    @Binding var selectedMode: EntityPaymentMode?
+    @Binding var selectedAccount : EntityAccount?
     
-    var CompteCurrent: EntityAccount? {
+    // Récupère le compte courant de manière sécurisée.
+    var compteCurrent: EntityAccount? {
         CurrentAccountManager.shared.getAccount()
     }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
+            
             FormField(label: String(localized: "Linked Account")) {
-                Picker("", selection: $selectAccount) {
+                Picker("", selection: $selectedAccount) {
                     ForEach(linkedAccount, id: \.uuid) { account in
-                        if account == CompteCurrent {
-                            Text("(no transfer)").tag(nil as EntityAccount?)
+                        if let currentAccount = compteCurrent, account == currentAccount {
+                            Text(String(localized: "(no transfer)")).tag(account as EntityAccount?)
                         } else {
-                            Text(account.initAccount?.codeAccount ?? "").tag(account)
+                            Text(account.initAccount?.codeAccount ?? "").tag(account as EntityAccount?)
                         }
                     }
                 }
             }
             
             FormField(label: String(localized: "Comment")) {
-                Text( selectAccount?.name ?? "")
+                Text( selectedAccount?.name ?? "")
             }
             
             FormField(label: String(localized: "Name")) {
-                Text( selectAccount?.identity?.name ?? "")
+                Text( selectedAccount?.identity?.name ?? "")
             }
             
             FormField(label: String(localized: "Surname")) {
-                Text( selectAccount?.identity?.surName ?? "")
+                Text( selectedAccount?.identity?.surName ?? "")
             }
             
             Divider()
@@ -90,17 +94,36 @@ struct TransactionFormViewModel: View {
             FormField(label: String(localized:"Bank statement")) {
                 TextField("", value: $bankStatement, formatter: NumberFormatter())
             }
-            
+
+            FormField(label: String(localized:"Check ")) {
+                TextField("", value: $checkNumber, formatter: NumberFormatter())
+            }
+
             FormField(label: String(localized:"Amount")) {
                 TextField("", value: $amount, formatter: NumberFormatter())
             }
+        }
+        .onAppear {
+            selectedAccount = linkedAccount.first
+        }
+        .onChange(of: compteCurrent) {old, new in
+            selectedAccount = compteCurrent
+        }
 
-            
+        .onChange(of: linkedAccount) { old, newValue in
+            print("linkedAccount mis à jour : \(newValue.map { $0.name })")
+            if !newValue.contains(where: { $0 == selectedAccount }) {
+                selectedAccount = newValue.first
+            }
+        }
+        .onChange(of: selectedAccount) { oldValue, newValue in
+            print("Compte sélectionné mis à jour : \(newValue?.name ?? "nil")")
         }
     }
 }
 
 // MARK: - FormField
+
 struct FormField<Content: View>: View {
     let label: String
     let content: Content

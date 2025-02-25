@@ -84,10 +84,9 @@ final class ListTransactionsManager {
             
             // Process transactions and their split operations
             for entityTransaction in entityTransactions {
-                if let splitTransactions = entityTransaction.sousOperations {
+                let splitTransactions = entityTransaction.sousOperations
                     let splitComments = splitTransactions.compactMap { $0.libelle }
                     comments.append(contentsOf: splitComments)
-                }
             }
             
             // Return unique comments

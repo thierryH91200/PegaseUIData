@@ -27,6 +27,19 @@
     "%@" : {
       "shouldTranslate" : false
     },
+    "%@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ %2$@"
+          }
+        }
+      }
+    },
+    "%lf" : {
+
+    },
     "%lld" : {
       "shouldTranslate" : false
     },
@@ -219,6 +232,9 @@
         }
       }
     },
+    "Année %@" : {
+
+    },
     "Appearance" : {
       "localizations" : {
         "fr" : {
@@ -366,10 +382,24 @@
       }
     },
     "Cancel operation" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annuler l'opération"
+          }
+        }
+      }
     },
     "Cancel sub-operation" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annuler la sous-opération"
+          }
+        }
+      }
     },
     "Cash" : {
       "localizations" : {
@@ -422,7 +452,14 @@
       }
     },
     "Category selection" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sélection de catégorie"
+          }
+        }
+      }
     },
     "CB Balance" : {
       "localizations" : {
@@ -459,6 +496,12 @@
           }
         }
       }
+    },
+    "Check " : {
+
+    },
+    "Check number" : {
+
     },
     "Choose a category within the selected rubric" : {
       "localizations" : {
@@ -517,7 +560,14 @@
       }
     },
     "Comment field" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Champ de commentaires"
+          }
+        }
+      }
     },
     "Complement" : {
       "localizations" : {
@@ -624,7 +674,14 @@
       }
     },
     "Create new operation screen" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créer un nouvel écran d'opération"
+          }
+        }
+      }
     },
     "Current Account: %@" : {
       "localizations" : {
@@ -739,7 +796,14 @@
       }
     },
     "Default values ​​for transactions for this account." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valeurs par défaut pour les transactions pour ce compte."
+          }
+        }
+      }
     },
     "Delete" : {
       "localizations" : {
@@ -758,7 +822,14 @@
       }
     },
     "Delete sub-operation" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer la sous opération"
+          }
+        }
+      }
     },
     "Delete the rubric" : {
       "localizations" : {
@@ -991,7 +1062,14 @@
       }
     },
     "Enter a description for this sub-operation" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entrez une description pour cette sous-opération"
+          }
+        }
+      }
     },
     "Enter Engaged value" : {
       "localizations" : {
@@ -1314,6 +1392,9 @@
           }
         }
       }
+    },
+    "My Transactions" : {
+
     },
     "N°" : {
       "localizations" : {
@@ -1644,7 +1725,14 @@
       }
     },
     "Rubric selection" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selection de la rubrique"
+          }
+        }
+      }
     },
     "Sales Line Chart" : {
       "localizations" : {
@@ -1667,7 +1755,14 @@
       }
     },
     "Save operation" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sauver l’opération"
+          }
+        }
+      }
     },
     "Select a statement" : {
       "localizations" : {
@@ -1771,6 +1866,9 @@
         }
       }
     },
+    "Total: %@ €" : {
+
+    },
     "Town" : {
       "localizations" : {
         "en" : {
@@ -1798,7 +1896,14 @@
       }
     },
     "Transaction form section" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section du formulaire de transaction"
+          }
+        }
+      }
     },
     "Transfers" : {
       "localizations" : {

@@ -146,10 +146,10 @@ struct ModePaymentView: View {
         
         // Formulaire d'ajout et de modification
         .sheet(isPresented: $isAddDialogPresented) {
-            ModePaiementFormView(isPresented: $isAddDialogPresented, mode: $modeCreate, modePaiement: nil)
+            ModePaiementFormView(isPresented: $isAddDialogPresented, isModeCtreate: $modeCreate, modePaiement: nil)
         }
         .sheet(isPresented: $isEditDialogPresented) {
-            ModePaiementFormView(isPresented: $isEditDialogPresented, mode: $modeCreate, modePaiement: selectedMode)
+            ModePaiementFormView(isPresented: $isEditDialogPresented, isModeCtreate: $modeCreate, modePaiement: selectedMode)
         }
     }
     
@@ -214,7 +214,7 @@ struct ModePaiementFormView: View {
     @EnvironmentObject var modePaiementViewManager: ModePaiementDataManager
     
     @Binding var isPresented: Bool
-    @Binding var mode: Bool
+    @Binding var isModeCtreate: Bool
     let modePaiement: EntityPaymentMode?
     @State private var name: String = ""
     @State private var selectedColor: Color = .gray
@@ -222,13 +222,13 @@ struct ModePaiementFormView: View {
     var body: some View {
         VStack(spacing: 0) {
             Rectangle()
-                .fill(mode ? Color.blue : Color.green)
+                .fill(isModeCtreate ? Color.blue : Color.green)
                 .frame(height: 10)
             
             // Contenu principal
             VStack(spacing: 20) {
                 
-                Text(mode ? "Add Payment Mode" : "Edit Payment Mode")
+                Text(isModeCtreate ? "Add Payment Mode" : "Edit Payment Mode")
                     .font(.headline)
                     .padding(.top, 10) // Ajoute un peu d'espace après le bandeau
                 
@@ -257,7 +257,7 @@ struct ModePaiementFormView: View {
             .frame(width: 300)
             
             Rectangle()
-                .fill(mode ? Color.blue : Color.green)
+                .fill(isModeCtreate ? Color.blue : Color.green)
                 .frame(height: 10)
             
                 .onAppear {

@@ -11,8 +11,8 @@ import SwiftData
 
 
 @Model public class EntitySousOperations: Identifiable {
-    var amount: Double? = 0.0
-    var libelle: String?
+    var amount: Double = 0.0
+    var libelle: String = ""
     var category: EntityCategory?
     var transaction: EntityTransactions?
    

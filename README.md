@@ -35,7 +35,37 @@ Add check                                       05/02/25
 Add scheduler                                   05/02/25
 
 
+/// Représente un groupe de transactions d'un mois précis (par exemple 2023-02).
+struct TransactionsByMonth: Identifiable {
+    let id = UUID()
+    let year: String
+    let month: Int
+    let transactions: [EntityTransactions]
 
+    /// Formatage mois (ex: "Février")
+    var monthName: String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "fr_FR") // ou "en_US" etc.
+        formatter.dateFormat = "LLLL" // nom du mois
+        if let transaction = transactions.first,
+           let date = transaction.datePointage {
+            return formatter.string(from: date).capitalized
+        }
+        return "Mois Inconnu"
+    }
+
+    /// Calcul du total du mois
+    var totalAmount: Double {
+        transactions.reduce(0.0) { $0 + $1.amount }
+    }
+}
+
+/// Représente un regroupement par année.  
+struct TransactionsByYear: Identifiable {
+    let id = UUID()
+    let year: String
+    let months: [TransactionsByMonth]
+}
 
 <p align="center">
 <img src="Doc/Capture1.png" alt="Sample">

@@ -12,15 +12,7 @@ import SwiftUI
 
 @Model
 class EntityBankStatement: Identifiable {
-    
-//    var dateFormatter: DateFormatter = {
-//        let formatter = DateFormatter()
-//        formatter.dateStyle = .short
-//        formatter.timeStyle = .none
-//        return formatter
-//    }()
-
-    
+       
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
     

@@ -99,6 +99,12 @@ extension EntityFolderAccount {
     }
 }
 
+extension EntityAccount: Equatable {
+    public static func == (lhs: EntityAccount, rhs: EntityAccount) -> Bool {
+        lhs.uuid == rhs.uuid
+    }
+}
+
 extension EntityAccount {
     @Transient
     var solde: Double

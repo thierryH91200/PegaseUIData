@@ -206,7 +206,7 @@ final class SchedulerManager {
         transaction.uuid = UUID()
         
         let sousOperation = createSousOperation(for: schedule)
-        transaction.sousOperations?.append( sousOperation )
+        transaction.sousOperations.append( sousOperation )
 
         if let linkedAccount = schedule.linkedAccount {
             let transferTransaction = EntityTransactions()
@@ -239,7 +239,7 @@ final class SchedulerManager {
             transferSousOperation.category?.rubric = rubric
             transferSousOperation.amount = -schedule.amount
             
-            transferTransaction.sousOperations?.append(transferSousOperation)
+            transferTransaction.sousOperations.append(transferSousOperation)
             transferTransaction.uuid = UUID()
             validContext.insert(transferTransaction) // Ajout explicite dans le contexte
 

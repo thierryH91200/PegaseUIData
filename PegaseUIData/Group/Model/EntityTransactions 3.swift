@@ -53,7 +53,7 @@ class GroupedMonthOperations : NSObject {
 }
 
 class Transaction : NSObject {
-    let cb               : Bool
+    let isCb             : Bool
     let year             : String
     let id               : String
     let entityTransaction : EntityTransactions
@@ -62,7 +62,7 @@ class Transaction : NSObject {
         self.year = year
         self.id = id
         self.entityTransaction = entityTransaction
-        self.cb = false
+        self.isCb = false
 //        let mode = self.entityTransaction.paymentMode?.name
 //        self.cb = mode == PaymentMethod.Bank_Card ? true : false
     }

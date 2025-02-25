@@ -14,14 +14,14 @@ import SwiftData
     var updatedAt: Date? = Date(timeIntervalSinceReferenceDate: 526815360.000000)
 
     var dateOperation: Date? = Date(timeIntervalSinceReferenceDate: 526815360.000000)
-    var datePointage: Date? = Date(timeIntervalSinceReferenceDate: 526815360.000000)
 
-    var amount: Double = 0.0
+    var amount: Double {
+        sousOperations.reduce(0.0) { $0 + $1.amount }
+    }
+
     var bankStatement: Double = 0.0
     var checkNumber: String = ""
     
-    @Attribute(.ephemeral) var sectionIdentifier: String?
-    @Attribute(.ephemeral) var sectionYear: String?
     @Attribute(.ephemeral) var solde: Double? = 0.0
     
     var statut: Int16? = 0
@@ -30,12 +30,48 @@ import SwiftData
     public var id: UUID { uuid }
 
     var account: EntityAccount
+    
     var paymentMode: EntityPaymentMode?
-    var sousOperations: [EntitySousOperations]?
-//    @Relationship(inverse: \EntityTransactions.operationLiee) var operationLiee: EntityTransactions?
+    var sousOperations: [EntitySousOperations] = []
+    
+//    @Relationship(inverse: \EntityTransactions.operationLiee)
+//    var operationLiee: EntityTransactions?
+    
+    private var _sectionIdentifier: String?
+
+    var datePointage: Date? = Date(timeIntervalSinceReferenceDate: 526815360.000000)
+    
+    /// Propriété calculée pour obtenir l'identifiant de section complet (année * 100 + mois).
+    var sectionIdentifier: String? {
+        guard let date = datePointage else { return nil }
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year, .month], from: date)
+        if let year = components.year, let month = components.month {
+            return String(format: "%ld", year * 100 + month)
+        }
+        return nil
+    }
+    
+    /// Propriété calculée pour obtenir uniquement l'année de la date de pointage.
+    var sectionYear: String? {
+        guard let date = datePointage else { return nil }
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year], from: date)
+        if let year = components.year {
+            return String(format: "%ld", year)
+        }
+        return nil
+    }
 
     public init() {
         self.account = CurrentAccountManager.shared.getAccount()!
+    }
+}
+
+extension EntityTransactions {
+    func addSubOperation(_ subOperation: EntitySousOperations) {
+        subOperation.transaction = self
+        self.sousOperations.append(subOperation)
     }
 }
 

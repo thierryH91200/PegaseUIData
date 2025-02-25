@@ -167,11 +167,11 @@ struct Scheduler: View {
         }
         
         .sheet(isPresented: $isAddDialogPresented) {
-            SchedulerFormView(isPresented: $isAddDialogPresented, mode: $modeCreate, scheduler: $selected)
+            SchedulerFormView(isPresented: $isAddDialogPresented, isModeCreate: $modeCreate, scheduler: $selected)
         }
         
         .sheet(isPresented: $isEditDialogPresented) {
-            SchedulerFormView(isPresented: $isEditDialogPresented, mode: $modeCreate, scheduler: $selectedSchedule)
+            SchedulerFormView(isPresented: $isEditDialogPresented, isModeCreate: $modeCreate, scheduler: $selectedSchedule)
         }
     }
     
@@ -276,7 +276,7 @@ struct SchedulerFormView: View {
     @EnvironmentObject var schedulerDataManager: SchedulerDataManager
 
     @Binding var isPresented: Bool
-    @Binding var mode: Bool
+    @Binding var isModeCreate: Bool
     
     @Binding var scheduler: EntitySchedule?
         
@@ -292,7 +292,7 @@ struct SchedulerFormView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            Text(mode ? "Add Scheduler" : "Edit Scheduler")
+            Text(isModeCreate ? "Add Scheduler" : "Edit Scheduler")
                 .font(.headline)
             
             HStack {
