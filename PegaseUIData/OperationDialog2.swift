@@ -147,7 +147,7 @@ struct OperationDialogView: View {
     @State private var subOperations: [EntitySousOperations] = []
     @State private var currentSubOperation: EntitySousOperations?
     
-    @State private var selectedBankStatement: String?
+    @State private var selectedBankStatement: String = ""
     @State private var selectedStatut = String(localized :"Engaged")
     @State private var selectedMode : EntityPaymentMode?
     @State private var selectedAccount : EntityAccount?
@@ -293,6 +293,7 @@ struct OperationDialogView: View {
         if let account = CurrentAccountManager.shared.getAccount() {
             if let modes = PaymentModeManager.shared.getAllDatas(for: account) {
                 paymentModes = modes
+                selectedMode = modes.first!
             } else {
                 paymentModes = [] // Évite un crash
             }

@@ -28,7 +28,7 @@ struct TransactionFormViewModel: View {
     @Binding var checkNumber: Int
     @Binding var amount: String
     
-    @Binding var selectedBankStatement: String?
+    @Binding var selectedBankStatement: String
     @Binding var selectedStatut: String
     @Binding var selectedMode: EntityPaymentMode?
     @Binding var selectedAccount : EntityAccount?
@@ -38,6 +38,15 @@ struct TransactionFormViewModel: View {
         CurrentAccountManager.shared.getAccount()
     }
     
+//    @State private var CurrentAccountManager.shared
+    
+    private var integerFormatter: NumberFormatter {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 0
+        return formatter
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             
@@ -45,9 +54,9 @@ struct TransactionFormViewModel: View {
                 Picker("", selection: $selectedAccount) {
                     ForEach(linkedAccount, id: \.uuid) { account in
                         if let currentAccount = compteCurrent, account == currentAccount {
-                            Text(String(localized: "(no transfer)")).tag(account as EntityAccount?)
+                            Text(String(localized: "(no transfer)")).tag(account )
                         } else {
-                            Text(account.initAccount?.codeAccount ?? "").tag(account as EntityAccount?)
+                            Text(account.initAccount?.codeAccount ?? "").tag(account)
                         }
                     }
                 }
@@ -73,7 +82,7 @@ struct TransactionFormViewModel: View {
             
             FormField(label: String(localized: "Payment method")) {
                 Picker("", selection: $selectedMode) {
-                    ForEach(modes, id: \.self) { mode in
+                    ForEach(modes, id: \.uuid) { mode in
                         Text(mode.name).tag(mode)
                     }
                 }
@@ -92,11 +101,11 @@ struct TransactionFormViewModel: View {
             }
             
             FormField(label: String(localized:"Bank statement")) {
-                TextField("", value: $bankStatement, formatter: NumberFormatter())
+                TextField("", value: $bankStatement, formatter: integerFormatter)
             }
 
             FormField(label: String(localized:"Check ")) {
-                TextField("", value: $checkNumber, formatter: NumberFormatter())
+                TextField("", value: $checkNumber, formatter: integerFormatter)
             }
 
             FormField(label: String(localized:"Amount")) {
@@ -104,7 +113,14 @@ struct TransactionFormViewModel: View {
             }
         }
         .onAppear {
-            selectedAccount = linkedAccount.first
+            selectedAccount = compteCurrent
+            if let firstMode = modes.first {
+                selectedMode = firstMode
+            }
+            if statut.indices.contains(1) {
+                selectedStatut = statut[1]
+            }
+            selectedBankStatement = ""
         }
         .onChange(of: compteCurrent) {old, new in
             selectedAccount = compteCurrent

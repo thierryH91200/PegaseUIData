@@ -36,7 +36,6 @@ struct ListTransactions: View {
 struct ContentView10000: View {
     @Environment(\.modelContext) private var context
 
-//    @Query(sort: \EntityTransactions.datePointage, order: .reverse)
     @State private var allTransactions1000: [EntityTransactions] = []
 
     var body: some View {
@@ -107,7 +106,7 @@ struct YearSectionView: View {
     let yearGroup: TransactionsByYear100
     
     var body: some View {
-        Section(header: Text("Année \(yearGroup.year)")
+        Section(header: Text("Year \(yearGroup.year)")
                     .font(.headline)
                     .foregroundColor(.blue)
         ) {
@@ -152,22 +151,31 @@ struct TransactionsListView: View {
             HStack {
                 Text("Date of pointing")
                     .frame(width: 90, alignment: .leading)
+                    .overlay(Rectangle().frame(width: 1).foregroundColor(.gray), alignment: .trailing)
                 Text("Date Transaction")
                     .frame(width: 90, alignment: .leading)
+                    .overlay(Rectangle().frame(width: 1).foregroundColor(.gray), alignment: .trailing)
                 Text("Comment")
                     .frame(width: 90, alignment: .leading)
+                    .overlay(Rectangle().frame(width: 1).foregroundColor(.gray), alignment: .trailing)
                 Text("Rubric")
                     .frame(width: 90, alignment: .leading)
+                    .overlay(Rectangle().frame(width: 1).foregroundColor(.gray), alignment: .trailing)
                 Text("Category")
                     .frame(width: 90, alignment: .leading)
+                    .overlay(Rectangle().frame(width: 1).foregroundColor(.gray), alignment: .trailing)
                 Text("Mode")
                     .frame(width: 90, alignment: .leading)
+                    .overlay(Rectangle().frame(width: 1).foregroundColor(.gray), alignment: .trailing)
                 Text("Bank statement")
                     .frame(width: 90, alignment: .leading)
+                    .overlay(Rectangle().frame(width: 1).foregroundColor(.gray), alignment: .trailing)
                 Text("Check number")
                     .frame(width: 90, alignment: .trailing)
+                    .overlay(Rectangle().frame(width: 1).foregroundColor(.gray), alignment: .trailing)
                 Text("Statut")
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .overlay(Rectangle().frame(width: 1).foregroundColor(.gray), alignment: .trailing)
                 Text("Amount")
                     .frame(width: 90, alignment: .trailing)
             }
@@ -278,7 +286,6 @@ struct TransactionRowView: View {
         }
     }
 }
-
 
 /// Représente un regroupement par année.
 struct TransactionsByYear100: Identifiable {
