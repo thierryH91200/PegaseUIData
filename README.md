@@ -34,6 +34,8 @@ Add check                                       05/02/25
 
 Add scheduler                                   05/02/25
 
+Add vew transaction                             26/02/25
+
 
 /// Représente un groupe de transactions d'un mois précis (par exemple 2023-02).
 struct TransactionsByMonth: Identifiable {

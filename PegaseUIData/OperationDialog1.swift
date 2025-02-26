@@ -104,7 +104,7 @@ struct TransactionFormViewModel: View {
                 TextField("", value: $bankStatement, formatter: integerFormatter)
             }
 
-            FormField(label: String(localized:"Check ")) {
+            FormField(label: String(localized:"Check")) {
                 TextField("", value: $checkNumber, formatter: integerFormatter)
             }
 
@@ -139,7 +139,6 @@ struct TransactionFormViewModel: View {
 }
 
 // MARK: - FormField
-
 struct FormField<Content: View>: View {
     let label: String
     let content: Content

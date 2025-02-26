@@ -447,7 +447,6 @@ struct SubOperationDialog: View {
                     String(localized: "No amount entered") :
                     amount)
 
-
             HStack {
                 Button(action: {
                     dismiss()

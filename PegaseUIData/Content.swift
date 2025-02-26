@@ -19,13 +19,42 @@ class ContentViewModel: ObservableObject {
     }
 }
 
+class ColorManager: ObservableObject {
+    
+    @Published var selectedColorType: String = "Payment Mode"
+    
+    func printColors() {
+        print("ColorManager : ", selectedColorType)
+    }
+
+    func colorForTransaction(_ transaction: EntityTransactions) -> Color {
+        switch selectedColorType {
+        case "United":
+            return .black
+        case "Income/Expense":
+            return transaction.amount >= 0 ? .green : .red
+        case "Rubric":
+            return .purple
+        case "Payment Mode":
+            return Color(transaction.paymentMode?.color ?? .black)
+        case "Statut":
+            return .gray
+        default:
+            return .black
+        }
+    }
+}
+
 struct ContentView100: View {
     
     @AppStorage("windowWidth")  var windowWidth: Double = 800
     @AppStorage("windowHeight")  var windowHeight: Double = 600
     
     @Environment(\.modelContext) private var modelContext
+    @StateObject private var colorManager = ColorManager()
     
+    var transactions: [EntityTransactions] = [] // Liste des transactions
+
     @State private var selection1: UUID?
     @State private var selection2: String? = "Notes"
     @State private var isVisible: Bool = true
@@ -33,10 +62,7 @@ struct ContentView100: View {
 
     @State private var entityAccount: [EntityAccount] = []    
     @State private var inspectorIsShown: Bool = false
-    
-    init() {
-    }
-    
+      
     var body: some View {
         HStack
         {
@@ -124,22 +150,27 @@ struct ContentView100: View {
                 } label: {
                     Label("Choose the color", systemImage: "paintpalette")
                 }
+                if isVisible == false{
+                    ListTransactions(isVisible: $isVisible)
+                        .environmentObject(colorManager)
+                }
             }
         }
+        .environmentObject(colorManager)  // Injection de ColorManager pour toutes les sous-vues
+    }
+
+    private func chooseCouleur(_ type: String) {
+        colorManager.selectedColorType = type
+        isVisible = false // Modifie l'état pour rafraîchir l'UI
     }
 
     private func saveWindowSize(width: CGFloat, height: CGFloat) {
         windowWidth = width
         windowHeight = height
     }
-
 }
 
 // Fonction d'action pour chaque choix de couleur
-private func chooseCouleur(_ type: String) {
-    // Ajoutez ici la logique de gestion du choix de couleur
-    print("Couleur sélectionnée : \(type)")
-}
 
 private func changeSearchFieldItem(_ itemType: String) {
     // Ajoutez ici la logique pour gérer la sélection du champ de recherche

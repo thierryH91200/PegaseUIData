@@ -10,7 +10,8 @@ import SwiftData
 
 
 struct ListTransactions: View {
-
+    
+    @EnvironmentObject var colorManager: ColorManager // ✅ Correct, utilise l'instance globale
     @Binding var isVisible: Bool
 
     var body: some View {
@@ -20,10 +21,16 @@ struct ListTransactions: View {
                 .task {
                     await performTrueTask()
                 }
+//            Text("Couleur sélectionnée : \(colorManager.selectedColorType)")
+
             ContentView10000()
+                .environmentObject(colorManager) // Injecté ici
                 .frame(minWidth: 200, minHeight: 300)
             Spacer()
         }
+        .onChange(of: colorManager.selectedColorType) { old, new in
+        }
+
     }
     private func performTrueTask() async {
         // Exécuter une tâche asynchrone (par exemple, un délai)
@@ -35,74 +42,26 @@ struct ListTransactions: View {
 
 struct ContentView10000: View {
     @Environment(\.modelContext) private var context
+    @EnvironmentObject var colorManager: ColorManager // Injecté par le parent
 
     @State private var allTransactions1000: [EntityTransactions] = []
 
     var body: some View {
         let grouped = groupTransactionsByYear(transactions: allTransactions1000)
         TransactionsListView(data: grouped)
+            .environmentObject(colorManager) // Passe l'objet aux sous-vues
             .navigationTitle("My Transactions")
             .onAppear {
                 allTransactions1000 = ListTransactionsManager.shared.getAllDatas()
             }
-    }
-}
-
-struct GradientText: View {
-    var text: String
-    var gradientImage: NSImage? {
-        NSImage(named: NSImage.Name("Gradient"))
-    }
-    
-    var body: some View {
-        Text(text)
-            .font(.custom("Silom", size: 16))
-            .background(LinearGradient(gradient: Gradient(colors: [Color.yellow.opacity(0.3), Color.yellow.opacity(0.7)]), startPoint: .top, endPoint: .bottom))
-    }
-}
-
-struct SummaryView: View {
-    var executed: Double
-    var planned: Double
-    var engaged: Double
-
-    var body: some View {
-        HStack(spacing: 0) {
-            VStack {
-                Text("Executed")
-                Text(String(format: "%.2f €", executed))
-                    .font(.title)
-                    .foregroundColor(.blue)
+            .onChange(of: colorManager.selectedColorType) { old, new in
             }
-            .frame(maxWidth: .infinity)
-            .background(LinearGradient(gradient: Gradient(colors: [Color.cyan.opacity(0.1), Color.cyan.opacity(0.6)]), startPoint: .top, endPoint: .bottom))
-            .border(Color.black, width: 1)
-
-            VStack {
-                Text("Planned")
-                Text(String(format: "%.2f €", planned))
-                    .font(.title)
-                    .foregroundColor(.green)
-            }
-            .frame(maxWidth: .infinity)
-            .background(LinearGradient(gradient: Gradient(colors: [Color.cyan.opacity(0.1), Color.cyan.opacity(0.6)]), startPoint: .top, endPoint: .bottom))
-            .border(Color.black, width: 1)
-
-            VStack {
-                Text("Engaged")
-                Text(String(format: "%.2f €", engaged))
-                    .font(.title)
-                    .foregroundColor(.orange)
-            }
-            .frame(maxWidth: .infinity)
-            .background(LinearGradient(gradient: Gradient(colors: [Color.cyan.opacity(0.1), Color.cyan.opacity(0.6)]), startPoint: .top, endPoint: .bottom))
-            .border(Color.black, width: 1)
-        }
-        .frame(maxWidth: .infinity, maxHeight: 150)
     }
 }
 
 struct YearSectionView: View {
+    @EnvironmentObject var colorManager: ColorManager // Injecté par le parent
+
     let yearGroup: TransactionsByYear100
     
     var body: some View {
@@ -112,6 +71,7 @@ struct YearSectionView: View {
         ) {
             ForEach(yearGroup.months) { monthGroup in
                 MonthDisclosureGroupView(monthGroup: monthGroup, year: yearGroup.year)
+                    .environmentObject(colorManager) // Passe l'objet aux sous-vues
             }
         }
     }
@@ -120,12 +80,38 @@ struct YearSectionView: View {
 struct MonthDisclosureGroupView: View {
     let monthGroup: TransactionsByMonth100
     let year: String
+    @EnvironmentObject var colorManager: ColorManager
     
+    @State private var selectedTransaction: EntityTransactions?
+
+    @AppStorage("disclosureStates") private var disclosureStatesData: Data = Data()
+    @State private var disclosureStates: [String: Bool] = [:]
+
+    var groupKey: String {
+        "\(monthGroup.monthName)_\(year)" // Clé unique pour chaque groupe
+    }
+
+    var isExpanded: Binding<Bool> {
+        Binding(
+            get: { disclosureStates[groupKey, default: false] },
+            set: { newValue in
+                disclosureStates[groupKey] = newValue
+                saveDisclosureState()
+            }
+        )
+    }
+
     var body: some View {
         DisclosureGroup(
+            isExpanded: isExpanded,
             content: {
                 ForEach(monthGroup.transactions, id: \.id) { transaction in
-                    TransactionRowView(transaction: transaction)
+                    TransactionRowView(transaction: transaction, isSelected: transaction == selectedTransaction)
+                        .environmentObject(colorManager)
+                        .onTapGesture {
+                            selectedTransaction = transaction
+                        }
+
                 }
             },
             label: {
@@ -137,10 +123,27 @@ struct MonthDisclosureGroupView: View {
                 }
             }
         )
+        .onAppear(perform: loadDisclosureState)
+    }
+
+    /// Sauvegarde l'état des `DisclosureGroup`
+    private func saveDisclosureState() {
+        if let data = try? JSONEncoder().encode(disclosureStates) {
+            disclosureStatesData = data
+        }
+    }
+
+    /// Charge l'état sauvegardé au démarrage
+    private func loadDisclosureState() {
+        if let loadedData = try? JSONDecoder().decode([String: Bool].self, from: disclosureStatesData) {
+            disclosureStates = loadedData
+        }
     }
 }
 
 struct TransactionsListView: View {
+    @EnvironmentObject var colorManager: ColorManager // Injecté par le parent
+
     let data: [TransactionsByYear100]
     
     @State private var selectedTransaction: EntityTransactions?
@@ -188,6 +191,8 @@ struct TransactionsListView: View {
             List(selection: $selectedTransaction) {
                 ForEach(data) { yearGroup in
                     YearSectionView(yearGroup: yearGroup)
+                        .environmentObject(colorManager) // Passe l'environnement aux sous-vues
+
                 }
             }
             .listStyle(.inset)
@@ -197,7 +202,10 @@ struct TransactionsListView: View {
 }
 
 struct TransactionRowView: View {
-    let transaction: EntityTransactions
+    let transaction: EntityTransactions?
+    let isSelected: Bool
+
+    @EnvironmentObject var colorManager: ColorManager
 
     // Formatters
     static let dateFormatter: DateFormatter = {
@@ -208,154 +216,99 @@ struct TransactionRowView: View {
     }()
 
     var body: some View {
-        HStack {
-            // Date pointage
-            Text(transaction.datePointage != nil
-                 ? Self.dateFormatter.string(from: transaction.datePointage!)
-                 : "—")
-                .frame(width: 90, alignment: .leading)
-            
-            // Date operation
-            Text(transaction.dateOperation != nil
-                 ? Self.dateFormatter.string(from: transaction.dateOperation!)
-                 : "—")
-                .frame(width: 90, alignment: .leading)
-
-            // libelle
-            Text(transaction.sousOperations.first?.libelle ?? "—")
-                .frame(width: 90, alignment: .leading)
-
-            // Rubric
-            Text(transaction.sousOperations.first?.category?.rubric?.name ?? "—")
-                .frame(width: 90, alignment: .leading)
-
-            // Categorie
-            Text(transaction.sousOperations.first?.category?.name ?? "—")
-                .frame(width: 90, alignment: .leading)
-
-            // Mode
-            Text(transaction.paymentMode?.name ?? "—")
-                .frame(width: 90, alignment: .leading)
-
-            // Bank statement
-            Text(String(format: "%.2f", transaction.bankStatement))
-                .frame(width: 80, alignment: .trailing)
-            
-            // Montant
-            Text(String(format: "%.2f", transaction.amount))
-                .foregroundColor(transaction.amount >= 0 ? .green : .red)
-                .frame(width: 80, alignment: .trailing)
-            
-            // Check number
-            Text(transaction.checkNumber)
-                .frame(width: 80, alignment: .leading)
-            
-            // Statut
-            Text(statusText)
-                .foregroundColor(statusColor)
-
-            // Solde (si vous voulez l’afficher)
-            Text(transaction.solde != nil
-                 ? String(format: "%.2f", transaction.solde!) : "—")
-                .frame(width: 80, alignment: .trailing)
-
-            // Statut
-            Text(statusText)
-                .foregroundColor(statusColor)
-            
-            Spacer()
-        }
-        .padding(.vertical, 2)
+            HStack {
+                
+                if let transaction = transaction {
+                    
+                    // Date pointage
+                    Text(transaction.datePointage != nil
+                         ? Self.dateFormatter.string(from: transaction.datePointage!)
+                         : "—")
+                    .frame(width: 90, alignment: .leading)
+                    .foregroundColor(colorManager.colorForTransaction(transaction))
+                    
+                    // Date operation
+                    Text(transaction.dateOperation != nil
+                         ? Self.dateFormatter.string(from: transaction.dateOperation!)
+                         : "—")
+                    .frame(width: 90, alignment: .leading)
+                    .foregroundColor(colorManager.colorForTransaction(transaction))
+                    
+                    // libelle
+                    Text(transaction.sousOperations.first?.libelle ?? "—")
+                        .frame(width: 90, alignment: .leading)
+                        .foregroundColor(colorManager.colorForTransaction(transaction))
+                    
+                    // Rubric
+                    Text(transaction.sousOperations.first?.category?.rubric?.name ?? "—")
+                        .frame(width: 90, alignment: .leading)
+                        .foregroundColor(colorManager.colorForTransaction(transaction))
+                    
+                    // Categorie
+                    Text(transaction.sousOperations.first?.category?.name ?? "—")
+                        .frame(width: 90, alignment: .leading)
+                        .foregroundColor(colorManager.colorForTransaction(transaction))
+                    
+                    // Mode
+                    Text(transaction.paymentMode?.name ?? "—")
+                        .frame(width: 90, alignment: .leading)
+                        .foregroundColor(colorManager.colorForTransaction(transaction))
+                    
+                    // Bank statement
+                    Text(String(format: "%.2f", transaction.bankStatement))
+                        .frame(width: 80, alignment: .trailing)
+                        .foregroundColor(colorManager.colorForTransaction(transaction))
+                    
+                    // Montant
+                    Text(String(format: "%.2f", transaction.amount))
+                        .foregroundColor(transaction.amount >= 0 ? .green : .red)
+                        .frame(width: 80, alignment: .trailing)
+                    //               .foregroundColor(colorManager.colorForTransaction(transaction))
+                    
+                    // Check number
+                    Text(transaction.checkNumber)
+                        .frame(width: 80, alignment: .leading)
+                        .foregroundColor(colorManager.colorForTransaction(transaction))
+                    
+                    // Statut
+                    Text(statusText)
+                        .foregroundColor(colorManager.colorForTransaction(transaction))
+                    
+                    // Solde (si vous voulez l’afficher)
+                    Text(transaction.solde != nil
+                         ? String(format: "%.2f", transaction.solde!) : "—")
+                    .frame(width: 80, alignment: .trailing)
+                    .foregroundColor(colorManager.colorForTransaction(transaction))
+                    
+                    Spacer()
+                }
+            }
+            .padding(.vertical, 2)
+            .background(isSelected ? Color.blue.opacity(0.3) : Color.clear) // ✅ Met en évidence la ligne sélectionnée
+            .clipShape(RoundedRectangle(cornerRadius: 5))
+            .onChange(of: colorManager.selectedColorType) { old, new in
+                print("couleur changée ",colorManager.selectedColorType)
+            }
     }
 
     private var statusText: String {
-        guard let s = transaction.statut else { return "Inconnu" }
+        guard let s = transaction?.statut else { return "Inconnu" }
         switch s {
         case 0: return "Engaged"
         case 1: return "Executé"
+        case 2: return "Planned"
         default: return "Autre"
         }
     }
 
     private var statusColor: Color {
-        guard let s = transaction.statut else { return .gray }
+        guard let s = transaction?.statut else { return .gray }
         switch s {
         case 0: return .orange
         case 1: return .green
+        case 2: return .red
         default: return .blue
         }
     }
 }
 
-/// Représente un regroupement par année.
-struct TransactionsByYear100: Identifiable {
-    let id = UUID()
-    let year: String
-    let months: [TransactionsByMonth100]
-}
-
-/// Représente un groupe de transactions d'un mois précis (par exemple 2023-02).
-struct TransactionsByMonth100: Identifiable {
-    let id = UUID()
-    let year: String
-    let month: Int
-    let transactions: [EntityTransactions]
-
-    /// Formatage mois (ex: "Février")
-    var monthName: String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "fr_FR") // ou "en_US" etc.
-        formatter.dateFormat = "LLLL" // nom du mois
-        if let transaction = transactions.first,
-           let date = transaction.datePointage {
-            return formatter.string(from: date).capitalized
-        }
-        return "Mois Inconnu"
-    }
-
-    /// Calcul du total du mois
-    var totalAmount: Double {
-        transactions.reduce(0.0) { $0 + $1.amount }
-    }
-}
-
-
-struct YearMonth: Hashable {
-    let year: String
-    let month: Int
-}
-
-func groupTransactionsByYear(transactions: [EntityTransactions]) -> [TransactionsByYear100] {
-    // Dictionnaire [year: [TransactionsByMonth]]
-    var dictionaryByYear: [String: [TransactionsByMonth100]] = [:]
-
-    // Dictionnaire [YearMonth : [EntityTransactions]]
-    var yearMonthDict: [YearMonth: [EntityTransactions]] = [:]
-
-    for transaction in transactions {
-        guard let yearString = transaction.sectionYear else { continue }
-        guard let datePointage = transaction.datePointage else { continue }
-        let calendar = Calendar.current
-        let month = calendar.component(.month, from: datePointage)
-
-        let key = YearMonth(year: yearString, month: month)
-        yearMonthDict[key, default: []].append(transaction)
-    }
-
-    // Convertir yearMonthDict → dictionaryByYear
-    for (yearMonth, trans) in yearMonthDict {
-        let byMonth = TransactionsByMonth100(year: yearMonth.year, month: yearMonth.month, transactions: trans)
-        dictionaryByYear[yearMonth.year, default: []].append(byMonth)
-    }
-
-    // Construire un tableau de TransactionsByYear100
-    var result: [TransactionsByYear100] = []
-    for (year, monthsArray) in dictionaryByYear {
-        // Trier les mois par ordre croissant
-        let sortedMonths = monthsArray.sorted { $0.month < $1.month }
-        result.append(TransactionsByYear100(year: year, months: sortedMonths))
-    }
-
-    // Trier par année décroissante (ou croissante)
-    return result.sorted { $0.year > $1.year }
-}

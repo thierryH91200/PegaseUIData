@@ -35,10 +35,11 @@
             "value" : "%1$@ %2$@"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "%lf" : {
-
+      "shouldTranslate" : false
     },
     "%lld" : {
       "shouldTranslate" : false
@@ -146,7 +147,7 @@
         }
       }
     },
-    "Add Scheduler" : {
+    "Add scheduler" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -494,11 +495,15 @@
         }
       }
     },
-    "Check " : {
-
-    },
     "Check number" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Numéro de chèque"
+          }
+        }
+      }
     },
     "Choose a category within the selected rubric" : {
       "localizations" : {
@@ -875,19 +880,54 @@
       }
     },
     "Double tap to delete %@" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appuyez deux fois pour supprimer %@"
+          }
+        }
+      }
     },
     "Double tap to discard changes" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appuyez deux fois pour annuler les modifications"
+          }
+        }
+      }
     },
     "Double tap to discard changes and close" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appuyez deux fois pour annuler les modifications et fermer"
+          }
+        }
+      }
     },
     "Double tap to edit %@" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appuyez deux fois pour modifier %@"
+          }
+        }
+      }
     },
     "Double tap to save all changes" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appuyez deux fois pour enregistrer toutes les modifications"
+          }
+        }
+      }
     },
     "Drop your PDF here" : {
       "localizations" : {
@@ -920,7 +960,14 @@
       }
     },
     "Edit operation screen" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modifier l'écran d'opération"
+          }
+        }
+      }
     },
     "Edit Payment Mode" : {
       "localizations" : {
@@ -948,16 +995,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Editer l’échéancier"
-          }
-        }
-      }
-    },
-    "Edit Scheduler" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Editer l’écheancier"
           }
         }
       }
@@ -1391,7 +1428,14 @@
       }
     },
     "My Transactions" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mes transactions"
+          }
+        }
+      }
     },
     "N°" : {
       "localizations" : {
