@@ -53,6 +53,9 @@ struct ContentView100: View {
     @Environment(\.modelContext) private var modelContext
     @StateObject private var colorManager = ColorManager()
     
+    @State private var selectedTransaction: EntityTransactions?
+    @State private var isCreationMode : Bool = false
+
     var transactions: [EntityTransactions] = [] // Liste des transactions
 
     @State private var selection1: UUID?
@@ -73,14 +76,14 @@ struct ContentView100: View {
             }
             content :
             {
-                DetailContainer(selection2: $selection2, isVisible: $isVisible)
+                DetailContainer(selection2: $selection2, isVisible: $isVisible, selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)
                     .navigationSplitViewColumnWidth( min: 150, ideal: 800)
             }
             detail :
             {
                 if isVisible
                 {
-                    OperationDialog(modeCreation: false)
+                    OperationDialog(selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)
                 }
             }
 //            .frame(minWidth: 800, maxWidth: .infinity) // Définit les contraintes globales du NavigationSplitView
@@ -151,7 +154,7 @@ struct ContentView100: View {
                     Label("Choose the color", systemImage: "paintpalette")
                 }
                 if isVisible == false{
-                    ListTransactions(isVisible: $isVisible)
+                    ListTransactions(isVisible: $isVisible, selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)
                         .environmentObject(colorManager)
                 }
             }
@@ -203,30 +206,36 @@ struct SidebarContainer: View {
 struct DetailContainer: View {
     @Binding var selection2: String?
     @Binding var isVisible: Bool
+    @Binding var selectedTransaction: EntityTransactions?
+    @Binding var isCreationMode: Bool
 
-    let detailViews: [String: (Binding<Bool>) -> AnyView] = [
-        String(localized: "List of Transactions",table: "Menu")     : { isVisible in AnyView(ListTransactions(isVisible           : isVisible)) },
-        String(localized: "Cash Flow Curve",table: "Menu")          : { isVisible in AnyView(TreasuryCurveView(isVisible          : isVisible)) },
-        String(localized: "Bank website",table: "Menu")             : { isVisible in AnyView(BankWebsiteView(isVisible            : isVisible)) },
-        String(localized: "Internet rapprochement",table: "Menu")   : { isVisible in AnyView(InternetReconciliationView(isVisible : isVisible)) },
-        String(localized: "Bank Statement",table: "Menu")           : { isVisible in AnyView(BankStatementView(isVisible          : isVisible)) },
-        String(localized: "Notes",table: "Menu")                    : { isVisible in AnyView(NotesView(isVisible                  : isVisible)) },
-
-        // Rapport
-        String(localized: "Category Bar1",table: "Menu")            : { isVisible in AnyView(CategorieBar1View(isVisible         : isVisible)) },
-        String(localized: "Category Bar2",table: "Menu")            : { isVisible in AnyView(CategorieBar2View(isVisible         : isVisible)) },
-        String(localized: "Payment method" ,table: "Menu")          : { isVisible in AnyView(ModePaiementBarView(isVisible       : isVisible)) },
-        String(localized: "Recipe / Expense Bar",table: "Menu")     : { isVisible in AnyView(RecetteDepenseBarView(isVisible     : isVisible)) },
-        String(localized: "Recipe / Expense Pie",table: "Menu")     : { isVisible in AnyView(RecetteDepensePieView(isVisible     : isVisible)) },
-        String(localized: "Rubric Bar",table: "Menu")               : { isVisible in AnyView(RubriqueBarView(isVisible           : isVisible)) },
-        String(localized: "Rubric Pie" ,table: "Menu")              : { isVisible in AnyView(RubriquePieView(isVisible           : isVisible)) },
-
-        // Reglage
-        String(localized: "Identity",table: "Menu")                 : {  isVisible in AnyView(Identy(isVisible                   : isVisible)) },
-        String(localized: "Scheduler",table: "Menu" )               : {  isVisible in AnyView(SchedulerView(isVisible            : isVisible)) },
-        String(localized: "Settings",table: "Menu" )                : {  isVisible in AnyView(SettingView(isVisible              : isVisible)) }
-    ]
-
+    var detailViews: [String: (Binding<Bool>) -> AnyView] {
+        [
+            String(localized: "List of Transactions",table: "Menu")     : { isVisible in AnyView(ListTransactions(isVisible : isVisible, selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)) },
+            String(localized: "Cash Flow Curve",table: "Menu")          : { isVisible in AnyView(TreasuryCurveView(isVisible          : isVisible)) },
+            String(localized: "Bank website",table: "Menu")             : { isVisible in AnyView(BankWebsiteView(isVisible            : isVisible)) },
+            String(localized: "Internet rapprochement",table: "Menu")   : { isVisible in AnyView(InternetReconciliationView(isVisible : isVisible)) },
+            String(localized: "Bank Statement",table: "Menu")           : { isVisible in AnyView(BankStatementView(isVisible          : isVisible)) },
+            String(localized: "Notes",table: "Menu")                    : { isVisible in AnyView(NotesView(isVisible                  : isVisible)) },
+            
+            // Rapport
+            String(localized: "Category Bar1",table: "Menu")            : { isVisible in AnyView(CategorieBar1View(isVisible         : isVisible)) },
+            String(localized: "Category Bar2",table: "Menu")            : { isVisible in AnyView(CategorieBar2View(isVisible         : isVisible)) },
+            String(localized: "Payment method" ,table: "Menu")          : { isVisible in AnyView(ModePaiementBarView(isVisible       : isVisible)) },
+            String(localized: "Recipe / Expense Bar",table: "Menu")     : { isVisible in AnyView(RecetteDepenseBarView(isVisible     : isVisible)) },
+            String(localized: "Recipe / Expense Pie",table: "Menu")     : { isVisible in AnyView(RecetteDepensePieView(isVisible     : isVisible)) },
+            String(localized: "Rubric Bar",table: "Menu")               : { isVisible in AnyView(RubriqueBarView(isVisible           : isVisible)) },
+            String(localized: "Rubric Pie" ,table: "Menu")              : { isVisible in AnyView(RubriquePieView(isVisible           : isVisible)) },
+            
+            // Reglage
+            String(localized: "Identity",table: "Menu")                 : {  isVisible in AnyView(Identy(isVisible                   : isVisible)) },
+            String(localized: "Scheduler",table: "Menu" )               : {  isVisible in AnyView(SchedulerView(isVisible            : isVisible)) },
+            String(localized: "Settings",table: "Menu" )                : {  isVisible in AnyView(SettingView(isVisible              : isVisible))
+            }
+        ]
+    }
+    
+    
     var body: some View {
         VStack {
             if let detailView = localizedDetailView(for: selection2) {

@@ -1589,6 +1589,16 @@
         }
       }
     },
+    "No transaction selected" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune transaction sélectionnée"
+          }
+        }
+      }
+    },
     "NotesView" : {
       "localizations" : {
         "fr" : {

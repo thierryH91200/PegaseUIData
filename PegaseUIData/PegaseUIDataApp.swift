@@ -51,7 +51,7 @@ struct PegaseUIDataApp: App {
     var body: some Scene {
         Window("Pegase", id: "main") {
 //        WindowGroup {
-            ContentView100()
+            ContentView100( )
         }
         .modelContainer(container)
     }

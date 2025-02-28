@@ -13,15 +13,13 @@ struct OperationDialog: View {
     
     @StateObject private var currentAccountManager = CurrentAccountManager.shared
     @StateObject private var transactionDataManager = TransactionDataManager()
-    @State private var modeCreate = true
     
-    init(modeCreation: Bool) {
-        self.modeCreate = modeCreation
-    }
+    @Binding var selectedTransaction: EntityTransactions?
+    @Binding var isCreationMode : Bool
 
     var body: some View {
         VStack {
-            OperationDialogView(modeCreation: true)
+            OperationDialogView(selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode )
                 .environmentObject(transactionDataManager)
                 .environmentObject(currentAccountManager)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -82,294 +80,6 @@ struct SubOperationListView: View {
     }
 }
 
-struct SubOperationRow: View {
-    let subOperation: EntitySousOperations
-    let onEdit: () -> Void
-    let onDelete: () -> Void
-
-    var body: some View {
-        HStack {
-            Text(subOperation.libelle)
-            Spacer()
-            Text("\(subOperation.amount)")
-                .foregroundColor(.red)
-                .accessibilityLabel(String(localized: "Amount"))
-                .accessibilityValue("\(subOperation.amount )")
-            Spacer()
-                .frame(width: 20)
-            Button(action: onEdit) {
-                Image(systemName: "pencil")
-            }
-            .accessibilityLabel(String(localized: "Edit sub-operation"))
-            .accessibilityHint(String(localized: "Double tap to edit \(subOperation.libelle)"))
-            Button(action: onDelete) {
-                Image(systemName: "trash")
-            }
-            .accessibilityLabel(String(localized: "Delete sub-operation"))
-            .accessibilityHint(String(localized: "Double tap to delete \(subOperation.libelle)"))
-        }
-    }
-}
-
-struct OperationDialogView: View {
-    
-    @Environment(\.modelContext) private var modelContext: ModelContext
-    @Environment(\.dismiss) private var dismiss
-    
-    @EnvironmentObject var currentAccountManager: CurrentAccountManager
-    @EnvironmentObject var dataManager: TransactionDataManager
-
-    @ObservedObject var paymentModeManager = ModeManager()
-    @ObservedObject var rubricManager = RubriqueManager()
-    
-    @State private var accounts : [EntityAccount] = []
-    var entityRubric : [EntityRubric]?
-    var entityCategorie : [EntityCategory]?
-    @State private var currentTransaction : EntityTransactions?
-    @State private var currentSousTransaction : EntitySousOperations?
-
-    @State private var linkedAccount: String = ""
-    @State private var comment = ""
-    @State private var name = ""
-    @State private var surname = ""
-
-    @State private var transactionDate: Date = Date()
-    @State private var paymentModes : [EntityPaymentMode] = []
-
-    @State private var pointingDate: Date = Date()
-    @State private var statut : [String] = [String(localized :"Planned"),
-                                            String(localized :"Engaged"),
-                                            String(localized :"Executed")]
-
-    @State private var amount: String = "75,00 €"
-    @State private var isShowingDialog: Bool = false
-    
-    @State private var subOperations: [EntitySousOperations] = []
-    @State private var currentSubOperation: EntitySousOperations?
-    
-    @State private var selectedBankStatement: String = ""
-    @State private var selectedStatut = String(localized :"Engaged")
-    @State private var selectedMode : EntityPaymentMode?
-    @State private var selectedAccount : EntityAccount?
-    
-    @State private var bankStatement = 0
-    @State private var checkNumber = 0
-    @State private var isCreationMode : Bool
-    
-    init(modeCreation: Bool) {
-        self.isCreationMode = modeCreation
-        accounts =  []
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            if let account = dataManager.currentAccount {
-                Text("Account: \(account.name)")
-                    .font(.headline)
-            }
-
-            // Titre en haut
-            Text("\(isCreationMode ? String(localized:"Create") : String(localized:"Edit"))")
-                .font(.headline)
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.green)
-                .accessibilityLabel(isCreationMode ?
-                    String(localized: "Create new operation screen") :
-                    String(localized: "Edit operation screen"))
-
-            
-            if selectedAccount != nil {
-                TransactionFormViewModel(
-                    linkedAccount: $accounts,
-                    transactionDate: $transactionDate,
-                    modes: $paymentModes,
-                    pointingDate: $pointingDate,
-                    statut: $statut,
-                    bankStatement: $bankStatement,
-                    checkNumber: $checkNumber,
-                    amount: $amount,
-                    selectedBankStatement: $selectedBankStatement,
-                    selectedStatut: $selectedStatut,
-                    selectedMode: $selectedMode,
-                    selectedAccount: $selectedAccount
-                )
-                .accessibilityElement(children: .contain)
-                .accessibilityLabel(String(localized: "Transaction form section"))
-            }
-
-            // Split Transactions
-            Text(String(localized:"Split Transactions"))
-                .font(.headline)
-                .accessibilityAddTraits(.isHeader)
-
-            List {
-                SubOperationListView(subOperations: $subOperations,
-                                     currentSubOperation: $currentSubOperation,
-                                     isShowingDialog: $isShowingDialog)
-            }
-            .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
-                
-                if let account = newAccount {
-                    dataManager.transactions = nil
-                    dataManager.currentAccount = account
-                    refreshData()
-                }
-            }
-
-            .onAppear {
-                Task {
-                    do {
-                        dataManager.configure(with: modelContext)
-                        AccountManager.shared.configure(with: modelContext)
-                        accounts = AccountManager.shared.getAllData()
-                        try await configurePaymentModes()
-                    } catch {
-                        print("Failed to configure payment modes: \(error)")
-                    }
-                }
-            }
-
-            HStack {
-                Button(action: {
-                    currentSubOperation = EntitySousOperations()
-                    isShowingDialog = true
-                }) {
-                    Image(systemName: "plus")
-                    Text("Add Sub-operation")
-                }
-                .padding(.leading)
-            }
-
-            Spacer()
-
-            // Buttons
-            HStack {
-                Button(action: {
-                    dismiss() // Ferme la vue
-                }) {
-                    Text("Cancel")
-                        .frame(width: 100)
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(Color.gray)
-                        .cornerRadius(5)
-                }
-                .accessibilityLabel(String(localized: "Cancel operation"))
-                .accessibilityHint(String(localized: "Double tap to discard changes and close"))
-
-                Button(action: {
-                    saveActions()
-                }) {
-                    Text("OK")
-                        .frame(width: 100)
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(Color.green)
-                        .cornerRadius(5)
-                }
-                .accessibilityLabel(String(localized: "Save operation"))
-                .accessibilityHint(String(localized: "Double tap to save all changes"))
-            }
-        }
-        .padding()
-        .sheet(isPresented: $isShowingDialog) {
-            SubOperationDialog(subOperation: $currentSubOperation, isModeCreate: $isCreationMode)
-        }
-    }
-    
-    private func refreshData() {
-        ListTransactionsManager.shared.configure(with: modelContext)
-        dataManager.transactions = ListTransactionsManager.shared.getAllDatas()
-    }
-
-    func configurePaymentModes() async throws {
-        AccountManager.shared.configure(with: modelContext)
-        accounts = AccountManager.shared.getAllData()
-        selectedAccount = CurrentAccountManager.shared.getAccount()
-        
-        PaymentModeManager.shared.configure(with: modelContext)
-        if let account = CurrentAccountManager.shared.getAccount() {
-            if let modes = PaymentModeManager.shared.getAllDatas(for: account) {
-                paymentModes = modes
-                selectedMode = modes.first!
-            } else {
-                paymentModes = [] // Évite un crash
-            }
-        }
-    }
-    // edition = false => creation 1 operation
-    // edition = true => edition 1 to n operation(s)
-    func contextSaveEdition() {
-        
-        guard let account = CurrentAccountManager.shared.getAccount() else {
-            print("Erreur : Impossible de récupérer le compte")
-            return
-        }
-
-        // creation = one operation
-        if isCreationMode == true {
-            
-            // Create entityTransaction
-            currentTransaction = EntityTransactions()
-            currentTransaction?.uuid = UUID()
-            self.currentTransaction?.createAt = Date().noon
-            self.currentTransaction?.updatedAt = Date().noon
-            self.currentTransaction?.account = account
-            modelContext.insert(currentTransaction!)
-            
-            // Create currentSousTransaction
-            self.currentSousTransaction = EntitySousOperations()
-            self.currentSousTransaction?.libelle = currentSubOperation!.libelle
-            self.currentSousTransaction?.amount = currentSubOperation!.amount
-            self.currentSousTransaction?.category = currentSubOperation?.category
-            modelContext.insert(currentSousTransaction!)
-            
-            currentTransaction!.addSubOperation(currentSousTransaction!)
-        }
-    }
-    
-    func saveActions() {
-        
-        guard let account = CurrentAccountManager.shared.getAccount() else {
-            print("Erreur : Impossible de récupérer le compte")
-            return
-        }
-
-        self.contextSaveEdition()
-        
-        currentTransaction?.datePointage  = pointingDate.noon
-        currentTransaction?.dateOperation  = transactionDate.noon
-        currentTransaction?.bankStatement = Double(bankStatement)
-        currentTransaction?.paymentMode = selectedMode
-        currentTransaction?.statut = 3
-        currentTransaction?.checkNumber = String(checkNumber)
-        currentTransaction?.account = account
-        
-        do {
-            try save()
-        } catch {
-            print("Erreur lors de l'enregistrement de la transaction : \(error)")
-        }
-        resetListTransactions()
-    }
-    
-    func save () throws {
-        
-        do {
-            try modelContext.save()
-        } catch {
-            print("Erreur lors de l'enregistrement de la transaction : \(error)")
-        }
-    }
-
-    func resetListTransactions() {
-        isCreationMode = true
-        bankStatement = 0
-        checkNumber = 0
-    }
-}
 
 struct SubOperationDialog: View {
     
@@ -539,3 +249,31 @@ struct SubOperationDialog: View {
     }
 }
 
+struct SubOperationRow: View {
+    let subOperation: EntitySousOperations
+    let onEdit: () -> Void
+    let onDelete: () -> Void
+
+    var body: some View {
+        HStack {
+            Text(subOperation.libelle)
+            Spacer()
+            Text("\(subOperation.amount)")
+                .foregroundColor(.red)
+                .accessibilityLabel(String(localized: "Amount"))
+                .accessibilityValue("\(subOperation.amount )")
+            Spacer()
+                .frame(width: 20)
+            Button(action: onEdit) {
+                Image(systemName: "pencil")
+            }
+            .accessibilityLabel(String(localized: "Edit sub-operation"))
+            .accessibilityHint(String(localized: "Double tap to edit \(subOperation.libelle)"))
+            Button(action: onDelete) {
+                Image(systemName: "trash")
+            }
+            .accessibilityLabel(String(localized: "Delete sub-operation"))
+            .accessibilityHint(String(localized: "Double tap to delete \(subOperation.libelle)"))
+        }
+    }
+}

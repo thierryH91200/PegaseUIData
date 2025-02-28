@@ -13,6 +13,8 @@ struct ListTransactions: View {
     
     @EnvironmentObject var colorManager: ColorManager // ✅ Correct, utilise l'instance globale
     @Binding var isVisible: Bool
+    @Binding var selectedTransaction: EntityTransactions?
+    @Binding var isCreationMode: Bool
 
     var body: some View {
         VStack(spacing: 0) {
@@ -21,9 +23,8 @@ struct ListTransactions: View {
                 .task {
                     await performTrueTask()
                 }
-//            Text("Couleur sélectionnée : \(colorManager.selectedColorType)")
 
-            ContentView10000()
+            ContentView10000( selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)
                 .environmentObject(colorManager) // Injecté ici
                 .frame(minWidth: 200, minHeight: 300)
             Spacer()
@@ -40,113 +41,36 @@ struct ListTransactions: View {
 }
 
 
+// MARK: ContentView10000
 struct ContentView10000: View {
     @Environment(\.modelContext) private var context
     @EnvironmentObject var colorManager: ColorManager // Injecté par le parent
 
-    @State private var allTransactions1000: [EntityTransactions] = []
+    @State private var allTransactions: [EntityTransactions] = []
+    @Binding var selectedTransaction: EntityTransactions?
+    @Binding var isCreationMode: Bool
 
     var body: some View {
-        let grouped = groupTransactionsByYear(transactions: allTransactions1000)
-        TransactionsListView(data: grouped)
+        let grouped = groupTransactionsByYear(transactions: allTransactions)
+        TransactionsListView(data: grouped, selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)
             .environmentObject(colorManager) // Passe l'objet aux sous-vues
             .navigationTitle("My Transactions")
             .onAppear {
-                allTransactions1000 = ListTransactionsManager.shared.getAllDatas()
+                allTransactions = ListTransactionsManager.shared.getAllDatas()
             }
             .onChange(of: colorManager.selectedColorType) { old, new in
             }
     }
 }
 
-struct YearSectionView: View {
-    @EnvironmentObject var colorManager: ColorManager // Injecté par le parent
-
-    let yearGroup: TransactionsByYear100
-    
-    var body: some View {
-        Section(header: Text("Year \(yearGroup.year)")
-                    .font(.headline)
-                    .foregroundColor(.blue)
-        ) {
-            ForEach(yearGroup.months) { monthGroup in
-                MonthDisclosureGroupView(monthGroup: monthGroup, year: yearGroup.year)
-                    .environmentObject(colorManager) // Passe l'objet aux sous-vues
-            }
-        }
-    }
-}
-
-struct MonthDisclosureGroupView: View {
-    let monthGroup: TransactionsByMonth100
-    let year: String
-    @EnvironmentObject var colorManager: ColorManager
-    
-    @State private var selectedTransaction: EntityTransactions?
-
-    @AppStorage("disclosureStates") private var disclosureStatesData: Data = Data()
-    @State private var disclosureStates: [String: Bool] = [:]
-
-    var groupKey: String {
-        "\(monthGroup.monthName)_\(year)" // Clé unique pour chaque groupe
-    }
-
-    var isExpanded: Binding<Bool> {
-        Binding(
-            get: { disclosureStates[groupKey, default: false] },
-            set: { newValue in
-                disclosureStates[groupKey] = newValue
-                saveDisclosureState()
-            }
-        )
-    }
-
-    var body: some View {
-        DisclosureGroup(
-            isExpanded: isExpanded,
-            content: {
-                ForEach(monthGroup.transactions, id: \.id) { transaction in
-                    TransactionRowView(transaction: transaction, isSelected: transaction == selectedTransaction)
-                        .environmentObject(colorManager)
-                        .onTapGesture {
-                            selectedTransaction = transaction
-                        }
-
-                }
-            },
-            label: {
-                HStack {
-                    Text("\(monthGroup.monthName) \(year)")
-                    Spacer()
-                    Text("Total: \(String(format: "%.2f", monthGroup.totalAmount)) €")
-                        .foregroundColor(.primary)
-                }
-            }
-        )
-        .onAppear(perform: loadDisclosureState)
-    }
-
-    /// Sauvegarde l'état des `DisclosureGroup`
-    private func saveDisclosureState() {
-        if let data = try? JSONEncoder().encode(disclosureStates) {
-            disclosureStatesData = data
-        }
-    }
-
-    /// Charge l'état sauvegardé au démarrage
-    private func loadDisclosureState() {
-        if let loadedData = try? JSONDecoder().decode([String: Bool].self, from: disclosureStatesData) {
-            disclosureStates = loadedData
-        }
-    }
-}
-
+// MARK: TransactionsListView
 struct TransactionsListView: View {
     @EnvironmentObject var colorManager: ColorManager // Injecté par le parent
 
     let data: [TransactionsByYear100]
     
-    @State private var selectedTransaction: EntityTransactions?
+    @Binding var selectedTransaction: EntityTransactions?
+    @Binding var isCreationMode: Bool
 
     var body: some View {
         VStack(spacing: 0) {
@@ -190,7 +114,7 @@ struct TransactionsListView: View {
             
             List(selection: $selectedTransaction) {
                 ForEach(data) { yearGroup in
-                    YearSectionView(yearGroup: yearGroup)
+                    YearSectionView(yearGroup: yearGroup, selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)
                         .environmentObject(colorManager) // Passe l'environnement aux sous-vues
 
                 }
@@ -198,9 +122,102 @@ struct TransactionsListView: View {
             .listStyle(.inset)
             .frame(minWidth: 700, minHeight: 400)
         }
+//        .sheet(item: $selectedTransaction) { transaction in
+//            OperationDialog(selectedTransaction: $selectedTransaction)
+//        }
     }
 }
 
+
+// MARK: YearSectionView
+struct YearSectionView: View {
+    @EnvironmentObject var colorManager: ColorManager // Injecté par le parent
+
+    let yearGroup: TransactionsByYear100
+    @Binding var selectedTransaction: EntityTransactions?
+    @Binding var isCreationMode: Bool
+
+    
+    var body: some View {
+        Section(header: Text("Year \(yearGroup.year)")
+                    .font(.headline)
+                    .foregroundColor(.blue)
+        ) {
+            ForEach(yearGroup.months) { monthGroup in
+                MonthDisclosureGroupView(monthGroup: monthGroup, year: yearGroup.year, selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)
+                    .environmentObject(colorManager) // Passe l'objet aux sous-vues
+            }
+        }
+    }
+}
+
+// MARK: MonthDisclosureGroupView
+struct MonthDisclosureGroupView: View {
+    let monthGroup: TransactionsByMonth100
+    let year: String
+    @EnvironmentObject var colorManager: ColorManager
+    
+    @Binding var selectedTransaction: EntityTransactions?
+    @Binding var isCreationMode: Bool
+
+    @AppStorage("disclosureStates") private var disclosureStatesData: Data = Data()
+    @State private var disclosureStates: [String: Bool] = [:]
+
+    var groupKey: String {
+        "\(monthGroup.monthName)_\(year)" // Clé unique pour chaque groupe
+    }
+
+    var isExpanded: Binding<Bool> {
+        Binding(
+            get: { disclosureStates[groupKey, default: false] },
+            set: { newValue in
+                disclosureStates[groupKey] = newValue
+                saveDisclosureState()
+            }
+        )
+    }
+
+    var body: some View {
+        DisclosureGroup(
+            isExpanded: isExpanded,
+            content: {
+                ForEach(monthGroup.transactions, id: \.id) { transaction in
+                    TransactionRowView(transaction: transaction, isSelected: transaction == selectedTransaction)
+                        .environmentObject(colorManager)
+                        .onTapGesture {
+                            selectedTransaction = transaction
+                            isCreationMode = false
+                        }
+                }
+            },
+            label: {
+                HStack {
+                    Text("\(monthGroup.monthName) \(year)")
+                    Spacer()
+                    Text("Total: \(String(format: "%.2f", monthGroup.totalAmount)) €")
+                        .foregroundColor(.primary)
+                }
+            }
+        )
+        .onAppear(perform: loadDisclosureState)
+    }
+
+    /// Sauvegarde l'état des `DisclosureGroup`
+    private func saveDisclosureState() {
+        if let data = try? JSONEncoder().encode(disclosureStates) {
+            disclosureStatesData = data
+        }
+    }
+
+    /// Charge l'état sauvegardé au démarrage
+    private func loadDisclosureState() {
+        if let loadedData = try? JSONDecoder().decode([String: Bool].self, from: disclosureStatesData) {
+            disclosureStates = loadedData
+        }
+    }
+}
+
+// MARK: TransactionRowView
 struct TransactionRowView: View {
     let transaction: EntityTransactions?
     let isSelected: Bool
@@ -275,10 +292,9 @@ struct TransactionRowView: View {
                         .foregroundColor(colorManager.colorForTransaction(transaction))
                     
                     // Solde (si vous voulez l’afficher)
-                    Text(transaction.solde != nil
-                         ? String(format: "%.2f", transaction.solde!) : "—")
-                    .frame(width: 80, alignment: .trailing)
-                    .foregroundColor(colorManager.colorForTransaction(transaction))
+                    Text(transaction.solde != nil ? String(format: "%.2f", transaction.solde!) : "—")
+                        .frame(width: 80, alignment: .trailing)
+                        .foregroundColor(colorManager.colorForTransaction(transaction))
                     
                     Spacer()
                 }
