@@ -11,7 +11,6 @@ import SwiftData
 
 // Gestionnaire de données pour les carnets de chèques
 final class CheckDataManager: ObservableObject {
-    @Published var currentAccount: EntityAccount?
     @Published var checkBooks: [EntityCheckBook]? {
         didSet {
             // Sauvegarde automatique dès qu'une modification est détectée
@@ -57,7 +56,7 @@ struct CheckView: View {
     var body: some View {
         VStack(spacing: 10) {
             // Affiche le compte actuel
-            if let account = dataManager.currentAccount {
+            if let account = currentAccountManager.currentAccount {
                 Text("Account: \(account.name)")
                     .font(.headline)
             }
@@ -69,16 +68,14 @@ struct CheckView: View {
                     // Mise à jour de l'élément sélectionné
                     selectedCheck = dataManager.checkBooks?.first(where: { $0.id == newValue })
                 }
-                .onChange(of: currentAccountManager.currentAccount) { _, newAccount in
+                .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
                     // Mise à jour de la liste en cas de changement de compte
-                    if let account = newAccount {
                         dataManager.checkBooks = nil
-                        dataManager.currentAccount = account
                         selectedCheck = nil
                         selectedItem = nil
                         refreshData()
-                    }
                 }
+                // Charge les données au démarrage de la vue
                 .onAppear {
                     setupDataManager()
                 }
@@ -128,7 +125,6 @@ struct CheckView: View {
         dataManager.configure(with: modelContext)
         
         if let account = currentAccountManager.currentAccount {
-            dataManager.currentAccount = account
             dataManager.checkBooks = ChequeBookManager.shared.getAllDatas()
         }
     }

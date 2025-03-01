@@ -11,7 +11,6 @@ import UniformTypeIdentifiers
 
 
 final class StatementDataManager: ObservableObject {
-    @Published var currentAccount: EntityAccount?
     @Published var statements: [EntityBankStatement]? {
         didSet {
             // Sauvegarder les modifications dès qu'il y a un changement
@@ -38,9 +37,9 @@ final class StatementDataManager: ObservableObject {
 struct BankStatementView: View {
     
     @Binding var isVisible: Bool
-    @StateObject private var currentAccountManager = CurrentAccountManager.shared
     @StateObject private var dataManager = StatementDataManager()
-    
+    @StateObject private var currentAccountManager = CurrentAccountManager.shared
+
     var body: some View {
         BankStatementListView()
             .environmentObject(dataManager)
@@ -79,7 +78,7 @@ struct BankStatementListView: View {
     
     var body: some View {
         NavigationSplitView {
-            if let account = dataManager.currentAccount {
+            if let account = CurrentAccountManager.shared.getAccount() {
                 Text("Account: \(account.name)")
                     .font(.headline)
             }
@@ -87,17 +86,10 @@ struct BankStatementListView: View {
             BankStatementTable(statements: dataManager.statements ?? [], selection: $selectedItem)
                 .frame(height: 300)
                 .onAppear {
-                    if let account = currentAccountManager.currentAccount {
-                        dataManager.currentAccount = account
-                    }
                     
                     // Créer un nouvel enregistrement si la base de données est vide
                     if dataManager.statements == nil {
-                        if let account = CurrentAccountManager.shared.getAccount() {
-                            dataManager.currentAccount = account
-                        } else {
-                            print("Aucun compte disponible.")
-                        }
+
                         BankStatementManager.shared.configure(with: modelContext)
                         let statements = BankStatementManager.shared.getAllDatas()
                         dataManager.statements = statements
@@ -121,7 +113,6 @@ struct BankStatementListView: View {
                     
                     if let account = newAccount {
                         dataManager.statements = nil
-                        dataManager.currentAccount = account
                         selectedStatement = nil
                         selectedItem = nil
                         refreshData()

@@ -9,28 +9,7 @@ import SwiftUI
 import AppKit
 import SwiftData
 
-struct OperationDialog: View {
-    
-    @StateObject private var currentAccountManager = CurrentAccountManager.shared
-    @StateObject private var transactionDataManager = TransactionDataManager()
-    
-    @Binding var selectedTransaction: EntityTransactions?
-    @Binding var isCreationMode : Bool
-
-    var body: some View {
-        VStack {
-            OperationDialogView(selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode )
-                .environmentObject(transactionDataManager)
-                .environmentObject(currentAccountManager)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .layoutPriority(1) // Priorité élevée pour occuper tout l’espace disponible
-        }
-        .padding()
-    }
-}
-
 final class TransactionDataManager: ObservableObject {
-    @Published var currentAccount: EntityAccount?
     @Published var transactions: [EntityTransactions]? {
         didSet {
             // Sauvegarder les modifications dès qu'il y a un changement
@@ -56,6 +35,28 @@ final class TransactionDataManager: ObservableObject {
         }
     }
 }
+
+
+struct OperationDialog: View {
+    
+    @StateObject private var currentAccountManager = CurrentAccountManager.shared
+    @StateObject private var transactionDataManager = TransactionDataManager()
+    
+    @Binding var selectedTransaction: EntityTransactions?
+    @Binding var isCreationMode : Bool
+
+    var body: some View {
+        VStack {
+            OperationDialogView(selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode )
+                .environmentObject(transactionDataManager)
+                .environmentObject(currentAccountManager)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .layoutPriority(1) // Priorité élevée pour occuper tout l’espace disponible
+        }
+        .padding()
+    }
+}
+
 
 struct SubOperationListView: View {
     @Binding var subOperations: [EntitySousOperations]
@@ -257,21 +258,24 @@ struct SubOperationRow: View {
     var body: some View {
         HStack {
             Text(subOperation.libelle)
+                .foregroundColor(.primary)
             Spacer()
-            Text("\(subOperation.amount)")
+            Text("\(subOperation.amount, format: .currency(code: "EUR"))")
                 .foregroundColor(.red)
                 .accessibilityLabel(String(localized: "Amount"))
-                .accessibilityValue("\(subOperation.amount )")
+                .accessibilityValue("\(subOperation.amount, format: .currency(code: "EUR"))")
             Spacer()
                 .frame(width: 20)
             Button(action: onEdit) {
                 Image(systemName: "pencil")
             }
+            .buttonStyle(BorderlessButtonStyle())
             .accessibilityLabel(String(localized: "Edit sub-operation"))
             .accessibilityHint(String(localized: "Double tap to edit \(subOperation.libelle)"))
             Button(action: onDelete) {
                 Image(systemName: "trash")
             }
+            .buttonStyle(BorderlessButtonStyle())
             .accessibilityLabel(String(localized: "Delete sub-operation"))
             .accessibilityHint(String(localized: "Double tap to delete \(subOperation.libelle)"))
         }

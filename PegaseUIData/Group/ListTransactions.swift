@@ -8,10 +8,43 @@
 import SwiftUI
 import SwiftData
 
+// Gestionnaire de données pour les carnets de chèques
+final class ListDataManager: ObservableObject {
+    @Published var listTransactions: [EntityTransactions]? {
+        didSet {
+            // Sauvegarde automatique dès qu'une modification est détectée
+            saveChanges()
+        }
+    }
+    
+    private var modelContext: ModelContext?
+    
+    // Configure le contexte de modèle pour la gestion des données
+    func configure(with context: ModelContext) {
+        self.modelContext = context
+    }
+    
+    // Sauvegarde les modifications dans SwiftData
+    func saveChanges() {
+        guard let modelContext = modelContext else {
+            print("Le contexte de modèle n'est pas initialisé.")
+            return
+        }
+        
+        do {
+            try modelContext.save()
+        } catch {
+            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+        }
+    }
+}
 
 struct ListTransactions: View {
     
-    @EnvironmentObject var colorManager: ColorManager // ✅ Correct, utilise l'instance globale
+    @EnvironmentObject var colorManager: ColorManager
+    @StateObject private var currentAccountManager = CurrentAccountManager.shared
+    @StateObject private var listDataManager       = ListDataManager()
+
     @Binding var isVisible: Bool
     @Binding var selectedTransaction: EntityTransactions?
     @Binding var isCreationMode: Bool
@@ -26,11 +59,15 @@ struct ListTransactions: View {
 
             ContentView10000( selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)
                 .environmentObject(colorManager) // Injecté ici
+                .environmentObject(currentAccountManager)
+                .environmentObject(listDataManager)
+
                 .frame(minWidth: 200, minHeight: 300)
             Spacer()
         }
         .onChange(of: colorManager.selectedColorType) { old, new in
         }
+
 
     }
     private func performTrueTask() async {
@@ -43,7 +80,10 @@ struct ListTransactions: View {
 
 // MARK: ContentView10000
 struct ContentView10000: View {
-    @Environment(\.modelContext) private var context
+    @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject var currentAccountManager: CurrentAccountManager
+    @EnvironmentObject var dataManager: ListDataManager
+
     @EnvironmentObject var colorManager: ColorManager // Injecté par le parent
 
     @State private var allTransactions: [EntityTransactions] = []
@@ -56,10 +96,35 @@ struct ContentView10000: View {
             .environmentObject(colorManager) // Passe l'objet aux sous-vues
             .navigationTitle("My Transactions")
             .onAppear {
+                setupDataManager()
+
                 allTransactions = ListTransactionsManager.shared.getAllDatas()
             }
             .onChange(of: colorManager.selectedColorType) { old, new in
             }
+            .onChange(of: currentAccountManager.currentAccount) { _, newAccount in
+                // Mise à jour de la liste en cas de changement de compte
+                if let account = newAccount {
+                    dataManager.listTransactions = nil
+                    refreshData()
+                }
+            }
+
+    }
+    // Configure le gestionnaire de données
+    private func setupDataManager() {
+        ListTransactionsManager.shared.configure(with: modelContext)
+        dataManager.configure(with: modelContext)
+        
+        if let account = currentAccountManager.currentAccount {
+            dataManager.listTransactions = ListTransactionsManager.shared.getAllDatas()
+        }
+    }
+    
+    // Rafraîchit la liste des carnets de chèques
+    private func refreshData() {
+        dataManager.listTransactions = ListTransactionsManager.shared.getAllDatas()
+        allTransactions = dataManager.listTransactions ?? []
     }
 }
 
@@ -122,9 +187,6 @@ struct TransactionsListView: View {
             .listStyle(.inset)
             .frame(minWidth: 700, minHeight: 400)
         }
-//        .sheet(item: $selectedTransaction) { transaction in
-//            OperationDialog(selectedTransaction: $selectedTransaction)
-//        }
     }
 }
 

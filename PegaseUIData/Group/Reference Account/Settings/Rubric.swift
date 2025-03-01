@@ -10,7 +10,6 @@ import SwiftUI
 import SwiftData
 
 final class RubricDataManager: ObservableObject {
-    @Published var currentAccount: EntityAccount?
     @Published var rubrics: [EntityRubric] = []
     
     private var modelContext: ModelContext?
@@ -49,7 +48,7 @@ struct RubricView: View {
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
-                if let account = dataManager.currentAccount {
+                if let account = currentAccountManager.currentAccount {
                     Text("Account: \(account.name)")
                         .font(.headline)
                 }
@@ -68,7 +67,6 @@ struct RubricView: View {
                 .onChange(of: currentAccountManager.currentAccount ) { old, newAccount in
                     if let account = newAccount {
                         dataManager.rubrics.removeAll()
-                        dataManager.currentAccount = account
                         selectedCategory = nil
                         selectedRubric = nil
                         
@@ -158,9 +156,13 @@ struct RubricView: View {
             
             .sheet(isPresented: $isAddDialogRubricPresented) {
                 RubricFormView(isPresented: $isAddDialogRubricPresented, isMode: $modeCreate, rubric: nil)
+                    .environmentObject(dataManager)
+
             }
             .sheet(isPresented: $isEditDialogRubricPresented) {
                 RubricFormView(isPresented: $isEditDialogRubricPresented, isMode: $modeCreate, rubric: selectedRubric)
+                    .environmentObject(dataManager)
+
             }
             .sheet(isPresented: $isAddDialogCategoryPresented) {
                 CategoryFormView(isPresented: $isAddDialogCategoryPresented, isModeCreate: $modeCreate, rubric: nil, category: nil)
@@ -176,9 +178,7 @@ struct RubricView: View {
             modelContext.delete(selectedRubric!)
         } else {
             modelContext.delete(selectedCategory!)
-
         }
-
     }
     
     func refreshData() {
@@ -299,8 +299,10 @@ struct RubricView: View {
 struct RubricFormView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject var rubricViewManager: RubricDataManager
     
+    @EnvironmentObject var dataManager : RubricDataManager
+
+
     @Binding var isPresented: Bool
     @Binding var isMode: Bool
     let rubric: EntityRubric?
@@ -360,15 +362,14 @@ struct RubricFormView: View {
     
     private func save() {
         let newItem: EntityRubric
-        let account = rubricViewManager.currentAccount
-        
+        let account = CurrentAccountManager.shared.getAccount()!
         if let existing = rubric {
             newItem = existing
         } else {
             let color = NSColor.fromSwiftUIColor(selectedColor)
-            newItem = EntityRubric(name: name, color: color, account: account!)
+            newItem = EntityRubric(name: name, color: color, account: account)
             modelContext.insert(newItem)
-            //            rubricViewManager.rubrics.append(newItem) // ✅ Ajouter à la liste
+            dataManager.rubrics.append(newItem) // ✅ Ajouter à la liste
         }
         
         newItem.name = name
@@ -382,7 +383,7 @@ struct RubricFormView: View {
 struct CategoryFormView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject var rubricViewManager: RubricDataManager
+//    @EnvironmentObject var rubricViewManager: RubricDataManager
     
     @Binding var isPresented: Bool
     @Binding var isModeCreate: Bool
@@ -451,7 +452,6 @@ struct CategoryFormView: View {
         } else {
             newItem = EntityCategory(name: name, objectif: Double(objectif) ?? 0.0, rubric: rubric!)
             modelContext.insert(newItem)
-//            rubricViewManager.rubrics.append(newItem)
         }
         
         newItem.name = name

@@ -38,9 +38,6 @@
       },
       "shouldTranslate" : false
     },
-    "%lf" : {
-      "shouldTranslate" : false
-    },
     "%lld" : {
       "shouldTranslate" : false
     },

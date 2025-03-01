@@ -9,7 +9,7 @@ import SwiftUI
 import AppKit
 import SwiftData
 
-// 1. Composant principal
+// MARK: 1. Composant principal
 struct OperationDialogView: View {
     @Environment(\.modelContext) private var modelContext: ModelContext
     @Environment(\.dismiss) private var dismiss
@@ -28,7 +28,7 @@ struct OperationDialogView: View {
             // En-tête avec information de transaction
             HeaderView(
                 title: selectedTransaction?.sousOperations.first?.libelle,
-                accountName: dataManager.currentAccount?.name,
+                accountName: currentAccountManager.currentAccount?.name,
                 isCreationMode: $isCreationMode
             )
             
@@ -46,8 +46,16 @@ struct OperationDialogView: View {
             
             // Boutons d'action
             ActionButtonsView(
-                cancelAction: { dismiss() },
-                saveAction: { saveActions() }
+                cancelAction: {
+                    selectedTransaction = nil
+                    isCreationMode = true
+                    dismiss()
+                },
+                saveAction: {
+                    saveActions()
+                    selectedTransaction = nil
+                    isCreationMode = true
+                }
             )
         }
         .padding()
@@ -60,17 +68,22 @@ struct OperationDialogView: View {
         .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
             if let account = newAccount {
                 dataManager.transactions = nil
-                dataManager.currentAccount = account
                 refreshData()
             }
         }
+        .onChange(of: selectedTransaction) { old, newAccount in
+            if isCreationMode == false, let transaction = selectedTransaction {
+                loadTransactionData(transaction)
+            }
+        }
+
         .onAppear {
             Task {
                 do {
                     configureDataManagers()
                     try await configurePaymentModes()
                     
-                    if !isCreationMode, let transaction = selectedTransaction {
+                    if isCreationMode == false, let transaction = selectedTransaction {
                         loadTransactionData(transaction)
                     }
                 } catch {
@@ -114,6 +127,10 @@ struct OperationDialogView: View {
         formState.pointingDate = transaction.datePointage!
         formState.selectedMode = transaction.paymentMode
         formState.checkNumber = Int(transaction.checkNumber)!
+        formState.bankStatement = Int(transaction.bankStatement)
+        formState.selectedAccount = transaction.account
+        formState.currentSousTransaction = transaction.sousOperations.first
+
         // Ajouter d'autres champs à charger selon besoin
     }
     
@@ -142,7 +159,7 @@ struct OperationDialogView: View {
         }
         
         // Création d'une nouvelle transaction
-        if isCreationMode {
+        if isCreationMode == true {
             createNewTransaction(account)
         }
     }
@@ -183,13 +200,12 @@ struct OperationDialogView: View {
     }
     
     func resetListTransactions() {
-        isCreationMode = true
         formState.bankStatement = 0
         formState.checkNumber = 0
     }
 }
 
-// 2. État du formulaire
+// MARK: 2. État du formulaire
 class TransactionFormState: ObservableObject {
     @Published var accounts: [EntityAccount] = []
     @Published var linkedAccount: String = ""
@@ -202,7 +218,7 @@ class TransactionFormState: ObservableObject {
         String(localized: "Executed")
     ]
     
-    @Published var amount: String = "75,00 €"
+    @Published var amount: String = "0,00 €"
     @Published var isShowingDialog: Bool = false
     
     @Published var subOperations: [EntitySousOperations] = []
@@ -219,7 +235,7 @@ class TransactionFormState: ObservableObject {
     @Published var checkNumber: Int = 0
 }
 
-// 3. Composant d'en-tête
+// MARK: 3. Composant d'en-tête
 struct HeaderView: View {
     let title: String?
     let accountName: String?
@@ -229,10 +245,8 @@ struct HeaderView: View {
         VStack(alignment: .leading) {
             if let title = title {
                 Text(title)
-                //isCreationMode = false
             } else {
                 Text("No transaction selected")
-//                isCreationMode = true
             }
             
             if let accountName = accountName {
@@ -253,7 +267,7 @@ struct HeaderView: View {
     }
 }
 
-// 4. Composant de formulaire principal
+// MARK:  4. Composant de formulaire principal
 struct TransactionFormView: View {
     @ObservedObject var formState: TransactionFormState
     
@@ -277,7 +291,7 @@ struct TransactionFormView: View {
     }
 }
 
-// 5. Composant pour la section des sous-opérations
+// MARK:  5. Composant pour la section des sous-opérations
 struct SubOperationsSectionView: View {
     @Binding var subOperations: [EntitySousOperations]
     @Binding var currentSubOperation: EntitySousOperations?
@@ -311,7 +325,7 @@ struct SubOperationsSectionView: View {
     }
 }
 
-// 6. Composant des boutons d'action
+// MARK: 6. Composant des boutons d'action
 struct ActionButtonsView: View {
     let cancelAction: () -> Void
     let saveAction: () -> Void

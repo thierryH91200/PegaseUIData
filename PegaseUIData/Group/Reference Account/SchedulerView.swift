@@ -10,7 +10,6 @@ import SwiftData
 
 
 final class SchedulerDataManager: ObservableObject {
-    @Published var currentAccount: EntityAccount?
     @Published var schedulers: [EntitySchedule]? {
         didSet {
             guard modelContext != nil else { return }
@@ -87,7 +86,7 @@ struct Scheduler: View {
     
     var body: some View {
         VStack(spacing: 10) {
-            if let account = dataManager.currentAccount {
+            if let account = CurrentAccountManager.shared.currentAccount {
                 Text("Account: \(account.name)")
                     .font(.headline)
             }
@@ -111,11 +110,10 @@ struct Scheduler: View {
                     selectedItem = nil
                 }
             }
-            .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
+            .onChange(of: CurrentAccountManager.shared.currentAccount) { old, newAccount in
                 
                 if let account = newAccount {
                     dataManager.schedulers = nil
-                    dataManager.currentAccount = account
                     selectedSchedule = nil
                     selectedItem = nil
                     selected = nil
@@ -186,7 +184,6 @@ struct Scheduler: View {
         dataManager.configure(with: modelContext)
 
         if let account = currentAccountManager.currentAccount {
-            dataManager.currentAccount = account
             dataManager.schedulers = SchedulerManager.shared.getAllDatas()
         }
     }
@@ -389,7 +386,6 @@ struct SchedulerFormView: View {
                 frequencytype = String(scheduler.typeFrequence)
             }
         }
-
     }
 
     private func save() {

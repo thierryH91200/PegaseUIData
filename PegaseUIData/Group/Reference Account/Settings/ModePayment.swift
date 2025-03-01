@@ -9,7 +9,6 @@ import SwiftUI
 import SwiftData
 
 final class ModePaiementDataManager: ObservableObject {
-    @Published var currentAccount: EntityAccount?
     @Published var modePayments: [EntityPaymentMode]? {
         didSet {
             // Sauvegarder les modifications dès qu'il y a un changement
@@ -56,7 +55,7 @@ struct ModePaymentView: View {
         VStack(spacing: 10) {
             
             // Affiche le nom du compte courant s'il existe
-            if let account = dataManager.currentAccount {
+            if let account = currentAccountManager.currentAccount  {
                 Text("Account: \(account.name)")
                     .font(.headline)
             }
@@ -85,7 +84,6 @@ struct ModePaymentView: View {
             .onChange(of: currentAccountManager.currentAccount ) { old, newAccount in
                 if let account = newAccount {
                     dataManager.modePayments = nil
-                    dataManager.currentAccount = account
                     selectedMode = nil
                     selectedItem = nil
                     refreshData()
@@ -147,9 +145,15 @@ struct ModePaymentView: View {
         // Formulaire d'ajout et de modification
         .sheet(isPresented: $isAddDialogPresented) {
             ModePaiementFormView(isPresented: $isAddDialogPresented, isModeCtreate: $modeCreate, modePaiement: nil)
+                .environmentObject(currentAccountManager)
+                .environmentObject(dataManager)
+
         }
         .sheet(isPresented: $isEditDialogPresented) {
             ModePaiementFormView(isPresented: $isEditDialogPresented, isModeCtreate: $modeCreate, modePaiement: selectedMode)
+                .environmentObject(currentAccountManager)
+                .environmentObject(dataManager)
+
         }
     }
     
@@ -157,7 +161,6 @@ struct ModePaymentView: View {
         PaymentModeManager.shared.configure(with: modelContext)
         dataManager.configure(with: modelContext)
         if let account = currentAccountManager.currentAccount {
-            dataManager.currentAccount = account
             dataManager.modePayments = PaymentModeManager.shared.getAllDatas(for: account)
         }
     }
@@ -212,6 +215,8 @@ struct ModePaiementFormView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var modePaiementViewManager: ModePaiementDataManager
+    @EnvironmentObject var currentAccountManager: CurrentAccountManager
+
     
     @Binding var isPresented: Bool
     @Binding var isModeCtreate: Bool
@@ -273,7 +278,7 @@ struct ModePaiementFormView: View {
     
     private func save() {
         let newItem: EntityPaymentMode
-        let account = modePaiementViewManager.currentAccount
+        let account = currentAccountManager.currentAccount
         
         if let existing = modePaiement {
             newItem = existing
