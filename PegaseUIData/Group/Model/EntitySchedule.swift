@@ -201,7 +201,7 @@ final class SchedulerManager {
         transaction.datePointage = dateValeur
         transaction.account = schedule.account
         transaction.paymentMode = schedule.paymentMode
-        transaction.statut = Date() >= dateValeur ? 2 : 1
+        transaction.status = Date() >= dateValeur ? 2 : 1
         transaction.bankStatement = 0
         transaction.uuid = UUID()
         
@@ -215,7 +215,7 @@ final class SchedulerManager {
             transferTransaction.dateOperation = transaction.dateOperation
             transferTransaction.datePointage = transaction.datePointage
             transferTransaction.account = linkedAccount
-            transferTransaction.statut = transaction.statut
+            transferTransaction.status = transaction.status
             transferTransaction.bankStatement = transaction.bankStatement
 
             let paymentModeName = transferTransaction.paymentMode?.name ?? ""

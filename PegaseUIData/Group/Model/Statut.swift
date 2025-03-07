@@ -1,5 +1,5 @@
 //
-//  Statut.swift
+//  Status.swift
 //  PegaseUIData
 //
 //  Created by Thierry hentic on 12/11/2024.
@@ -7,13 +7,13 @@
 
 import SwiftUI
 
-final class Statut {
+final class Status {
     
-    static let shared = Statut()
+    static let shared = Status()
     
     init() {}
 
-    enum TypeOfStatut: Int16, CaseIterable {
+    enum TypeOfStatus: Int16, CaseIterable {
         case engaged = 0
         case pending = 1
         case completed = 2
@@ -28,19 +28,19 @@ final class Statut {
 
         var color: Color {
             switch self {
-            case .engaged: return .black
-            case .pending: return .blue
+            case .engaged: return .blue
+            case .pending: return .black
             case .completed: return .green
             }
         }
     }
 
-    // Méthode pour retrouver un statut en fonction de son label
-    func findStatut(statut: String) -> Int16 {
-        if let foundStatut = TypeOfStatut.allCases.first(where: { $0.label == statut }) {
-            return foundStatut.rawValue
+    // Méthode pour retrouver un status en fonction de son label
+    func findStatus(status: String) -> Int16 {
+        if let foundStatus = TypeOfStatus.allCases.first(where: { $0.label == status }) {
+            return foundStatus.rawValue
         }
-        return TypeOfStatut.engaged.rawValue // Valeur par défaut
+        return TypeOfStatus.engaged.rawValue // Valeur par défaut
     }
 }
 

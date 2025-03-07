@@ -9,7 +9,6 @@ import SwiftUI
 import SwiftData
 
 final class BankDataManager: ObservableObject {
-    @Published var currentAccount: EntityAccount?
     @Published var banqueInfo: EntityBanqueInfo? {
         didSet {
             // Sauvegarder les modifications dès qu'il y a un changement
@@ -43,7 +42,7 @@ struct BankView: View {
     
     var body: some View {
         VStack(spacing: 30) {
-            if let account = dataManager.currentAccount {
+            if let account = CurrentAccountManager.shared.currentAccount {
                 Text("Account: \(account.name)")
                     .font(.headline)
             }
@@ -62,18 +61,9 @@ struct BankView: View {
             
             dataManager.configure(with: modelContext)
 
-            if let account = currentAccountManager.currentAccount {
-                dataManager.currentAccount = account
-            }
-
             // Créer un nouvel enregistrement si la base de données est vide
             if dataManager.banqueInfo == nil {
-                if let account = CurrentAccountManager.shared.getAccount() {
-                    dataManager.currentAccount = account
-                } else {
-                    print("Aucun compte disponible.")
-                }
-                
+
                 BankManager.shared.configure(with: modelContext)
                 let banqueInfo = BankManager.shared.getAllDatas()
                 dataManager.banqueInfo = banqueInfo
@@ -96,7 +86,6 @@ struct BankView: View {
     
             if let account = newAccount {
                 dataManager.banqueInfo = nil
-                dataManager.currentAccount = account
                 
                 loadOrCreate(for: account)
             }
@@ -175,7 +164,6 @@ struct FieldView: View {
                 .onSubmit {
                     saveChanges()
                 }
-
         }
     }
     

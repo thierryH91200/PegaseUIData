@@ -13,7 +13,7 @@ import SwiftUI
 
 @Model public class EntityPreference {
     var signe: Bool = true
-    var statut: Int16 = 0
+    var status: Int16 = 0
 
     var category: EntityCategory?
     var paymentMode: EntityPaymentMode?
@@ -28,7 +28,7 @@ import SwiftUI
                 paymentMode: EntityPaymentMode? = nil ) {
         self.category = category
         self.paymentMode = paymentMode
-        self.statut = 1
+        self.status = 1
         self.signe = true
         
         self.account = account
@@ -36,6 +36,7 @@ import SwiftUI
 }
 
 protocol PreferenceManaging {
+    func configure(with modelContext: ModelContext)
     func defaultPref(account: EntityAccount) -> EntityPreference?
     func getAllDatas(for account: EntityAccount?) -> EntityPreference?
     func saveContext()
@@ -79,7 +80,11 @@ final class PreferenceManager: PreferenceManaging {
         let paymentModes = PaymentModeManager.shared.getAllDatas(for: account)
         newPreference.paymentMode = paymentModes?.first ?? nil
         
-        newPreference.statut = 1
+        let rubrics = RubricManager.shared.getAllDatas(account: account)
+        newPreference.category?.rubric = rubrics.first ?? nil
+        newPreference.category = rubrics.first?.categorie.first ?? nil
+
+        newPreference.status = 1
         newPreference.signe = true
         newPreference.account = account
         
@@ -87,7 +92,6 @@ final class PreferenceManager: PreferenceManaging {
         entityPreference?.append(newPreference) // Mise à jour du cache local
         
         saveContext()
-        
         return newPreference
     }
     

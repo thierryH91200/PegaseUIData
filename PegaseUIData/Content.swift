@@ -34,10 +34,10 @@ class ColorManager: ObservableObject {
         case "Income/Expense":
             return transaction.amount >= 0 ? .green : .red
         case "Rubric":
-            return .purple
+            return Color(transaction.sousOperations.first?.category?.rubric?.color ?? .black)
         case "Payment Mode":
             return Color(transaction.paymentMode?.color ?? .black)
-        case "Statut":
+        case "Status":
             return .gray
         default:
             return .black
@@ -54,7 +54,7 @@ struct ContentView100: View {
     @StateObject private var colorManager = ColorManager()
     
     @State private var selectedTransaction: EntityTransactions?
-    @State private var isCreationMode : Bool = false
+    @State private var isCreationMode : Bool = true
 
     var transactions: [EntityTransactions] = [] // Liste des transactions
 
@@ -147,8 +147,8 @@ struct ContentView100: View {
                     Button(action: { chooseCouleur("Payment Mode") }) {
                         Label("Payment method", systemImage: "creditcard.fill")
                     }
-                    Button(action: { chooseCouleur("Statut") }) {
-                        Label("Statut", systemImage: "checkmark.circle.fill")
+                    Button(action: { chooseCouleur("Status") }) {
+                        Label("Status", systemImage: "checkmark.circle.fill")
                     }
                 } label: {
                     Label("Choose the color", systemImage: "paintpalette")

@@ -24,7 +24,7 @@ import SwiftData
     
     @Attribute(.ephemeral) var solde: Double? = 0.0
     
-    var statut: Int16? = 0
+    var status: Int16? = 0
 
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }

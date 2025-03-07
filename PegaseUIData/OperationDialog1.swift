@@ -23,13 +23,13 @@ struct TransactionFormViewModel: View {
     @Binding var transactionDate: Date
     @Binding var modes: [EntityPaymentMode]
     @Binding var pointingDate: Date
-    @Binding var statut: [String]
+    @Binding var status: [String]
     @Binding var bankStatement: Int
     @Binding var checkNumber: Int
     @Binding var amount: String
     
     @Binding var selectedBankStatement: String
-    @Binding var selectedStatut: String
+    @Binding var selectedStatus: String
     @Binding var selectedMode: EntityPaymentMode?
     @Binding var selectedAccount : EntityAccount?
     
@@ -37,8 +37,6 @@ struct TransactionFormViewModel: View {
     var compteCurrent: EntityAccount? {
         CurrentAccountManager.shared.getAccount()
     }
-    
-//    @State private var CurrentAccountManager.shared
     
     private var integerFormatter: NumberFormatter {
         let formatter = NumberFormatter()
@@ -92,9 +90,9 @@ struct TransactionFormViewModel: View {
                 DatePicker("", selection: $pointingDate, displayedComponents: .date)
             }
             
-            FormField(label: String(localized: "Statut")) {
-                Picker("", selection: $selectedStatut) {
-                    ForEach(statut, id: \.self) {
+            FormField(label: String(localized: "Status")) {
+                Picker("", selection: $selectedStatus) {
+                    ForEach(status, id: \.self) {
                         Text($0).tag($0)
                     }
                 }
@@ -117,8 +115,8 @@ struct TransactionFormViewModel: View {
             if let firstMode = modes.first {
                 selectedMode = firstMode
             }
-            if statut.indices.contains(1) {
-                selectedStatut = statut[1]
+            if status.indices.contains(1) {
+                selectedStatus = status[1]
             }
             selectedBankStatement = ""
         }

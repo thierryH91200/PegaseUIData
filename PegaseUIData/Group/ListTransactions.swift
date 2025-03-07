@@ -40,18 +40,22 @@ final class ListDataManager: ObservableObject {
 }
 
 struct ListTransactions: View {
-    
+    @Environment(\.modelContext) private var modelContext
+
     @EnvironmentObject var colorManager: ColorManager
     @StateObject private var currentAccountManager = CurrentAccountManager.shared
-    @StateObject private var listDataManager       = ListDataManager()
+    @StateObject private var dataManager       = ListDataManager()
 
     @Binding var isVisible: Bool
     @Binding var selectedTransaction: EntityTransactions?
     @Binding var isCreationMode: Bool
+    @State var soldeBanque = 0.0
+    @State var soldeReel = 0.0
+    @State var soldeFinal = 0.0
 
     var body: some View {
         VStack(spacing: 0) {
-            SummaryView(executed: 100, planned: 123.10, engaged: 45.5)
+            SummaryView(executed: soldeBanque, planned: soldeReel, engaged: soldeFinal)
                 .frame(maxWidth: .infinity, maxHeight: 100)
                 .task {
                     await performTrueTask()
@@ -60,20 +64,73 @@ struct ListTransactions: View {
             ContentView10000( selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)
                 .environmentObject(colorManager) // Injecté ici
                 .environmentObject(currentAccountManager)
-                .environmentObject(listDataManager)
+                .environmentObject(dataManager)
 
                 .frame(minWidth: 200, minHeight: 300)
             Spacer()
         }
         .onChange(of: colorManager.selectedColorType) { old, new in
         }
-
-
+        .onAppear() {
+            balanceCalculation()
+        }
     }
     private func performTrueTask() async {
         // Exécuter une tâche asynchrone (par exemple, un délai)
         try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 seconde de délai
         isVisible = true
+    }
+//case engaged = 0
+//case pending = 1
+//case completed = 2
+
+    private func balanceCalculation() {
+        // Récupère les données de l'init
+        InitAccountManager.shared.configure(with: modelContext)
+        guard let initCompte = InitAccountManager.shared.getAllDatas() else { return }
+        
+        // Initialisation des soldes
+        var balanceRealise = initCompte.realise
+        var balancePrevu   = initCompte.prevu
+        var balanceEngage  = initCompte.engage
+        let initialBalance = balancePrevu + balanceEngage + balanceRealise
+
+        // Vérification des transactions disponibles
+        guard let transactions = dataManager.listTransactions, !transactions.isEmpty else {
+            return
+        }
+        
+        let count = transactions.count
+        
+        // Calcul des soldes transaction par transaction
+        for index in stride(from: count - 1, to: -1, by: -1) {
+            let transaction = transactions[index]
+            
+            let status = Int16(transaction.status ?? 1)
+            guard let propertyEnum = Status.TypeOfStatus(rawValue: status) else { continue }
+            
+            // Mise à jour des soldes en fonction du status
+            switch propertyEnum {
+            case .pending:
+                balancePrevu += transaction.amount
+            case .engaged:
+                balanceEngage += transaction.amount
+            case .completed:
+                balanceRealise += transaction.amount
+            }
+            
+            // Calcul du solde de la transaction
+            transaction.solde = (index == count - 1) ?
+            (transaction.amount) + initialBalance :
+            (transactions[index + 1].solde ?? 0.0) + (transaction.amount)
+        }
+        
+        // Mise à jour des soldes finaux
+        self.soldeBanque = balanceRealise
+        self.soldeReel   = balanceRealise + balanceEngage
+        self.soldeFinal  = balanceRealise + balanceEngage + balancePrevu
+        
+    //    NotificationCenter.send(.updateBalance) // Décommente si nécessaire
     }
 }
 
@@ -104,10 +161,8 @@ struct ContentView10000: View {
             }
             .onChange(of: currentAccountManager.currentAccount) { _, newAccount in
                 // Mise à jour de la liste en cas de changement de compte
-                if let account = newAccount {
-                    dataManager.listTransactions = nil
-                    refreshData()
-                }
+                dataManager.listTransactions = nil
+                refreshData()
             }
 
     }
@@ -165,7 +220,7 @@ struct TransactionsListView: View {
                 Text("Check number")
                     .frame(width: 90, alignment: .trailing)
                     .overlay(Rectangle().frame(width: 1).foregroundColor(.gray), alignment: .trailing)
-                Text("Statut")
+                Text("Status")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .overlay(Rectangle().frame(width: 1).foregroundColor(.gray), alignment: .trailing)
                 Text("Amount")
@@ -349,7 +404,7 @@ struct TransactionRowView: View {
                         .frame(width: 80, alignment: .leading)
                         .foregroundColor(colorManager.colorForTransaction(transaction))
                     
-                    // Statut
+                    // Status
                     Text(statusText)
                         .foregroundColor(colorManager.colorForTransaction(transaction))
                     
@@ -370,7 +425,7 @@ struct TransactionRowView: View {
     }
 
     private var statusText: String {
-        guard let s = transaction?.statut else { return "Inconnu" }
+        guard let s = transaction?.status else { return "Inconnu" }
         switch s {
         case 0: return "Engaged"
         case 1: return "Executé"
@@ -380,7 +435,7 @@ struct TransactionRowView: View {
     }
 
     private var statusColor: Color {
-        guard let s = transaction?.statut else { return .gray }
+        guard let s = transaction?.status else { return .gray }
         switch s {
         case 0: return .orange
         case 1: return .green

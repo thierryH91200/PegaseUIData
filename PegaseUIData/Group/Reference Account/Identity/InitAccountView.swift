@@ -9,7 +9,6 @@ import SwiftUI
 import SwiftData
 
 final class InitAccountDataManager: ObservableObject {
-    @Published var currentAccount: EntityAccount?
     @Published var initAccount: EntityInitAccount? {
         didSet {
             // Sauvegarder les modifications dès qu'il y a un changement
@@ -92,8 +91,6 @@ struct InitAccountView: View {
             
             if let account = newAccount {
                 dataManager.initAccount = nil
-                dataManager.currentAccount = account
-                
                 loadOrCreateIdentity(for: account)
             }
         }
@@ -108,23 +105,13 @@ struct InitAccountView: View {
     }
     
     private func initializeData() {
-        initializeCurrentAccount()
         createAccountIfNeeded()
     }
     
-    private func initializeCurrentAccount() {
-        if let account = currentAccountManager.currentAccount {
-            dataManager.currentAccount = account
-        }
-    }
 
     private func createAccountIfNeeded() {
         if dataManager.initAccount == nil {
-            if let account = CurrentAccountManager.shared.getAccount() {
-                dataManager.currentAccount = account
-            } else {
-                print("Aucun compte de disponible.")
-            }
+
             InitAccountManager.shared.configure(with: modelContext)
             let accountInitInfo = InitAccountManager.shared.getAllDatas()
             dataManager.initAccount = accountInitInfo ?? {
@@ -312,5 +299,4 @@ struct BankReferenceView: View {
             print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
     }
-
 }

@@ -53,6 +53,24 @@ struct CheckView: View {
     @State private var isEditDialogPresented = false
     @State private var isModeCreate = false
     
+//    @State private var currentAccount :EntityAccount?
+//    
+//    private var checks: [EntityCheckBook] {
+//        let request = FetchDescriptor<EntityCheckBook>(
+//            predicate: #Predicate<EntityCheckBook> { checkBook in
+//                checkBook.account == currentAccount
+//            },
+//            sortBy: [SortDescriptor(\.name, order: .forward)]
+//        )
+//        return (try? modelContext.fetch(request)) ?? []
+//    }
+
+    
+//    @Query(filter: #Predicate<EntityCheckBook> { checkBooks in
+//        checkBooks.account == currentAccount
+//    }, sort: \.name, order: .forward)
+//       private var checks: [EntityCheckBook]
+    
     var body: some View {
         VStack(spacing: 10) {
             // Affiche le compte actuel
@@ -78,6 +96,7 @@ struct CheckView: View {
                 // Charge les données au démarrage de la vue
                 .onAppear {
                     setupDataManager()
+//                    currentAccount = currentAccountManager.currentAccount
                 }
             
             // Boutons d'action
@@ -124,9 +143,7 @@ struct CheckView: View {
         ChequeBookManager.shared.configure(with: modelContext)
         dataManager.configure(with: modelContext)
         
-        if let account = currentAccountManager.currentAccount {
-            dataManager.checkBooks = ChequeBookManager.shared.getAllDatas()
-        }
+        dataManager.checkBooks = ChequeBookManager.shared.getAllDatas()
     }
     
     // Supprime un carnet de chèques sélectionné

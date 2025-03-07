@@ -624,7 +624,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Contenu pour le sidebar 2 %@"
+            "value" : "Contenu pour la barre latérale 2 %@"
           }
         }
       }
@@ -1888,12 +1888,12 @@
         }
       }
     },
-    "Statut" : {
+    "Status" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Statut"
+            "value" : "Status"
           }
         }
       }
@@ -1941,6 +1941,7 @@
       }
     },
     "Transaction" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {

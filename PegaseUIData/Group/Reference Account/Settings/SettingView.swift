@@ -53,13 +53,13 @@ struct SettingTab: View {
                     Label("Payment method", systemImage: "eurosign.bank.building")
                 }
             
-            PreferenceTransactionView()
-                .environmentObject(currentAccountManager)
-                .environmentObject(preferenceDataManager)
-            
-                .tabItem {
-                    Label("Transaction", systemImage: "person")
-                }
+//            PreferenceTransactionView()
+//                .environmentObject(currentAccountManager)
+//                .environmentObject(preferenceDataManager)
+//            
+//                .tabItem {
+//                    Label("Transaction", systemImage: "person")
+//                }
             
             CheckView()
                 .environmentObject(currentAccountManager)

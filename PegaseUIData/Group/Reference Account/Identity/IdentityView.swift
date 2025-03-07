@@ -8,7 +8,6 @@ import SwiftUI
 import SwiftData
 
 final class IdentityDataManager: ObservableObject {
-    @Published var currentAccount: EntityAccount?
     @Published var identity: EntityIdentity? {
         didSet {
             // Sauvegarder les modifications dès qu'il y a un changement
@@ -67,17 +66,8 @@ struct IdentityView: View {
             
             dataManager.configure(with: modelContext)
             
-            if let account = currentAccountManager.currentAccount {
-                dataManager.currentAccount = account
-            }
-
             // Créer un nouvel enregistrement si la base de données est vide
             if dataManager.identity == nil {
-                if let account = CurrentAccountManager.shared.getAccount() {
-                    dataManager.currentAccount = account
-                } else {
-                    print("Aucun compte disponible.")
-                }
                 IdentityManager.shared.configure(with: modelContext)
                 let identity = IdentityManager.shared.getAllDatas()
                 dataManager.identity = identity
@@ -99,7 +89,6 @@ struct IdentityView: View {
             
             if let account = newAccount {
                 dataManager.identity = nil
-                dataManager.currentAccount = account
                 
                 loadOrCreate(for: account)
             }
