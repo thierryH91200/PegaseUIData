@@ -67,14 +67,16 @@ struct TreasuryCurve: View {
     ]
 
     var body: some View {
-        VStack {
-            Text("Sales Line Chart")
-                .font(.headline)
-                .padding()
-            DGLineChartView(entries: lineDataEntries)
-                .frame(width: .infinity, height: 400)
-                .padding()
-            Spacer()
+        GeometryReader { geometry in
+            VStack {
+                Text("Sales Line Chart")
+                    .font(.headline)
+                    .padding()
+                DGLineChartView(entries: lineDataEntries)
+                    .frame(width: geometry.size.width, height: 400)
+                    .padding()
+                Spacer()
+            }
         }
     }
 }

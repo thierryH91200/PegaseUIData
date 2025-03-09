@@ -44,7 +44,7 @@ struct PreferenceTransactionView: View {
     @State private var entityCategorie : [EntityCategory]  = []
     @State private var entityPaymentMode : [EntityPaymentMode] = []
 
-    @Binding var selectedStatus: String
+    @Binding var selectedStatus: Int
     @Binding var selectedRubric: EntityRubric?
     @Binding var selectedCategory: EntityCategory?
     @Binding var selectedMode: EntityPaymentMode?
@@ -68,12 +68,12 @@ struct PreferenceTransactionView: View {
                 VStack(alignment: .leading) {
                     FormField(label: String(localized: "Status")) {
                         Picker("", selection: $selectedStatus) {
-                            ForEach(statusOptions, id: \.self) {
-                                Text($0).tag($0)
+                            ForEach(statusOptions.indices, id: \.self) { index in
+                                Text(statusOptions[index]).tag(index)
                             }
                         }
                     }
-
+                    
                     Picker("Mode", selection: $selectedMode) {
                         ForEach(entityPaymentMode, id: \.self) {
                             Text($0.name).tag($0)
@@ -123,12 +123,11 @@ struct PreferenceTransactionView: View {
             }
             
             if statusOptions.indices.contains(1) {
-                selectedStatus = statusOptions[1]
+                selectedStatus = 1
             }
-
         }
         
-        .onChange(of: currentAccountManager.currentAccount) { _, newAccount in
+        .onChange(of: currentAccountManager.currentAccount) { oldAccount, newAccount in
             // Mise à jour de la liste en cas de changement de compte
             if let account = newAccount {
                 dataManager.preferenceTransaction = nil
@@ -148,7 +147,7 @@ struct PreferenceTransactionView: View {
         entityPreference = dataManager.preferenceTransaction
         
         // Status
-        selectedStatus = String(entityPreference?.status ?? Int16(1))
+        selectedStatus = Int(entityPreference?.status ?? 1)
         
         // Mode
         self.entityPaymentMode = PaymentModeManager.shared.getAllDatas(for: account)!

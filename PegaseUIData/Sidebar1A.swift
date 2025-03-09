@@ -188,7 +188,7 @@ struct AccountRow: View {
                     .foregroundColor(.gray)
             }
             Spacer()
-            Text("\(account.solde ?? 100.0, specifier: "%.2f") €")
+            Text("\(account.solde, specifier: "%.2f") €")
                 .font(.caption)
                 .foregroundColor(.green)
                 .frame(width: 80, alignment: .trailing) // Aligne à droite avec la même largeur fixe

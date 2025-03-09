@@ -82,7 +82,7 @@ struct ModePaymentView: View {
             
             // Recharge les données lorsqu'un nouveau compte est sélectionné
             .onChange(of: currentAccountManager.currentAccount ) { old, newAccount in
-                if let account = newAccount {
+                if newAccount != nil {
                     dataManager.modePayments = nil
                     selectedMode = nil
                     selectedItem = nil

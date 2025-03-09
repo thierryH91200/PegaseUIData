@@ -6,15 +6,20 @@
 //
 //
 
-import Foundation
+import SwiftUI
 import SwiftData
+import AppKit
+
 
 
 final class ListTransactionsManager {
-    
+    @EnvironmentObject var formState: TransactionFormState
+
     static let shared = ListTransactionsManager()
     
-    var entities = [EntityTransactions]()
+    var entities : [EntityTransactions] = []
+    var entity : EntityTransactions = EntityTransactions()
+    
     private var cache: ListTransactionsCache = ListTransactionsCache()
 
     var ascending = false
@@ -35,14 +40,19 @@ final class ListTransactionsManager {
         self.modelContext = modelContext
     }
 
+    @discardableResult
+    func createTransactions(formState: TransactionFormState) -> EntityTransactions {
+        // Create entityTransaction
+        formState.currentTransaction = EntityTransactions()
+        formState.currentTransaction?.createAt = Date().noon
+        formState.currentTransaction?.updatedAt = Date().noon
+        formState.currentTransaction?.uuid = UUID()
+        let account = CurrentAccountManager.shared.getAccount()!
+        formState.currentTransaction?.account = account
+        
+        modelContext!.insert(formState.currentTransaction!)
 
-    // delete Transaction
-    func remove(entity: EntityTransactions)
-    {
-        validContext.undoManager?.beginUndoGrouping()
-        validContext.undoManager?.setActionName("DeleteTransaction")
-        validContext.delete(entity)
-        validContext.undoManager?.endUndoGrouping()
+        return formState.currentTransaction!
     }
     
     func find(uuid: UUID) -> EntityTransactions? {
@@ -122,6 +132,7 @@ final class ListTransactionsManager {
         do {
             // Récupération des entités depuis le contexte
             entities = try validContext.fetch(fetchDescriptor)
+            printTransactions()
         } catch {
             print("Erreur lors de la récupération des données avec SwiftData : \(error)")
             return []
@@ -132,6 +143,31 @@ final class ListTransactionsManager {
             adjustDate(for: currentAccount)
         }
         return entities
+    }
+    
+    // delete Transaction
+    func remove(entity: EntityTransactions)
+    {
+        validContext.undoManager?.beginUndoGrouping()
+        validContext.undoManager?.setActionName("DeleteTransaction")
+        validContext.delete(entity)
+        validContext.undoManager?.endUndoGrouping()
+    }
+
+    
+    func printTransactions() {
+        for entity in entities {
+            print(entity.datePointage!)
+            print(entity.dateOperation!)
+            print(entity.status!)
+            print(entity.paymentMode?.name ?? "defaultMode")
+            let subs = entity.sousOperations
+            for sub in subs {
+                print(sub.libelle)
+                print(sub.category?.name ?? "Cat def")
+                print(sub.category?.rubric!.name ?? "Rub def")
+            }
+        }
     }
 
     func adjustDate (for account: EntityAccount) {

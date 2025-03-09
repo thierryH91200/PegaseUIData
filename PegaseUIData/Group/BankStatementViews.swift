@@ -111,7 +111,7 @@ struct BankStatementListView: View {
             
                 .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
                     
-                    if let account = newAccount {
+                    if newAccount != nil {
                         dataManager.statements = nil
                         selectedStatement = nil
                         selectedItem = nil

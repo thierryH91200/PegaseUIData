@@ -169,7 +169,7 @@ final class SchedulerManager {
         let sousOperation = EntitySousOperations()
         
         let rubricName = schedule.category?.rubric?.name ?? ""
-        let color = schedule.category?.rubric?.color ?? .black
+        _ = schedule.category?.rubric?.color ?? .black
 //        let rubricUUID = schedule.category?.rubric?.uuid ?? UUID()
         let rubric = RubricManager.shared.findOrCreate(account: schedule.account, name: rubricName, color: NSColor.blue)
         
@@ -201,7 +201,7 @@ final class SchedulerManager {
         transaction.datePointage = dateValeur
         transaction.account = schedule.account
         transaction.paymentMode = schedule.paymentMode
-        transaction.status = Date() >= dateValeur ? 2 : 1
+//        transaction.status = Date() >= dateValeur ? 2 : 1
         transaction.bankStatement = 0
         transaction.uuid = UUID()
         

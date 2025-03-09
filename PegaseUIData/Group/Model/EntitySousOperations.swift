@@ -6,8 +6,9 @@
 //
 //
 
-import Foundation
+import SwiftUI
 import SwiftData
+import AppKit
 
 
 @Model public class EntitySousOperations: Identifiable {
@@ -21,5 +22,63 @@ import SwiftData
 
     public init() {
 
+    }
+}
+
+final class SubTransactionsManager {
+    
+    var formState : TransactionFormState = TransactionFormState()
+
+    static let shared =  SubTransactionsManager()
+    
+    var entities : [EntitySousOperations] = []
+    var subOperation : EntitySousOperations = EntitySousOperations()
+
+    var modelContext : ModelContext?
+    var validContext: ModelContext {
+        guard let context = modelContext else {
+            print("File: \(#file), Function: \(#function), line: \(#line)")
+            fatalError("ModelContext non configuré. Veuillez appeler configure.")
+        }
+        return context
+    }
+
+    init() {
+    }
+    
+    func configure(with modelContext: ModelContext) {
+        self.modelContext = modelContext
+    }
+    
+    func createSubTransactions(comment: String,
+                               category: EntityCategory,
+                               amount: String,
+                               formState: TransactionFormState ) {
+        
+        self.formState = formState
+        
+        self.subOperation = EntitySousOperations()
+        
+        updateSousOperation(comment: comment, category: category, amount: amount)
+        
+        formState.currentTransaction?.addSubOperation(subOperation)
+        formState.entityTransactions.append(formState.currentTransaction!)
+        if formState.currentTransaction?.sousOperations == nil {
+            formState.currentTransaction?.sousOperations = []
+        }
+        
+    }
+    
+    private func updateSousOperation(comment: String,
+                                     category: EntityCategory,
+                                     amount: String) {
+        subOperation.libelle = comment
+        subOperation.category = category
+        if let value = Double(amount) {
+            subOperation.amount = value
+        } else {
+            print("Erreur : Le montant saisi n'est pas valide")
+        }
+        subOperation.transaction = formState.currentTransaction
     }
 }

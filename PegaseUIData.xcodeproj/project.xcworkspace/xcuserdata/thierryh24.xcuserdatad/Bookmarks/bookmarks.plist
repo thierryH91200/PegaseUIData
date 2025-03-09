@@ -12,13 +12,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>271</string>
+					<string>264</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>270</string>
+					<string>263</string>
 					<key>Timestamp</key>
-					<string>762708999.502969</string>
+					<string>763225576.600566</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -57,13 +57,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>40</string>
+					<string>44</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>39</string>
+					<string>43</string>
 					<key>Timestamp</key>
-					<string>762528347.988982</string>
+					<string>763206678.940452</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -79,16 +79,16 @@
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string>struct OperationDialog: View {
+				<string>    }
 </string>
 				<key>leading</key>
-				<string>
-
+				<string>    var compteCurrent: EntityAccount? {
+        CurrentAccountManager.shared.getAccount()
 </string>
 				<key>trailing</key>
 				<string>    
-    @StateObject private var currentAccountManager = CurrentAccountManager.shared
-    @StateObject private var transactionDataManager = TransactionDataManager()
+    private var integerFormatter: NumberFormatter {
+        let formatter = NumberFormatter()
 </string>
 			</dict>
 			<key>type</key>
@@ -102,13 +102,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>338</string>
+					<string>331</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>337</string>
+					<string>330</string>
 					<key>Timestamp</key>
-					<string>762708999.502959</string>
+					<string>763225576.600491</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -147,13 +147,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>301</string>
+					<string>285</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>300</string>
+					<string>284</string>
 					<key>Timestamp</key>
-					<string>763042384.889942</string>
+					<string>763227249.045236</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -181,6 +181,113 @@
     
 </string>
 			</dict>
+			<key>type</key>
+			<string>bookmark</string>
+		</dict>
+		<dict>
+			<key>destination</key>
+			<dict>
+				<key>rebasable-url</key>
+				<dict>
+					<key>base</key>
+					<string>workspace</string>
+					<key>payload</key>
+					<dict>
+						<key>relative-path</key>
+						<string>PegaseUIData/OperationDialogSubOperation.swift</string>
+					</dict>
+				</dict>
+				<key>type</key>
+				<string>DVTDocumentLocation</string>
+			</dict>
+			<key>type</key>
+			<string>bookmark</string>
+		</dict>
+		<dict>
+			<key>query-specification</key>
+			<dict>
+				<key>anchoring</key>
+				<string>word</string>
+				<key>include-symbol-members</key>
+				<integer>1</integer>
+				<key>match-case</key>
+				<integer>1</integer>
+				<key>query</key>
+				<string>conformers</string>
+				<key>term</key>
+				<dict>
+					<key>display-string</key>
+					<string>PersistentModel</string>
+					<key>symbol</key>
+					<string>s:9SwiftData15PersistentModelP</string>
+				</dict>
+			</dict>
+			<key>title</key>
+			<string>SwiftData Model</string>
+			<key>type</key>
+			<string>batch-find-query</string>
+		</dict>
+		<dict>
+			<key>destination</key>
+			<dict>
+				<key>rebasable-url</key>
+				<dict>
+					<key>base</key>
+					<string>workspace</string>
+					<key>payload</key>
+					<dict>
+						<key>relative-path</key>
+						<string>PegaseUIData/OperationDialogSubOperation.swift</string>
+					</dict>
+				</dict>
+				<key>type</key>
+				<string>DVTDocumentLocation</string>
+			</dict>
+			<key>type</key>
+			<string>bookmark</string>
+		</dict>
+		<dict>
+			<key>query-specification</key>
+			<dict>
+				<key>anchoring</key>
+				<string>word</string>
+				<key>include-symbol-members</key>
+				<integer>1</integer>
+				<key>match-case</key>
+				<integer>1</integer>
+				<key>query</key>
+				<string>conformers</string>
+				<key>term</key>
+				<dict>
+					<key>display-string</key>
+					<string>PersistentModel</string>
+					<key>symbol</key>
+					<string>s:9SwiftData15PersistentModelP</string>
+				</dict>
+			</dict>
+			<key>title</key>
+			<string>SwiftData Model</string>
+			<key>type</key>
+			<string>batch-find-query</string>
+		</dict>
+		<dict>
+			<key>destination</key>
+			<dict>
+				<key>rebasable-url</key>
+				<dict>
+					<key>base</key>
+					<string>workspace</string>
+					<key>payload</key>
+					<dict>
+						<key>relative-path</key>
+						<string>PegaseUIData/OperationDialog3.swift</string>
+					</dict>
+				</dict>
+				<key>type</key>
+				<string>DVTDocumentLocation</string>
+			</dict>
+			<key>title</key>
+			<string>resetListTransactions</string>
 			<key>type</key>
 			<string>bookmark</string>
 		</dict>

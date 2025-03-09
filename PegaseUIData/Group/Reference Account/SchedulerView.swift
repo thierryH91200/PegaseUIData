@@ -112,7 +112,7 @@ struct Scheduler: View {
             }
             .onChange(of: CurrentAccountManager.shared.currentAccount) { old, newAccount in
                 
-                if let account = newAccount {
+                if newAccount != nil {
                     dataManager.schedulers = nil
                     selectedSchedule = nil
                     selectedItem = nil
@@ -183,7 +183,7 @@ struct Scheduler: View {
         SchedulerManager.shared.configure(with: modelContext)
         dataManager.configure(with: modelContext)
 
-        if let account = currentAccountManager.currentAccount {
+        if currentAccountManager.currentAccount != nil {
             dataManager.schedulers = SchedulerManager.shared.getAllDatas()
         }
     }

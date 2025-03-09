@@ -324,6 +324,7 @@
       }
     },
     "bankStatement" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -1141,6 +1142,9 @@
           }
         }
       }
+    },
+    "Executé" : {
+
     },
     "Executed" : {
       "localizations" : {

@@ -73,6 +73,9 @@ extension EntityFolderAccount {
     @Relationship(deleteRule: .cascade, inverse: \EntityPaymentMode.account)
     var paymentMode: [EntityPaymentMode]?
     
+    @Relationship(deleteRule: .cascade, inverse: \EntityStatus.account)
+    var status: [EntityStatus]?
+
     @Relationship(deleteRule: .cascade, inverse: \EntityBankStatement.account)
     var bankStatement: [EntityBankStatement]?
     

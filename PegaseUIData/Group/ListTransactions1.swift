@@ -63,7 +63,6 @@ struct SummaryView: View {
     }
 }
 
-
 /// Représente un regroupement par année.
 struct TransactionsByYear100: Identifiable {
     let id = UUID()
@@ -95,7 +94,6 @@ struct TransactionsByMonth100: Identifiable {
         transactions.reduce(0.0) { $0 + $1.amount }
     }
 }
-
 
 struct YearMonth: Hashable {
     let year: String

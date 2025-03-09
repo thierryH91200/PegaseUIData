@@ -80,9 +80,6 @@ struct ListTransactions: View {
         try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 seconde de délai
         isVisible = true
     }
-//case engaged = 0
-//case pending = 1
-//case completed = 2
 
     private func balanceCalculation() {
         // Récupère les données de l'init
@@ -106,17 +103,18 @@ struct ListTransactions: View {
         for index in stride(from: count - 1, to: -1, by: -1) {
             let transaction = transactions[index]
             
-            let status = Int16(transaction.status ?? 1)
-            guard let propertyEnum = Status.TypeOfStatus(rawValue: status) else { continue }
+            let status = Int(transaction.status!.type)
             
             // Mise à jour des soldes en fonction du status
-            switch propertyEnum {
-            case .pending:
+            switch status {
+            case 0:
                 balancePrevu += transaction.amount
-            case .engaged:
+            case 1:
                 balanceEngage += transaction.amount
-            case .completed:
+            case 2:
                 balanceRealise += transaction.amount
+            default:
+                balancePrevu += transaction.amount
             }
             
             // Calcul du solde de la transaction
@@ -133,7 +131,6 @@ struct ListTransactions: View {
     //    NotificationCenter.send(.updateBalance) // Décommente si nécessaire
     }
 }
-
 
 // MARK: ContentView10000
 struct ContentView10000: View {
@@ -154,7 +151,6 @@ struct ContentView10000: View {
             .navigationTitle("My Transactions")
             .onAppear {
                 setupDataManager()
-
                 allTransactions = ListTransactionsManager.shared.getAllDatas()
             }
             .onChange(of: colorManager.selectedColorType) { old, new in
@@ -164,19 +160,18 @@ struct ContentView10000: View {
                 dataManager.listTransactions = nil
                 refreshData()
             }
-
     }
     // Configure le gestionnaire de données
     private func setupDataManager() {
         ListTransactionsManager.shared.configure(with: modelContext)
         dataManager.configure(with: modelContext)
         
-        if let account = currentAccountManager.currentAccount {
+        if currentAccountManager.currentAccount != nil {
             dataManager.listTransactions = ListTransactionsManager.shared.getAllDatas()
         }
     }
     
-    // Rafraîchit la liste des carnets de chèques
+    // Rafraîchit la liste des transactions
     private func refreshData() {
         dataManager.listTransactions = ListTransactionsManager.shared.getAllDatas()
         allTransactions = dataManager.listTransactions ?? []
@@ -236,7 +231,6 @@ struct TransactionsListView: View {
                 ForEach(data) { yearGroup in
                     YearSectionView(yearGroup: yearGroup, selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)
                         .environmentObject(colorManager) // Passe l'environnement aux sous-vues
-
                 }
             }
             .listStyle(.inset)
@@ -244,7 +238,6 @@ struct TransactionsListView: View {
         }
     }
 }
-
 
 // MARK: YearSectionView
 struct YearSectionView: View {
@@ -425,17 +418,18 @@ struct TransactionRowView: View {
     }
 
     private var statusText: String {
-        guard let s = transaction?.status else { return "Inconnu" }
+        guard let s = transaction?.status?.type else { return "Inconnu" }
         switch s {
-        case 0: return "Engaged"
-        case 1: return "Executé"
-        case 2: return "Planned"
-        default: return "Autre"
+        case 0: return String(localized: "Engaged")
+        case 1: return String(localized: "Executé")
+        case 2: return String(localized: "Planned")
+        default: return "Other"
         }
     }
 
     private var statusColor: Color {
-        guard let s = transaction?.status else { return .gray }
+        guard let s = transaction?.status?.type else { return .gray }
+        
         switch s {
         case 0: return .orange
         case 1: return .green

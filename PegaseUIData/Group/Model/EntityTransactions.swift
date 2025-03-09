@@ -10,36 +10,37 @@ import Foundation
 import SwiftData
 
 @Model public class EntityTransactions {
-    var createAt: Date? = Date(timeIntervalSinceReferenceDate: 526815360.000000)
-    var updatedAt: Date? = Date(timeIntervalSinceReferenceDate: 526815360.000000)
 
-    var dateOperation: Date? = Date(timeIntervalSinceReferenceDate: 526815360.000000)
+    var createAt:  Date? = Date()
+    var updatedAt: Date? = Date()
+
+    var dateOperation: Date? = Date()
+    var datePointage:  Date? = Date()
+
+    var bankStatement: Double = 0.0
+    var checkNumber: String = ""
+    
+    var status: EntityStatus?
+    var paymentMode: EntityPaymentMode?
+    
+    var sousOperations: [EntitySousOperations] = []
 
     var amount: Double {
         sousOperations.reduce(0.0) { $0 + $1.amount }
     }
 
-    var bankStatement: Double = 0.0
-    var checkNumber: String = ""
-    
     @Attribute(.ephemeral) var solde: Double? = 0.0
     
-    var status: Int16? = 0
-
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
 
     var account: EntityAccount
-    
-    var paymentMode: EntityPaymentMode?
-    var sousOperations: [EntitySousOperations] = []
     
 //    @Relationship(inverse: \EntityTransactions.operationLiee)
 //    var operationLiee: EntityTransactions?
     
     private var _sectionIdentifier: String?
 
-    var datePointage: Date? = Date(timeIntervalSinceReferenceDate: 526815360.000000)
     
     /// Propriété calculée pour obtenir l'identifiant de section complet (année * 100 + mois).
     var sectionIdentifier: String? {

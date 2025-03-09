@@ -15,6 +15,7 @@ struct SubOperationDialog: View {
     @Environment(\.modelContext) private var modelContext: ModelContext
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var dataManager: TransactionDataManager
+    @EnvironmentObject var formState: TransactionFormState
 
     @Binding var subOperation: EntitySousOperations?
     @Binding var isModeCreate: Bool
@@ -33,7 +34,6 @@ struct SubOperationDialog: View {
     @State private var entityRubric : [EntityRubric] = []
     @State private var entityCategorie : [EntityCategory] = []
     
-    @StateObject private var formState = TransactionFormState()
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -166,13 +166,19 @@ struct SubOperationDialog: View {
     func saveSubOperation()
     {
         if isModeCreate == true { // Création
-            self.subOperation = EntitySousOperations()
-            updateSousOperation(subOperation!)
+            // Create entityTransaction
+            ListTransactionsManager.shared.configure(with: modelContext)
+            ListTransactionsManager.shared.createTransactions(formState: formState)
+                       
+            // Create entitySousOperation
+            SubTransactionsManager.shared.createSubTransactions(comment: comment, category: selectedCategorie!, amount: amount, formState: formState)
+            
+
             if formState.currentTransaction?.sousOperations == nil {
                 formState.currentTransaction?.sousOperations = []
             }
+            
             formState.currentTransaction?.addSubOperation(subOperation!)
-
             modelContext.insert(subOperation!)
 
         } else { // Edition
@@ -191,12 +197,17 @@ struct SubOperationDialog: View {
         } else {
             print("Erreur : Le montant saisi n'est pas valide")
         }
+        
+        item.transaction = formState.currentTransaction
+
     }
 
     func configureManagers() async throws {
         RubricManager.shared.configure(with: modelContext)
         PreferenceManager.shared.configure(with: modelContext)
         PaymentModeManager.shared.configure(with: modelContext)
+        SubTransactionsManager.shared.configure(with: modelContext)
+        ListTransactionsManager.shared.configure(with: modelContext)
     }
     
     func configureForm() {
@@ -259,6 +270,8 @@ struct SubOperationsSectionView: View {
 }
 
 struct SubOperationListView: View {
+    @EnvironmentObject var formState: TransactionFormState
+
     @Binding var subOperations: [EntitySousOperations]
     @Binding var currentSubOperation: EntitySousOperations?
     @Binding var isShowingDialog: Bool

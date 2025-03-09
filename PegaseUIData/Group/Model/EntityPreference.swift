@@ -13,7 +13,7 @@ import SwiftUI
 
 @Model public class EntityPreference {
     var signe: Bool = true
-    var status: Int16 = 0
+    var status: Int = 0
 
     var category: EntityCategory?
     var paymentMode: EntityPaymentMode?

@@ -65,7 +65,7 @@ struct RubricView: View {
                 }
                 
                 .onChange(of: currentAccountManager.currentAccount ) { old, newAccount in
-                    if let account = newAccount {
+                    if newAccount != nil {
                         dataManager.rubrics.removeAll()
                         selectedCategory = nil
                         selectedRubric = nil

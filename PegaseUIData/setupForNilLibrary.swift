@@ -37,6 +37,10 @@ struct AccountFactory {
         PaymentModeManager.shared.defaultModePaiement(for: account)
         account.paymentMode = PaymentModeManager.shared.entities
         
+        StatusManager.shared.configure(with: modelContext)
+        StatusManager.shared.defaultStatus(account: account)
+        account.status = StatusManager.shared.entityStatus
+        
         RubricManager.shared.configure(with: modelContext)  
         RubricManager.shared.defaultRubric(for: account)
         let rubric = RubricManager.shared.getAllDatas(account: account)

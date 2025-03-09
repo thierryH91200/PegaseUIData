@@ -1,5 +1,5 @@
 //
-//  Untitled.swift
+//  OperationDialog3.swift
 //  PegaseUIData
 //
 //  Created by Thierry hentic on 27/02/2025.
@@ -8,6 +8,7 @@
 import SwiftUI
 import AppKit
 import SwiftData
+import Observation
 
 // MARK: 1. Composant principal
 struct OperationDialogView: View {
@@ -16,13 +17,13 @@ struct OperationDialogView: View {
     
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
     @EnvironmentObject var dataManager: TransactionDataManager
-    
+    @EnvironmentObject var formState: TransactionFormState
+
     @Binding var selectedTransaction: EntityTransactions?
     @Binding var isCreationMode: Bool
         
     // États du formulaire déplacés dans un State Object
-    @StateObject private var formState = TransactionFormState()
-        
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             // En-tête avec information de transaction
@@ -34,7 +35,9 @@ struct OperationDialogView: View {
             
             // Formulaire principal
             if formState.selectedAccount != nil {
-                TransactionFormView(formState: formState)
+                TransactionFormView()
+                    .environmentObject(formState)
+
             }
             
             // Section des sous-opérations
@@ -43,6 +46,8 @@ struct OperationDialogView: View {
                 currentSubOperation: $formState.currentSousTransaction,
                 isShowingDialog: $formState.isShowingDialog
             )
+            .environmentObject(formState)
+
             
             // Boutons d'action
             ActionButtonsView(
@@ -64,9 +69,10 @@ struct OperationDialogView: View {
                 subOperation: $formState.currentSousTransaction,
                 isModeCreate: $isCreationMode
             )
+            .environmentObject(formState)
         }
         .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
-            if let account = newAccount {
+            if newAccount != nil {
                 dataManager.transactions = nil
                 refreshData()
             }
@@ -120,19 +126,25 @@ struct OperationDialogView: View {
                 formState.selectedMode = modes.first
             }
         }
+        StatusManager.shared.configure(with: modelContext)
+        if let account = CurrentAccountManager.shared.getAccount() {
+            if let status = StatusManager.shared.getAllDatas(for: account) {
+                formState.status = status
+                // Sélection sécurisée du premier mode de paiement
+                formState.selectedStatus = status.first
+            }
+        }
     }
     
     private func loadTransactionData(_ transaction: EntityTransactions) {
-        formState.transactionDate = transaction.dateOperation!
-        formState.pointingDate = transaction.datePointage!
+        formState.transactionDate = transaction.dateOperation!.noon
+        formState.pointingDate = transaction.datePointage!.noon
         formState.selectedMode = transaction.paymentMode
-        formState.checkNumber = Int(transaction.checkNumber)!
+        formState.checkNumber = Int(transaction.checkNumber) ?? 0
         formState.bankStatement = Int(transaction.bankStatement)
         formState.selectedAccount = transaction.account
         formState.currentSousTransaction = transaction.sousOperations.first
         formState.currentTransaction = transaction
-
-        // Ajouter d'autres champs à charger selon besoin
     }
     
     func saveActions() {
@@ -149,7 +161,6 @@ struct OperationDialogView: View {
         } catch {
             print("Erreur lors de l'enregistrement : \(error)")
         }
-        
         resetListTransactions()
     }
     
@@ -168,26 +179,24 @@ struct OperationDialogView: View {
     
     private func createNewTransaction(_ account: EntityAccount) {
         // Création de l'entité transaction
-        var currentTransaction =  formState.currentTransaction
-        currentTransaction = EntityTransactions()
-        currentTransaction?.uuid = UUID()
-        currentTransaction?.createAt = Date().noon
-        currentTransaction?.updatedAt = Date().noon
-        currentTransaction?.account = account
-        modelContext.insert(currentTransaction!)
-        
-        // Création de la sous-transaction
-        formState.currentSousTransaction = EntitySousOperations()
-        if let subOp = formState.currentSousTransaction {
-            formState.currentSousTransaction?.libelle = subOp.libelle
-            formState.currentSousTransaction?.amount = subOp.amount
-            formState.currentSousTransaction?.category = subOp.category
+        if let transaction = formState.currentTransaction {
+            
+            transaction.datePointage = formState.pointingDate.noon
+            transaction.dateOperation = formState.transactionDate.noon
+            transaction.paymentMode = formState.selectedMode
+            transaction.bankStatement = Double(formState.selectedBankStatement) ?? 0
+            transaction.status = formState.selectedStatus
+            transaction.checkNumber = String(formState.checkNumber)
+            modelContext.insert( formState.currentTransaction!)
         }
-        modelContext.insert(formState.currentSousTransaction!)
+    }
+    
+    func printsub() {
+        print(  formState.currentTransaction!.sousOperations.first?.libelle ?? "default")
+        print(  formState.currentTransaction!.sousOperations.first?.category?.name ?? "nameCat")
+        print(  formState.currentTransaction!.sousOperations.first?.category?.rubric?.name ?? "nameRub")
+        print(  formState.currentTransaction!.sousOperations.first?.amount ?? 0.0)
         
-        formState.currentTransaction = currentTransaction
-        
-        formState.currentTransaction!.addSubOperation(formState.currentSousTransaction!)
     }
     
     private func updateTransactionData(_ account: EntityAccount) {
@@ -195,9 +204,11 @@ struct OperationDialogView: View {
         formState.currentTransaction?.dateOperation = formState.transactionDate.noon
         formState.currentTransaction?.bankStatement = Double(formState.bankStatement)
         formState.currentTransaction?.paymentMode = formState.selectedMode
-        formState.currentTransaction?.status = Int16(formState.selectedStatus)
+        formState.currentTransaction?.status = formState.selectedStatus
         formState.currentTransaction?.checkNumber = String(formState.checkNumber)
         formState.currentTransaction?.account = account
+        
+        printsub()
     }
     
     func save() throws {
@@ -210,35 +221,8 @@ struct OperationDialogView: View {
     }
 }
 
-// MARK: 2. État du formulaire
-class TransactionFormState: ObservableObject {
-    @Published var accounts: [EntityAccount] = []
-    @Published var linkedAccount: String = ""
-    @Published var transactionDate: Date = Date()
-    @Published var paymentModes: [EntityPaymentMode] = []
-    @Published var pointingDate: Date = Date()
-    @Published var status: [String] = [
-        String(localized: "Planned"),
-        String(localized: "Engaged"),
-        String(localized: "Executed")
-    ]
-    
-    @Published var amount: String = "0,00 €"
-    @Published var isShowingDialog: Bool = false
-    
-    @Published var subOperations: [EntitySousOperations] = []
-//    @Published var currentSubOperation: EntitySousOperations?
-    @Published var currentTransaction: EntityTransactions?
-    @Published var currentSousTransaction: EntitySousOperations?
-    
-    @Published var selectedBankStatement: String = ""
-    @Published var selectedStatus = String(localized: "Engaged")
-    @Published var selectedMode: EntityPaymentMode?
-    @Published var selectedAccount: EntityAccount?
-    
-    @Published var bankStatement: Int = 0
-    @Published var checkNumber: Int = 0
-}
+
+
 
 // MARK: 3. Composant d'en-tête
 struct HeaderView: View {
@@ -274,22 +258,22 @@ struct HeaderView: View {
 
 // MARK:  4. Composant de formulaire principal
 struct TransactionFormView: View {
-    @ObservedObject var formState: TransactionFormState
-    
+    @EnvironmentObject var formState: TransactionFormState
+
     var body: some View {
         TransactionFormViewModel(
-            linkedAccount: $formState.accounts,
-            transactionDate: $formState.transactionDate,
-            modes: $formState.paymentModes,
-            pointingDate: $formState.pointingDate,
-            status: $formState.status,
-            bankStatement: $formState.bankStatement,
-            checkNumber: $formState.checkNumber,
-            amount: $formState.amount,
-            selectedBankStatement: $formState.selectedBankStatement,
-            selectedStatus: $formState.selectedStatus,
-            selectedMode: $formState.selectedMode,
-            selectedAccount: $formState.selectedAccount
+            linkedAccount         : $formState.accounts,
+            transactionDate       : $formState.transactionDate,
+            modes                 : $formState.paymentModes,
+            pointingDate          : $formState.pointingDate,
+            status                : $formState.status,
+            bankStatement         : $formState.bankStatement,
+            checkNumber           : $formState.checkNumber,
+            amount                : $formState.amount,
+            selectedBankStatement : $formState.selectedBankStatement,
+            selectedStatus        : $formState.selectedStatus,
+            selectedMode          : $formState.selectedMode,
+            selectedAccount       : $formState.selectedAccount
         )
         .accessibilityElement(children: .contain)
         .accessibilityLabel(String(localized: "Transaction form section"))
