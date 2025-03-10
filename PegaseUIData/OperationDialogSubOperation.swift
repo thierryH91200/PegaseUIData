@@ -173,7 +173,6 @@ struct SubOperationDialog: View {
             // Create entitySousOperation
             SubTransactionsManager.shared.createSubTransactions(comment: comment, category: selectedCategorie!, amount: amount, formState: formState)
             
-
             if formState.currentTransaction?.sousOperations == nil {
                 formState.currentTransaction?.sousOperations = []
             }

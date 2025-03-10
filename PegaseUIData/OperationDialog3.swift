@@ -87,7 +87,7 @@ struct OperationDialogView: View {
             Task {
                 do {
                     configureDataManagers()
-                    try await configurePaymentModes()
+                    try await configureFormState()
                     
                     if isCreationMode == false, let transaction = selectedTransaction {
                         loadTransactionData(transaction)
@@ -111,7 +111,7 @@ struct OperationDialogView: View {
         dataManager.transactions = ListTransactionsManager.shared.getAllDatas()
     }
     
-    func configurePaymentModes() async throws {
+    func configureFormState() async throws {
         // Configuration des comptes
         AccountManager.shared.configure(with: modelContext)
         formState.accounts = AccountManager.shared.getAllData()
@@ -126,25 +126,27 @@ struct OperationDialogView: View {
                 formState.selectedMode = modes.first
             }
         }
+        // Configuration des différents status
         StatusManager.shared.configure(with: modelContext)
         if let account = CurrentAccountManager.shared.getAccount() {
             if let status = StatusManager.shared.getAllDatas(for: account) {
                 formState.status = status
-                // Sélection sécurisée du premier mode de paiement
+                // Sélection sécurisée du premier status
                 formState.selectedStatus = status.first
             }
         }
     }
     
     private func loadTransactionData(_ transaction: EntityTransactions) {
-        formState.transactionDate = transaction.dateOperation!.noon
-        formState.pointingDate = transaction.datePointage!.noon
-        formState.selectedMode = transaction.paymentMode
-        formState.checkNumber = Int(transaction.checkNumber) ?? 0
-        formState.bankStatement = Int(transaction.bankStatement)
-        formState.selectedAccount = transaction.account
+        formState.transactionDate        = transaction.dateOperation!.noon
+        formState.pointingDate           = transaction.datePointage!.noon
+        formState.selectedMode           = transaction.paymentMode
+        formState.checkNumber            = Int(transaction.checkNumber) ?? 0
+        formState.bankStatement          = Int(transaction.bankStatement)
+        formState.selectedAccount        = transaction.account
         formState.currentSousTransaction = transaction.sousOperations.first
-        formState.currentTransaction = transaction
+        formState.subOperations          = transaction.sousOperations
+        formState.currentTransaction     = transaction
     }
     
     func saveActions() {
@@ -220,9 +222,6 @@ struct OperationDialogView: View {
         formState.checkNumber = 0
     }
 }
-
-
-
 
 // MARK: 3. Composant d'en-tête
 struct HeaderView: View {

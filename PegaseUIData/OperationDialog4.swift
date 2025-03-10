@@ -13,7 +13,6 @@ import Observation
 
 
 // MARK: 2. État du formulaire
-
 class TransactionFormState: ObservableObject {
     
     @Published var accounts: [EntityAccount] = []

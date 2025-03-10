@@ -323,17 +323,6 @@
         }
       }
     },
-    "bankStatement" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "bankStatement"
-          }
-        }
-      }
-    },
     "BankWebsiteView" : {
       "localizations" : {
         "fr" : {
@@ -1143,9 +1132,6 @@
         }
       }
     },
-    "Executé" : {
-
-    },
     "Executed" : {
       "localizations" : {
         "fr" : {
@@ -1716,16 +1702,6 @@
         }
       }
     },
-    "Plannifie" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "PLannifié"
-          }
-        }
-      }
-    },
     "Postal Code" : {
       "localizations" : {
         "fr" : {
@@ -1945,15 +1921,7 @@
       }
     },
     "Transaction" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Transaction"
-          }
-        }
-      }
+
     },
     "Transaction form section" : {
       "localizations" : {

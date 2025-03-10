@@ -38,21 +38,18 @@ struct PreferenceTransactionView: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var currentAccountManager : CurrentAccountManager
     @EnvironmentObject var dataManager : PreferenceDataManager
-    
-    @State private var entityPreference : EntityPreference?
-    @State private var entityRubric : [EntityRubric] = []
-    @State private var entityCategorie : [EntityCategory]  = []
+       
+    @State private var entityPreference  : EntityPreference?
+    @State private var entityRubric      : [EntityRubric]      = []
+    @State private var entityCategorie   : [EntityCategory]    = []
     @State private var entityPaymentMode : [EntityPaymentMode] = []
+    @State private var entityStatus      : [EntityStatus]      = []
 
-    @Binding var selectedStatus: Int
-    @Binding var selectedRubric: EntityRubric?
-    @Binding var selectedCategory: EntityCategory?
-    @Binding var selectedMode: EntityPaymentMode?
+    @State var selectedStatus   : EntityStatus?
+    @State var selectedRubric   : EntityRubric?
+    @State var selectedCategory : EntityCategory?
+    @State var selectedMode     : EntityPaymentMode?
     
-    @State private var statusOptions = [String(localized :"Plannifie"),
-                                        String(localized :"Engaged"),
-                                        String(localized :"Executed")]
-
     @State private var rubricOptions =  [String]()
     @State private var categoryOptions =  [String]()
     @State private var modeOptions = [String]()
@@ -66,13 +63,12 @@ struct PreferenceTransactionView: View {
             
             HStack(spacing: 30) {
                 VStack(alignment: .leading) {
-                    FormField(label: String(localized: "Status")) {
-                        Picker("", selection: $selectedStatus) {
-                            ForEach(statusOptions.indices, id: \.self) { index in
-                                Text(statusOptions[index]).tag(index)
-                            }
+                    Picker("Status", selection: $selectedStatus) {
+                        ForEach(entityStatus, id: \.self) { index in
+                            Text(index.name).tag(index)
                         }
                     }
+                    .pickerStyle(MenuPickerStyle())
                     
                     Picker("Mode", selection: $selectedMode) {
                         ForEach(entityPaymentMode, id: \.self) {
@@ -88,9 +84,23 @@ struct PreferenceTransactionView: View {
                             Text($0.name).tag($0 as EntityRubric?)                        }
                     }
                     .pickerStyle(MenuPickerStyle())
-                    
+                    .onChange(of: selectedRubric) { oldRubric, newRubric in
+                        if let newRubric = newRubric {
+                            // Met à jour la liste des catégories en fonction de la rubrique sélectionnée
+                            entityCategorie = newRubric.categorie.sorted { $0.name < $1.name }
+                            // Réinitialise la sélection de catégorie si elle ne fait plus partie des catégories disponibles
+                            if let selected = selectedCategory,
+                               !entityCategorie.contains(where: { $0 == selected }) {
+                                selectedCategory = entityCategorie.first
+                            }
+                        } else {
+                            entityCategorie = []
+                            selectedCategory = nil
+                        }
+                    }
+
                     Picker("Category", selection: $selectedCategory) {
-                        ForEach(selectedRubric!.categorie, id: \.self) {
+                        ForEach(entityCategorie, id: \.self) {
                             Text($0.name).tag($0)
                         }
                     }
@@ -111,68 +121,129 @@ struct PreferenceTransactionView: View {
         }
         .padding()
         .onAppear {
-            
-            PaymentModeManager.shared.configure(with: modelContext)
-            RubricManager.shared.configure(with: modelContext)
-            PreferenceManager.shared.configure(with: modelContext)
-            
-            if let account = currentAccountManager.currentAccount {
-                refreshData(for : account)
-            } else {
-                print("Aucun compte disponible.")
-            }
-            
-            if statusOptions.indices.contains(1) {
-                selectedStatus = 1
+            Task {
+                try await configureFormState()
+                
+                PaymentModeManager.shared.configure(with : modelContext)
+                RubricManager.shared.configure(with      : modelContext)
+                PreferenceManager.shared.configure(with  : modelContext)
+                
+                if let account = currentAccountManager.currentAccount {
+                    printPreference(for: account)
+                    try await refreshData(for : account)
+                    printPreference(for: account)
+
+                } else {
+                    print("Aucun compte disponible.")
+                }
             }
         }
         
-        .onChange(of: currentAccountManager.currentAccount) { oldAccount, newAccount in
-            // Mise à jour de la liste en cas de changement de compte
-            if let account = newAccount {
-                dataManager.preferenceTransaction = nil
-                dataManager.currentAccount = account
-                refreshData(for: account)
+        .onDisappear {
+            Task {
+                await updatePreference(status     : selectedStatus!,
+                                 mode       : selectedMode!,
+                                 rubric     : selectedRubric!,
+                                 category   : selectedCategory!,
+                                 preference : entityPreference!)
             }
         }
+        
+        .onChange(of: currentAccountManager.currentAccount!) {
+                oldAccount, newAccount in
+                // Mise à jour de la liste en cas de changement de compte
+            Task {
+                await updatePreference(status     : selectedStatus!,
+                                 mode       : selectedMode!,
+                                 rubric     : selectedRubric!,
+                                 category   : selectedCategory!,
+                                 preference : entityPreference!)
+
+
+                if let account = currentAccountManager.currentAccount {
+                    dataManager.preferenceTransaction = nil
+                    dataManager.currentAccount = account
+                    
+                    try await refreshData(for : account)
+                }
+            }
+
+        }
+        
         .cornerRadius(10)
         .shadow(radius: 5)
         .padding()
     }
     
-    private func refreshData(for account : EntityAccount) {
+    func updatePreference(status     : EntityStatus,
+                          mode       : EntityPaymentMode,
+                          rubric     : EntityRubric,
+                          category   : EntityCategory,
+                          preference : EntityPreference) async {
         
+        Task {
+            try await PreferenceManager.shared.update(status     : status,
+                                                  mode       : mode,
+                                                  rubric     : rubric,
+                                                  category   : category,
+                                                  preference : preference)
+        }
+
+    }
+    
+    
+    func configureFormState() async throws {
+        
+        // Configuration des modes de paiement
+        PaymentModeManager.shared.configure(with: modelContext)
+        if let account = CurrentAccountManager.shared.getAccount() {
+            if let modes = PaymentModeManager.shared.getAllDatas(for: account) {
+                // Sélection sécurisée du premier mode de paiement
+                selectedMode = entityPreference?.paymentMode
+                entityPaymentMode = modes
+            }
+        }
+        // Configuration de status
+        StatusManager.shared.configure(with: modelContext)
+        if let account = CurrentAccountManager.shared.getAccount() {
+            if let status = StatusManager.shared.getAllDatas(for: account) {
+                // Sélection sécurisée du premier status
+                selectedStatus = entityPreference?.status
+                entityStatus = status
+            }
+        }
+    }
+
+    private func refreshData(for account: EntityAccount)  async throws {
         PreferenceManager.shared.configure(with: modelContext)
         dataManager.preferenceTransaction = PreferenceManager.shared.getAllDatas(for: account)
-        entityPreference = dataManager.preferenceTransaction
         
-        // Status
-        selectedStatus = Int(entityPreference?.status ?? 1)
-        
-        // Mode
-        self.entityPaymentMode = PaymentModeManager.shared.getAllDatas(for: account)!
-        let i = entityPaymentMode.firstIndex { $0 == entityPreference?.paymentMode}
-        selectedMode = entityPaymentMode[i ?? 0]
-        
-        // Rubrique
-        self.entityRubric = RubricManager.shared.getAllDatas()
-        let j = entityRubric.firstIndex { $0 == entityPreference?.category?.rubric }
-        selectedRubric = entityRubric [ j ?? 0]
-        
-        // Categorie
-        entityCategorie = selectedRubric!.categorie
-        let k = entityCategorie.firstIndex { $0 == entityPreference?.category! }
-        selectedCategory = entityCategorie [ k ?? 0]
+        guard let preference = dataManager.preferenceTransaction else { return }
 
-        printPreference(for: account)
+        entityPreference  = preference
+        entityStatus      = StatusManager.shared.getAllDatas(for           : account) ?? []
+        entityPaymentMode = PaymentModeManager.shared.getAllDatas(for : account) ?? []
+        entityRubric      = RubricManager.shared.getAllDatas()
+        entityCategorie   = selectedRubric?.categorie ?? []
+        
+        selectedStatus   = entityPreference?.status
+        selectedMode     = entityPreference?.paymentMode
+        selectedRubric   = entityPreference?.category?.rubric
+        selectedCategory = entityPreference?.category
     }
     
     func printPreference(for account : EntityAccount) {
         print(account.name)
-        print(entityPreference?.paymentMode?.name ?? "")
-        print(entityPreference?.status ?? -1)
-        print(entityPreference?.category?.name ?? "no cat")
-        print(entityPreference?.category?.rubric?.name ?? "no rub")
+        print("Mode   : ",entityPreference?.paymentMode?.name ?? "")
+        print("Status : ",entityPreference?.status?.name ?? "no status")
+        print("Rub    : ",entityPreference?.category?.rubric?.name ?? "no rub")
+        print("Cat    : ",entityPreference?.category?.name ?? "no cat")
+        
+        print("Mode   : ", selectedMode?.name ?? "no mode1")
+        print("Status : ", selectedStatus?.name ?? "no status1")
+        print("Rub    : ", selectedRubric?.name ?? "no rub1")
+        print("Cat    : ", selectedCategory?.name ?? "no cat1")
+
     }
 }
 

@@ -421,7 +421,7 @@ struct TransactionRowView: View {
         guard let s = transaction?.status?.type else { return "Inconnu" }
         switch s {
         case 0: return String(localized: "Engaged")
-        case 1: return String(localized: "Executé")
+        case 1: return String(localized: "Executed")
         case 2: return String(localized: "Planned")
         default: return "Other"
         }

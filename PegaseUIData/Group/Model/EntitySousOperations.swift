@@ -54,24 +54,23 @@ final class SubTransactionsManager {
                                category: EntityCategory,
                                amount: String,
                                formState: TransactionFormState ) {
-        
+                
         self.formState = formState
-        
         self.subOperation = EntitySousOperations()
-        
-        updateSousOperation(comment: comment, category: category, amount: amount)
+        update(comment: comment, category: category, amount: amount)
         
         formState.currentTransaction?.addSubOperation(subOperation)
         formState.entityTransactions.append(formState.currentTransaction!)
         if formState.currentTransaction?.sousOperations == nil {
             formState.currentTransaction?.sousOperations = []
         }
-        
+            
     }
     
-    private func updateSousOperation(comment: String,
+    private func update(comment: String,
                                      category: EntityCategory,
                                      amount: String) {
+        
         subOperation.libelle = comment
         subOperation.category = category
         if let value = Double(amount) {
@@ -79,6 +78,6 @@ final class SubTransactionsManager {
         } else {
             print("Erreur : Le montant saisi n'est pas valide")
         }
-        subOperation.transaction = formState.currentTransaction
+//        subOperation.transaction = formState.currentTransaction
     }
 }

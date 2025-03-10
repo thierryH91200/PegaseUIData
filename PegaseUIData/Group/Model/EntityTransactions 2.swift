@@ -154,7 +154,6 @@ final class ListTransactionsManager {
         validContext.undoManager?.endUndoGrouping()
     }
 
-    
     func printTransactions() {
         for entity in entities {
             print(entity.datePointage!)

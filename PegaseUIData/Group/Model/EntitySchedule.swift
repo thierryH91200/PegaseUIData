@@ -135,10 +135,8 @@ final class SchedulerManager {
         }
     }
     
-    
     // Récupérer toutes les données filtrées par compte
     func getAllDatas() -> [EntitySchedule]? {
-        
 
         guard let currentAccount = CurrentAccountManager.shared.getAccount() else {
             print("Erreur : aucun compte courant trouvé.")
