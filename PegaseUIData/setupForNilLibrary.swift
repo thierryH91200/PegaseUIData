@@ -105,13 +105,21 @@ final class InitManager {
         let folder1 = AccountFactory.createHeader(modelContext: validContext, name: "Bank Account")
         let folder2 = AccountFactory.createHeader(modelContext: validContext, name: "Save")
         
+        let typeAccounts : [String] = [
+            String(localized :"Current account1",table : "Account"),
+            String(localized :"Current account2",table : "Account"),
+            String(localized :"Credit card1",table : "Account"),
+            String(localized :"Credit card2",table : "Account"),
+            String(localized :"Save",table : "Account"),
+            String(localized :"Current account3",table : "Account")]
+        
         let accountsConfig: [(name: String, icon: String, idName: String, idSurname: String, numAccount: String)] = [
-            ("Current account1", DefaultIcons.currentAccount, "Martin", "Pierre", "00045700E"),
-            ("Current account2", DefaultIcons.currentAccount, "Martin", "Marie", "00045701F"),
-            ("Credit card1"    , DefaultIcons.creditCard, "Martin", "Pierre", "00045702G"),
-            ("Credit card2"    , DefaultIcons.creditCard, "Durand", "Jean", "00045705K"),
-            ("Save"            , DefaultIcons.currentAccount, "Durand", "Jean", "00045703H"),
-            ("Current account3", DefaultIcons.currentAccount, "Durand", "Sarah", "00045704J")
+            (typeAccounts[0], DefaultIcons.currentAccount, "Martin", "Pierre", "00045700E"),
+            (typeAccounts[1], DefaultIcons.currentAccount, "Martin", "Marie", "00045701F"),
+            (typeAccounts[2], DefaultIcons.creditCard, "Martin", "Pierre", "00045702G"),
+            (typeAccounts[3], DefaultIcons.creditCard, "Durand", "Jean", "00045705K"),
+            (typeAccounts[4], DefaultIcons.currentAccount, "Durand", "Jean", "00045703H"),
+            (typeAccounts[5], DefaultIcons.currentAccount, "Durand", "Sarah", "00045704J")
         ]
         
         for config in accountsConfig[0...3] {

@@ -44,7 +44,7 @@ protocol PreferenceManaging {
     func saveContext()
 }
 
-//@Observable
+// MARK: preferenceManager
 final class PreferenceManager: PreferenceManaging {
     
     static let shared = PreferenceManager()
@@ -125,13 +125,15 @@ final class PreferenceManager: PreferenceManaging {
                 mode: EntityPaymentMode,
                 rubric: EntityRubric,
                 category: EntityCategory,
-                preference: EntityPreference) async throws {
+                preference: EntityPreference,
+                sign : Bool) async throws {
         
         preference.status = status
         preference.paymentMode = mode
         preference.category?.rubric = rubric
         preference.category = category
-        
+        preference.signe = sign
+
         saveContext()
     }
     
