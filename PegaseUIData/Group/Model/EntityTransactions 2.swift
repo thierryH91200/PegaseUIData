@@ -10,9 +10,16 @@ import SwiftUI
 import SwiftData
 import AppKit
 
+protocol ListManaging {
+    func configure(with modelContext: ModelContext)
+//    func defaultStatus(account: EntityAccount)
+//    func getAllDatas(ascending: Bool) -> [EntityStatus]?
+//    func saveContext()
+}
 
 
-final class ListTransactionsManager {
+final class ListTransactionsManager: ListManaging {
+    
     @EnvironmentObject var formState: TransactionFormState
 
     static let shared = ListTransactionsManager()
@@ -79,13 +86,13 @@ final class ListTransactionsManager {
     func getAllComments(for account: EntityAccount) throws -> [String] {
         var comments = [String]()
         
-        let accountID = account.id
+        let lhs = account.uuid
+        let predicate = #Predicate<EntityTransactions>{ transaction in transaction.account.uuid == lhs }
+        let sort = [SortDescriptor(\EntityTransactions.dateOperation, order: .reverse)]
+        
         let descriptor = FetchDescriptor<EntityTransactions>(
-            predicate: #Predicate<EntityTransactions> { transaction in
-                transaction.account.id == accountID
-            },
-            sortBy: [SortDescriptor(\EntityTransactions.dateOperation, order: .reverse)]  // Optional: sort by date
-        )
+            predicate: predicate,
+            sortBy: sort )
 
         // Fetch les transactions liées à l'account
         do {
@@ -106,6 +113,7 @@ final class ListTransactionsManager {
         }
     }
 
+    // MARK: getAllDatas
     func getAllDatas( ascending: Bool = true) -> [EntityTransactions] {
 
         let currentAccount = CurrentAccountManager.shared.getAccount()
@@ -116,18 +124,15 @@ final class ListTransactionsManager {
         
         // Création du prédicat pour filtrer les transactions par compte
         let currentAccountID = currentAccount.uuid
-        let predicate = #Predicate<EntityTransactions> {
-            $0.account.uuid == currentAccountID
-        }
+        let predicate = #Predicate<EntityTransactions> { $0.account.uuid == currentAccountID }
+        let sort = [
+            SortDescriptor(\EntityTransactions.datePointage, order: ascending ? .forward : .reverse),
+            SortDescriptor(\EntityTransactions.dateOperation, order: ascending ? .forward : .reverse) ]
 
         // Création du FetchDescriptor avec les tri par datePointage et dateOperation
         let fetchDescriptor = FetchDescriptor<EntityTransactions>(
             predicate: predicate,
-            sortBy: [
-                SortDescriptor(\.datePointage, order: ascending ? .forward : .reverse),
-                SortDescriptor(\.dateOperation, order: ascending ? .forward : .reverse)
-            ]
-        )
+            sortBy: sort )
 
         do {
             // Récupération des entités depuis le contexte
@@ -145,7 +150,7 @@ final class ListTransactionsManager {
         return entities
     }
     
-    // delete Transaction
+    // MARK: remove Transaction
     func remove(entity: EntityTransactions)
     {
         validContext.undoManager?.beginUndoGrouping()
@@ -158,7 +163,7 @@ final class ListTransactionsManager {
         for entity in entities {
             print(entity.datePointage!)
             print(entity.dateOperation!)
-            print(entity.status!)
+            print(entity.status?.name ?? "no status")
             print(entity.paymentMode?.name ?? "defaultMode")
             let subs = entity.sousOperations
             for sub in subs {

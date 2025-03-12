@@ -12,13 +12,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>264</string>
+					<string>332</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>263</string>
+					<string>331</string>
 					<key>Timestamp</key>
-					<string>763225576.600566</string>
+					<string>763477176.277632</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -102,13 +102,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>331</string>
+					<string>402</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>330</string>
+					<string>401</string>
 					<key>Timestamp</key>
-					<string>763225576.600491</string>
+					<string>763477176.2776639</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -131,8 +131,8 @@
 // MARK: TransactionRowView
 </string>
 				<key>trailing</key>
-				<string>    let transaction: EntityTransactions?
-    let isSelected: Bool
+				<string>    @Environment(\.modelContext) private var modelContext
+
 
 </string>
 			</dict>
@@ -147,13 +147,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>284</string>
+					<string>285</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>283</string>
+					<string>284</string>
 					<key>Timestamp</key>
-					<string>763294418.7746561</string>
+					<string>763373338.528854</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>

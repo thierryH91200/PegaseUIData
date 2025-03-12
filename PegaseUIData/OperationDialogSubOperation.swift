@@ -34,6 +34,8 @@ struct SubOperationDialog: View {
     @State private var entityRubric : [EntityRubric] = []
     @State private var entityCategorie : [EntityCategory] = []
     
+    @State private var isExpanded = false // Indicateur l'état de sélection du signe
+
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -46,7 +48,7 @@ struct SubOperationDialog: View {
                 .accessibilityLabel(String(localized: "Comment field"))
                 .accessibilityHint(String(localized: "Enter a description for this sub-operation"))
 
-            FormField(label: "Rubric") {
+            FormField(label: String(localized:"Rubric")) {
                 Picker("", selection: $selectedRubric) {
                     ForEach(entityRubric, id: \.self) { rubric in
                         Text(rubric.name).tag(rubric)
@@ -71,7 +73,7 @@ struct SubOperationDialog: View {
                 }
             }
 
-            FormField(label: "Category") {
+            FormField(label: String(localized:"Category")) {
                 Picker("", selection: $selectedCategorie) {
                     ForEach(entityCategorie, id: \.self) { category in
                         Text(category.name).tag(category)
@@ -80,14 +82,33 @@ struct SubOperationDialog: View {
                 .accessibilityLabel(String(localized: "Category selection"))
                 .accessibilityHint(String(localized: "Choose a category within the selected rubric"))
             }
+            HStack {
+                Text("Amount")
+                ZStack {
+                    Rectangle()
+                        .fill(isExpanded ? Color.red : Color.green)
+                        .frame(width: 30, height: 30)
+                    
+                    Image(systemName: isExpanded ? "minus" : "plus")
+                        .foregroundColor(.white)
+                        .font(.system(size: 16, weight: .bold))
+                }
+                .onTapGesture {
+                    isExpanded.toggle()
+                }
 
-            TextField("Amount", text: $amount)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .accessibilityLabel(String(localized: "Amount field"))
-                .accessibilityHint(String(localized: "Enter the amount for this sub-operation"))
-                .accessibilityValue(amount.isEmpty ?
-                    String(localized: "No amount entered") :
-                    amount)
+                TextField("Amount", text: $amount)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .font(.system(size: 20))
+                    .foregroundColor(isExpanded ? .red : .green)
+
+                    .accessibilityLabel(String(localized: "Amount field"))
+                    .accessibilityHint(String(localized: "Enter the amount for this sub-operation"))
+                    .accessibilityValue(amount.isEmpty ? String(localized: "No amount entered") :
+                                            amount)
+            }
+            .padding(.bottom)
+
 
             HStack {
                 Button(action: {
@@ -113,10 +134,9 @@ struct SubOperationDialog: View {
                         .padding()
                         .background(Color.green)
                         .cornerRadius(5)
-                        .opacity(comment == "" ? 0.6 : 1) // Opacité réduite si désactivé
-
-                        .disabled( comment == "")
                 }
+                .disabled(comment == "") 
+                .opacity(comment == "" ? 0.6 : 1)
             }
         }
         .padding()
@@ -135,9 +155,6 @@ struct SubOperationDialog: View {
                 PreferenceManager.shared.configure(with: modelContext)
                 self.entityPreference = PreferenceManager.shared.getAllDatas(for: account)
 
-                // comment
-                comment = ""
-
                 // Rubrique
                 if let i = entityRubric.firstIndex(where: { $0 == entityPreference?.category?.rubric }) {
                     selectedRubric = entityRubric[i]
@@ -147,11 +164,12 @@ struct SubOperationDialog: View {
                     }
                 }
                 
-                category = subOperation!.category
-                rubrique = subOperation!.category?.rubric
+                comment = ""
+                category = entityPreference!.category
+                rubrique = entityPreference!.category?.rubric
                 amount = String(0.0)
                 
-                printSub()
+                printSub1()
             }
         }
     }
@@ -163,6 +181,13 @@ struct SubOperationDialog: View {
         print(subOperation?.amount ?? 0.0)
     }
     
+    func printSub1() {
+        print(comment)
+        print(category?.rubric?.name ?? "nil")
+        print(category?.name ?? "default")
+        print(amount)
+    }
+
     func saveSubOperation()
     {
         if isModeCreate == true { // Création
@@ -171,6 +196,9 @@ struct SubOperationDialog: View {
             ListTransactionsManager.shared.createTransactions(formState: formState)
                        
             // Create entitySousOperation
+            let amountDouble = (Double(amount) ?? 0.0) * (isExpanded ? -1 : 1)
+            amount = String(amountDouble)
+            printSub1()
             SubTransactionsManager.shared.createSubTransactions(comment: comment, category: selectedCategorie!, amount: amount, formState: formState)
             
             if formState.currentTransaction?.sousOperations == nil {

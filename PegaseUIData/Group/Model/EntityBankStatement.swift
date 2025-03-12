@@ -141,11 +141,11 @@ final class BankStatementManager {
             
             let lhs = currentAccount.uuid
             let predicate = #Predicate<EntityBankStatement>{ entity in entity.account.uuid  ==  lhs }
-            
+            let sort = [SortDescriptor(\EntityBankStatement.num, order: .forward)]
+
             let descriptor = FetchDescriptor<EntityBankStatement>(
                 predicate: predicate,
-                sortBy: [SortDescriptor(\.num)]
-            )
+                sortBy: sort )
             
             entities = try validContext.fetch(descriptor)
         } catch {

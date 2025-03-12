@@ -154,8 +154,8 @@ struct ContentView100: View {
                     Label("Choose the color", systemImage: "paintpalette")
                 }
                 if isVisible == false{
-                    ListTransactions(isVisible: $isVisible, selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)
-                        .environmentObject(colorManager)
+//                    ListTransactions(isVisible: $isVisible, selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)
+//                        .environmentObject(colorManager)
                 }
             }
         }
@@ -211,7 +211,8 @@ struct DetailContainer: View {
 
     var detailViews: [String: (Binding<Bool>) -> AnyView] {
         [
-            String(localized: "List of Transactions",table: "Menu")     : { isVisible in AnyView(ListTransactions(isVisible : isVisible, selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)) },
+            String(localized: "List of Transactions",table: "Menu")     : { isVisible in AnyView(ListTransactionsView(isVisible       : isVisible)) },
+            //selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)) },
             String(localized: "Cash Flow Curve",table: "Menu")          : { isVisible in AnyView(TreasuryCurveView(isVisible          : isVisible)) },
             String(localized: "Bank website",table: "Menu")             : { isVisible in AnyView(BankWebsiteView(isVisible            : isVisible)) },
             String(localized: "Internet rapprochement",table: "Menu")   : { isVisible in AnyView(InternetReconciliationView(isVisible : isVisible)) },

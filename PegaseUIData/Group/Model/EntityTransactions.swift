@@ -65,7 +65,9 @@ import SwiftData
     }
 
     public init() {
-        self.account = CurrentAccountManager.shared.getAccount()!
+        let account = CurrentAccountManager.shared.getAccount() 
+        self.account = account!
+        
     }
 }
 

@@ -652,22 +652,22 @@
         }
       }
     },
-    "Create" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Création"
-          }
-        }
-      }
-    },
     "Create new operation screen" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Créer un nouvel écran d'opération"
+          }
+        }
+      }
+    },
+    "Creation Mode" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mode Création"
           }
         }
       }
@@ -750,16 +750,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Date de pointage"
-          }
-        }
-      }
-    },
-    "Date Transaction" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Date de la Transaction"
           }
         }
       }
@@ -942,6 +932,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Editer le carnet de chéque"
+          }
+        }
+      }
+    },
+    "Edit Mode" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mode Edition"
           }
         }
       }
@@ -1702,6 +1702,16 @@
         }
       }
     },
+    "Pointing Date" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date de Pointage"
+          }
+        }
+      }
+    },
     "Postal Code" : {
       "localizations" : {
         "fr" : {
@@ -1878,6 +1888,9 @@
         }
       }
     },
+    "Supprimer" : {
+
+    },
     "Surname" : {
       "localizations" : {
         "en" : {
@@ -1921,7 +1934,24 @@
       }
     },
     "Transaction" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transaction"
+          }
+        }
+      }
+    },
+    "Transaction Date" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date de la Transaction"
+          }
+        }
+      }
     },
     "Transaction form section" : {
       "localizations" : {

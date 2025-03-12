@@ -119,13 +119,12 @@ final class SchedulerManager {
             return []
         }
         
-        let predicate = #Predicate<EntitySchedule> { entity in
-            entity.account.uuid == lhs
-        }
+        let predicate = #Predicate<EntitySchedule> { entity in entity.account.uuid == lhs }
+        let sort = [SortDescriptor(\EntitySchedule.libelle, order: .forward)]
+        
         let descriptor = FetchDescriptor<EntitySchedule>(
             predicate: predicate,
-            sortBy: [SortDescriptor(\.libelle, order: .forward)]
-        )
+            sortBy: sort )
         
         do {
             return try validContext.fetch(descriptor)
@@ -144,13 +143,12 @@ final class SchedulerManager {
         }
 
         let lhs = currentAccount.uuid
-        let predicate = #Predicate<EntitySchedule>{ entity in
-            entity.account.uuid == lhs
-        }
+        let predicate = #Predicate<EntitySchedule>{ entity in entity.account.uuid == lhs }
+        let sort =  [SortDescriptor(\EntitySchedule.libelle, order: .forward)]
+        
         let descriptor = FetchDescriptor<EntitySchedule>(
             predicate: predicate,
-            sortBy: [SortDescriptor(\.libelle, order: .forward)]
-        )
+            sortBy: sort )
         
         do {
             // Récupérez les entités en utilisant le FetchDescriptor

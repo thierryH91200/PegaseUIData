@@ -79,7 +79,7 @@ struct TransactionFormViewModel: View {
             
             Divider()
             
-            FormField(label: String(localized: "Date Transaction")) {
+            FormField(label: String(localized: "Transaction Date")) {
                 DatePicker("", selection: $transactionDate, displayedComponents: .date)
             }
             

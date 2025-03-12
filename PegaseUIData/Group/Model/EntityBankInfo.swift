@@ -102,14 +102,13 @@ final class BankManager {
         }
 
         let lhs = account.uuid
-        let predicate = #Predicate<EntityBanqueInfo> { entity in
-            entity.account.uuid == lhs
-        }
+        let predicate = #Predicate<EntityBanqueInfo> { entity in entity.account.uuid == lhs }
+        let sort = [SortDescriptor(\EntityBanqueInfo.name, order: .forward)]
         
         let fetchDescriptor = FetchDescriptor<EntityBanqueInfo>(
             predicate: predicate,
-            sortBy: [SortDescriptor(\.name, order: .forward)]
-        )
+            sortBy: sort )
+        
         do {
             entitiesBank = try validContext.fetch(fetchDescriptor)
 

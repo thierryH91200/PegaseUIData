@@ -111,13 +111,13 @@ final class IdentityManager  {
         
         do {
             let lhs = currentAccount.uuid
-            let predicate = #Predicate<EntityIdentity>{ entity in
-                entity.account.uuid == lhs }
+            let predicate = #Predicate<EntityIdentity>{ entity in entity.account.uuid == lhs }
+            let sort = [SortDescriptor(\EntityIdentity.name, order: .forward)]
 
             // Utilisation de SwiftData pour récupérer les entités correspondantes
             let fetchDescriptor = FetchDescriptor<EntityIdentity>(
                 predicate: predicate,
-                sortBy: [SortDescriptor(\.name, order: .forward)] )
+                sortBy: sort )
             
             entities = try validContext.fetch(fetchDescriptor)
             

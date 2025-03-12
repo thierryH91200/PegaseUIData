@@ -143,6 +143,7 @@ struct OperationDialogView: View {
         formState.selectedMode           = transaction.paymentMode
         formState.checkNumber            = Int(transaction.checkNumber) ?? 0
         formState.bankStatement          = Int(transaction.bankStatement)
+        formState.selectedStatus         = transaction.status
         formState.selectedAccount        = transaction.account
         formState.currentSousTransaction = transaction.sousOperations.first
         formState.subOperations          = transaction.sousOperations
@@ -242,7 +243,7 @@ struct HeaderView: View {
                     .font(.headline)
             }
             
-            Text("\(isCreationMode ? String(localized: "Create") : String(localized: "Edit"))")
+            Text("\(isCreationMode ? String(localized: "Creation Mode") : String(localized: "Edit Mode"))")
                 .font(.headline)
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)

@@ -20,8 +20,9 @@ import SwiftUI
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
 
-    public init(account: EntityAccount, name: String, color: NSColor ) {
+    public init(account: EntityAccount, name: String, type: Int, color: NSColor ) {
         self.name = name
+        self.type = type
         self.color = color
         self.account = account
     }
@@ -64,12 +65,12 @@ final class StatusManager: StatusManaging {
         self.modelContext = modelContext
     }
     
-    func create(account: EntityAccount?, name: String, color: NSColor) throws -> EntityStatus? {
+    func create(account: EntityAccount?, name: String, type: Int, color: NSColor) throws -> EntityStatus? {
         guard let account = account else {
-            throw PaymentModeError.accountNotFound
+            throw StatusError.accountNotFound
         }
                 
-        let newMode = EntityStatus(account: account, name: name, color: color)
+        let newMode = EntityStatus(account: account, name: name, type: type, color: color)
         validContext.insert(newMode)
         try save()
         return newMode
@@ -91,8 +92,11 @@ final class StatusManager: StatusManaging {
         }
         let accountID = account.uuid
         let predicate = #Predicate<EntityStatus> { entity in entity.account.uuid == accountID }
+        let sort = [SortDescriptor(\EntityStatus.type, order: .forward)]
+        
         let fetchDescriptor = FetchDescriptor<EntityStatus>(
-            predicate: predicate)
+            predicate: predicate,
+            sortBy: sort )
         
         do {
             entityStatus = try validContext.fetch(fetchDescriptor)
@@ -121,39 +125,36 @@ final class StatusManager: StatusManaging {
         
         entityStatus.removeAll()
         
-        // Liste des noms et couleurs des méthodes de paiement
+        // Liste des noms et couleurs des status
         let names = [ String(localized :"Planned"),
                       String(localized :"Engaged"),
                       String(localized :"Executed") ]
         
-        let statusModes: [(name: String, type : Int, color: NSColor)] = [
+        let status: [(name: String, type : Int, color: NSColor)] = [
             ( names[0], 0, .orange),
             ( names[1], 1, .green),
             ( names[2], 2, .red)
         ]
         
-        // Création des entités de mode de paiement
-        statusModes.forEach {
-           try!  _ = create(account: account, name: $0.name, color: $0.color)
+        // Création des entités
+        status.forEach {
+            try!  _ = create(account: account, name: $0.name, type: $0.type, color: $0.color)
         }
                
         let lhs = account.uuid
         let predicate = #Predicate<EntityStatus>{ entity in entity.account.uuid == lhs }
-                
+        let sort = [SortDescriptor(\EntityStatus.type, order: .forward)]
+        
         let fetchDescriptor = FetchDescriptor<EntityStatus>(
             predicate: predicate,
-            sortBy: [SortDescriptor(\.name, order: .forward)]
-        )
+            sortBy: sort )
         
         // Récupération des entités EntityStatus liées au compte actuel
         do {
             entityStatus = try validContext.fetch(fetchDescriptor)
         } catch {
-            print("Erreur lors de la récupération des modes de paiement : \(error.localizedDescription)")
+            print("Erreur lors de la récupération des status : \(error.localizedDescription)")
         }
     }
-
-
-
 }
 

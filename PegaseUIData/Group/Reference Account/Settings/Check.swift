@@ -11,12 +11,13 @@ import SwiftData
 
 // Gestionnaire de données pour les carnets de chèques
 final class CheckDataManager: ObservableObject {
-    @Published var checkBooks: [EntityCheckBook]? {
-        didSet {
-            // Sauvegarde automatique dès qu'une modification est détectée
-            saveChanges()
+    @Published var checkBooks: [EntityCheckBook]?
+    {
+            didSet {
+                // Sauvegarde automatique dès qu'une modification est détectée
+                saveChanges()
+            }
         }
-    }
     
     private var modelContext: ModelContext?
     
@@ -38,6 +39,46 @@ final class CheckDataManager: ObservableObject {
             print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
     }
+    // Ajoute un nouveau carnet de chèques
+    func addCheckBook(name: String, nbCheques: Int, numPremier: Int, numSuivant: Int, prefix: String, account: EntityAccount?) {
+        guard let modelContext = modelContext else {
+            print("Le contexte de modèle n'est pas initialisé.")
+            return
+        }
+        
+        let newCheckBook = EntityCheckBook()
+        newCheckBook.name = name
+        newCheckBook.nbCheques = nbCheques
+        newCheckBook.numPremier = numPremier
+        newCheckBook.numSuivant = numSuivant
+        newCheckBook.prefix = prefix
+        newCheckBook.account = account
+        
+        modelContext.insert(newCheckBook)
+        
+        // Ajoute à la liste
+        if checkBooks == nil {
+            checkBooks = [newCheckBook]
+        } else {
+            checkBooks?.append(newCheckBook)
+        }
+        saveChanges()
+    }
+
+    // Supprime un carnet de chèques
+    func deleteCheckBook(_ checkBook: EntityCheckBook) {
+        guard let modelContext = modelContext else {
+            print("Le contexte de modèle n'est pas initialisé.")
+            return
+        }
+        
+        modelContext.delete(checkBook)
+        
+        // Met à jour la liste
+        checkBooks?.removeAll { $0.id == checkBook.id }
+        
+        saveChanges()
+    }
 }
 
 // Vue principale pour l'affichage des carnets de chèques
@@ -52,25 +93,7 @@ struct CheckView: View {
     @State private var isAddDialogPresented = false
     @State private var isEditDialogPresented = false
     @State private var isModeCreate = false
-    
-//    @State private var currentAccount :EntityAccount?
-//    
-//    private var checks: [EntityCheckBook] {
-//        let request = FetchDescriptor<EntityCheckBook>(
-//            predicate: #Predicate<EntityCheckBook> { checkBook in
-//                checkBook.account == currentAccount
-//            },
-//            sortBy: [SortDescriptor(\.name, order: .forward)]
-//        )
-//        return (try? modelContext.fetch(request)) ?? []
-//    }
-
-    
-//    @Query(filter: #Predicate<EntityCheckBook> { checkBooks in
-//        checkBooks.account == currentAccount
-//    }, sort: \.name, order: .forward)
-//       private var checks: [EntityCheckBook]
-    
+        
     var body: some View {
         VStack(spacing: 10) {
             // Affiche le compte actuel
@@ -88,7 +111,7 @@ struct CheckView: View {
                 }
                 .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
                     // Mise à jour de la liste en cas de changement de compte
-                        dataManager.checkBooks = nil
+                        dataManager.checkBooks = []
                         selectedCheck = nil
                         selectedItem = nil
                         refreshData()
@@ -149,11 +172,9 @@ struct CheckView: View {
     // Supprime un carnet de chèques sélectionné
     private func delete() {
         if let checkBookToDelete = selectedCheck {
-            modelContext.delete(checkBookToDelete)
+            dataManager.deleteCheckBook(checkBookToDelete)
             selectedCheck = nil
             selectedItem = nil
-            try? modelContext.save()
-            refreshData()
         }
     }
     
@@ -268,7 +289,6 @@ struct CheckBookFormView: View {
                     TextField("", text: $prefix)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                 }
-                
                 Spacer()
             }
             .padding()
@@ -286,6 +306,8 @@ struct CheckBookFormView: View {
                         save()
                         dismiss()
                     }
+                    .disabled(prefix.isEmpty || name.isEmpty || numPremier <= 0 || numSuivant <= 0 || nbCheques <= 0)
+                    .opacity(prefix.isEmpty || name.isEmpty || numPremier <= 0 || numSuivant <= 0 || nbCheques <= 0 ? 0.6 : 1)
                 }
             }
             .frame(width: 400)
@@ -308,19 +330,27 @@ struct CheckBookFormView: View {
     
     private func save() {
         if isModeCreate { // Création
-            let newItem = EntityCheckBook()
-            updateCheckBook(newItem)
-            if let account = CurrentAccountManager.shared.getAccount() {
-                newItem.account = account
-            }
-            modelContext.insert(newItem)
-            checkViewManager.checkBooks?.append(newItem)
+            checkViewManager.addCheckBook(
+                name: name,
+                nbCheques: nbCheques,
+                numPremier: numPremier,
+                numSuivant: numSuivant,
+                prefix: prefix,
+                account: CurrentAccountManager.shared.getAccount()
+            )
         } else { // Modification
             if let existingItem = checkBook {
-                updateCheckBook(existingItem)
+                existingItem.name = name
+                existingItem.nbCheques = nbCheques
+                existingItem.numPremier = numPremier
+                existingItem.numSuivant = numSuivant
+                existingItem.prefix = prefix
+                try? modelContext.save()
             }
         }
-        try? modelContext.save()
+        
+        isPresented = false
+        dismiss()
     }
     
     private func updateCheckBook(_ item: EntityCheckBook) {

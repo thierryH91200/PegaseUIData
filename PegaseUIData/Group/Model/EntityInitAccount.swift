@@ -85,11 +85,11 @@ final class InitAccountManager {
 
         let lhs = account.uuid
         let predicate = #Predicate<EntityInitAccount>{ entity in entity.account.uuid == lhs }
+        let sort = [SortDescriptor(\EntityInitAccount.codeAccount)]
 
         let descriptor = FetchDescriptor<EntityInitAccount>(
             predicate: predicate,
-            sortBy: [SortDescriptor(\.codeAccount)]
-        )
+            sortBy: sort )
 
         do {
             initAccounts = try validContext.fetch(descriptor)

@@ -114,13 +114,12 @@ final class ChequeBookManager : ObservableObject {
         }
 
         let lhs = account.uuid
-        let predicate = #Predicate<EntityCheckBook> { entity in
-            entity.account?.uuid == lhs
-        }
+        let predicate = #Predicate<EntityCheckBook> { entity in entity.account?.uuid == lhs  }
+        let sort = [SortDescriptor(\EntityCheckBook.name, order: .forward)]
+        
         let descriptor = FetchDescriptor<EntityCheckBook>(
             predicate: predicate,
-            sortBy: [SortDescriptor(\.name, order: .forward)]
-        )
+            sortBy: sort )
         
         do {
             entities = try validContext.fetch(descriptor)

@@ -94,11 +94,11 @@ final class RubricManager {
         
         let lhs = currentAccount!.uuid
         let predicate = #Predicate<EntityRubric>{ entity in entity.account.uuid == lhs }
+        let sort = [SortDescriptor(\EntityRubric.name, order: .forward)]
         
         let fetchDescriptor = FetchDescriptor<EntityRubric>(
             predicate: predicate,
-            sortBy: [SortDescriptor(\EntityRubric.name, order: .forward)]
-        )
+            sortBy: sort )
         
         do {
             entitiesRubric = try validContext.fetch(fetchDescriptor)

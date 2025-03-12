@@ -114,14 +114,12 @@ final class PaymentModeManager {
         }
 
         let lhs = account.uuid
-        let predicate = #Predicate<EntityPaymentMode> { entity in
-            entity.account.uuid == lhs
-        }
+        let predicate = #Predicate<EntityPaymentMode> { entity in entity.account.uuid == lhs }
+        let sort = [SortDescriptor(\EntityPaymentMode.name, order: .forward)]
         
         let fetchDescriptor = FetchDescriptor<EntityPaymentMode>(
             predicate: predicate,
-            sortBy: [SortDescriptor(\.name, order: .forward)]
-        )
+            sortBy: sort )
         
         do {
             let fetchedData = try validContext.fetch(fetchDescriptor)
@@ -132,6 +130,7 @@ final class PaymentModeManager {
         }
     }
     
+    // MARK: getAllNames ModePaiement
     func getAllNames(for account: EntityAccount) -> [String] {
         var names = [String]()
         
@@ -143,8 +142,8 @@ final class PaymentModeManager {
         return names
     }
 
-
-    func findOrCreate(account: EntityAccount, name: String, color: Color, uuid: UUID) -> EntityPaymentMode {
+    // MARK: findOrCreate ModePaiement
+   func findOrCreate(account: EntityAccount, name: String, color: Color, uuid: UUID) -> EntityPaymentMode {
         if let entity = find(account: account, name: name) {
             return entity
         } else {
@@ -152,6 +151,7 @@ final class PaymentModeManager {
         }
     }
     
+    // MARK: save ModePaiement
     func save () throws {
         
         do {
@@ -161,15 +161,16 @@ final class PaymentModeManager {
         }
     }
 
+    // MARK: find ModePaiement
     func find( account: EntityAccount, name: String) -> EntityPaymentMode? {
         
         let lhs = account.uuid
         let predicate = #Predicate<EntityPaymentMode> { $0.account.uuid == lhs && $0.name == name }
+        let sort = [SortDescriptor(\EntityPaymentMode.name, order: .forward)] // Trier par le nom
 
         let fetchDescriptor = FetchDescriptor<EntityPaymentMode>(
             predicate: predicate, // Filtrer par le compte
-            sortBy: [SortDescriptor(\.name, order: .forward)] // Trier par le nom
-        )
+            sortBy: sort )
 
         do {
             let searchResults = try validContext.fetch(fetchDescriptor)
@@ -181,7 +182,7 @@ final class PaymentModeManager {
         }
     }
     
-    // MARK: - delete ModePaiement
+    // MARK: delete ModePaiement
     func delete(entity: EntityPaymentMode)
     {
         validContext.undoManager?.beginUndoGrouping()
@@ -196,6 +197,7 @@ final class PaymentModeManager {
         }
     }
 
+    // MARK: default ModePaiement
     func defaultModePaiement(for account: EntityAccount) {
         entities.removeAll()
         
@@ -224,11 +226,11 @@ final class PaymentModeManager {
                
         let lhs = account.uuid
         let predicate = #Predicate<EntityPaymentMode>{ entity in entity.account.uuid == lhs }
+        let sort = [SortDescriptor(\EntityPaymentMode.name, order: .forward)]
                 
         let fetchDescriptor = FetchDescriptor<EntityPaymentMode>(
             predicate: predicate,
-            sortBy: [SortDescriptor(\.name, order: .forward)]
-        )
+            sortBy: sort )
         
         // Récupération des entités EntityPaymentMode liées au compte actuel
         do {
