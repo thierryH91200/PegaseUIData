@@ -118,4 +118,31 @@ extension NSColor {
     }
 }
 
+extension Color {
+    init(hex: String) {
+        let hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+        let scanner = Scanner(string: hexSanitized)
+        if hexSanitized.hasPrefix("#") { scanner.currentIndex = scanner.string.index(after: scanner.currentIndex) }
+        
+        var rgb: UInt64 = 0
+        scanner.scanHexInt64(&rgb)
+        
+        let red = Double((rgb >> 16) & 0xFF) / 255.0
+        let green = Double((rgb >> 8) & 0xFF) / 255.0
+        let blue = Double(rgb & 0xFF) / 255.0
+        
+        self.init(red: red, green: green, blue: blue)
+    }
+
+    func toHex() -> String {
+        guard let components = NSColor(self).cgColor.components, components.count >= 3 else {
+            return "#000000"
+        }
+        let r = Int(components[0] * 255)
+        let g = Int(components[1] * 255)
+        let b = Int(components[2] * 255)
+        return String(format: "#%02X%02X%02X", r, g, b)
+    }
+}
+
 

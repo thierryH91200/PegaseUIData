@@ -42,17 +42,79 @@ class PreferencesWindowController: NSWindowController, NSWindowDelegate {
 
 
 struct PreferencesView: View {
-    @AppStorage("showNotifications") private var showNotifications = false
-    @AppStorage("enableSounds") private var enableSounds = false
-    
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Toggle("Show notifications", isOn: $showNotifications)
-            Toggle("Enable sounds", isOn: $enableSounds)
+        TabView {
+            GeneralSettingsView()
+                .tabItem {
+                    Label("General", systemImage: "gear")
+                }
+            
+            EyesSettingsView()
+                .tabItem {
+                    Label("Eyes", systemImage: "eye")
+                }
+        }
+        .padding()
+        .frame(width: 450, height: 250) // Taille de la fenêtre de préférences
+    }
+}
+
+struct GeneralSettingsView: View {
+    @AppStorage("launchAtLogin") private var launchAtLogin = false
+    @AppStorage("showInMenuBar") private var showInMenuBar = false
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Toggle("Launch at login", isOn: .constant(true))
+            Toggle("Show in menu bar (hide from Dock)", isOn: .constant(false))
             
             Spacer()
         }
         .padding()
-        .frame(width: 400, height: 300)
+    }
+}
+
+struct EyesSettingsView: View {
+    @AppStorage("foregroundColor") private var foregroundColorHex: String = "#000000"
+    @AppStorage("backgroundColor") private var backgroundColorHex: String = "#00FF00"
+    @AppStorage("alphaValue") private var alphaValue: Double = 1.0
+
+    private var foregroundColor: Binding<Color> {
+        Binding(
+            get: { Color(hex: foregroundColorHex) },
+            set: { foregroundColorHex = $0.toHex() }
+        )
+    }
+
+    private var backgroundColor: Binding<Color> {
+        Binding(
+            get: { Color(hex: backgroundColorHex) },
+            set: { backgroundColorHex = $0.toHex() }
+        )
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 15) {
+            HStack {
+                Text("Foreground color:")
+                    .frame(width: 150, alignment: .leading)
+                ColorPicker("", selection: foregroundColor)
+                    .labelsHidden()
+            }
+            HStack {
+                Text("Background color:")
+                    .frame(width: 150, alignment: .leading)
+                ColorPicker("", selection: backgroundColor)
+                    .labelsHidden()
+            }
+            HStack {
+                Text("Alpha value:")
+                    .frame(width: 150, alignment: .leading)
+                Slider(value: $alphaValue, in: 0...1)
+            }
+            
+            Spacer()
+        }
+        .padding()
     }
 }

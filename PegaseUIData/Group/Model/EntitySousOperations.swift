@@ -64,7 +64,6 @@ final class SubTransactionsManager {
         if formState.currentTransaction?.sousOperations == nil {
             formState.currentTransaction?.sousOperations = []
         }
-            
     }
     
     private func update(comment: String,

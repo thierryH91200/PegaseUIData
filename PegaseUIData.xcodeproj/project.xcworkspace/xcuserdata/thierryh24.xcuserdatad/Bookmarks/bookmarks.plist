@@ -12,13 +12,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>332</string>
+					<string>308</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>331</string>
+					<string>307</string>
 					<key>Timestamp</key>
-					<string>763477176.277632</string>
+					<string>763485932.96541</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -42,8 +42,8 @@
 </string>
 				<key>trailing</key>
 				<string>struct MonthDisclosureGroupView: View {
-    let monthGroup: TransactionsByMonth100
-    let year: String
+    @EnvironmentObject var dataManager: ListDataManager
+    @EnvironmentObject var colorManager: ColorManager
 </string>
 			</dict>
 			<key>type</key>
@@ -102,13 +102,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>402</string>
+					<string>379</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>401</string>
+					<string>378</string>
 					<key>Timestamp</key>
-					<string>763477176.2776639</string>
+					<string>763485932.965398</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -133,7 +133,7 @@
 				<key>trailing</key>
 				<string>    @Environment(\.modelContext) private var modelContext
 
-
+    @EnvironmentObject var colorManager: ColorManager
 </string>
 			</dict>
 			<key>type</key>
@@ -153,7 +153,7 @@
 					<key>StartingLineNumber</key>
 					<string>284</string>
 					<key>Timestamp</key>
-					<string>763373338.528854</string>
+					<string>763540557.663054</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -318,6 +318,50 @@
 			<string>New Group</string>
 			<key>type</key>
 			<string>group</string>
+		</dict>
+		<dict>
+			<key>destination</key>
+			<dict>
+				<key>location-parameters</key>
+				<dict>
+					<key>EndingColumnNumber</key>
+					<string>29</string>
+					<key>EndingLineNumber</key>
+					<string>51</string>
+					<key>StartingColumnNumber</key>
+					<string>12</string>
+					<key>StartingLineNumber</key>
+					<string>51</string>
+					<key>Timestamp</key>
+					<string>763499617.724234</string>
+				</dict>
+				<key>rebasable-url</key>
+				<dict>
+					<key>base</key>
+					<string>workspace</string>
+					<key>payload</key>
+					<dict>
+						<key>relative-path</key>
+						<string>PegaseUIData/OperationDialog3.swift</string>
+					</dict>
+				</dict>
+			</dict>
+			<key>text-context</key>
+			<dict>
+				<key>focused</key>
+				<string>ActionButtonsView</string>
+				<key>leading</key>
+				<string>            
+            // Boutons d'action
+            </string>
+				<key>trailing</key>
+				<string>(
+                cancelAction: {
+                    selectedTransaction = nil
+</string>
+			</dict>
+			<key>type</key>
+			<string>bookmark</string>
 		</dict>
 	</array>
 </dict>

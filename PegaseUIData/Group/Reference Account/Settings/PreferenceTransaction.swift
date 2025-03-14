@@ -147,6 +147,7 @@ struct PreferenceTransactionView: View {
             changeCounter += 1
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 Task.detached {
+                    
                     await updatePreference(status: selectedStatus!,
                                            mode: selectedMode!,
                                            rubric: selectedRubric!,
@@ -169,6 +170,7 @@ struct PreferenceTransactionView: View {
     }
     
     // Fonction de mise à jour des préférences
+    @MainActor
     func updatePreference(status: EntityStatus,
                           mode: EntityPaymentMode,
                           rubric: EntityRubric,

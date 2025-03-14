@@ -11,10 +11,6 @@ import SwiftData
 // Gestionnaire de données pour les listTransactions
 final class ListDataManager: ObservableObject {
     @Published var listTransactions: [EntityTransactions]? {
-//        willSet {
-//            print("Transactions rechargées willSet :", listTransactions?.count ?? 0)
-//            objectWillChange.send()
-//        }
 
         didSet {
             // Sauvegarde automatique dès qu'une modification est détectée
@@ -43,30 +39,18 @@ final class ListDataManager: ObservableObject {
         }
     }
     
-    func deleteTransaction(_ transaction: EntityTransactions) {
+    @MainActor func deleteTransaction(_ transaction: EntityTransactions) {
         guard let modelContext = modelContext else { return }
         
-        print("Transactions rechargées avant :", listTransactions?.count ?? 0)
+        print("Transactions avant suppression :", listTransactions?.count ?? 0)
 
         modelContext.delete(transaction)
-        listTransactions?.removeAll { $0.id == transaction.id }
-        saveChanges()
 
-//        do {
-//            try modelContext.save()
-//            
-//            // Met à jour la liste en supprimant l’élément
-//         if let index = listTransactions?.firstIndex(where: { $0.id == transaction.id }) {
-//                listTransactions?.remove(at: index)
-//            }
-//            
-//            // Force une mise à jour
-//            objectWillChange.send()
-//            loadTransactions()
-//            
-//        } catch {
-//            print("Erreur lors de la suppression de la transaction : \(error.localizedDescription)")
-//        }
+        // Rafraîchir complètement la liste après suppression
+        saveChanges()
+        loadTransactions()  // Recharger la liste des transactions
+        
+        print("Transactions après suppression :", listTransactions?.count ?? 0)
     }
     
     @MainActor
@@ -81,7 +65,6 @@ struct ListTransactionsView: View {
     
     @StateObject private var currentAccountManager = CurrentAccountManager.shared
     @StateObject private var listDataManager = ListDataManager()
-
     @Binding var isVisible: Bool
     
     var body: some View {
@@ -120,9 +103,6 @@ struct ListTransactions: View {
         VStack(spacing: 0) {
             SummaryView(executed: soldeBanque, planned: soldeReel, engaged: soldeFinal)
                 .frame(maxWidth: .infinity, maxHeight: 100)
-                .task {
-                    await performTrueTask()
-                }
 
             ContentView10000( selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)
                 .environmentObject(colorManager) // Injecté ici
@@ -137,11 +117,6 @@ struct ListTransactions: View {
         .onAppear() {
             balanceCalculation()
         }
-    }
-    private func performTrueTask() async {
-        // Exécuter une tâche asynchrone (par exemple, un délai)
-        try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 seconde de délai
-        isVisible = true
     }
 
     private func balanceCalculation() {
@@ -216,6 +191,9 @@ struct ContentView10000: View {
                 setupDataManager()
                 allTransactions = ListTransactionsManager.shared.getAllDatas()
             }
+            .onChange(of: dataManager.listTransactions) { _, _ in
+                allTransactions = dataManager.listTransactions ?? []
+            }
             .onChange(of: colorManager.selectedColorType) { old, new in
             }
             .onChange(of: currentAccountManager.currentAccount) { _, newAccount in
@@ -245,7 +223,6 @@ struct ContentView10000: View {
 struct TransactionsListView: View {
     @EnvironmentObject var colorManager: ColorManager // Injecté par le parent
     @EnvironmentObject var dataManager: ListDataManager
-
 
     let data: [TransactionsByYear100]
     
@@ -307,14 +284,13 @@ struct TransactionsListView: View {
 
 // MARK: YearSectionView
 struct YearSectionView: View {
-    @EnvironmentObject var colorManager: ColorManager // Injecté par le parent
     @EnvironmentObject var dataManager: ListDataManager
+    @EnvironmentObject var colorManager: ColorManager // Injecté par le parent
 
     let yearGroup: TransactionsByYear100
     @Binding var selectedTransaction: EntityTransactions?
     @Binding var isCreationMode: Bool
 
-    
     var body: some View {
         Section(header: Text("Year \(yearGroup.year)")
                     .font(.headline)
@@ -331,10 +307,11 @@ struct YearSectionView: View {
 
 // MARK: MonthDisclosureGroupView
 struct MonthDisclosureGroupView: View {
+    @EnvironmentObject var dataManager: ListDataManager
+    @EnvironmentObject var colorManager: ColorManager
+
     let monthGroup: TransactionsByMonth100
     let year: String
-    @EnvironmentObject var colorManager: ColorManager
-    @EnvironmentObject var dataManager: ListDataManager
 
     @Binding var selectedTransaction: EntityTransactions?
     @Binding var isCreationMode: Bool
@@ -401,7 +378,6 @@ struct MonthDisclosureGroupView: View {
 // MARK: TransactionRowView
 struct TransactionRowView: View {
     @Environment(\.modelContext) private var modelContext
-
 
     @EnvironmentObject var colorManager: ColorManager
     @EnvironmentObject var dataManager: ListDataManager
@@ -474,13 +450,15 @@ struct TransactionRowView: View {
                     
                     // Status
                     Text(transaction.status?.name ?? "N/A")
+                        .frame(width: 90, alignment: .leading) // Fixe une largeur identique aux autres colonnes
+                        .monospacedDigit() // Uniformise la largeur des caractères
                         .foregroundColor(colorManager.colorForTransaction(transaction))
                     
                     // Solde (si vous voulez l’afficher)
                     Text(transaction.solde != nil ? String(format: "%.2f", transaction.solde!) : "—")
                         .frame(width: 80, alignment: .trailing)
                         .foregroundColor(colorManager.colorForTransaction(transaction))
-                    
+                    Spacer()
                     Button {
                         deleteTransaction(transaction)
                     } label: {
@@ -488,7 +466,7 @@ struct TransactionRowView: View {
                             .foregroundColor(.red)
                     }
                     .buttonStyle(BorderlessButtonStyle()) // Pour éviter d'affecter toute la ligne
-                    
+                    .frame(width: 30, height: 30) // Fixer la taille
                     Spacer()
                 }
             }
@@ -496,7 +474,7 @@ struct TransactionRowView: View {
                 Button(role: .destructive) {
                     deleteTransaction(transaction!)
                 } label: {
-                    Label("Supprimer", systemImage: "trash")
+                    Label("Delete", systemImage: "trash")
                 }
             }
 
@@ -507,6 +485,7 @@ struct TransactionRowView: View {
                 print("couleur changée ",colorManager.selectedColorType)
             }
     }
+    
     @MainActor
     func deleteTransaction(_ transaction: EntityTransactions) {
 //        guard let modelContext = modelContext else { return }

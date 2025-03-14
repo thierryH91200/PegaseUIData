@@ -20,19 +20,16 @@ struct SubOperationDialog: View {
     @Binding var subOperation: EntitySousOperations?
     @Binding var isModeCreate: Bool
 
-    @State private var comment: String = ""
-    @State private var rubrique: EntityRubric?
-    @State private var category: EntityCategory?
-    @State private var amount: String = ""
+    @State private var comment           : String = ""
+    @State private var selectedRubric    : EntityRubric?
+    @State private var selectedCategorie : EntityCategory?
+    @State private var amount            : String = ""
     
     @State private var isShowingDialog: Bool = false
     
-    @State private var selectedRubric    : EntityRubric?
-    @State private var selectedCategorie : EntityCategory?
-    
     @State private var entityPreference : EntityPreference?
-    @State private var entityRubric : [EntityRubric] = []
-    @State private var entityCategorie : [EntityCategory] = []
+    @State private var entityRubric     : [EntityRubric] = []
+    @State private var entityCategorie  : [EntityCategory] = []
     
     @State private var isExpanded = false // Indicateur l'état de sélection du signe
 
@@ -144,8 +141,8 @@ struct SubOperationDialog: View {
             configureForm()
             if isModeCreate == false{
                 comment = subOperation?.libelle ?? ""
-                category = subOperation?.category
-                rubrique = subOperation?.category?.rubric
+                selectedCategorie = subOperation?.category
+                selectedRubric    = subOperation?.category?.rubric
                 amount = String(subOperation?.amount ?? 0.0)
                 printSub()
 
@@ -154,19 +151,10 @@ struct SubOperationDialog: View {
                 let account = CurrentAccountManager.shared.getAccount()
                 PreferenceManager.shared.configure(with: modelContext)
                 self.entityPreference = PreferenceManager.shared.getAllDatas(for: account)
-
-                // Rubrique
-                if let i = entityRubric.firstIndex(where: { $0 == entityPreference?.category?.rubric }) {
-                    selectedRubric = entityRubric[i]
-                    let entityCategory = entityRubric[i].categorie.sorted { $0.name < $1.name }
-                    if let j = entityCategory.firstIndex(where: { $0 === entityPreference?.category }) {
-                        selectedCategorie = entityCategory[j]
-                    }
-                }
                 
                 comment = ""
-                category = entityPreference!.category
-                rubrique = entityPreference!.category?.rubric
+                selectedCategorie = entityPreference!.category
+                selectedRubric = entityPreference!.category?.rubric
                 amount = String(0.0)
                 
                 printSub1()
@@ -183,8 +171,8 @@ struct SubOperationDialog: View {
     
     func printSub1() {
         print(comment)
-        print(category?.rubric?.name ?? "nil")
-        print(category?.name ?? "default")
+        print(selectedCategorie?.rubric?.name ?? "nil")
+        print(selectedCategorie?.name ?? "default")
         print(amount)
     }
 

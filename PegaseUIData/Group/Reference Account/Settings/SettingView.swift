@@ -25,7 +25,11 @@ struct SettingView: View {
         isVisible = false
     }
 }
-
+enum TabSelection: Hashable {
+    case rubric
+    case modePaiement
+    case preference
+}
 struct SettingTab: View {
     
     @StateObject private var currentAccountManager = CurrentAccountManager.shared
@@ -34,17 +38,26 @@ struct SettingTab: View {
     @StateObject private var modePaiementDataManager = ModePaiementDataManager()
     @StateObject private var rubricDataManager       = RubricDataManager()
     @StateObject private var preferenceDataManager   = PreferenceDataManager()
-
+    
+    @State private var selectedTab: TabSelection = .rubric
     var body: some View {
+        
         TabView {
+            
+//            Tab ("Rubric", systemImage: "house", value: .rubric ) {
+//                RubricView()
+//                    .environmentObject(currentAccountManager)
+//                    .environmentObject(rubricDataManager)
+//                
+//            }
+//        }
             RubricView()
                 .environmentObject(currentAccountManager)
                 .environmentObject(rubricDataManager)
-
                 .tabItem {
-                    Label("Rubric", systemImage: "house")
+                    Label ("Rubric", systemImage: "house" )
                 }
-            
+
             ModePaymentView()
                 .environmentObject(currentAccountManager)
                 .environmentObject(modePaiementDataManager)

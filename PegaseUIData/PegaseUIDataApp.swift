@@ -54,6 +54,15 @@ struct PegaseUIDataApp: App {
 //        WindowGroup {
             ContentView100( )
         }
+        .commands {
+            CommandGroup(replacing: .appSettings) {
+                Button("Préférences…") {
+                    PreferencesWindowController.shared.showWindow()
+                }
+                .keyboardShortcut(",", modifiers: .command)
+            }
+        }
+
         .modelContainer(container)
     }
     
@@ -121,8 +130,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func applicationDidFinishLaunching(_ notification: Notification) {
+        if let mainMenu = NSApp.mainMenu {
+            let appMenu = mainMenu.item(at: 0)?.submenu
+            let preferencesItem = NSMenuItem(title: "Préférences…", action: #selector(openPreferences), keyEquivalent: ",")
+            preferencesItem.target = self
+            appMenu?.insertItem(preferencesItem, at: 1)
+        }
+
     }
     
+    @objc func openPreferences() {
+        PreferencesWindowController.shared.showWindow()
+    }
     func applicationShouldTerminateAfterLastWindowClosed (_ sender: NSApplication) -> Bool {
         return false
     }

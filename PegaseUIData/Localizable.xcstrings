@@ -210,6 +210,9 @@
         }
       }
     },
+    "Alpha value:" : {
+
+    },
     "Amount" : {
       "localizations" : {
         "fr" : {
@@ -239,6 +242,9 @@
           }
         }
       }
+    },
+    "Background color:" : {
+
     },
     "Bank" : {
       "localizations" : {
@@ -1037,6 +1043,7 @@
       }
     },
     "Enable sounds" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -1142,6 +1149,9 @@
         }
       }
     },
+    "Eyes" : {
+
+    },
     "Final balance" : {
       "localizations" : {
         "fr" : {
@@ -1182,6 +1192,9 @@
         }
       }
     },
+    "Foreground color:" : {
+
+    },
     "Frequency" : {
       "localizations" : {
         "fr" : {
@@ -1211,6 +1224,9 @@
           }
         }
       }
+    },
+    "General" : {
+
     },
     "General information" : {
       "localizations" : {
@@ -1363,6 +1379,9 @@
           }
         }
       }
+    },
+    "Launch at login" : {
+
     },
     "Light" : {
       "localizations" : {
@@ -1722,6 +1741,9 @@
         }
       }
     },
+    "Préférences…" : {
+
+    },
     "Prefix" : {
       "localizations" : {
         "fr" : {
@@ -1832,6 +1854,9 @@
         }
       }
     },
+    "Show in menu bar (hide from Dock)" : {
+
+    },
     "Show inspector" : {
       "localizations" : {
         "fr" : {
@@ -1843,6 +1868,7 @@
       }
     },
     "Show notifications" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -1887,9 +1913,6 @@
           }
         }
       }
-    },
-    "Supprimer" : {
-
     },
     "Surname" : {
       "localizations" : {

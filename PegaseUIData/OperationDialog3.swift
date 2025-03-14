@@ -37,7 +37,6 @@ struct OperationDialogView: View {
             if formState.selectedAccount != nil {
                 TransactionFormView()
                     .environmentObject(formState)
-
             }
             
             // Section des sous-opérations
@@ -199,7 +198,6 @@ struct OperationDialogView: View {
         print(  formState.currentTransaction!.sousOperations.first?.category?.name ?? "nameCat")
         print(  formState.currentTransaction!.sousOperations.first?.category?.rubric?.name ?? "nameRub")
         print(  formState.currentTransaction!.sousOperations.first?.amount ?? 0.0)
-        
     }
     
     private func updateTransactionData(_ account: EntityAccount) {
@@ -221,6 +219,8 @@ struct OperationDialogView: View {
     func resetListTransactions() {
         formState.bankStatement = 0
         formState.checkNumber = 0
+        formState.currentSousTransaction = nil
+        formState.selectedMode = nil
     }
 }
 
@@ -299,7 +299,9 @@ struct ActionButtonsView: View {
             .accessibilityLabel(String(localized: "Cancel operation"))
             .accessibilityHint(String(localized: "Double tap to discard changes and close"))
             
-            Button(action: saveAction) {
+            Button(action:
+                    saveAction
+            ) {
                 Text("OK")
                     .frame(width: 100)
                     .foregroundColor(.white)
