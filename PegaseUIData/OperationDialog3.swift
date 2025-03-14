@@ -15,12 +15,15 @@ struct OperationDialogView: View {
     @Environment(\.modelContext) private var modelContext: ModelContext
     @Environment(\.dismiss) private var dismiss
     
+    @EnvironmentObject var transactionManager: TransactionSelectionManager
+
+    
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
     @EnvironmentObject var dataManager: TransactionDataManager
     @EnvironmentObject var formState: TransactionFormState
 
-    @Binding var selectedTransaction: EntityTransactions?
-    @Binding var isCreationMode: Bool
+//    @Binding var selectedTransaction: EntityTransactions?
+//    @Binding var isCreationMode: Bool
         
     // États du formulaire déplacés dans un State Object
 
@@ -28,9 +31,8 @@ struct OperationDialogView: View {
         VStack(alignment: .leading, spacing: 10) {
             // En-tête avec information de transaction
             HeaderView(
-                title: selectedTransaction?.sousOperations.first?.libelle,
-                accountName: currentAccountManager.currentAccount?.name,
-                isCreationMode: $isCreationMode
+                title: transactionManager.selectedTransaction?.sousOperations.first?.libelle,
+                accountName: currentAccountManager.currentAccount?.name
             )
             
             // Formulaire principal
@@ -51,22 +53,21 @@ struct OperationDialogView: View {
             // Boutons d'action
             ActionButtonsView(
                 cancelAction: {
-                    selectedTransaction = nil
-                    isCreationMode = true
+                    transactionManager.selectedTransaction = nil
+                    transactionManager.isCreationMode = true
                     dismiss()
                 },
                 saveAction: {
                     saveActions()
-                    selectedTransaction = nil
-                    isCreationMode = true
+                    transactionManager.selectedTransaction = nil
+                    transactionManager.isCreationMode = true
                 }
             )
         }
         .padding()
         .sheet(isPresented: $formState.isShowingDialog) {
             SubOperationDialog(
-                subOperation: $formState.currentSousTransaction,
-                isModeCreate: $isCreationMode
+                subOperation: $formState.currentSousTransaction
             )
             .environmentObject(formState)
         }
@@ -76,8 +77,8 @@ struct OperationDialogView: View {
                 refreshData()
             }
         }
-        .onChange(of: selectedTransaction) { old, newAccount in
-            if isCreationMode == false, let transaction = selectedTransaction {
+        .onChange(of: transactionManager.selectedTransaction) { old, newTransaction in
+            if transactionManager.isCreationMode == false, let transaction = newTransaction, old != newTransaction {
                 loadTransactionData(transaction)
             }
         }
@@ -88,7 +89,7 @@ struct OperationDialogView: View {
                     configureDataManagers()
                     try await configureFormState()
                     
-                    if isCreationMode == false, let transaction = selectedTransaction {
+                    if transactionManager.isCreationMode == false, let transaction = transactionManager.selectedTransaction {
                         loadTransactionData(transaction)
                     }
                 } catch {
@@ -137,8 +138,8 @@ struct OperationDialogView: View {
     }
     
     private func loadTransactionData(_ transaction: EntityTransactions) {
-        formState.transactionDate        = transaction.dateOperation!.noon
-        formState.pointingDate           = transaction.datePointage!.noon
+        formState.transactionDate = transaction.dateOperation?.noon ?? Date()
+        formState.pointingDate = transaction.datePointage?.noon ?? Date()
         formState.selectedMode           = transaction.paymentMode
         formState.checkNumber            = Int(transaction.checkNumber) ?? 0
         formState.bankStatement          = Int(transaction.bankStatement)
@@ -173,7 +174,7 @@ struct OperationDialogView: View {
         }
         
         // Création d'une nouvelle transaction
-        if isCreationMode == true {
+        if transactionManager.isCreationMode == true {
             createNewTransaction(account)
             refreshData()
         }
@@ -189,7 +190,9 @@ struct OperationDialogView: View {
             transaction.bankStatement = Double(formState.selectedBankStatement) ?? 0
             transaction.status = formState.selectedStatus
             transaction.checkNumber = String(formState.checkNumber)
-            modelContext.insert( formState.currentTransaction!)
+            if let transaction = formState.currentTransaction {
+                modelContext.insert(transaction)
+            }
         }
     }
     
@@ -221,14 +224,17 @@ struct OperationDialogView: View {
         formState.checkNumber = 0
         formState.currentSousTransaction = nil
         formState.selectedMode = nil
+        formState.currentTransaction = nil
     }
 }
 
 // MARK: 3. Composant d'en-tête
 struct HeaderView: View {
+    
+    @EnvironmentObject var transactionManager: TransactionSelectionManager
+
     let title: String?
     let accountName: String?
-    @Binding var isCreationMode: Bool
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -243,13 +249,13 @@ struct HeaderView: View {
                     .font(.headline)
             }
             
-            Text("\(isCreationMode ? String(localized: "Creation Mode") : String(localized: "Edit Mode"))")
+            Text("\(transactionManager.isCreationMode ? String(localized: "Creation Mode") : String(localized: "Edit Mode"))")
                 .font(.headline)
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(isCreationMode ? Color.orange : Color.green )
-                .accessibilityLabel(isCreationMode ?
+                .background(transactionManager.isCreationMode ? Color.orange : Color.green )
+                .accessibilityLabel(transactionManager.isCreationMode ?
                     String(localized: "Create new operation screen") :
                     String(localized: "Edit operation screen"))
         }
@@ -280,11 +286,10 @@ struct TransactionFormView: View {
     }
 }
 
-
 // MARK: 6. Composant des boutons d'action
 struct ActionButtonsView: View {
     let cancelAction: () -> Void
-    let saveAction: () -> Void
+    let saveAction:   () -> Void
     
     var body: some View {
         HStack {

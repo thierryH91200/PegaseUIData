@@ -12,13 +12,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>308</string>
+					<string>302</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>307</string>
+					<string>301</string>
 					<key>Timestamp</key>
-					<string>763485932.96541</string>
+					<string>763647474.3259259</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -43,7 +43,7 @@
 				<key>trailing</key>
 				<string>struct MonthDisclosureGroupView: View {
     @EnvironmentObject var dataManager: ListDataManager
-    @EnvironmentObject var colorManager: ColorManager
+    @EnvironmentObject var transactionManager: TransactionSelectionManager
 </string>
 			</dict>
 			<key>type</key>
@@ -102,13 +102,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>379</string>
+					<string>369</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>378</string>
+					<string>368</string>
 					<key>Timestamp</key>
-					<string>763485932.965398</string>
+					<string>763647474.325906</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -147,13 +147,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>285</string>
+					<string>290</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>284</string>
+					<string>289</string>
 					<key>Timestamp</key>
-					<string>763540557.663054</string>
+					<string>763644963.736389</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -177,7 +177,7 @@
 </string>
 				<key>trailing</key>
 				<string>    let cancelAction: () -&gt; Void
-    let saveAction: () -&gt; Void
+    let saveAction:   () -&gt; Void
     
 </string>
 			</dict>
@@ -325,15 +325,15 @@
 				<key>location-parameters</key>
 				<dict>
 					<key>EndingColumnNumber</key>
-					<string>29</string>
+					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>51</string>
+					<string>54</string>
 					<key>StartingColumnNumber</key>
-					<string>12</string>
+					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>51</string>
+					<string>53</string>
 					<key>Timestamp</key>
-					<string>763499617.724234</string>
+					<string>763644963.736367</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -349,15 +349,16 @@
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string>ActionButtonsView</string>
+				<string>            ActionButtonsView(
+</string>
 				<key>leading</key>
 				<string>            
             // Boutons d'action
-            </string>
+</string>
 				<key>trailing</key>
-				<string>(
-                cancelAction: {
-                    selectedTransaction = nil
+				<string>                cancelAction: {
+                    transactionManager.selectedTransaction = nil
+                    transactionManager.isCreationMode = true
 </string>
 			</dict>
 			<key>type</key>

@@ -16,9 +16,10 @@ struct SubOperationDialog: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var dataManager: TransactionDataManager
     @EnvironmentObject var formState: TransactionFormState
+    
+    @EnvironmentObject var transactionManager: TransactionSelectionManager
 
     @Binding var subOperation: EntitySousOperations?
-    @Binding var isModeCreate: Bool
 
     @State private var comment           : String = ""
     @State private var selectedRubric    : EntityRubric?
@@ -139,7 +140,7 @@ struct SubOperationDialog: View {
         .padding()
         .onAppear {
             configureForm()
-            if isModeCreate == false{
+            if transactionManager.isCreationMode == false {
                 comment = subOperation?.libelle ?? ""
                 selectedCategorie = subOperation?.category
                 selectedRubric    = subOperation?.category?.rubric
@@ -178,7 +179,7 @@ struct SubOperationDialog: View {
 
     func saveSubOperation()
     {
-        if isModeCreate == true { // Création
+        if transactionManager.isCreationMode == true { // Création
             // Create entityTransaction
             ListTransactionsManager.shared.configure(with: modelContext)
             ListTransactionsManager.shared.createTransactions(formState: formState)

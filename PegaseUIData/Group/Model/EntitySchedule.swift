@@ -62,14 +62,6 @@ import SwiftUI
     }
 }
 
-
-enum SchedulerError: Error {
-    case contextNotConfigured
-    case accountNotFound
-    case saveFailed
-    case fetchFailed
-}
-
 final class SchedulerManager {
 
     static let shared = SchedulerManager()
@@ -254,7 +246,7 @@ final class SchedulerManager {
         do {
             try validContext.save()
         } catch {
-            throw SchedulerError.saveFailed
+            throw EnumError.saveFailed
         }
     }
 

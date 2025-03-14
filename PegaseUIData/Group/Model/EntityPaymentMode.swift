@@ -52,13 +52,6 @@ final class CacheEntry<T> {
 }
 
 
-enum PaymentModeError: Error {
-    case contextNotConfigured
-    case accountNotFound
-    case saveFailed
-    case fetchFailed
-}
-
 //Gère les opérations CRUD (Create, Read, Update, Delete)
 //Interagit directement avec SwiftData
 //Contient la logique métier complexe
@@ -88,7 +81,7 @@ final class PaymentModeManager {
     
     func create(account: EntityAccount?, name: String, color: NSColor) throws -> EntityPaymentMode? {
         guard let account = account else {
-            throw PaymentModeError.accountNotFound
+            throw EnumError.accountNotFound
         }
                 
         let newMode = EntityPaymentMode(name: name, color: color, account: account)
@@ -157,7 +150,7 @@ final class PaymentModeManager {
         do {
             try validContext.save()
         } catch {
-            throw PaymentModeError.saveFailed
+            throw EnumError.saveFailed
         }
     }
 
@@ -269,10 +262,10 @@ class PaymentModeViewModel: ObservableObject {
         do {
             let _ = try manager.create(account: account, name: name, color: NSColor.fromSwiftUIColor(color))
             reloadData()
-        } catch PaymentModeError.accountNotFound {
+        } catch EnumError.accountNotFound {
             // Gérer l'erreur account non trouvé
             print("Erreur : compte non trouvé")
-        } catch PaymentModeError.saveFailed {
+        } catch EnumError.saveFailed {
             // Gérer l'erreur de sauvegarde
             print("Erreur : échec de la sauvegarde")
         } catch {

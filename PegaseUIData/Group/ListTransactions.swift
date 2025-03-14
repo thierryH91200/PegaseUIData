@@ -105,7 +105,6 @@ struct ListTransactions: View {
                 .frame(maxWidth: .infinity, maxHeight: 100)
 
             ContentView10000( selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)
-                .environmentObject(colorManager) // Injecté ici
                 .environmentObject(currentAccountManager)
                 .environmentObject(dataManager)
 
@@ -221,7 +220,6 @@ struct ContentView10000: View {
 
 // MARK: TransactionsListView
 struct TransactionsListView: View {
-    @EnvironmentObject var colorManager: ColorManager // Injecté par le parent
     @EnvironmentObject var dataManager: ListDataManager
 
     let data: [TransactionsByYear100]
@@ -273,7 +271,6 @@ struct TransactionsListView: View {
                 ForEach(data) { yearGroup in
                     YearSectionView(yearGroup: yearGroup, selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)
                         .environmentObject(dataManager)
-                        .environmentObject(colorManager) // Passe l'environnement aux sous-vues
                 }
             }
             .listStyle(.inset)
@@ -285,7 +282,6 @@ struct TransactionsListView: View {
 // MARK: YearSectionView
 struct YearSectionView: View {
     @EnvironmentObject var dataManager: ListDataManager
-    @EnvironmentObject var colorManager: ColorManager // Injecté par le parent
 
     let yearGroup: TransactionsByYear100
     @Binding var selectedTransaction: EntityTransactions?
@@ -297,9 +293,7 @@ struct YearSectionView: View {
                     .foregroundColor(.blue)
         ) {
             ForEach(yearGroup.months) { monthGroup in
-                MonthDisclosureGroupView(monthGroup: monthGroup, year: yearGroup.year, selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)
-                    .environmentObject(colorManager) // Passe l'objet aux sous-vues
-                    .environmentObject(dataManager)
+                MonthDisclosureGroupView(monthGroup: monthGroup, year: yearGroup.year)
             }
         }
     }
@@ -308,13 +302,10 @@ struct YearSectionView: View {
 // MARK: MonthDisclosureGroupView
 struct MonthDisclosureGroupView: View {
     @EnvironmentObject var dataManager: ListDataManager
-    @EnvironmentObject var colorManager: ColorManager
+    @EnvironmentObject var transactionManager: TransactionSelectionManager
 
     let monthGroup: TransactionsByMonth100
     let year: String
-
-    @Binding var selectedTransaction: EntityTransactions?
-    @Binding var isCreationMode: Bool
 
     @AppStorage("disclosureStates") private var disclosureStatesData: Data = Data()
     @State private var disclosureStates: [String: Bool] = [:]
@@ -338,13 +329,12 @@ struct MonthDisclosureGroupView: View {
             isExpanded: isExpanded,
             content: {
                 ForEach(monthGroup.transactions, id: \.id) { transaction in
-                    TransactionRowView(transaction: transaction, isSelected: transaction == selectedTransaction)
-                        .environmentObject(colorManager)
+                    TransactionRowView(transaction: transaction, isSelected: transaction == transactionManager.selectedTransaction)
                         .environmentObject(dataManager)
 
                         .onTapGesture {
-                            selectedTransaction = transaction
-                            isCreationMode = false
+                            transactionManager.selectedTransaction = transaction
+                            transactionManager.isCreationMode = false
                         }
                 }
             },

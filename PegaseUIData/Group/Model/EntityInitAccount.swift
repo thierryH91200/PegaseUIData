@@ -19,14 +19,6 @@ import SwiftUI
     var codeGuichet: String = ""
     
     var iban: String = ""
-//    var iban2: String = ""
-//    var iban3: String = ""
-//    var iban4: String = ""
-//    var iban5: String = ""
-//    var iban6: String = ""
-//    var iban7: String = ""
-//    var iban8: String = ""
-//    var iban9: String = ""
 
     var engage: Double = 0.0
     var prevu: Double = 0.0
@@ -41,13 +33,6 @@ import SwiftUI
         self.iban = "FR76"
         self.account = account
     }
-}
-
-enum EnumError: Error {
-    case contextNotConfigured
-    case accountNotFound
-    case saveFailed
-    case fetchFailed
 }
 
 final class InitAccountManager {
@@ -141,7 +126,7 @@ final class InitAccountManager {
         do {
             try validContext.save()
         } catch {
-            throw PaymentModeError.saveFailed
+            throw EnumError.saveFailed
         }
     }
 }

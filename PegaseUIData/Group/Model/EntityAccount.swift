@@ -44,7 +44,6 @@ extension EntityFolderAccount {
     }
 }
 
-
 @Model public class EntityAccount: Identifiable {
 
     var name: String = ""

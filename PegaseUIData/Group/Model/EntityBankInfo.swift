@@ -143,9 +143,9 @@ class BankViewModel: ObservableObject {
         do {
             let _ = try manager.create(account: account)
             reloadData()
-        } catch PaymentModeError.accountNotFound {
+        } catch EnumError.accountNotFound {
             print("Erreur : compte non trouvé")
-        } catch PaymentModeError.saveFailed {
+        } catch EnumError.saveFailed {
             print("Erreur : échec de la sauvegarde")
         } catch {
             print("Erreur inattendue : \(error)")

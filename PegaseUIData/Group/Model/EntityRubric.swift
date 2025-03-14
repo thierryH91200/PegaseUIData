@@ -181,7 +181,7 @@ final class RubricManager {
         do {
             try validContext.save()
         } catch {
-            throw PaymentModeError.saveFailed
+            throw EnumError.saveFailed
         }
     }
 }

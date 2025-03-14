@@ -28,13 +28,6 @@ import SwiftUI
     }
 }
 
-enum StatusError: Error {
-    case contextNotConfigured
-    case accountNotFound
-    case saveFailed
-    case fetchFailed
-}
-
 protocol StatusManaging {
     func configure(with modelContext: ModelContext)
     func defaultStatus(account: EntityAccount)
@@ -67,7 +60,7 @@ final class StatusManager: StatusManaging {
     
     func create(account: EntityAccount?, name: String, type: Int, color: NSColor) throws -> EntityStatus? {
         guard let account = account else {
-            throw StatusError.accountNotFound
+            throw EnumError.accountNotFound
         }
                 
         let newMode = EntityStatus(account: account, name: name, type: type, color: color)
@@ -81,7 +74,7 @@ final class StatusManager: StatusManaging {
         do {
             try validContext.save()
         } catch {
-            throw StatusError.saveFailed
+            throw EnumError.saveFailed
         }
     }
 

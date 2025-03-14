@@ -36,25 +36,26 @@ final class TransactionDataManager: ObservableObject {
     }
 }
 
-
 struct OperationDialog: View {
     
+    @EnvironmentObject var transactionManager: TransactionSelectionManager
+
     @StateObject private var currentAccountManager = CurrentAccountManager.shared
     @StateObject private var transactionDataManager = TransactionDataManager()
     @StateObject private var formState = TransactionFormState()
     
-    @Binding var selectedTransaction: EntityTransactions?
-    @Binding var isCreationMode : Bool
-
     var body: some View {
         VStack {
-            OperationDialogView(selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode )
+            OperationDialogView()
                 .environmentObject(transactionDataManager)
                 .environmentObject(currentAccountManager)
                 .environmentObject(formState)
 
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .layoutPriority(1) // Priorité élevée pour occuper tout l’espace disponible
+                .layoutPriority(1)
+                .onChange(of: transactionManager.selectedTransaction) {old, new in
+                }
+
         }
         .padding()
     }

@@ -45,12 +45,19 @@ class ColorManager: ObservableObject {
     }
 }
 
+class TransactionSelectionManager: ObservableObject {
+    @Published var selectedTransaction: EntityTransactions?
+    @Published var isCreationMode: Bool = true
+}
+
 struct ContentView100: View {
     
     @AppStorage("windowWidth")  var windowWidth: Double = 800
     @AppStorage("windowHeight")  var windowHeight: Double = 600
     
     @Environment(\.modelContext) private var modelContext
+    @StateObject private var transactionManager = TransactionSelectionManager()
+
     @StateObject private var colorManager = ColorManager()
     
     @State private var selectedTransaction: EntityTransactions?
@@ -83,11 +90,11 @@ struct ContentView100: View {
             {
                 if isVisible
                 {
-                    OperationDialog(selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)
+                    OperationDialog()
                 }
             }
-//            .frame(minWidth: 800, maxWidth: .infinity) // Définit les contraintes globales du NavigationSplitView
-            .navigationSplitViewStyle(.balanced) // Style équilibré pour ajuster les tailles
+            .environmentObject(transactionManager) // Injection de l’EnvironmentObject
+            .navigationSplitViewStyle(.balanced)
 
             .onAppear {
 //                InitManager.shared.configure(with: modelContext)
