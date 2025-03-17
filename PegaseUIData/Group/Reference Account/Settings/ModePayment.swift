@@ -61,7 +61,9 @@ struct ModePaymentView: View {
             }
 
             // Affiche le tableau des modes de paiement
-            ModePaiementTable(modePayments: dataManager.modePayments ?? [], selection: $selectedItem)
+            ModePaiementTable(
+                modePayments: dataManager.modePayments ?? [],
+                selection: $selectedItem)
                 .frame(height: 300)
             
             // Met à jour la sélection
@@ -145,15 +147,9 @@ struct ModePaymentView: View {
         // Formulaire d'ajout et de modification
         .sheet(isPresented: $isAddDialogPresented) {
             ModePaiementFormView(isPresented: $isAddDialogPresented, isModeCtreate: $modeCreate, modePaiement: nil)
-                .environmentObject(currentAccountManager)
-                .environmentObject(dataManager)
-
         }
         .sheet(isPresented: $isEditDialogPresented) {
             ModePaiementFormView(isPresented: $isEditDialogPresented, isModeCtreate: $modeCreate, modePaiement: selectedMode)
-                .environmentObject(currentAccountManager)
-                .environmentObject(dataManager)
-
         }
     }
     
@@ -217,7 +213,6 @@ struct ModePaiementFormView: View {
     @EnvironmentObject var modePaiementViewManager: ModePaiementDataManager
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
 
-    
     @Binding var isPresented: Bool
     @Binding var isModeCtreate: Bool
     let modePaiement: EntityPaymentMode?

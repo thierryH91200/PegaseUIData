@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		030EFF1C2D84844D00A5C614 /* astuces.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EFF1B2D84843E00A5C614 /* astuces.swift */; };
 		0359AE602CD7BB8900687E3F /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 0359AE5F2CD7BB8900687E3F /* README.md */; };
 		037066232CD7FECA0071312A /* README_fr.md in Resources */ = {isa = PBXBuildFile; fileRef = 037066222CD7FECA0071312A /* README_fr.md */; };
 		03B7EC4C2D60E56D0039F3DA /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = 03B7EC4B2D60E56D0039F3DA /* DGCharts */; };
@@ -14,6 +15,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		030EFF1B2D84843E00A5C614 /* astuces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = astuces.swift; sourceTree = "<group>"; };
 		031346A02CE092ED0048F465 /* Pegase.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = Pegase.xcodeproj; sourceTree = "<group>"; };
 		0359AE5F2CD7BB8900687E3F /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		037059202CDF6AC100AA39D4 /* Pegase.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pegase.xcodeproj; path = PegaseUIData/Group/Model/Pegase.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -80,6 +82,7 @@
 				0359AE612CD7BBA300687E3F /* Doc */,
 				0359AE5F2CD7BB8900687E3F /* README.md */,
 				037066222CD7FECA0071312A /* README_fr.md */,
+				030EFF1B2D84843E00A5C614 /* astuces.swift */,
 				039B4BAB2CD78949002203D9 /* PegaseUIData */,
 				039B4BAA2CD78949002203D9 /* Products */,
 			);
@@ -188,6 +191,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				030EFF1C2D84844D00A5C614 /* astuces.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

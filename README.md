@@ -38,6 +38,8 @@ Add vew transaction                             26/02/25
 
 improve preference Transaction                  10/03/25
 
+clean the code                                  14/03/25
+
 
 /// Représente un groupe de transactions d'un mois précis (par exemple 2023-02).
 struct TransactionsByMonth: Identifiable {

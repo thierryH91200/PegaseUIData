@@ -187,7 +187,7 @@ struct SubOperationDialog: View {
             // Create entitySousOperation
             let amountDouble = (Double(amount) ?? 0.0) * (isExpanded ? -1 : 1)
             amount = String(amountDouble)
-            printSub1()
+            
             SubTransactionsManager.shared.createSubTransactions(comment: comment, category: selectedCategorie!, amount: amount, formState: formState)
             
             if formState.currentTransaction?.sousOperations == nil {
@@ -195,7 +195,7 @@ struct SubOperationDialog: View {
             }
             
             formState.currentTransaction?.addSubOperation(subOperation!)
-            modelContext.insert(subOperation!)
+//            modelContext.insert(subOperation!)
 
         } else { // Edition
             if let subOperation = subOperation {

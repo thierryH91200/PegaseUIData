@@ -12,13 +12,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>302</string>
+					<string>291</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>301</string>
+					<string>290</string>
 					<key>Timestamp</key>
-					<string>763647474.3259259</string>
+					<string>763752404.731853</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -100,15 +100,15 @@
 				<key>location-parameters</key>
 				<dict>
 					<key>EndingColumnNumber</key>
-					<string>0</string>
+					<string>5</string>
 					<key>EndingLineNumber</key>
-					<string>369</string>
+					<string>565</string>
 					<key>StartingColumnNumber</key>
-					<string>0</string>
+					<string>5</string>
 					<key>StartingLineNumber</key>
-					<string>368</string>
+					<string>565</string>
 					<key>Timestamp</key>
-					<string>763647474.325906</string>
+					<string>763913229.420454</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -124,16 +124,15 @@
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string>struct TransactionRowView: View {
-</string>
+				<string></string>
 				<key>leading</key>
-				<string>
-// MARK: TransactionRowView
-</string>
+				<string>        .padding()
+        .frame(minWidth: 400, minHeight: 300)
+    }</string>
 				<key>trailing</key>
-				<string>    @Environment(\.modelContext) private var modelContext
+				<string>    
+}
 
-    @EnvironmentObject var colorManager: ColorManager
 </string>
 			</dict>
 			<key>type</key>
@@ -147,13 +146,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>290</string>
+					<string>286</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>289</string>
+					<string>285</string>
 					<key>Timestamp</key>
-					<string>763644963.736389</string>
+					<string>763657999.576717</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -327,13 +326,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>54</string>
+					<string>50</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>53</string>
+					<string>49</string>
 					<key>Timestamp</key>
-					<string>763644963.736367</string>
+					<string>763657999.576579</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>

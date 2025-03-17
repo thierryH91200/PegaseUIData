@@ -105,8 +105,8 @@ struct CheckView: View {
             // Table des carnets de chèques
             CheckBookTable(checkBooks: dataManager.checkBooks ?? [], selection: $selectedItem)
                 .frame(height: 300)
+                // Mise à jour de l'élément sélectionné
                 .onChange(of: selectedItem) { _, newValue in
-                    // Mise à jour de l'élément sélectionné
                     selectedCheck = dataManager.checkBooks?.first(where: { $0.id == newValue })
                 }
                 .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
@@ -165,7 +165,6 @@ struct CheckView: View {
     private func setupDataManager() {
         ChequeBookManager.shared.configure(with: modelContext)
         dataManager.configure(with: modelContext)
-        
         dataManager.checkBooks = ChequeBookManager.shared.getAllDatas()
     }
     

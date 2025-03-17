@@ -21,7 +21,7 @@ import AppKit
     public var id: UUID { uuid }
 
     public init() {
-
+        self.libelle = "Empty"
     }
 }
 
@@ -32,7 +32,7 @@ final class SubTransactionsManager {
     static let shared =  SubTransactionsManager()
     
     var entities : [EntitySousOperations] = []
-    var subOperation : EntitySousOperations = EntitySousOperations()
+    var subOperation : EntitySousOperations?
 
     var modelContext : ModelContext?
     var validContext: ModelContext {
@@ -56,10 +56,10 @@ final class SubTransactionsManager {
                                formState: TransactionFormState ) {
                 
         self.formState = formState
-        self.subOperation = EntitySousOperations()
+        self.subOperation = formState.currentSousTransaction ?? EntitySousOperations()
         update(comment: comment, category: category, amount: amount)
         
-        formState.currentTransaction?.addSubOperation(subOperation)
+        formState.currentTransaction?.addSubOperation(subOperation!)
         formState.entityTransactions.append(formState.currentTransaction!)
         if formState.currentTransaction?.sousOperations == nil {
             formState.currentTransaction?.sousOperations = []
@@ -67,16 +67,19 @@ final class SubTransactionsManager {
     }
     
     private func update(comment: String,
-                                     category: EntityCategory,
-                                     amount: String) {
+                        category: EntityCategory,
+                        amount: String) {
         
-        subOperation.libelle = comment
-        subOperation.category = category
-        if let value = Double(amount) {
-            subOperation.amount = value
-        } else {
-            print("Erreur : Le montant saisi n'est pas valide")
+        if let subOperation = subOperation {
+            
+            subOperation.libelle = comment
+            subOperation.category = category
+            if let value = Double(amount) {
+                subOperation.amount = value
+            } else {
+                print("Erreur : Le montant saisi n'est pas valide")
+            }
+            //        subOperation.transaction = formState.currentTransaction
         }
-//        subOperation.transaction = formState.currentTransaction
     }
 }

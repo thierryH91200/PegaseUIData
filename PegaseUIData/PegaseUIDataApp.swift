@@ -56,7 +56,7 @@ struct PegaseUIDataApp: App {
         }
         .commands {
             CommandGroup(replacing: .appSettings) {
-                Button("Préférences…") {
+                Button("Preferences…") {
                     PreferencesWindowController.shared.showWindow()
                 }
                 .keyboardShortcut(",", modifiers: .command)
@@ -136,7 +136,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             preferencesItem.target = self
             appMenu?.insertItem(preferencesItem, at: 1)
         }
-
     }
     
     @objc func openPreferences() {

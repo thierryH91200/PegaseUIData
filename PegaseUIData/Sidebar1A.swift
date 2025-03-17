@@ -80,9 +80,6 @@ struct Sidebar1A: View {
     private func tableView(account: EntityAccount) async -> some View {
         let _ = PaymentModeManager.shared.configure(with: modelContext)
         let _ =  PaymentModeViewModel(account: account)
-        
-//        TableView(account: account, modePayments: $modePayments, viewModel: viewModel)
-//            .environmentObject(viewModel)
     }
     
     func preloadDataIfNeeded(modelContext: ModelContext) {

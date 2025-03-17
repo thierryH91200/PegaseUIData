@@ -156,13 +156,9 @@ struct RubricView: View {
             
             .sheet(isPresented: $isAddDialogRubricPresented) {
                 RubricFormView(isPresented: $isAddDialogRubricPresented, isMode: $modeCreate, rubric: nil)
-                    .environmentObject(dataManager)
-
             }
             .sheet(isPresented: $isEditDialogRubricPresented) {
                 RubricFormView(isPresented: $isEditDialogRubricPresented, isMode: $modeCreate, rubric: selectedRubric)
-                    .environmentObject(dataManager)
-
             }
             .sheet(isPresented: $isAddDialogCategoryPresented) {
                 CategoryFormView(isPresented: $isAddDialogCategoryPresented, isModeCreate: $modeCreate, rubric: nil, category: nil)
@@ -299,10 +295,9 @@ struct RubricView: View {
 struct RubricFormView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    
     @EnvironmentObject var dataManager : RubricDataManager
 
-
+    
     @Binding var isPresented: Bool
     @Binding var isMode: Bool
     let rubric: EntityRubric?
@@ -383,7 +378,6 @@ struct RubricFormView: View {
 struct CategoryFormView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-//    @EnvironmentObject var rubricViewManager: RubricDataManager
     
     @Binding var isPresented: Bool
     @Binding var isModeCreate: Bool

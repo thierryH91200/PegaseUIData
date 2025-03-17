@@ -4,6 +4,16 @@
     "" : {
       "shouldTranslate" : false
     },
+    " Bank statement :" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relevé bancaire :"
+          }
+        }
+      }
+    },
     "(no transfer)" : {
       "localizations" : {
         "fr" : {
@@ -37,6 +47,16 @@
         }
       },
       "shouldTranslate" : false
+    },
+    "%@ €" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ €"
+          }
+        }
+      }
     },
     "%lld" : {
       "shouldTranslate" : false
@@ -211,7 +231,14 @@
       }
     },
     "Alpha value:" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valeur alpha"
+          }
+        }
+      }
     },
     "Amount" : {
       "localizations" : {
@@ -219,6 +246,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Montant"
+          }
+        }
+      }
+    },
+    "Amount :" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Montant :"
           }
         }
       }
@@ -243,8 +280,21 @@
         }
       }
     },
-    "Background color:" : {
+    "Aucune sous-opération disponible" : {
 
+    },
+    "Aucune transaction sélectionnée" : {
+
+    },
+    "Background color:" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couleur d'arrière-plan :"
+          }
+        }
+      }
     },
     "Bank" : {
       "localizations" : {
@@ -442,6 +492,16 @@
         }
       }
     },
+    "Category :" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Catégorie :"
+          }
+        }
+      }
+    },
     "Category selection" : {
       "localizations" : {
         "fr" : {
@@ -528,6 +588,16 @@
         }
       }
     },
+    "Close" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fermer"
+          }
+        }
+      }
+    },
     "Color" : {
       "localizations" : {
         "fr" : {
@@ -550,6 +620,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Libellé"
+          }
+        }
+      }
+    },
+    "Comment :" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Libellé :"
           }
         }
       }
@@ -756,6 +836,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Date de pointage"
+          }
+        }
+      }
+    },
+    "Date of pointing :" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date de pointage :"
+          }
+        }
+      }
+    },
+    "Date operation :" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date de l’opération"
           }
         }
       }
@@ -1042,17 +1142,6 @@
         }
       }
     },
-    "Enable sounds" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Activer les sons"
-          }
-        }
-      }
-    },
     "End balance" : {
       "localizations" : {
         "fr" : {
@@ -1150,7 +1239,14 @@
       }
     },
     "Eyes" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yeux"
+          }
+        }
+      }
     },
     "Final balance" : {
       "localizations" : {
@@ -1193,7 +1289,14 @@
       }
     },
     "Foreground color:" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couleur de premier plan :"
+          }
+        }
+      }
     },
     "Frequency" : {
       "localizations" : {
@@ -1226,7 +1329,14 @@
       }
     },
     "General" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Général"
+          }
+        }
+      }
     },
     "General information" : {
       "localizations" : {
@@ -1308,6 +1418,16 @@
         }
       }
     },
+    "Information" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Information"
+          }
+        }
+      }
+    },
     "Initial balance" : {
       "localizations" : {
         "fr" : {
@@ -1381,7 +1501,14 @@
       }
     },
     "Launch at login" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lancer à la connexion"
+          }
+        }
+      }
     },
     "Light" : {
       "localizations" : {
@@ -1691,6 +1818,16 @@
         }
       }
     },
+    "Payment method :" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mode de paiement :"
+          }
+        }
+      }
+    },
     "Pegase" : {
       "localizations" : {
         "fr" : {
@@ -1741,8 +1878,15 @@
         }
       }
     },
-    "Préférences…" : {
-
+    "Preferences…" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Préférences…"
+          }
+        }
+      }
     },
     "Prefix" : {
       "localizations" : {
@@ -1780,6 +1924,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rubrique"
+          }
+        }
+      }
+    },
+    "Rubric :" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rubrique :"
           }
         }
       }
@@ -1855,7 +2009,14 @@
       }
     },
     "Show in menu bar (hide from Dock)" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher dans la barre de menu (masquer du Dock)"
+          }
+        }
+      }
     },
     "Show inspector" : {
       "localizations" : {
@@ -1863,17 +2024,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Montre l’inspecteur"
-          }
-        }
-      }
-    },
-    "Show notifications" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Afficher les notifications"
           }
         }
       }
@@ -1910,6 +2060,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Status"
+          }
+        }
+      }
+    },
+    "Statut :" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Statut :"
           }
         }
       }
@@ -1972,6 +2132,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Date de la Transaction"
+          }
+        }
+      }
+    },
+    "Transaction Details" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Détails de la transaction"
           }
         }
       }

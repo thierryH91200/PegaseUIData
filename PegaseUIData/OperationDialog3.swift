@@ -22,11 +22,7 @@ struct OperationDialogView: View {
     @EnvironmentObject var dataManager: TransactionDataManager
     @EnvironmentObject var formState: TransactionFormState
 
-//    @Binding var selectedTransaction: EntityTransactions?
-//    @Binding var isCreationMode: Bool
-        
     // États du formulaire déplacés dans un State Object
-
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             // En-tête avec information de transaction
