@@ -35,35 +35,29 @@ final class ListDataManager: ObservableObject {
     
     @MainActor func deleteTransaction(_ transaction: EntityTransactions) {
         guard let modelContext = modelContext else { return }
-        
-        print("Transactions avant suppression :", listTransactions.count)
-        
+               
         modelContext.delete(transaction)
         
         // Rafraîchir complètement la liste après suppression
         saveChanges()
         loadTransactions()  // Recharger la liste des transactions
-        
-        print("Transactions après suppression :", listTransactions.count)
     }
     
     @MainActor
     func loadTransactions() {
         
         self.listTransactions = ListTransactionsManager.shared.getAllDatas()
-        print("Transactions rechargées apres :", listTransactions.count)
+        objectWillChange.send()
     }
 }
 
 struct ListTransactionsView: View {
     
     @StateObject private var currentAccountManager = CurrentAccountManager.shared
-    @StateObject private var listDataManager = ListDataManager()
     @Binding var isVisible: Bool
     
     var body: some View {
         ListTransactions()
-            .environmentObject(listDataManager)
             .environmentObject(currentAccountManager)
         
             .padding()
@@ -99,10 +93,8 @@ struct ListTransactions: View {
                 .frame(maxWidth: .infinity, maxHeight: 100)
             
             ContentView10000( selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)
-            //                .environmentObject(currentAccountManager)
-            //                .environmentObject(dataManager)
-            
                 .frame(minWidth: 200, minHeight: 300)
+            
             Spacer()
         }
         .onChange(of: colorManager.selectedColorType) { old, new in
@@ -188,7 +180,7 @@ struct ContentView10000: View {
             }
             .onChange(of: currentAccountManager.currentAccount) { _, newAccount in
                 // Mise à jour de la liste en cas de changement de compte
-                dataManager.listTransactions = []
+//                dataManager.listTransactions = []
                 refreshData()
             }
     }
@@ -328,7 +320,7 @@ struct MonthDisclosureGroupView: View {
                         TransactionDetailView(transaction: selected)
                             .frame(minWidth: 400, minHeight: 300)
                     } else {
-                        Text("Aucune transaction sélectionnée")
+                        Text("No transaction selected")
                             .frame(minWidth: 400, minHeight: 300)
                     }
                 }
@@ -467,6 +459,21 @@ struct TransactionDetailView: View {
                 .padding(.bottom, 10)
             
             HStack {
+                Text("Create at :")
+                    .bold()
+                Spacer()
+                Text(transaction.createAt != nil ? Self.dateFormatter.string(from: transaction.createAt!) : "—")
+            }
+            HStack {
+                Text("Update at :")
+                    .bold()
+                Spacer()
+                Text(transaction.updatedAt != nil ? Self.dateFormatter.string(from: transaction.updatedAt!) : "—")
+            }
+
+            Divider()
+
+            HStack {
                 Text("Amount :")
                     .bold()
                 Spacer()
@@ -537,7 +544,7 @@ struct TransactionDetailView: View {
                         .foregroundColor(premiereSousOp.amount >= 0 ? .green : .red)
                 }
             } else {
-                Text("Aucune sous-opération disponible")
+                Text("No sub-operations available")
                     .italic()
                     .foregroundColor(.gray)
             }

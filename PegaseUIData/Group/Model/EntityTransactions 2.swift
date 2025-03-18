@@ -12,9 +12,7 @@ import AppKit
 
 protocol ListManaging {
     func configure(with modelContext: ModelContext)
-//    func defaultStatus(account: EntityAccount)
-//    func getAllDatas(ascending: Bool) -> [EntityStatus]?
-//    func saveContext()
+    func find(uuid: UUID) -> EntityTransactions?
 }
 
 
@@ -137,7 +135,6 @@ final class ListTransactionsManager: ListManaging {
         do {
             // Récupération des entités depuis le contexte
             entities = try validContext.fetch(fetchDescriptor)
-            printTransactions()
         } catch {
             print("Erreur lors de la récupération des données avec SwiftData : \(error)")
             return []
@@ -149,7 +146,7 @@ final class ListTransactionsManager: ListManaging {
         }
         return entities
     }
-    
+
     // MARK: remove Transaction
     func remove(entity: EntityTransactions)
     {

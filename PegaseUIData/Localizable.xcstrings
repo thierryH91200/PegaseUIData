@@ -280,12 +280,6 @@
         }
       }
     },
-    "Aucune sous-opération disponible" : {
-
-    },
-    "Aucune transaction sélectionnée" : {
-
-    },
     "Background color:" : {
       "localizations" : {
         "fr" : {
@@ -734,6 +728,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "CP"
+          }
+        }
+      }
+    },
+    "Create at :" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crée le :"
           }
         }
       }
@@ -1722,6 +1726,16 @@
         }
       }
     },
+    "No sub-operations available" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune sous-opération disponible"
+          }
+        }
+      }
+    },
     "No transaction selected" : {
       "localizations" : {
         "fr" : {
@@ -1943,7 +1957,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Selection de la rubrique"
+            "value" : "Sélection de la rubrique"
           }
         }
       }
@@ -2172,6 +2186,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unie"
+          }
+        }
+      }
+    },
+    "Update" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mise à jour"
+          }
+        }
+      }
+    },
+    "Update at :" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modifié le :"
           }
         }
       }

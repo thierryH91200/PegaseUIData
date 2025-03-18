@@ -16,10 +16,8 @@ struct OperationDialogView: View {
     @Environment(\.dismiss) private var dismiss
     
     @EnvironmentObject var transactionManager: TransactionSelectionManager
-
-    
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
-    @EnvironmentObject var dataManager: TransactionDataManager
+    @EnvironmentObject var dataManager: ListDataManager
     @EnvironmentObject var formState: TransactionFormState
 
     // États du formulaire déplacés dans un State Object
@@ -69,7 +67,6 @@ struct OperationDialogView: View {
         }
         .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
             if newAccount != nil {
-                dataManager.transactions = nil
                 refreshData()
             }
         }
@@ -104,7 +101,7 @@ struct OperationDialogView: View {
     
     private func refreshData() {
         ListTransactionsManager.shared.configure(with: modelContext)
-        dataManager.transactions = ListTransactionsManager.shared.getAllDatas()
+        dataManager.listTransactions = ListTransactionsManager.shared.getAllDatas()
     }
     
     func configureFormState() async throws {
@@ -133,9 +130,9 @@ struct OperationDialogView: View {
         }
     }
     
-    private func loadTransactionData(_ transaction: EntityTransactions) {
-        formState.transactionDate = transaction.dateOperation?.noon ?? Date()
-        formState.pointingDate = transaction.datePointage?.noon ?? Date()
+    private func loadTransactionData(_ transaction : EntityTransactions) {
+        formState.transactionDate        = transaction.dateOperation?.noon ?? Date()
+        formState.pointingDate           = transaction.datePointage?.noon ?? Date()
         formState.selectedMode           = transaction.paymentMode
         formState.checkNumber            = Int(transaction.checkNumber) ?? 0
         formState.bankStatement          = Int(transaction.bankStatement)
@@ -160,6 +157,7 @@ struct OperationDialogView: View {
         } catch {
             print("Erreur lors de l'enregistrement : \(error)")
         }
+        dataManager.loadTransactions()
         resetListTransactions()
     }
     
@@ -172,7 +170,9 @@ struct OperationDialogView: View {
         // Création d'une nouvelle transaction
         if transactionManager.isCreationMode == true {
             createNewTransaction(account)
-            refreshData()
+//            refreshData()
+            dataManager.loadTransactions()
+
         }
     }
     
@@ -207,8 +207,7 @@ struct OperationDialogView: View {
         formState.currentTransaction?.status = formState.selectedStatus
         formState.currentTransaction?.checkNumber = String(formState.checkNumber)
         formState.currentTransaction?.account = account
-        
-        printsub()
+//        printsub()
     }
     
     func save() throws {
@@ -284,6 +283,9 @@ struct TransactionFormView: View {
 
 // MARK: 6. Composant des boutons d'action
 struct ActionButtonsView: View {
+    
+    @EnvironmentObject var transactionManager: TransactionSelectionManager
+
     let cancelAction: () -> Void
     let saveAction:   () -> Void
     
@@ -300,14 +302,12 @@ struct ActionButtonsView: View {
             .accessibilityLabel(String(localized: "Cancel operation"))
             .accessibilityHint(String(localized: "Double tap to discard changes and close"))
             
-            Button(action:
-                    saveAction
-            ) {
-                Text("OK")
+            Button(action: saveAction ) {
+                Text(transactionManager.isCreationMode ? "Add" : "Update")
                     .frame(width: 100)
                     .foregroundColor(.white)
                     .padding()
-                    .background(Color.green)
+                    .background(transactionManager.isCreationMode ? .orange : .green)
                     .cornerRadius(5)
             }
             .accessibilityLabel(String(localized: "Save operation"))

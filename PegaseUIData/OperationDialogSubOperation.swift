@@ -14,7 +14,7 @@ struct SubOperationDialog: View {
     
     @Environment(\.modelContext) private var modelContext: ModelContext
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject var dataManager: TransactionDataManager
+    @EnvironmentObject var dataManager: ListDataManager
     @EnvironmentObject var formState: TransactionFormState
     
     @EnvironmentObject var transactionManager: TransactionSelectionManager
@@ -145,7 +145,7 @@ struct SubOperationDialog: View {
                 selectedCategorie = subOperation?.category
                 selectedRubric    = subOperation?.category?.rubric
                 amount = String(subOperation?.amount ?? 0.0)
-                printSub()
+//                printSub()
 
             } else {
                 
@@ -157,8 +157,7 @@ struct SubOperationDialog: View {
                 selectedCategorie = entityPreference!.category
                 selectedRubric = entityPreference!.category?.rubric
                 amount = String(0.0)
-                
-                printSub1()
+//                printSub1()
             }
         }
     }
@@ -185,6 +184,8 @@ struct SubOperationDialog: View {
             ListTransactionsManager.shared.createTransactions(formState: formState)
                        
             // Create entitySousOperation
+            formState.currentSousTransaction = EntitySousOperations()
+
             let amountDouble = (Double(amount) ?? 0.0) * (isExpanded ? -1 : 1)
             amount = String(amountDouble)
             
@@ -241,6 +242,7 @@ struct SubOperationDialog: View {
                     if let categoryIndex = entityCategorie.firstIndex(where: { $0 === preference.category }) {
                         selectedCategorie = entityCategorie[categoryIndex]
                     }
+                    isExpanded = preference.signe
                 }
             } catch {
                 print("Failed to configure form: \(error)")
@@ -273,7 +275,7 @@ struct SubOperationsSectionView: View {
             
             HStack {
                 Button(action: {
-                    currentSubOperation = EntitySousOperations()
+//                    currentSubOperation = EntitySousOperations()
                     isShowingDialog = true
                 }) {
                     Image(systemName: "plus")

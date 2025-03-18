@@ -15,6 +15,7 @@ import AppKit
     var amount: Double = 0.0
     var libelle: String = ""
     var category: EntityCategory?
+    
     var transaction: EntityTransactions?
    
     @Attribute(.unique) var uuid: UUID = UUID()

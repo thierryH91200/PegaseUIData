@@ -38,7 +38,7 @@ class ColorManager: ObservableObject {
         case "Payment Mode":
             return Color(transaction.paymentMode?.color ?? .black)
         case "Status":
-            return .gray
+            return Color(transaction.status?.color ?? .gray)
         default:
             return .black
         }
@@ -57,9 +57,9 @@ struct ContentView100: View {
     
     @Environment(\.modelContext) private var modelContext
     @StateObject private var transactionManager = TransactionSelectionManager()
-
     @StateObject private var colorManager = ColorManager()
-    
+    @StateObject private var listDataManager = ListDataManager()
+
     @State private var selectedTransaction: EntityTransactions?
     @State private var isCreationMode : Bool = true
 
@@ -72,6 +72,8 @@ struct ContentView100: View {
 
     @State private var entityAccount: [EntityAccount] = []    
     @State private var inspectorIsShown: Bool = false
+    
+    @State private var selectedColor: String? = "United"
       
     var body: some View {
         HStack
@@ -93,7 +95,8 @@ struct ContentView100: View {
                     OperationDialog()
                 }
             }
-            .environmentObject(transactionManager) // Injection de l’EnvironmentObject
+            .environmentObject(transactionManager)     // Injection de l’EnvironmentObject
+            .environmentObject(listDataManager)        // Injection de l’EnvironmentObject
             .navigationSplitViewStyle(.balanced)
 
             .onAppear {
@@ -140,22 +143,42 @@ struct ContentView100: View {
                     Label("Settings", systemImage: "gear")
                 }
             }
+            
             ToolbarItemGroup(placement: .automatic) {
                 Menu {
                     Button(action: { chooseCouleur("United") }) {
-                        Label("United", systemImage: "paintbrush.fill")
+                        HStack {
+                            Label("United", systemImage: "paintbrush.fill")
+                            if selectedColor == "United" {
+                                Image(systemName: "checkmark")
+                            }
+                        }
                     }
                     Button(action: { chooseCouleur("Income/Expense") }) {
                         Label("Income/Expense", systemImage: "dollarsign.circle")
+                        if selectedColor == "Income/Expense" {
+                            Image(systemName: "checkmark")
+                        }
                     }
                     Button(action: { chooseCouleur("Rubric") }) {
                         Label("Rubric", systemImage: "tag.fill")
+                        if selectedColor == "Rubric" {
+                            Image(systemName: "checkmark")
+                        }
                     }
                     Button(action: { chooseCouleur("Payment Mode") }) {
                         Label("Payment method", systemImage: "creditcard.fill")
+                        if selectedColor == "Payment Mode" {
+                            Image(systemName: "checkmark")
+                        }
                     }
                     Button(action: { chooseCouleur("Status") }) {
-                        Label("Status", systemImage: "checkmark.circle.fill")
+                        HStack {
+                            Label("Status", systemImage: "checkmark.circle.fill")
+                            if selectedColor == "Status" {
+                                Image(systemName: "checkmark")
+                            }
+                        }
                     }
                 } label: {
                     Label("Choose the color", systemImage: "paintpalette")
@@ -169,9 +192,10 @@ struct ContentView100: View {
         .environmentObject(colorManager)  // Injection de ColorManager pour toutes les sous-vues
     }
 
-    private func chooseCouleur(_ type: String) {
-        colorManager.selectedColorType = type
-        isVisible = false // Modifie l'état pour rafraîchir l'UI
+    private func chooseCouleur(_ color: String) {
+        colorManager.selectedColorType = color
+        selectedColor = color
+//        isVisible = false // Modifie l'état pour rafraîchir l'UI
     }
 
     private func saveWindowSize(width: CGFloat, height: CGFloat) {

@@ -124,7 +124,7 @@ final class StatusManager: StatusManaging {
                       String(localized :"Executed") ]
         
         let status: [(name: String, type : Int, color: NSColor)] = [
-            ( names[0], 0, .orange),
+            ( names[0], 0, .blue),
             ( names[1], 1, .green),
             ( names[2], 2, .red)
         ]
