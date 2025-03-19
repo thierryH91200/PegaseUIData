@@ -62,7 +62,7 @@ struct PegaseUIDataApp: App {
                     }
                     .keyboardShortcut("T", modifiers: [.command, .shift]) // Cmd+Shift+T
                     
-                    Button("Relevé") {
+                    Button("Statement") {
                         NotificationCenter.default.post(name: .importReleve, object: nil)
                     }
                     .keyboardShortcut("R", modifiers: [.command, .shift]) // Cmd+Shift+R

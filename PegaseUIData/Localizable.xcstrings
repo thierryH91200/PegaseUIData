@@ -270,9 +270,6 @@
         }
       }
     },
-    "Aperçu du CSV" : {
-
-    },
     "Appearance" : {
       "localizations" : {
         "fr" : {
@@ -282,9 +279,6 @@
           }
         }
       }
-    },
-    "Associez les colonnes :" : {
-
     },
     "Background color:" : {
       "localizations" : {
@@ -598,15 +592,22 @@
         }
       }
     },
-    "Colonne %lld" : {
-
-    },
     "Color" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Couleur"
+          }
+        }
+      }
+    },
+    "Colunn %lld" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Colonne %lld"
           }
         }
       }
@@ -767,6 +768,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mode Création"
+          }
+        }
+      }
+    },
+    "CSV Preview" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aperçu CSV"
           }
         }
       }
@@ -1401,17 +1412,35 @@
         }
       }
     },
-    "Ignorer" : {
-
+    "Ignore" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ignorer"
+          }
+        }
+      }
     },
     "Import" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importer"
+          }
+        }
+      }
     },
-    "Importer" : {
-
-    },
-    "Importer un fichier CSV" : {
-
+    "Import a CSV file" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importer un ficher CSV"
+          }
+        }
+      }
     },
     "Income/Expense" : {
       "localizations" : {
@@ -1499,17 +1528,6 @@
         }
       }
     },
-    "InternetReconciliationView" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "InternetReconciliationView"
-          }
-        }
-      }
-    },
     "Key" : {
       "localizations" : {
         "en" : {
@@ -1552,6 +1570,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Compte lié"
+          }
+        }
+      }
+    },
+    "Match the columns :" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Associer les colonnes"
           }
         }
       }
@@ -1944,9 +1972,6 @@
         }
       }
     },
-    "Relevé" : {
-
-    },
     "Remove the category" : {
       "localizations" : {
         "fr" : {
@@ -2089,6 +2114,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Date de Début"
+          }
+        }
+      }
+    },
+    "Statement" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relevé"
           }
         }
       }

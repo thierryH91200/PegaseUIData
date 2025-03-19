@@ -65,7 +65,7 @@ struct CSVImportView: View {
     
     var body: some View {
         VStack {
-            Button("Importer un fichier CSV") {
+            Button("Import a CSV file") {
                 showFileImporter = true
             }
             .frame(width: 200, height: 30, alignment: .center)
@@ -85,20 +85,20 @@ struct CSVImportView: View {
             }
             
             if !csvData.isEmpty {
-                Text("Aperçu du CSV").font(.headline)
+                Text("CSV Preview").font(.headline)
                 ScrollView(.horizontal) {
                     TableView(data: csvData)
                 }
                 
-                Text("Associez les colonnes :").font(.headline)
+                Text("Match the columns :").font(.headline)
                 ForEach(transactionAttributes, id: \.self) { attribute in
                     Picker(attribute, selection: Binding(
                         get: { columnMapping[attribute] ?? -1 },
                         set: { columnMapping[attribute] = $0 }
                     )) {
-                        Text("Ignorer").tag(-1)
+                        Text("Ignore").tag(-1)
                         ForEach(0..<(csvData.first?.count ?? 0), id: \.self) { index in
-                            Text("Colonne \(index)").tag(index)
+                            Text("Colunn \(index)").tag(index)
                         }
                     }
                     .frame(width: 300) // Réduit la largeur du picker
@@ -106,7 +106,7 @@ struct CSVImportView: View {
 
                 }
                 
-                Button("Importer") {
+                Button("Import") {
                     importCSVTransactions(context: modelContext)
                 }
                 .disabled(columnMapping.isEmpty)
@@ -124,6 +124,7 @@ struct CSVImportView: View {
         PaymentModeManager.shared.configure(with: context)
         StatusManager.shared.configure(with: context)
         CategoriesManager.shared.configure(with: context)
+        
         let entityPreference = PreferenceManager.shared.getAllDatas(for: account)
 
         for row in csvData.dropFirst() { // Ignorer l'en-tête
@@ -164,9 +165,7 @@ struct CSVImportView: View {
             sousTransaction.transaction = transaction
             
             context.insert(sousTransaction)
-
             transaction.addSubOperation(sousTransaction)
-
 
             context.insert(transaction)
         }

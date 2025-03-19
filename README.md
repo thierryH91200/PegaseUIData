@@ -1,48 +1,28 @@
-I convert the Pegase program from swift to swiftui
+Since the beginning of the Pegase conversion from Swift to SwiftUI, significant progress has been made to modernize the application and enhance its functionality.
+    •    Migration to SwiftData: The old CoreData structure has been fully transitioned to SwiftData, with a complete model redesign.
+    •    Identity ✅
+    •    Bank ✅
+    •    Bank statement ✅
+    •    UI Customization:
+    •    Added Dark/Light Mode support for the toolbar (10/11/24).
+    •    Improved the Detail View for better readability (13/12/24).
+    •    New Features Implemented:
+    •    Added Payment Mode management (20/01/25).
+    •    Integrated Bank Statements (30/01/25).
+    •    Introduced Rubrics for better categorization (03/02/25).
+    •    Implemented a Payment Scheduler (05/02/25).
+    •    Added Check Management (05/02/25).
+    •    Developed the Transaction View (26/02/25).
+    •    Improvements and Optimizations:
+    •    Enhanced Transaction Preferences for a smoother experience (10/03/25).
+    •    Code cleanup and optimization for better performance (14/03/25).
+    •    Refined the Account Switching mechanism for improved usability (02/02/25).
+    •    Improved Translations to make the application more accessible (02/02/25).
+    •    Most Recent Advancement:
+    •    Added CSV transaction import (19/03/25), enabling more flexible financial data management.
 
-I converted coredata to SwiftData
+Step by step, Pegase is shaping up and is now starting to function as intended. 🚀
 
-Identity = ok
-
-Bank = ok
-
-Statement = ok
-
-Dark/LIght toolBar = ok                         10/11/24
-
-Add helper and definition for SwiftData         15/11/24
-
-I have added a database to my application.
-I still have a lot adjustments to make.
-Improvement of the database                     20/11/24
-
-Improves Detail view                            13/12/24
-
-Add view mode payment                           20/01/25
-
-Add bank statement                              30/01/25
-
-Improve translation                             02/02/25
-
-Improve change account                          02/02/25
-
-Add rubric                                      03/02/25
-
-Improve alot of things                          05/02/25
-
-Add check                                       05/02/25
-
-Add scheduler                                   05/02/25
-
-Add vew transaction                             26/02/25
-
-improve preference Transaction                  10/03/25
-
-clean the code                                  14/03/25
-
-it's starting to work
-
-add import transaction csv                      19/03/25
 
 
 /// Représente un groupe de transactions d'un mois précis (par exemple 2023-02).

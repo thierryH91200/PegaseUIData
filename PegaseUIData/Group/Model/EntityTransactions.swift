@@ -69,19 +69,7 @@ import SwiftData
     public init() {
         let account = CurrentAccountManager.shared.getAccount() 
         self.account = account!
-    }
-    
-    init(datePointage: Date?, dateOperation: Date?, libelle: String, category: String, paymentMode: String, amount: Double) {
-        self.datePointage = datePointage
-        self.dateOperation = dateOperation
-//        self.libelle = libelle
-//        self.category = category
-//        self.amount = amount
-        self.account = CurrentAccountManager.shared.getAccount()!
-
-        self.paymentMode = EntityPaymentMode(name: paymentMode, color: .black, account: account)
-    }
-
+    }    
 }
 
 extension EntityTransactions {
