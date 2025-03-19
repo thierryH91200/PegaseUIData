@@ -1,10 +1,17 @@
 Since the beginning of the Pegase conversion from Swift to SwiftUI, significant progress has been made to modernize the application and enhance its functionality.
+
     •    Migration to SwiftData: The old CoreData structure has been fully transitioned to SwiftData, with a complete model redesign.
+    
     •    Identity ✅
+    
     •    Bank ✅
+    
     •    Bank statement ✅
+    
     •    UI Customization:
+    
     •    Added Dark/Light Mode support for the toolbar (10/11/24).
+    
     •    Improved the Detail View for better readability (13/12/24).
     •    New Features Implemented:
     •    Added Payment Mode management (20/01/25).
