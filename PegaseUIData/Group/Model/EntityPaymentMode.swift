@@ -155,7 +155,9 @@ final class PaymentModeManager {
     }
 
     // MARK: find ModePaiement
-    func find( account: EntityAccount, name: String) -> EntityPaymentMode? {
+    func find( account: EntityAccount? = nil, name: String) -> EntityPaymentMode? {
+        
+        let account = CurrentAccountManager.shared.getAccount()!
         
         let lhs = account.uuid
         let predicate = #Predicate<EntityPaymentMode> { $0.account.uuid == lhs && $0.name == name }

@@ -42,6 +42,9 @@ struct BankStatementView: View {
 
     var body: some View {
         BankStatementListView()
+            .environmentObject(dataManager)
+            .environmentObject(currentAccountManager)
+
             .padding()
             .task {
                 await performFalseTask()

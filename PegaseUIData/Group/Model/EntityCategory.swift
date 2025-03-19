@@ -50,6 +50,10 @@ final class CategoriesManager: ObservableObject {
 
     init() {}
     
+    func configure(with modelContext: ModelContext) {
+        self.modelContext = modelContext
+    }
+    
     func findOrCreate(account: EntityAccount,
                       name: String,
                       objectif: Double,

@@ -55,6 +55,20 @@ struct PegaseUIDataApp: App {
             ContentView100( )
         }
         .commands {
+            CommandGroup(after: .newItem) {
+                Menu("Import") { // Crée un menu "Import"
+                    Button("Transaction") {
+                        NotificationCenter.default.post(name: .importTransaction, object: nil)
+                    }
+                    .keyboardShortcut("T", modifiers: [.command, .shift]) // Cmd+Shift+T
+                    
+                    Button("Relevé") {
+                        NotificationCenter.default.post(name: .importReleve, object: nil)
+                    }
+                    .keyboardShortcut("R", modifiers: [.command, .shift]) // Cmd+Shift+R
+                }
+            }
+            
             CommandGroup(replacing: .appSettings) {
                 Button("Preferences…") {
                     PreferencesWindowController.shared.showWindow()

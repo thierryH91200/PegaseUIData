@@ -46,7 +46,7 @@ final class ListDataManager: ObservableObject {
     @MainActor
     func loadTransactions() {
         
-        self.listTransactions = ListTransactionsManager.shared.getAllDatas()
+        self.listTransactions = ListTransactionsManager.shared.getAllDatas(ascending: false)
         objectWillChange.send()
     }
 }
@@ -77,8 +77,8 @@ struct ListTransactions: View {
     @Environment(\.modelContext) private var modelContext
     
     @EnvironmentObject private var currentAccountManager : CurrentAccountManager
-    @EnvironmentObject private var dataManager       : ListDataManager
-    @EnvironmentObject var colorManager: ColorManager
+    @EnvironmentObject private var dataManager           : ListDataManager
+    @EnvironmentObject private var colorManager          : ColorManager
     
     @State var isVisible: Bool = true
     @State var selectedTransaction: EntityTransactions?
@@ -171,7 +171,7 @@ struct ContentView10000: View {
             .navigationTitle("My Transactions")
             .onAppear {
                 setupDataManager()
-                allTransactions = ListTransactionsManager.shared.getAllDatas()
+                allTransactions = ListTransactionsManager.shared.getAllDatas(ascending: false)
             }
             .onChange(of: dataManager.listTransactions) { _, _ in
                 allTransactions = dataManager.listTransactions

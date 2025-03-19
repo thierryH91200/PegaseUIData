@@ -38,7 +38,6 @@ struct SummaryView: View {
             .frame(maxWidth: .infinity)
             .background(LinearGradient(gradient: Gradient(colors: [Color.cyan.opacity(0.1), Color.cyan.opacity(0.6)]), startPoint: .top, endPoint: .bottom))
             .border(Color.black, width: 1)
-
             VStack {
                 Text("Planned")
                 Text(String(format: "%.2f €", planned))
@@ -76,7 +75,7 @@ struct TransactionsByMonth100: Identifiable {
     let year: String
     let month: Int
     let transactions: [EntityTransactions]
-
+    
     /// Formatage mois (ex: "Février")
     var monthName: String {
         let formatter = DateFormatter()
@@ -127,7 +126,7 @@ func groupTransactionsByYear(transactions: [EntityTransactions]) -> [Transaction
     var result: [TransactionsByYear100] = []
     for (year, monthsArray) in dictionaryByYear {
         // Trier les mois par ordre croissant
-        let sortedMonths = monthsArray.sorted { $0.month < $1.month }
+        let sortedMonths = monthsArray.sorted { $0.month > $1.month }
         result.append(TransactionsByYear100(year: year, months: sortedMonths))
     }
 

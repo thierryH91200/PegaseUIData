@@ -68,13 +68,28 @@ final class StatusManager: StatusManaging {
         try save()
         return newMode
     }
-
-    func save () throws {
+    
+    
+    
+    func find( account: EntityAccount? = nil, name: String) -> EntityStatus? {
         
+        let account = CurrentAccountManager.shared.getAccount()!
+        
+        let lhs = account.uuid
+        let predicate = #Predicate<EntityStatus> { $0.account.uuid == lhs && $0.name == name }
+        let sort = [SortDescriptor(\EntityStatus.name, order: .forward)] // Trier par le nom
+
+        let fetchDescriptor = FetchDescriptor<EntityStatus>(
+            predicate: predicate, // Filtrer par le compte
+            sortBy: sort )
+
         do {
-            try validContext.save()
+            let searchResults = try validContext.fetch(fetchDescriptor)
+            let result = searchResults.isEmpty == false ? searchResults.first : nil
+            return result
         } catch {
-            throw EnumError.saveFailed
+            print("Error with request: \(error)")
+            return nil
         }
     }
 
@@ -99,6 +114,17 @@ final class StatusManager: StatusManaging {
         return entityStatus
     }
     
+
+
+    func save () throws {
+        
+        do {
+            try validContext.save()
+        } catch {
+            throw EnumError.saveFailed
+        }
+    }
+
     func saveContext() {
         if let path = getSQLiteFilePath() {
             print("Base de données SQLite : \(path)")

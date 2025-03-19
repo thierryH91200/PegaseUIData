@@ -270,6 +270,9 @@
         }
       }
     },
+    "Aperçu du CSV" : {
+
+    },
     "Appearance" : {
       "localizations" : {
         "fr" : {
@@ -279,6 +282,9 @@
           }
         }
       }
+    },
+    "Associez les colonnes :" : {
+
     },
     "Background color:" : {
       "localizations" : {
@@ -591,6 +597,9 @@
           }
         }
       }
+    },
+    "Colonne %lld" : {
+
     },
     "Color" : {
       "localizations" : {
@@ -1392,6 +1401,18 @@
         }
       }
     },
+    "Ignorer" : {
+
+    },
+    "Import" : {
+
+    },
+    "Importer" : {
+
+    },
+    "Importer un fichier CSV" : {
+
+    },
     "Income/Expense" : {
       "localizations" : {
         "fr" : {
@@ -1479,6 +1500,7 @@
       }
     },
     "InternetReconciliationView" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -1921,6 +1943,9 @@
           }
         }
       }
+    },
+    "Relevé" : {
+
     },
     "Remove the category" : {
       "localizations" : {

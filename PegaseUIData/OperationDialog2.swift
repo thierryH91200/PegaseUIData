@@ -10,7 +10,6 @@ import AppKit
 import SwiftData
 
 // MARK: - Managers
-
 // PaymentModeManager et RubricManager comme ObservableObject
 class ModeManager: ObservableObject {
     @Published var names: [String] = []
@@ -118,10 +117,8 @@ struct TransactionFormViewModel: View {
         .onAppear {
             selectedAccount = compteCurrent
             DispatchQueue.main.async {
-                if let firstMode = modes.first {
-                    selectedMode = firstMode
-                }
-                selectedStatus = status.first
+                selectedMode = modes.first ?? selectedMode
+                selectedStatus = status.first ?? selectedStatus
                 selectedBankStatement = ""
             }
         }
@@ -131,8 +128,7 @@ struct TransactionFormViewModel: View {
         }
 
         .onChange(of: linkedAccount) { old, newValue in
-            print("linkedAccount mis à jour : \(newValue.map { $0.name })")
-            if !newValue.contains(where: { $0 == selectedAccount }) {
+            if !newValue.contains( selectedAccount! ) {
                 selectedAccount = newValue.first
             }
         }

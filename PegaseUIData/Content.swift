@@ -62,6 +62,9 @@ struct ContentView100: View {
 
     @State private var selectedTransaction: EntityTransactions?
     @State private var isCreationMode : Bool = true
+    
+    @State private var showCSVImporter = false
+
 
     var transactions: [EntityTransactions] = [] // Liste des transactions
 
@@ -100,14 +103,17 @@ struct ContentView100: View {
             .navigationSplitViewStyle(.balanced)
 
             .onAppear {
-//                InitManager.shared.configure(with: modelContext)
-//                InitManager.shared.initialize()
-//                let entityAccount = AccountManager.shared.getRoot(modelContext: modelContext)
-//                AccountManager.shared.printAccount(entityAccount: entityAccount.first!, description: "Account")
             }
             
             Spacer(minLength: 10)
         }
+        .onReceive(NotificationCenter.default.publisher(for: .importTransaction)) { _ in
+            showCSVImporter = true
+        }
+        .sheet(isPresented: $showCSVImporter) {
+            CSVImportView() // Affiche la fenêtre d'importation CSV
+        }
+
         .toolbar {
             ToolbarItemGroup(placement: .navigation) {
                 Button(action: {

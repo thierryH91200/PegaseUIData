@@ -9,7 +9,6 @@ import SwiftUI
 import AppKit
 import SwiftData
 
-
 struct SubOperationDialog: View {
     
     @Environment(\.modelContext) private var modelContext: ModelContext
