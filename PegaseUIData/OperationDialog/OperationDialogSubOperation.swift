@@ -17,9 +17,9 @@ struct SubOperationDialog: View {
     @EnvironmentObject var formState: TransactionFormState
     
     @EnvironmentObject var transactionManager: TransactionSelectionManager
-
+    
     @Binding var subOperation: EntitySousOperations?
-
+    
     @State private var comment           : String = ""
     @State private var selectedRubric    : EntityRubric?
     @State private var selectedCategorie : EntityCategory?
@@ -32,19 +32,19 @@ struct SubOperationDialog: View {
     @State private var entityCategorie  : [EntityCategory] = []
     
     @State private var isExpanded = false // Indicateur l'état de sélection du signe
-
-
+    
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Split Transactions")
                 .font(.headline)
                 .padding(.bottom)
-
+            
             TextField("Comment", text: $comment)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .accessibilityLabel(String(localized: "Comment field"))
                 .accessibilityHint(String(localized: "Enter a description for this sub-operation"))
-
+            
             FormField(label: String(localized:"Rubric")) {
                 Picker("", selection: $selectedRubric) {
                     ForEach(entityRubric, id: \.self) { rubric in
@@ -69,7 +69,7 @@ struct SubOperationDialog: View {
                     }
                 }
             }
-
+            
             FormField(label: String(localized:"Category")) {
                 Picker("", selection: $selectedCategorie) {
                     ForEach(entityCategorie, id: \.self) { category in
@@ -93,20 +93,20 @@ struct SubOperationDialog: View {
                 .onTapGesture {
                     isExpanded.toggle()
                 }
-
+                
                 TextField("Amount", text: $amount)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .font(.system(size: 20))
                     .foregroundColor(isExpanded ? .red : .green)
-
+                
                     .accessibilityLabel(String(localized: "Amount field"))
                     .accessibilityHint(String(localized: "Enter the amount for this sub-operation"))
                     .accessibilityValue(amount.isEmpty ? String(localized: "No amount entered") :
                                             amount)
             }
             .padding(.bottom)
-
-
+            
+            
             HStack {
                 Button(action: {
                     dismiss()
@@ -120,10 +120,10 @@ struct SubOperationDialog: View {
                 }
                 .accessibilityLabel(String(localized: "Cancel sub-operation"))
                 .accessibilityHint(String(localized: "Double tap to discard changes"))
-
+                
                 Button(action: {
-                        saveSubOperation()
-                        dismiss() // Ferme la vue après sauvegarde
+                    saveSubOperation()
+                    dismiss() // Ferme la vue après sauvegarde
                 }) {
                     Text("OK")
                         .frame(width: 100)
@@ -132,7 +132,7 @@ struct SubOperationDialog: View {
                         .background(Color.green)
                         .cornerRadius(5)
                 }
-                .disabled(comment == "") 
+                .disabled(comment == "")
                 .opacity(comment == "" ? 0.6 : 1)
             }
         }
@@ -144,8 +144,8 @@ struct SubOperationDialog: View {
                 selectedCategorie = subOperation?.category
                 selectedRubric    = subOperation?.category?.rubric
                 amount = String(subOperation?.amount ?? 0.0)
-//                printSub()
-
+                //                printSub()
+                
             } else {
                 
                 let account = CurrentAccountManager.shared.getAccount()
@@ -156,7 +156,7 @@ struct SubOperationDialog: View {
                 selectedCategorie = entityPreference!.category
                 selectedRubric = entityPreference!.category?.rubric
                 amount = String(0.0)
-//                printSub1()
+                //                printSub1()
             }
         }
     }
@@ -174,17 +174,17 @@ struct SubOperationDialog: View {
         print(selectedCategorie?.name ?? "default")
         print(amount)
     }
-
+    
     func saveSubOperation()
     {
         if transactionManager.isCreationMode == true { // Création
             // Create entityTransaction
             ListTransactionsManager.shared.configure(with: modelContext)
             ListTransactionsManager.shared.createTransactions(formState: formState)
-                       
+            
             // Create entitySousOperation
             formState.currentSousTransaction = EntitySousOperations()
-
+            
             let amountDouble = (Double(amount) ?? 0.0) * (isExpanded ? -1 : 1)
             amount = String(amountDouble)
             
@@ -195,8 +195,8 @@ struct SubOperationDialog: View {
             }
             
             formState.currentTransaction?.addSubOperation(subOperation!)
-//            modelContext.insert(subOperation!)
-
+            //            modelContext.insert(subOperation!)
+            
         } else { // Edition
             if let subOperation = subOperation {
                 updateSousOperation(subOperation)
@@ -215,9 +215,9 @@ struct SubOperationDialog: View {
         }
         
         item.transaction = formState.currentTransaction
-
+        
     }
-
+    
     func configureManagers() async throws {
         RubricManager.shared.configure(with: modelContext)
         PreferenceManager.shared.configure(with: modelContext)
@@ -250,10 +250,11 @@ struct SubOperationDialog: View {
     }
 }
 
-
-
 // MARK:  5. Composant pour la section des sous-opérations
 struct SubOperationsSectionView: View {
+    
+    @EnvironmentObject var formState: TransactionFormState
+    
     @Binding var subOperations: [EntitySousOperations]
     @Binding var currentSubOperation: EntitySousOperations?
     @Binding var isShowingDialog: Bool
@@ -264,17 +265,25 @@ struct SubOperationsSectionView: View {
                 .font(.headline)
                 .accessibilityAddTraits(.isHeader)
             
+            Text("Sous-opérations affichées : \(subOperations.count)")
+            
             List {
-                SubOperationListView(
-                    subOperations: $subOperations,
-                    currentSubOperation: $currentSubOperation,
-                    isShowingDialog: $isShowingDialog
-                )
+                ForEach(subOperations.indices, id: \.self) { index in
+                    SubOperationRow(
+                        subOperation: $subOperations[index] ,
+                        onEdit: {
+                            currentSubOperation = subOperations[index]
+                            isShowingDialog = true
+                        },
+                        onDelete: {
+                            subOperations.remove(at: index)
+                        }
+                    )
+                }
             }
             
             HStack {
                 Button(action: {
-//                    currentSubOperation = EntitySousOperations()
                     isShowingDialog = true
                 }) {
                     Image(systemName: "plus")
@@ -283,48 +292,27 @@ struct SubOperationsSectionView: View {
                 .padding(.leading)
             }
         }
-    }
-}
-
-struct SubOperationListView: View {
-    @EnvironmentObject var formState: TransactionFormState
-
-    @Binding var subOperations: [EntitySousOperations]
-    @Binding var currentSubOperation: EntitySousOperations?
-    @Binding var isShowingDialog: Bool
-
-    var body: some View {
-        List {
-            ForEach(subOperations.indices, id: \.self) { index in
-                SubOperationRow(
-                    subOperation: subOperations[index],
-                    onEdit: {
-                        currentSubOperation = subOperations[index]
-                        isShowingDialog = true
-                    },
-                    onDelete: {
-                        subOperations.remove(at: index)
-                    }
-                )
-            }
-        }
+        
     }
 }
 
 struct SubOperationRow: View {
-    let subOperation: EntitySousOperations
+    @Binding var subOperation: EntitySousOperations
     let onEdit: () -> Void
     let onDelete: () -> Void
-
+    
     var body: some View {
+        
         HStack {
-            Text(subOperation.libelle)
-                .foregroundColor(.primary)
+            Text(subOperation.libelle ?? "Sans libellé")
+                .foregroundColor(.black)
+            
             Spacer()
             Text("\(subOperation.amount, format: .currency(code: "EUR"))")
                 .foregroundColor(.red)
                 .accessibilityLabel(String(localized: "Amount"))
                 .accessibilityValue("\(subOperation.amount, format: .currency(code: "EUR"))")
+            
             Spacer()
                 .frame(width: 20)
             Button(action: onEdit) {
@@ -332,13 +320,13 @@ struct SubOperationRow: View {
             }
             .buttonStyle(BorderlessButtonStyle())
             .accessibilityLabel(String(localized: "Edit sub-operation"))
-            .accessibilityHint(String(localized: "Double tap to edit \(subOperation.libelle)"))
+            .accessibilityHint(String(localized: "Double tap to edit \(subOperation.libelle ?? "Sans libellé")"))
             Button(action: onDelete) {
                 Image(systemName: "trash")
             }
             .buttonStyle(BorderlessButtonStyle())
             .accessibilityLabel(String(localized: "Delete sub-operation"))
-            .accessibilityHint(String(localized: "Double tap to delete \(subOperation.libelle)"))
+            .accessibilityHint(String(localized: "Double tap to delete \(subOperation.libelle ?? "Sans libellé")"))
         }
     }
 }

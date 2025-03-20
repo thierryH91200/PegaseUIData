@@ -164,7 +164,7 @@ final class ListTransactionsManager: ListManaging {
             print(entity.paymentMode?.name ?? "defaultMode")
             let subs = entity.sousOperations
             for sub in subs {
-                print(sub.libelle)
+                print(sub.libelle ?? "Sans libellé")
                 print(sub.category?.name ?? "Cat def")
                 print(sub.category?.rubric!.name ?? "Rub def")
             }

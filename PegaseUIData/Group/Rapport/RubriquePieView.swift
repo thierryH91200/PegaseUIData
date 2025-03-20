@@ -68,9 +68,9 @@ struct RubriquePie: View {
             Text("RecetteDepensePie")
                 .font(.headline)
                 .padding()
-            DGPieChartView(entries: pieDataEntries)
-                .frame(width: 600, height: 400)
-                .padding()
+//            DGPieChartView(entries: pieDataEntries)
+//                .frame(width: 600, height: 400)
+//                .padding()
             Spacer()
         }
     }

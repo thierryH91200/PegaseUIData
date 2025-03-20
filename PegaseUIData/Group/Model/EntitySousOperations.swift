@@ -11,21 +11,23 @@ import SwiftData
 import AppKit
 
 
-@Model public class EntitySousOperations: Identifiable {
+@Model
+public class EntitySousOperations: Identifiable {
     var amount: Double = 0.0
-    var libelle: String = ""
-    var category: EntityCategory?
-    
-    var transaction: EntityTransactions?
+    var libelle: String? // Rend optionnel si nécessaire
+    @Relationship(deleteRule: .nullify) var category: EntityCategory?
+    @Relationship(deleteRule: .cascade) var transaction: EntityTransactions?
    
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
 
-    public init() {
-        self.libelle = "Empty"
+    public init(libelle: String? = "Empty", amount: Double = 0.0, category: EntityCategory? = nil, transaction: EntityTransactions? = nil) {
+        self.libelle = libelle
+        self.amount = amount
+        self.category = category
+        self.transaction = transaction
     }
 }
-
 final class SubTransactionsManager {
     
     var formState : TransactionFormState = TransactionFormState()

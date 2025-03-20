@@ -522,7 +522,7 @@ struct TransactionDetailView: View {
                     Text("Comment :")
                         .bold()
                     Spacer()
-                    Text(premiereSousOp.libelle)
+                    Text(premiereSousOp.libelle ?? "Sans libellé")
                 }
                 HStack {
                     Text("Rubric :")

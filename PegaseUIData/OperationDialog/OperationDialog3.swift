@@ -18,8 +18,10 @@ struct OperationDialogView: View {
     @EnvironmentObject var transactionManager: TransactionSelectionManager
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
     @EnvironmentObject var dataManager: ListDataManager
+    
     @EnvironmentObject var formState: TransactionFormState
-
+//    @StateObject var formState = TransactionFormState()
+    
     // États du formulaire déplacés dans un State Object
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -32,7 +34,6 @@ struct OperationDialogView: View {
             // Formulaire principal
             if formState.selectedAccount != nil {
                 TransactionFormView()
-                    .environmentObject(formState)
             }
             
             // Section des sous-opérations
@@ -41,8 +42,7 @@ struct OperationDialogView: View {
                 currentSubOperation: $formState.currentSousTransaction,
                 isShowingDialog: $formState.isShowingDialog
             )
-            .environmentObject(formState)
-
+            .id(UUID()) // ✅ Force SwiftUI à redessiner la vue
             
             // Boutons d'action
             ActionButtonsView(
@@ -60,10 +60,13 @@ struct OperationDialogView: View {
         }
         .padding()
         .sheet(isPresented: $formState.isShowingDialog) {
-            SubOperationDialog(
-                subOperation: $formState.currentSousTransaction
+            SubOperationDialog( subOperation: $formState.currentSousTransaction
             )
-            .environmentObject(formState)
+        }
+        
+        .onChange(of: formState.subOperations) { oldValue, newValue in
+            print("🔄 Sous-opérations mises à jour :", newValue)
+            formState.subOperations = Array(newValue) // Force SwiftUI à détecter un changement
         }
         .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
             if newAccount != nil {
@@ -75,7 +78,6 @@ struct OperationDialogView: View {
                 loadTransactionData(transaction)
             }
         }
-
         .onAppear {
             Task {
                 do {
@@ -85,6 +87,7 @@ struct OperationDialogView: View {
                     if transactionManager.isCreationMode == false, let transaction = transactionManager.selectedTransaction {
                         loadTransactionData(transaction)
                     }
+
                 } catch {
                     print("Failed to configure: \(error)")
                 }
@@ -138,8 +141,14 @@ struct OperationDialogView: View {
         formState.bankStatement          = Int(transaction.bankStatement)
         formState.selectedStatus         = transaction.status
         formState.selectedAccount        = transaction.account
-        formState.currentSousTransaction = transaction.sousOperations.first
-        formState.subOperations          = transaction.sousOperations
+        
+        DispatchQueue.main.async {
+            formState.subOperations = transaction.sousOperations
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            formState.subOperations = transaction.sousOperations
+        }
         formState.currentTransaction     = transaction
     }
     

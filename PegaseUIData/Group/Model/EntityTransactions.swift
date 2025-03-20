@@ -23,9 +23,9 @@ import SwiftData
     var status: EntityStatus?
     var paymentMode: EntityPaymentMode?
     
-//    @Relationship(deleteRule: .cascade, inverse: \EntitySousOperations.transaction)
-//    var sousOperations: [EntitySousOperations]? = []
+    @Relationship(deleteRule: .cascade) //, inverse: \EntitySousOperations.transaction)
     var sousOperations: [EntitySousOperations] = []
+//    var sousOperations: [EntitySousOperations] = []
 
     var amount: Double {
         sousOperations.reduce(0.0) { $0 + $1.amount }

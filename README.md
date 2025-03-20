@@ -22,6 +22,8 @@ Since the beginning of the Pegase conversion from Swift to SwiftUI, significant 
     •    Improved Translations to make the application more accessible (02/02/25).
     •    Most Recent Advancement:
     •    Added CSV transaction import (19/03/25), enabling more flexible financial data management.
+    •    Display sub transaction (20/03/25)
+    
 
 Step by step, Pegase is shaping up and is now starting to function as intended. 🚀
 

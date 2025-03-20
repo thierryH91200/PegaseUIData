@@ -1528,6 +1528,9 @@
         }
       }
     },
+    "InternetReconciliationView" : {
+
+    },
     "Key" : {
       "localizations" : {
         "en" : {
@@ -2091,6 +2094,9 @@
           }
         }
       }
+    },
+    "Sous-opérations affichées : %lld" : {
+
     },
     "Split Transactions" : {
       "localizations" : {
