@@ -11,32 +11,11 @@ import Foundation
 import SwiftData
 
 
-func readCSV(from url: URL) -> [[String]]? {
-    
-    guard url.startAccessingSecurityScopedResource() else {
-        print("⚠️ Impossible d'accéder au fichier (Security Scoped)")
-        return nil
-    }
-    
-    defer { url.stopAccessingSecurityScopedResource() } // Libérer l'accès à la fin
-
-    do {
-        let content = try String(contentsOf: url, encoding: .utf8)
-        let rows = content.components(separatedBy: "\n").filter { !$0.isEmpty }
-        
-        // Détecter le séparateur
-        let separator: Character = content.contains(";") ? ";" : ","
-        
-        let parsedData = rows.map { $0.components(separatedBy: String(separator)) }
-        return parsedData
-    } catch {
-        print("Erreur lors de la lecture du fichier CSV : \(error.localizedDescription)")
-        return nil
-    }
-}
 
 struct CSVImportView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
+
     @State private var showFileImporter = false
     @State private var csvData: [[String]] = []
     @State private var columnMapping: [String: Int] = [:] // Associe les attributs aux colonnes
@@ -77,8 +56,9 @@ struct CSVImportView: View {
                         get: { columnMapping[attribute] ?? -1 },
                         set: { columnMapping[attribute] = $0 }
                     )) {
+                        let csvData1 = csvData.dropFirst()
                         Text("Ignore").tag(-1)
-                        ForEach(0..<(csvData.first?.count ?? 0), id: \.self) { index in
+                        ForEach(0..<(csvData1.first?.count ?? 0), id: \.self) { index in
                             Text("Colunn \(index)").tag(index)
                         }
                     }
@@ -89,6 +69,7 @@ struct CSVImportView: View {
                 
                 Button("Import") {
                     importCSVTransactions(context: modelContext)
+                    dismiss()
                 }
                 .disabled(columnMapping.isEmpty)
             }
@@ -99,6 +80,9 @@ struct CSVImportView: View {
     // Fonction d'importation
     func importCSVTransactions(context: ModelContext) {
         guard !csvData.isEmpty else { return }
+        
+        let count = csvData.count
+        print("Importation de \(count) transactions CSV.")
         
         let account = CurrentAccountManager.shared.getAccount()!
         PreferenceManager.shared.configure(with: context)
@@ -167,7 +151,8 @@ struct CSVImportView: View {
 
     func getDouble(from row: [String], index: Int?) -> Double {
         guard let index = index, index >= 0, index < row.count else { return 0.0 }
-        return Double(row[index]) ?? 0.0
+        let value = row[index].replacingOccurrences(of: String(","), with: ".")
+        return Double(value) ?? 0.0
     }
 
     func getDate(from row: [String], index: Int?) -> Date? {
@@ -193,5 +178,29 @@ struct TableView: View {
                 }
             }
         }
+    }
+}
+
+func readCSV(from url: URL) -> [[String]]? {
+    
+    guard url.startAccessingSecurityScopedResource() else {
+        print("⚠️ Impossible d'accéder au fichier (Security Scoped)")
+        return nil
+    }
+    
+    defer { url.stopAccessingSecurityScopedResource() } // Libérer l'accès à la fin
+
+    do {
+        let content = try String(contentsOf: url, encoding: .utf8)
+        let rows = content.components(separatedBy: "\n").filter { !$0.isEmpty }
+        
+        // Détecter le séparateur
+        let separator: Character = content.contains(";") ? ";" : ","
+        
+        let parsedData = rows.map { $0.components(separatedBy: String(separator)) }
+        return parsedData
+    } catch {
+        print("Erreur lors de la lecture du fichier CSV : \(error.localizedDescription)")
+        return nil
     }
 }

@@ -81,8 +81,10 @@ struct ListTransactions: View {
     @EnvironmentObject private var colorManager          : ColorManager
     
     @State var isVisible: Bool = true
-    @State var selectedTransaction: EntityTransactions?
+    
+//    @State var selectedTransactions :  Set<UUID> = []
     @State var isCreationMode: Bool = true
+    
     @State var soldeBanque = 0.0
     @State var soldeReel = 0.0
     @State var soldeFinal = 0.0
@@ -92,12 +94,12 @@ struct ListTransactions: View {
             SummaryView(executed: soldeBanque, planned: soldeReel, engaged: soldeFinal)
                 .frame(maxWidth: .infinity, maxHeight: 100)
             
-            ContentView10000( selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)
+            ContentView10000( isCreationMode: $isCreationMode)
                 .frame(minWidth: 200, minHeight: 300)
             
             Spacer()
         }
-        .onChange(of: colorManager.selectedColorType) { old, new in
+        .onChange(of: colorManager.colorChoix) { old, new in
         }
         .onAppear() {
             balanceCalculation()
@@ -117,7 +119,6 @@ struct ListTransactions: View {
         
         // Vérification des transactions disponibles
         let transactions = dataManager.listTransactions
-//        , !transactions.isEmpty else { return }
         
         let count = transactions.count
         
@@ -162,12 +163,14 @@ struct ContentView10000: View {
     @EnvironmentObject var colorManager: ColorManager // Injecté par le parent
     
     @State private var allTransactions: [EntityTransactions] = []
-    @Binding var selectedTransaction: EntityTransactions?
+    
+    @State private var selectedTransactions = Set<EntityTransactions.ID>()
     @Binding var isCreationMode: Bool
     
     var body: some View {
         let grouped = groupTransactionsByYear(transactions: allTransactions)
-        TransactionsListView(data: grouped, selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)
+        
+        TransactionsListView(data: grouped, selectedTransactions: $selectedTransactions, isCreationMode: $isCreationMode)
             .navigationTitle("My Transactions")
             .onAppear {
                 setupDataManager()
@@ -176,11 +179,9 @@ struct ContentView10000: View {
             .onChange(of: dataManager.listTransactions) { _, _ in
                 allTransactions = dataManager.listTransactions
             }
-            .onChange(of: colorManager.selectedColorType) { old, new in
+            .onChange(of: colorManager.colorChoix) { old, new in
             }
             .onChange(of: currentAccountManager.currentAccount) { _, newAccount in
-                // Mise à jour de la liste en cas de changement de compte
-//                dataManager.listTransactions = []
                 refreshData()
             }
     }
@@ -190,13 +191,13 @@ struct ContentView10000: View {
         dataManager.configure(with: modelContext)
         
         if currentAccountManager.currentAccount != nil {
-            dataManager.listTransactions = ListTransactionsManager.shared.getAllDatas()
+            dataManager.listTransactions = ListTransactionsManager.shared.getAllDatas(ascending: false)
         }
     }
     
     // Rafraîchit la liste des transactions
     private func refreshData() {
-        dataManager.listTransactions = ListTransactionsManager.shared.getAllDatas()
+        dataManager.listTransactions = ListTransactionsManager.shared.getAllDatas(ascending: false)
         allTransactions = dataManager.listTransactions
     }
 }
@@ -207,9 +208,11 @@ struct TransactionsListView: View {
     
     let data: [TransactionsByYear100]
     
-    @Binding var selectedTransaction: EntityTransactions?
+    @Binding var selectedTransactions :  Set<EntityTransactions.ID>
     @Binding var isCreationMode: Bool
     
+    var transactions: [EntityTransactions] = [] // Charge tes transactions ici
+
     var body: some View {
         VStack(spacing: 0) {
             // En-tête des colonnes
@@ -221,7 +224,7 @@ struct TransactionsListView: View {
                     .frame(width: 90, alignment: .leading)
                     .overlay(Rectangle().frame(width: 1).foregroundColor(.gray), alignment: .trailing)
                 Text("Comment")
-                    .frame(width: 90, alignment: .leading)
+                    .frame(width: 150, alignment: .leading)
                     .overlay(Rectangle().frame(width: 1).foregroundColor(.gray), alignment: .trailing)
                 Text("Rubric")
                     .frame(width: 90, alignment: .leading)
@@ -235,7 +238,7 @@ struct TransactionsListView: View {
                 Text("Bank statement")
                     .frame(width: 90, alignment: .leading)
                     .overlay(Rectangle().frame(width: 1).foregroundColor(.gray), alignment: .trailing)
-                Text("Check number")
+                Text("Check")
                     .frame(width: 90, alignment: .trailing)
                     .overlay(Rectangle().frame(width: 1).foregroundColor(.gray), alignment: .trailing)
                 Text("Status")
@@ -250,9 +253,11 @@ struct TransactionsListView: View {
             
             Divider()
             
-            List(selection: $selectedTransaction) {
+            List(selection: $selectedTransactions) {
                 ForEach(data) { yearGroup in
-                    YearSectionView(yearGroup: yearGroup, selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)
+                    YearSectionView(yearGroup: yearGroup,
+                                    selectedTransactions: $selectedTransactions,
+                                    isCreationMode: $isCreationMode)
                 }
             }
             .listStyle(.inset)
@@ -265,7 +270,7 @@ struct TransactionsListView: View {
 struct YearSectionView: View {
     
     let yearGroup: TransactionsByYear100
-    @Binding var selectedTransaction: EntityTransactions?
+    @Binding var selectedTransactions: Set<EntityTransactions.ID>
     @Binding var isCreationMode: Bool
     
     var body: some View {
@@ -274,7 +279,15 @@ struct YearSectionView: View {
             .foregroundColor(.blue)
         ) {
             ForEach(yearGroup.months) { monthGroup in
-                MonthDisclosureGroupView(monthGroup: monthGroup, year: yearGroup.year)
+//                MonthDisclosureGroupView(year: yearGroup.year,
+//                                         selectedTransactions: $selectedTransactions)
+                MonthDisclosureGroupView(
+                    transactions: monthGroup.transactions,
+                    showTransactionInfo: false, // Si c'est une @State var, passe `false` par défaut
+                    selectedTransactions: $selectedTransactions,
+                    monthGroup: monthGroup,
+                    year: yearGroup.year
+                )
             }
         }
     }
@@ -285,8 +298,10 @@ struct MonthDisclosureGroupView: View {
     @EnvironmentObject var dataManager: ListDataManager
     @EnvironmentObject var transactionManager: TransactionSelectionManager
     
-    @State private var showTransactionInfo : Bool = false
-    @State private var selectedTransaction: EntityTransactions?
+    var transactions: [EntityTransactions] = [] // Charge tes transactions ici
+
+    @State var showTransactionInfo : Bool
+    @Binding var selectedTransactions: Set<EntityTransactions.ID>
     
     let monthGroup: TransactionsByMonth100
     let year: String
@@ -312,19 +327,25 @@ struct MonthDisclosureGroupView: View {
         DisclosureGroup(
             isExpanded: isExpanded,
             content: {
-                TransactionsRowsView(transactions: monthGroup.transactions,
-                                     selectedTransaction: $selectedTransaction,
-                                     showTransactionInfo: $showTransactionInfo )
+                TransactionsRowsView(
+                    transactions: monthGroup.transactions,
+                    selectedTransactions: $selectedTransactions,
+                    showTransactionInfo: $showTransactionInfo )
+                
+//                .onChange(of: selectedTransaction) { old, newValue in
+//                    print("Nouvelle transaction sélectionnée : \(newValue?.libelle ?? "N/A")")
+//                }
+
                 .sheet(isPresented: $showTransactionInfo) {
-                    if let selected = selectedTransaction {
-                        TransactionDetailView(transaction: selected)
+                    if let firstSelectedID = selectedTransactions.first,
+                       let selectedTransaction = dataManager.listTransactions.first(where: { $0.id == firstSelectedID }) {
+                        TransactionDetailView(transaction: selectedTransaction)
                             .frame(minWidth: 400, minHeight: 300)
                     } else {
                         Text("No transaction selected")
                             .frame(minWidth: 400, minHeight: 300)
                     }
                 }
-
             },
             label: {
                 HStack {
@@ -356,68 +377,95 @@ struct MonthDisclosureGroupView: View {
 // MARK: TransactionsRowsView
 struct TransactionsRowsView: View {
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject var colorManager: ColorManager
     @EnvironmentObject var dataManager: ListDataManager
     @EnvironmentObject var transactionManager: TransactionSelectionManager
     
     let transactions: [EntityTransactions]?
     
-    @Binding var selectedTransaction: EntityTransactions?
+    @Binding var selectedTransactions: Set<EntityTransactions.ID>
     @Binding var showTransactionInfo: Bool
     
     var body: some View {
         VStack {
-            if let transactions = transactions {
-                ForEach(transactions, id: \.id) { transaction in
-                    let isSelected = transactionManager.selectedTransaction?.id == transaction.id
+//            if let transactions = transactions {
+//                ForEach(transactions, id: \.id) { transaction in
                     
-                    Button {
-                        // Synchroniser les deux états de sélection
-                        transactionManager.selectedTransaction = transaction
-                        selectedTransaction = transaction
-                        transactionManager.isCreationMode = false
-                    } label: {
-                        TransactionRow(
-                            transaction: transaction,
-                            isSelected: isSelected,
-                            colorManager: colorManager
-                        ) {
-                            deleteTransaction(transaction)
-                        }
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    .contextMenu {
-                        Button {
-                            selectedTransaction = transaction
-                            showTransactionInfo = true
-                        } label: {
-                            Label("Information", systemImage: "info.circle")
-                        }
-                        
-                        Button(role: .destructive) {
-                            deleteTransaction(transaction)
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
-                    }
-                }
-            }
+//                    let isSelected = transactionManager.selectedTransactions.map { $0.id == transaction.id } ?? false
+//                    let isSelected = transactionManager.selectedTransactions.contains(transaction.id)
+//                    let isSelected = true
+//                    Button {
+//                        toggleSelection(transaction)
+//                    } label: {
+//                        TransactionRow(
+//                            transaction: transaction,
+//                            isSelected: isSelected
+//                        ) {
+//                            deleteTransaction(transaction)
+//                        }
+//                    }
+//                    .buttonStyle(PlainButtonStyle())
+//                    .contextMenu {
+//                        Button {
+//                            // Synchroniser les deux états de sélection
+//                            transactionManager.selectedTransaction = transaction
+//                            selectedTransactions = transaction
+//                            transactionManager.isCreationMode = false
+//                        } label: {
+//                            TransactionRow(
+//                                transaction: transaction,
+//                                isSelected: isSelected,
+//                            ) {
+//                                deleteTransaction(transaction)
+//                            }
+//                        }
+//                        .buttonStyle(PlainButtonStyle())
+//                        .contextMenu {
+//                            Button {
+//                                selectedTransactions = transaction
+//                                showTransactionInfo = true
+//                            } label: {
+//                                Label("Information", systemImage: "info.circle")
+//                            }
+//                            
+//                            Button(role: .destructive) {
+//                                deleteTransaction(transaction)
+//                            } label: {
+//                                Label("Delete", systemImage: "trash")
+//                            }
+//                        }
+//                    }
+//                }
+//            }
         }
-        // Déplacer le sheet vers la vue parente
-        // Ce sheet devrait être attaché à la vue parente, pas à l'intérieur de cette vue
     }
     
-
-    /// ✅ Nouvelle fonction pour sélectionner correctement une transaction
-    private func selectTransaction(_ transaction: EntityTransactions) {
-        DispatchQueue.main.async {
-            selectedTransaction = transaction
-            print("📌 [selectTransaction] Transaction sélectionnée : \(transaction.id.uuidString)")
+    /// ✅ Fonction pour gérer la sélection multiple
+    func toggleSelection(_ transaction: EntityTransactions) {
+        if NSEvent.modifierFlags.contains(.command) {
+            // Cmd + Clic : Ajoute ou enlève une sélection
+            if selectedTransactions.contains(transaction.id) {
+                selectedTransactions.remove(transaction.id)
+            } else {
+                selectedTransactions.insert(transaction.id)
+            }
+        } else if NSEvent.modifierFlags.contains(.shift) {
+            // Shift + Clic : Sélection en continu (expliqué plus bas)
+            if let first = transactions?.first,
+               let firstIndex = transactions?.firstIndex(of: first),
+               let lastIndex = transactions?.firstIndex(of: transaction) {
+                let range = firstIndex...lastIndex
+                let selectedRange = transactions?[range].map { $0.id } ?? []
+                selectedTransactions.formUnion(selectedRange)
+            }
+        } else {
+            // Clic normal : Sélection unique
+            selectedTransactions = [transaction.id]
         }
     }
     
     @MainActor
     func deleteTransaction(_ transaction: EntityTransactions) {
+        
         modelContext.delete(transaction)
         
         do {
@@ -433,150 +481,16 @@ struct TransactionsRowsView: View {
     
     @MainActor
     func loadTransactions() {
-        dataManager.listTransactions = ListTransactionsManager.shared.getAllDatas()
+        dataManager.listTransactions = ListTransactionsManager.shared.getAllDatas(ascending: false)
     }
 }
 
-struct TransactionDetailView: View {
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject var transactionManager: TransactionSelectionManager
-    
-    let transaction: EntityTransactions
-    
-    static let dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .short
-        formatter.timeStyle = .none
-        return formatter
-    }()
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Transaction Details")
-                .font(.title)
-                .bold()
-                .padding(.bottom, 10)
-            
-            HStack {
-                Text("Create at :")
-                    .bold()
-                Spacer()
-                Text(transaction.createAt != nil ? Self.dateFormatter.string(from: transaction.createAt!) : "—")
-            }
-            HStack {
-                Text("Update at :")
-                    .bold()
-                Spacer()
-                Text(transaction.updatedAt != nil ? Self.dateFormatter.string(from: transaction.updatedAt!) : "—")
-            }
-
-            Divider()
-
-            HStack {
-                Text("Amount :")
-                    .bold()
-                Spacer()
-                Text("\(String(format: "%.2f", transaction.amount)) €")
-                    .foregroundColor(transaction.amount >= 0 ? .green : .red)
-            }
-            Divider()
-            
-            HStack {
-                Text("Date of pointing :")
-                    .bold()
-                Spacer()
-                Text(transaction.datePointage != nil ? Self.dateFormatter.string(from: transaction.datePointage!) : "—")
-            }
-            HStack {
-                Text("Date operation :")
-                    .bold()
-                Spacer()
-                // Correction ici - vous utilisiez datePointage au lieu de dateOperation
-                Text(transaction.dateOperation != nil ? Self.dateFormatter.string(from: transaction.dateOperation!) : "—")
-            }
-            HStack {
-                Text("Payment method :")
-                    .bold()
-                Spacer()
-                Text(transaction.paymentMode?.name ?? "—")
-            }
-            HStack {
-                Text(" Bank statement :")
-                    .bold()
-                Spacer()
-                Text(String(transaction.bankStatement))
-            }
-            
-            HStack {
-                Text("Statut :")
-                    .bold()
-                Spacer()
-                Text(transaction.status?.name ?? "N/A")
-            }
-            Divider()
-            
-            // Section pour les sous-opérations
-            if let premiereSousOp = transaction.sousOperations.first {
-                HStack {
-                    Text("Comment :")
-                        .bold()
-                    Spacer()
-                    Text(premiereSousOp.libelle ?? "Sans libellé")
-                }
-                HStack {
-                    Text("Rubric :")
-                        .bold()
-                    Spacer()
-                    Text(premiereSousOp.category?.rubric?.name ?? "N/A")
-                }
-                HStack {
-                    Text("Category :")
-                        .bold()
-                    Spacer()
-                    Text(premiereSousOp.category?.name ?? "N/A")
-                }
-                HStack {
-                    Text("Amount :")
-                        .bold()
-                    Spacer()
-                    Text("\(String(format: "%.2f", premiereSousOp.amount)) €")
-                        .foregroundColor(premiereSousOp.amount >= 0 ? .green : .red)
-                }
-            } else {
-                Text("No sub-operations available")
-                    .italic()
-                    .foregroundColor(.gray)
-            }
-            
-            // Si vous avez plusieurs sous-opérations, vous pourriez ajouter une liste ici
-            
-            Spacer()
-            HStack {
-                Spacer()
-                Button(action: {
-                    transactionManager.selectedTransaction = nil
-                    dismiss()
-                }) {
-                    Text("Close")
-                        .frame(width: 100)
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
-                }
-                Spacer()
-            }
-        }
-        .padding()
-        .frame(minWidth: 400, minHeight: 300)
-    }    
-}
-
 struct TransactionRow: View {
+    
+    @EnvironmentObject private var colorManager : ColorManager
+
     let transaction: EntityTransactions
     let isSelected: Bool
-    let colorManager: ColorManager
     let deleteAction: () -> Void
     
     static let dateFormatter: DateFormatter = {
@@ -599,7 +513,7 @@ struct TransactionRow: View {
                 .foregroundColor(foregroundColor)
             
             Text(transaction.sousOperations.first?.libelle ?? "—")
-                .frame(width: 90, alignment: .leading)
+                .frame(width: 150, alignment: .leading)
                 .foregroundColor(foregroundColor)
             
             Text(transaction.sousOperations.first?.category?.rubric?.name ?? "—")
@@ -609,11 +523,9 @@ struct TransactionRow: View {
             Text(transaction.sousOperations.first?.category?.name ?? "—")
                 .frame(width: 90, alignment: .leading)
                 .foregroundColor(foregroundColor)
-            
             Text(transaction.paymentMode?.name ?? "—")
                 .frame(width: 90, alignment: .leading)
                 .foregroundColor(foregroundColor)
-            
             Text(String(format: "%.2f", transaction.bankStatement))
                 .frame(width: 80, alignment: .trailing)
                 .foregroundColor(foregroundColor)
@@ -622,7 +534,7 @@ struct TransactionRow: View {
                 .frame(width: 80, alignment: .trailing)
                 .foregroundColor(transaction.amount >= 0 ? .green : .red)
             
-            Text(transaction.checkNumber)
+            Text(transaction.checkNumber == "0" ? transaction.checkNumber : " "  )
                 .frame(width: 80, alignment: .leading)
                 .foregroundColor(foregroundColor)
             
@@ -649,5 +561,4 @@ struct TransactionRow: View {
         .clipShape(RoundedRectangle(cornerRadius: 5))
     }
 }
-    
     

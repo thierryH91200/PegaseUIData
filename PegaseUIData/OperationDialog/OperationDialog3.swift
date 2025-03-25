@@ -20,7 +20,6 @@ struct OperationDialogView: View {
     @EnvironmentObject var dataManager: ListDataManager
     
     @EnvironmentObject var formState: TransactionFormState
-//    @StateObject var formState = TransactionFormState()
     
     // États du formulaire déplacés dans un State Object
     var body: some View {
@@ -44,6 +43,8 @@ struct OperationDialogView: View {
             )
             .id(UUID()) // ✅ Force SwiftUI à redessiner la vue
             
+            Spacer()
+            
             // Boutons d'action
             ActionButtonsView(
                 cancelAction: {
@@ -65,7 +66,6 @@ struct OperationDialogView: View {
         }
         
         .onChange(of: formState.subOperations) { oldValue, newValue in
-            print("🔄 Sous-opérations mises à jour :", newValue)
             formState.subOperations = Array(newValue) // Force SwiftUI à détecter un changement
         }
         .onChange(of: currentAccountManager.currentAccount) { old, newAccount in

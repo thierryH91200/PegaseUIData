@@ -5,6 +5,7 @@
       "shouldTranslate" : false
     },
     " Bank statement :" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -346,6 +347,12 @@
         }
       }
     },
+    "Bank Statement" : {
+
+    },
+    "Bank statement :" : {
+
+    },
     "Bank withdrawal" : {
       "localizations" : {
         "fr" : {
@@ -542,15 +549,8 @@
         }
       }
     },
-    "Check number" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Numéro de chèque"
-          }
-        }
-      }
+    "Check Number" : {
+
     },
     "Choose a category within the selected rubric" : {
       "localizations" : {
@@ -874,6 +874,9 @@
         }
       }
     },
+    "Date Operation" : {
+
+    },
     "Date operation :" : {
       "localizations" : {
         "fr" : {
@@ -883,6 +886,9 @@
           }
         }
       }
+    },
+    "Date Pointage" : {
+
     },
     "Decrease" : {
       "localizations" : {
@@ -972,6 +978,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Affichage"
+          }
+        }
+      }
+    },
+    "Displayed sub-operations: %lld" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sous-opérations affichées : %lld"
           }
         }
       }
@@ -1473,6 +1489,7 @@
       }
     },
     "Information" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -1529,7 +1546,14 @@
       }
     },
     "InternetReconciliationView" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "InternetReconciliationView"
+          }
+        }
+      }
     },
     "Key" : {
       "localizations" : {
@@ -1617,12 +1641,25 @@
         }
       }
     },
+    "Month: %@" : {
+
+    },
     "My Transactions" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mes transactions"
+          }
+        }
+      }
+    },
+    "N/A" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "N/A"
           }
         }
       }
@@ -1769,6 +1806,9 @@
         }
       }
     },
+    "No label" : {
+
+    },
     "No PDF available" : {
       "localizations" : {
         "fr" : {
@@ -1894,6 +1934,9 @@
           }
         }
       }
+    },
+    "Payment Mode" : {
+
     },
     "Pegase" : {
       "localizations" : {
@@ -2095,9 +2138,6 @@
         }
       }
     },
-    "Sous-opérations affichées : %lld" : {
-
-    },
     "Split Transactions" : {
       "localizations" : {
         "fr" : {
@@ -2241,7 +2281,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Transferts"
+            "value" : "Virement"
           }
         }
       }
@@ -2295,6 +2335,9 @@
           }
         }
       }
+    },
+    "Year: %@" : {
+
     }
   },
   "version" : "1.0"

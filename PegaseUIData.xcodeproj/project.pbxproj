@@ -27,6 +27,7 @@
 		039B4BB92CD7894A002203D9 /* Exceptions for "PegaseUIData" folder in "PegaseUIData" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Group/Untitled.swift,
 				Info.plist,
 			);
 			target = 039B4BA82CD78949002203D9 /* PegaseUIData */;

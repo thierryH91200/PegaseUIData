@@ -21,14 +21,15 @@ class ContentViewModel: ObservableObject {
 
 class ColorManager: ObservableObject {
     
-    @Published var selectedColorType: String = "Payment Mode"
+//    @Published var selectedColorType: String = "United"
+    @AppStorage("colorChoix") var colorChoix : String = "United"
     
     func printColors() {
-        print("ColorManager : ", selectedColorType)
+        print("ColorManager : ", colorChoix)
     }
 
     func colorForTransaction(_ transaction: EntityTransactions) -> Color {
-        switch selectedColorType {
+        switch colorChoix {
         case "United":
             return .black
         case "Income/Expense":
@@ -45,7 +46,7 @@ class ColorManager: ObservableObject {
     }
 }
 
-class TransactionSelectionManager: ObservableObject {
+class TransactionSelectionManager: ObservableObject , Identifiable {
     @Published var selectedTransaction: EntityTransactions?
     @Published var isCreationMode: Bool = true
 }
@@ -54,7 +55,9 @@ struct ContentView100: View {
     
     @AppStorage("windowWidth")  var windowWidth: Double = 800
     @AppStorage("windowHeight")  var windowHeight: Double = 600
-    
+    @AppStorage("choixCouleur") var choixCouleur: String = "Unie"
+
+
     @Environment(\.modelContext) private var modelContext
     @StateObject private var transactionManager = TransactionSelectionManager()
     @StateObject private var colorManager = ColorManager()
@@ -64,7 +67,6 @@ struct ContentView100: View {
     @State private var isCreationMode : Bool = true
     
     @State private var showCSVImporter = false
-
 
     var transactions: [EntityTransactions] = [] // Liste des transactions
 
@@ -199,7 +201,8 @@ struct ContentView100: View {
     }
 
     private func chooseCouleur(_ color: String) {
-        colorManager.selectedColorType = color
+//        colorManager.selectedColorType = color
+        colorManager.colorChoix = color
         selectedColor = color
 //        isVisible = false // Modifie l'état pour rafraîchir l'UI
     }
@@ -248,7 +251,7 @@ struct DetailContainer: View {
 
     var detailViews: [String: (Binding<Bool>) -> AnyView] {
         [
-            String(localized: "List of Transactions",table: "Menu")     : { isVisible in AnyView(ListTransactionsView(isVisible       : isVisible)) },
+            String(localized: "List of Transactions",table: "Menu")     : { isVisible in AnyView(ListTransactionsView100(isVisible    : isVisible)) },
             //selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)) },
             String(localized: "Cash Flow Curve",table: "Menu")          : { isVisible in AnyView(TreasuryCurveView(isVisible          : isVisible)) },
             String(localized: "Bank website",table: "Menu")             : { isVisible in AnyView(BankWebsiteView(isVisible            : isVisible)) },

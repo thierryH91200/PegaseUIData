@@ -25,7 +25,6 @@ import SwiftData
     
     @Relationship(deleteRule: .cascade) //, inverse: \EntitySousOperations.transaction)
     var sousOperations: [EntitySousOperations] = []
-//    var sousOperations: [EntitySousOperations] = []
 
     var amount: Double {
         sousOperations.reduce(0.0) { $0 + $1.amount }
@@ -69,7 +68,7 @@ import SwiftData
     public init() {
         let account = CurrentAccountManager.shared.getAccount() 
         self.account = account!
-    }    
+    }
 }
 
 extension EntityTransactions {

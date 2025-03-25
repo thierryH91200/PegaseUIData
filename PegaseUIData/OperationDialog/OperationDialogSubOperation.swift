@@ -160,21 +160,7 @@ struct SubOperationDialog: View {
             }
         }
     }
-    
-    func printSub() {
-        print(subOperation?.libelle ?? "default")
-        print(subOperation?.category?.rubric?.name ?? "nil")
-        print(subOperation?.category?.name ?? "default")
-        print(subOperation?.amount ?? 0.0)
-    }
-    
-    func printSub1() {
-        print(comment)
-        print(selectedCategorie?.rubric?.name ?? "nil")
-        print(selectedCategorie?.name ?? "default")
-        print(amount)
-    }
-    
+        
     func saveSubOperation()
     {
         if transactionManager.isCreationMode == true { // Création
@@ -195,7 +181,6 @@ struct SubOperationDialog: View {
             }
             
             formState.currentTransaction?.addSubOperation(subOperation!)
-            //            modelContext.insert(subOperation!)
             
         } else { // Edition
             if let subOperation = subOperation {
@@ -260,12 +245,13 @@ struct SubOperationsSectionView: View {
     @Binding var isShowingDialog: Bool
     
     var body: some View {
+
         VStack(alignment: .leading) {
             Text(String(localized: "Split Transactions"))
                 .font(.headline)
                 .accessibilityAddTraits(.isHeader)
             
-            Text("Sous-opérations affichées : \(subOperations.count)")
+            Text("Displayed sub-operations: \(subOperations.count)")
             
             List {
                 ForEach(subOperations.indices, id: \.self) { index in
@@ -281,6 +267,7 @@ struct SubOperationsSectionView: View {
                     )
                 }
             }
+            .frame(height: 300)
             
             HStack {
                 Button(action: {
@@ -292,41 +279,59 @@ struct SubOperationsSectionView: View {
                 .padding(.leading)
             }
         }
-        
     }
 }
 
 struct SubOperationRow: View {
+    
+    @EnvironmentObject private var colorManager          : ColorManager
+
     @Binding var subOperation: EntitySousOperations
     let onEdit: () -> Void
     let onDelete: () -> Void
     
     var body: some View {
         
-        HStack {
-            Text(subOperation.libelle ?? "Sans libellé")
-                .foregroundColor(.black)
-            
-            Spacer()
-            Text("\(subOperation.amount, format: .currency(code: "EUR"))")
-                .foregroundColor(.red)
-                .accessibilityLabel(String(localized: "Amount"))
-                .accessibilityValue("\(subOperation.amount, format: .currency(code: "EUR"))")
-            
-            Spacer()
-                .frame(width: 20)
-            Button(action: onEdit) {
-                Image(systemName: "pencil")
+        let foregroundColor = colorManager.colorForTransaction(subOperation.transaction!)
+
+        VStack {
+            HStack {
+                Text("\(subOperation.category?.rubric?.name ?? String(localized: "N/A"))")
+                    .foregroundColor(foregroundColor)
+
+                Spacer()
+                Text("\(subOperation.category?.name ?? String(localized: "N/A"))")
+                    .foregroundColor(foregroundColor)
+                Spacer()
+                    .frame(width: 20)
             }
-            .buttonStyle(BorderlessButtonStyle())
-            .accessibilityLabel(String(localized: "Edit sub-operation"))
-            .accessibilityHint(String(localized: "Double tap to edit \(subOperation.libelle ?? "Sans libellé")"))
-            Button(action: onDelete) {
-                Image(systemName: "trash")
+            
+            HStack {
+                Text(subOperation.libelle ?? String(localized: "No label"))
+                    .foregroundColor(foregroundColor)
+
+                Spacer()
+                Text("\(subOperation.amount, format: .currency(code: "EUR"))")
+                    .foregroundColor(foregroundColor)
+                    .accessibilityLabel(String(localized: "Amount"))
+                    .accessibilityValue("\(subOperation.amount, format: .currency(code: "EUR"))")
+                
+                Spacer()
+                    .frame(width: 20)
+                Button(action: onEdit) {
+                    Image(systemName: "pencil")
+                }
+                .buttonStyle(BorderlessButtonStyle())
+                .accessibilityLabel(String(localized: "Edit sub-operation"))
+                .accessibilityHint(String(localized: "Double tap to edit \(subOperation.libelle ?? "Sans libellé")"))
+                Button(action: onDelete) {
+                    Image(systemName: "trash")
+                }
+                .buttonStyle(BorderlessButtonStyle())
+                .accessibilityLabel(String(localized: "Delete sub-operation"))
+                .accessibilityHint(String(localized: "Double tap to delete \(subOperation.libelle ?? "Sans libellé")"))
             }
-            .buttonStyle(BorderlessButtonStyle())
-            .accessibilityLabel(String(localized: "Delete sub-operation"))
-            .accessibilityHint(String(localized: "Double tap to delete \(subOperation.libelle ?? "Sans libellé")"))
+            Divider()
         }
     }
 }
