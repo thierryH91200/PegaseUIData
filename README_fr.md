@@ -1,34 +1,63 @@
+# PegaseUIData
 
+![Swift](https://img.shields.io/badge/Swift-5.7-orange) ![macOS](https://img.shields.io/badge/macOS-14-blue) ![License](https://img.shields.io/badge/License-MIT-green)
 
+PegaseUIData est une application macOS développée en **SwiftUI**, permettant de **gérer et visualiser des transactions financières** de manière intuitive et efficace.
 
-Depuis le début de la conversion de Pegase de Swift vers SwiftUI, de nombreuses étapes ont été franchies pour moderniser l’application et améliorer son fonctionnement.
-    •    Migration vers SwiftData : Transformation de l’ancienne base CoreData en SwiftData, avec une refonte complète des modèles.
-    •    Identité ✅
-    •    Banque ✅
-    •    Relevé bancaire ✅
-    •    Personnalisation de l’interface :
-    •    Ajout du support Mode Sombre / Mode Clair dans la barre d’outils (10/11/24).
-    •    Amélioration de la vue de détail pour une meilleure lisibilité (13/12/24).
-    •    Nouvelles fonctionnalités ajoutées :
-    •    Intégration du mode de paiement (20/01/25).
-    •    Gestion des relevés bancaires (30/01/25).
-    •    Ajout de la gestion des rubriques (03/02/25).
-    •    Mise en place d’un planificateur de paiements (05/02/25).
-    •    Ajout du suivi des chèques (05/02/25).
-    •    Création de la vue des transactions (26/02/25).
-    •    Améliorations et optimisations :
-    •    Amélioration du système de préférences des transactions (10/03/25).
-    •    Optimisation et nettoyage du code pour plus de clarté et de performance (14/03/25).
-    •    Refonte du système de changement de compte pour une meilleure fluidité (02/02/25).
-    •    Amélioration de la traduction pour rendre l’application plus accessible (02/02/25).
-    •    Dernière grande avancée :
-    •    Ajout de l’importation de transactions au format CSV (19/03/25), ouvrant la voie à une gestion plus flexible des données financières.
+## 📸 Aperçu
 
-Petit à petit, Pegase prend forme et commence réellement à fonctionner comme prévu. 🚀
+![Interface](assets/screenshot.png)
 
-<p align="center">
-<img src="Doc/Capture1.png" alt="Sample">
-<p align="center">
-<em>Init</em>
-</p>
-</p>
+## 🚀 Fonctionnalités
+
+- 📅 **Organisation des transactions par année et par mois** avec des groupes dynamiques.
+- 🔍 **Affichage et gestion des transactions** sous forme de liste interactive.
+- 🎨 **Interface moderne et intuitive** en SwiftUI.
+- 📂 **Sauvegarde et restauration des états d'affichage** (DisclosureGroup).
+- 🛠️ **Possibilité de filtrer, supprimer ou afficher les détails des transactions.**
+
+## 📦 Installation
+
+### 🔧 Prérequis
+- macOS 14+ (Sonoma)
+- Xcode 15+
+- Swift 5.7+
+
+### 📥 Cloner le projet
+
+```bash
+git clone https://github.com/ton-utilisateur/PegaseUIData.git
+cd PegaseUIData
+open PegaseUIData.xcodeproj
+```
+
+### ▶️ Lancer l'application
+- Ouvrir le projet avec **Xcode**.
+- Sélectionner un simulateur ou une machine locale.
+- **Run** (⌘ + R) pour exécuter l’application.
+
+## 📜 Utilisation
+
+1. **Lancer PegaseUIData** et charger les transactions existantes.
+2. **Explorer les transactions** organisées par année et mois.
+3. **Utiliser le menu contextuel** (clic droit) pour afficher les détails ou supprimer une transaction.
+4. **Personnaliser l'affichage** grâce aux options disponibles.
+
+## 🛠️ Contribution
+
+Les contributions sont les bienvenues !
+
+1. **Fork** le projet 🍴.
+2. **Crée une branche** (`git checkout -b feature-nouvelle-fonction`).
+3. **Commit tes modifications** (`git commit -m 'Ajout d'une nouvelle fonction'`).
+4. **Push la branche** (`git push origin feature-nouvelle-fonction`).
+5. **Ouvre une Pull Request** ✅.
+
+## 📃 Licence
+
+Ce projet est sous licence **MIT**. Voir le fichier [LICENSE](LICENSE) pour plus d’informations.
+
+## 🌟 Remerciements
+
+Merci d’utiliser **PegaseUIData** ! Si ce projet t’a aidé, **n’oublie pas de laisser une ⭐ sur GitHub** 🚀.
+
