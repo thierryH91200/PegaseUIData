@@ -58,26 +58,16 @@ struct ListTransactions200: View {
                 List {
                     // Titres des colonnes
                     HStack {
-                        Text("Date Operation").bold()
-                        Spacer()
-                        Text("Date Pointage").bold()
-                        Spacer()
-                        Text("Comment").bold()
-                            .frame(width: 150, alignment: .leading)
-                        Spacer()
-                        Text("Rubric").bold()
-                        Spacer()
-                        Text("Category").bold()
-                        Spacer()
-                        Text("Bank Statement").bold()
-                        Spacer()
-                        Text("Check Number").bold()
-                        Spacer()
-                        Text("Status").bold()
-                        Spacer()
-                        Text("Payment Mode").bold()
-                        Spacer()
-                        Text("Amount").bold()
+                        Text("Date operation").bold().frame(width: 120, alignment: .leading)
+                        Text("Date of pointing").bold().frame(width: 120, alignment: .leading)
+                        Text("Comment").bold().frame(width: 150, alignment: .leading)
+                        Text("Rubric").bold().frame(width: 100, alignment: .leading)
+                        Text("Category").bold().frame(width: 100, alignment: .leading)
+                        Text("Bank Statement").bold().frame(width: 120, alignment: .leading)
+                        Text("Check Number").bold().frame(width: 120, alignment: .leading)
+                        Text("Status").bold().frame(width: 100, alignment: .leading)
+                        Text("Payment Mode").bold().frame(width: 120, alignment: .leading)
+                        Text("Amount").bold().frame(width: 100, alignment: .trailing)
                     }
                     .padding(.vertical)
                     OperationRow()
@@ -204,11 +194,11 @@ extension EntityTransactions {
     }
     
     var statusString: String {
-        status.map { "\($0)" } ?? "N/A"
+        status.map { "\($0.name)" } ?? "N/A"
     }
     
     var paymentModeString: String {
-        paymentMode.map { "\($0)" } ?? "N/A"
+        paymentMode.map { "\($0.name)" } ?? "N/A"
     }
     
     var amountString: String {

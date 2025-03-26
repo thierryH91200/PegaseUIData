@@ -73,7 +73,7 @@ struct TransactionDetailView: View {
                 Text(transaction.paymentMode?.name ?? "—")
             }
             HStack {
-                Text("Bank statement :")
+                Text("Bank Statement :")
                     .bold()
                 Spacer()
                 Text(String(transaction.bankStatement))

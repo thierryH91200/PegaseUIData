@@ -348,10 +348,24 @@
       }
     },
     "Bank Statement" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relevé Bancaire"
+          }
+        }
+      }
     },
-    "Bank statement :" : {
-
+    "Bank Statement :" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relevé Bancaire :"
+          }
+        }
+      }
     },
     "Bank withdrawal" : {
       "localizations" : {
@@ -550,7 +564,14 @@
       }
     },
     "Check Number" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Numero de chèque"
+          }
+        }
+      }
     },
     "Choose a category within the selected rubric" : {
       "localizations" : {
@@ -874,10 +895,7 @@
         }
       }
     },
-    "Date Operation" : {
-
-    },
-    "Date operation :" : {
+    "Date operation" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -887,8 +905,15 @@
         }
       }
     },
-    "Date Pointage" : {
-
+    "Date operation :" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date de l’opération :"
+          }
+        }
+      }
     },
     "Decrease" : {
       "localizations" : {
@@ -1488,17 +1513,6 @@
         }
       }
     },
-    "Information" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Information"
-          }
-        }
-      }
-    },
     "Initial balance" : {
       "localizations" : {
         "fr" : {
@@ -1642,7 +1656,14 @@
       }
     },
     "Month: %@" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mois : %@"
+          }
+        }
+      }
     },
     "My Transactions" : {
       "localizations" : {
@@ -1807,7 +1828,14 @@
       }
     },
     "No label" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas de label"
+          }
+        }
+      }
     },
     "No PDF available" : {
       "localizations" : {
@@ -1936,7 +1964,14 @@
       }
     },
     "Payment Mode" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mode de paiement"
+          }
+        }
+      }
     },
     "Pegase" : {
       "localizations" : {
@@ -2014,6 +2049,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "RecetteDepensePie"
+          }
+        }
+      }
+    },
+    "Remove" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer"
           }
         }
       }
@@ -2114,6 +2159,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Paramètres"
+          }
+        }
+      }
+    },
+    "Show details" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher les détails"
           }
         }
       }
@@ -2337,7 +2392,14 @@
       }
     },
     "Year: %@" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Année %@"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
