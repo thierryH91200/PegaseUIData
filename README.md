@@ -1,3 +1,7 @@
+
+![Swift](https://img.shields.io/badge/Swift-5.7-orange)
+![macOS](https://img.shields.io/badge/macOS-15-blue)
+
 Since the beginning of the Pegase conversion from Swift to SwiftUI, significant progress has been made to modernize the application and enhance its functionality.
 
     •    Migration to SwiftData: The old CoreData structure has been fully transitioned to SwiftData, with a complete model redesign.
