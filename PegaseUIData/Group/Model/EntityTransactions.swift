@@ -78,6 +78,34 @@ extension EntityTransactions {
     }
 }
 
+extension EntityTransactions {
+    var dateOperationString: String {
+        return dateOperation?.formatted() ?? "N/A"
+    }
+    
+    var datePointageString: String {
+        datePointage?.formatted() ?? "N/A"
+    }
+    
+    var bankStatementString: String {
+        String(format: "%.2f", bankStatement)
+    }
+    
+    var statusString: String {
+        status.map { "\($0.name)" } ?? "N/A"
+    }
+    
+    var paymentModeString: String {
+        paymentMode.map { "\($0.name)" } ?? "N/A"
+    }
+    
+    var amountString: String {
+        let price = formatPrice(amount)
+        return price
+    }
+}
+
+
 actor ListTransactionsCache {
     // Configuration du cache
     private struct Config {

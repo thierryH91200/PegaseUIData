@@ -38,17 +38,6 @@
     "%@" : {
       "shouldTranslate" : false
     },
-    "%@ %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ %2$@"
-          }
-        }
-      },
-      "shouldTranslate" : false
-    },
     "%@ €" : {
       "localizations" : {
         "fr" : {
@@ -1665,16 +1654,6 @@
         }
       }
     },
-    "My Transactions" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mes transactions"
-          }
-        }
-      }
-    },
     "N/A" : {
       "localizations" : {
         "fr" : {
@@ -2003,16 +1982,6 @@
         }
       }
     },
-    "Pointing Date" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Date de Pointage"
-          }
-        }
-      }
-    },
     "Postal Code" : {
       "localizations" : {
         "fr" : {
@@ -2265,16 +2234,6 @@
         }
       }
     },
-    "Total: %@ €" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Total: %@ €"
-          }
-        }
-      }
-    },
     "Town" : {
       "localizations" : {
         "en" : {
@@ -2377,16 +2336,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Date de valeur"
-          }
-        }
-      }
-    },
-    "Year %@" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Année %@"
           }
         }
       }

@@ -159,7 +159,7 @@ struct CSVImportView: View {
         guard let index = index, index >= 0, index < row.count else { return Date().noon }
         let formatter = DateFormatter()
         formatter.dateFormat = "dd-MM-yyyy" // Ajuste selon le format de ton CSV
-        return formatter.date(from: row[index])
+        return formatter.date(from: row[index])?.noon
     }
 }
 

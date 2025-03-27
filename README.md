@@ -1,7 +1,4 @@
 
-![Swift](https://img.shields.io/badge/Swift-5.7-orange)
-![macOS](https://img.shields.io/badge/macOS-15-blue)
-
 # PegaseUIData
 
 ![Swift](https://img.shields.io/badge/Swift-5.7-orange) ![macOS](https://img.shields.io/badge/macOS-14-blue) ![License](https://img.shields.io/badge/License-MIT-green)

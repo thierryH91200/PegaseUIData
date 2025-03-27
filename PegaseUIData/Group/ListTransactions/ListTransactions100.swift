@@ -31,7 +31,6 @@ struct ListTransactionsView100: View {
     }
 }
 
-
 struct ListTransactions200: View {
     
     @Environment(\.modelContext) private var modelContext
@@ -86,7 +85,6 @@ struct ListTransactions200: View {
     func loadTransactions() {
         dataManager.listTransactions = ListTransactionsManager.shared.getAllDatas(ascending: false)
     }
-    
     
     private func balanceCalculation() {
         // Récupère les données de l'init
@@ -178,40 +176,21 @@ struct MonthGroup {
     var transactions: [EntityTransactions]
 }
 
-extension EntityTransactions {
-    var dateOperationString: String {
-        let date = dateOperation?.formatted() ?? "N/A"
-        
-        return dateOperation?.formatted() ?? "N/A"
-    }
-    
-    var datePointageString: String {
-        datePointage?.formatted() ?? "N/A"
-    }
-    
-    var bankStatementString: String {
-        String(format: "%.2f", bankStatement)
-    }
-    
-    var statusString: String {
-        status.map { "\($0.name)" } ?? "N/A"
-    }
-    
-    var paymentModeString: String {
-        paymentMode.map { "\($0.name)" } ?? "N/A"
-    }
-    
-    var amountString: String {
-        String(format: "%.2f", amount)
-    }
-}
 
 // Exemple d'extension pour formater les dates
 extension Date {
     func formatted() -> String {
         let formatter = DateFormatter()
-        formatter.dateStyle = .medium
+        formatter.dateStyle = .short
+        formatter.timeStyle = .none
         return formatter.string(from: self)
     }
 }
 
+func formatPrice(_ amount: Double) -> String {
+    let formatter = NumberFormatter()
+    formatter.numberStyle = .currency // format monétaire
+    formatter.locale = Locale.current // devise de l'utilisateur
+    let format = formatter.string(from: NSNumber(value: amount)) ?? "\(amount)"
+    return format
+}

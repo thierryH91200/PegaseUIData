@@ -53,10 +53,9 @@ struct OperationRow: View {
                             content: {
                                 VStack {
                                     List(monthGroup.transactions, selection: $selectedTransactions) { transaction in
-                                        TransactionLigne(transaction: transaction)
+                                        TransactionLigne(transaction: transaction, selectedTransactions: $selectedTransactions)
                                             .foregroundColor(.black)
                                             .frame(minHeight: 30)
-
                                     }
                                     .frame(minHeight: 800)
                                     Spacer()
@@ -81,7 +80,6 @@ struct OperationRow: View {
 //        TransactionDetailView(transaction: transaction)
     }
 
-    
     // Sauvegarde l'état des `DisclosureGroup`
     private func saveDisclosureState() {
         if let data = try? JSONEncoder().encode(disclosureStates) {
@@ -131,32 +129,64 @@ struct OperationRow: View {
 
 struct TransactionLigne: View {
     
-    @EnvironmentObject private var colorManager: ColorManager
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var dataManager           : ListDataManager
+    @EnvironmentObject private var dataManager      : ListDataManager
+    @EnvironmentObject var transactionManager: TransactionSelectionManager
+    @EnvironmentObject private var colorManager: ColorManager
 
     let transaction: EntityTransactions
+    @Binding var selectedTransactions: Set<UUID>
     
-    @State var showTransactionInfo : Bool = false
+    @State var showTransactionInfo: Bool = false
+    @GestureState private var isShiftPressed = false
+    @GestureState private var isCmdPressed = false
 
-    
+    var isSelected: Bool {
+        selectedTransactions.contains(transaction.id)
+    }
+
     var body: some View {
-        let foregroundColor = colorManager.colorForTransaction(transaction)
-        
+        let isSelected = selectedTransactions.contains(transaction.id)
+        var backgroundColor = isSelected ? Color.blue.opacity(0.5) : Color.clear
+        let textColor = isSelected ? Color.white : colorManager.colorForTransaction(transaction)
+
         HStack {
-            Text(transaction.dateOperationString).frame(width: 120, alignment: .leading).foregroundColor(foregroundColor)
-            Text(transaction.datePointageString).frame(width: 120, alignment: .leading).foregroundColor(foregroundColor)
-            Text(transaction.sousOperations.first?.libelle ?? "—").frame(width: 150, alignment: .leading).foregroundColor(foregroundColor)
-            Text(transaction.sousOperations.first?.category?.rubric?.name ?? "—").frame(width: 100, alignment: .leading).foregroundColor(foregroundColor)
-            Text(transaction.sousOperations.first?.category?.name ?? "—").frame(width: 100, alignment: .leading).foregroundColor(foregroundColor)
-            Text(transaction.bankStatementString).frame(width: 120, alignment: .leading).foregroundColor(foregroundColor)
-            Text(transaction.checkNumber).frame(width: 120, alignment: .leading).foregroundColor(foregroundColor)
-            Text(transaction.statusString).frame(width: 100, alignment: .leading).foregroundColor(foregroundColor)
-            Text(transaction.paymentModeString).frame(width: 120, alignment: .leading).foregroundColor(foregroundColor)
-            Text(transaction.amountString).frame(width: 100, alignment: .trailing).foregroundColor(foregroundColor)
+            Text(transaction.dateOperationString).frame(width: 120, alignment: .leading)
+            Text(transaction.datePointageString).frame(width: 120, alignment: .leading)
+            Text(transaction.sousOperations.first?.libelle ?? "—").frame(width: 150, alignment: .leading)
+            Text(transaction.sousOperations.first?.category?.rubric?.name ?? "—").frame(width: 100, alignment: .leading)
+            Text(transaction.sousOperations.first?.category?.name ?? "—").frame(width: 100, alignment: .leading)
+            Text(transaction.bankStatementString).frame(width: 120, alignment: .leading)
+            Text(transaction.checkNumber).frame(width: 120, alignment: .leading)
+            Text(transaction.statusString).frame(width: 100, alignment: .leading)
+            Text(transaction.paymentModeString).frame(width: 120, alignment: .leading)
+            Text(transaction.amountString).frame(width: 100, alignment: .trailing)
         }
+        .padding(.vertical, 6) // Ajout d'un peu d'espace
+        .background(backgroundColor)
+        .foregroundColor(textColor)
+        .cornerRadius(8) // Arrondi les coins du fond sélectionné
+        .contentShape(Rectangle()) // Permet de cliquer sur toute la ligne
+        .onTapGesture {
+            toggleSelection()
+        }
+        .onHover { hovering in
+            if !isSelected {
+                withAnimation {
+                    backgroundColor = hovering ? Color.gray.opacity(0.1) : Color.clear
+                }
+            }
+        }
+
+        .gesture(
+            DragGesture(minimumDistance: 0)
+                .updating($isCmdPressed) { _, state, _ in state = NSEvent.modifierFlags.contains(.command) }
+                .updating($isShiftPressed) { _, state, _ in state = NSEvent.modifierFlags.contains(.shift) }
+        )
         .contextMenu {
             Button(action: {
+                transactionManager.selectedTransaction = transaction
+                transactionManager.isCreationMode = false
                 showTransactionInfo = true
             }) {
                 Label("Show details", systemImage: "info.circle")
@@ -174,14 +204,39 @@ struct TransactionLigne: View {
         }
     }
     
+    private func transaction(for id: UUID) -> EntityTransactions? {
+        let selectedTransactionsList = selectedTransactions.compactMap { id in
+            transaction(for: id)
+        }
+        return dataManager.listTransactions.first { $0.id == id }
+    }
+    
+    private func toggleSelection() {
+        if NSEvent.modifierFlags.contains(.command) || NSEvent.modifierFlags.contains(.shift) {
+            // Mode sélection multiple : ajoute ou enlève de la sélection
+            if selectedTransactions.contains(transaction.id) {
+                selectedTransactions.remove(transaction.id)
+            } else {
+                selectedTransactions.insert(transaction.id)
+            }
+        } else {
+            // Mode sélection unique : efface la sélection précédente
+            selectedTransactions.removeAll()
+            selectedTransactions.insert(transaction.id)
+        }
+
+        // Met à jour la transaction sélectionnée dans le manager
+        if let firstSelectedId = selectedTransactions.first {
+            transactionManager.selectedTransaction = dataManager.listTransactions.first { $0.id == firstSelectedId }
+        }
+        transactionManager.isCreationMode = false
+    }
+    
     private func supprimerTransaction(_ transaction: EntityTransactions) {
         withAnimation {
             ListTransactionsManager.shared.configure(with: modelContext)
             ListTransactionsManager.shared.remove(entity: transaction)
-//            transactions.removeAll { $0.id == transaction.id }
-//            // Ici, pense à mettre à jour ton `dataManager` si nécessaire
             dataManager.listTransactions = ListTransactionsManager.shared.getAllDatas()
         }
     }
-
 }
