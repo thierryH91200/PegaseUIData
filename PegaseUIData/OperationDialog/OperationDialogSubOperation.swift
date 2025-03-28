@@ -33,7 +33,6 @@ struct SubOperationDialog: View {
     
     @State private var isExpanded = false // Indicateur l'état de sélection du signe
     
-    
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Split Transactions")
@@ -83,10 +82,10 @@ struct SubOperationDialog: View {
                 Text("Amount")
                 ZStack {
                     Rectangle()
-                        .fill(isExpanded ? Color.red : Color.green)
+                        .fill(isExpanded ? .green : .red)
                         .frame(width: 30, height: 30)
                     
-                    Image(systemName: isExpanded ? "minus" : "plus")
+                    Image(systemName: isExpanded ? "plus" : "minus")
                         .foregroundColor(.white)
                         .font(.system(size: 16, weight: .bold))
                 }
@@ -97,7 +96,7 @@ struct SubOperationDialog: View {
                 TextField("Amount", text: $amount)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .font(.system(size: 20))
-                    .foregroundColor(isExpanded ? .red : .green)
+                    .foregroundColor(isExpanded ? .green : .red)
                 
                     .accessibilityLabel(String(localized: "Amount field"))
                     .accessibilityHint(String(localized: "Enter the amount for this sub-operation"))
@@ -105,7 +104,6 @@ struct SubOperationDialog: View {
                                             amount)
             }
             .padding(.bottom)
-            
             
             HStack {
                 Button(action: {
@@ -138,69 +136,70 @@ struct SubOperationDialog: View {
         }
         .padding()
         .onAppear {
-            configureForm()
-            if transactionManager.isCreationMode == false {
+            Task {
+                do {
+                    try await configureManagers()
+                    self.entityRubric = RubricManager.shared.getAllDatas()
+                } catch {
+                    print("Failed to configure form: \(error)")
+                }
+            }
+                
+            
+            if transactionManager.isCreationMode {
+                configureForm()
+            }
+            
+            if !transactionManager.isCreationMode {
                 comment = subOperation?.libelle ?? ""
                 selectedCategorie = subOperation?.category
-                selectedRubric    = subOperation?.category?.rubric
-                amount = String(subOperation?.amount ?? 0.0)
-                //                printSub()
+                selectedRubric = subOperation?.category?.rubric
                 
-            } else {
-                
-                let account = CurrentAccountManager.shared.getAccount()
-                PreferenceManager.shared.configure(with: modelContext)
-                self.entityPreference = PreferenceManager.shared.getAllDatas(for: account)
-                
-                comment = ""
-                selectedCategorie = entityPreference!.category
-                selectedRubric = entityPreference!.category?.rubric
-                amount = String(0.0)
-                //                printSub1()
+                if let sum = subOperation?.amount {
+                    amount = String(abs(sum)) // Toujours positif à l'affichage
+                    let shouldBeExpanded = sum >= 0.0
+                    if isExpanded != shouldBeExpanded { // Empêche un rafraîchissement visuel
+                        isExpanded = shouldBeExpanded
+                    }
+                } else {
+                    amount = "0.0"
+                    isExpanded = false
+                }
             }
         }
     }
         
-    func saveSubOperation()
-    {
-        if transactionManager.isCreationMode == true { // Création
-            // Create entityTransaction
+    func saveSubOperation() {
+        if transactionManager.isCreationMode { // Création
             ListTransactionsManager.shared.configure(with: modelContext)
             ListTransactionsManager.shared.createTransactions(formState: formState)
-            
-            // Create entitySousOperation
             formState.currentSousTransaction = EntitySousOperations()
-            
-            let amountDouble = (Double(amount) ?? 0.0) * (isExpanded ? -1 : 1)
-            amount = String(amountDouble)
-            
-            SubTransactionsManager.shared.createSubTransactions(comment: comment, category: selectedCategorie!, amount: amount, formState: formState)
-            
-            if formState.currentTransaction?.sousOperations == nil {
-                formState.currentTransaction?.sousOperations = []
-            }
-            
-            formState.currentTransaction?.addSubOperation(subOperation!)
-            
-        } else { // Edition
-            if let subOperation = subOperation {
-                updateSousOperation(subOperation)
-            }
         }
+
+        if let subOperation = subOperation {
+            updateSousOperation(subOperation)
+        }
+
         try? modelContext.save()
+        dismiss() // Ferme la vue immédiatement après la sauvegarde
     }
     
     private func updateSousOperation(_ item: EntitySousOperations) {
         item.libelle = comment
         item.category = selectedCategorie
+
         if let value = Double(amount) {
-            item.amount = value
+            let signedValue = isExpanded ? value : -value
+            
+            // Vérification stricte pour éviter les mises à jour involontaires
+            if item.amount != signedValue {
+                item.amount = signedValue
+            }
         } else {
             print("Erreur : Le montant saisi n'est pas valide")
         }
-        
+
         item.transaction = formState.currentTransaction
-        
     }
     
     func configureManagers() async throws {

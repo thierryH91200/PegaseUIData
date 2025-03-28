@@ -4,17 +4,6 @@
     "" : {
       "shouldTranslate" : false
     },
-    " Bank statement :" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Relevé bancaire :"
-          }
-        }
-      }
-    },
     "(no transfer)" : {
       "localizations" : {
         "fr" : {
@@ -1292,6 +1281,26 @@
         }
       }
     },
+    "Export" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exporter"
+          }
+        }
+      }
+    },
+    "Export CSV" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exporter au format CSV"
+          }
+        }
+      }
+    },
     "Eyes" : {
       "localizations" : {
         "fr" : {
@@ -1962,6 +1971,9 @@
         }
       }
     },
+    "Pegase UI Data" : {
+
+    },
     "Phone" : {
       "localizations" : {
         "fr" : {
@@ -2336,6 +2348,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Date de valeur"
+          }
+        }
+      }
+    },
+    "Version %@ (Build %@)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Version %1$@ (Build %2$@)"
           }
         }
       }

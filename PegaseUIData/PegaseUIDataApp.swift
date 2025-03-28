@@ -52,11 +52,11 @@ struct PegaseUIDataApp: App {
     var body: some Scene {
         Window("Pegase", id: "main") {
 //        WindowGroup {
-            ContentView100( )
+            SplashScreenView( )
         }
         .commands {
             CommandGroup(after: .newItem) {
-                Menu("Import") { // Crée un menu "Import"
+                Menu("Import") { // Création d'un menu "Import"
                     Button("Transaction") {
                         NotificationCenter.default.post(name: .importTransaction, object: nil)
                     }
@@ -66,6 +66,17 @@ struct PegaseUIDataApp: App {
                         NotificationCenter.default.post(name: .importReleve, object: nil)
                     }
                     .keyboardShortcut("R", modifiers: [.command, .shift]) // Cmd+Shift+R
+                }
+                Menu("Export") {    // Création d'un menu "Export"
+                    Button("Transaction") {
+                        NotificationCenter.default.post(name: .exportTransaction, object: nil)
+                    }
+                    .keyboardShortcut("E", modifiers: [.command, .shift]) // Cmd+Shift+E
+                    
+                    Button("Statement") {
+                        NotificationCenter.default.post(name: .exportReleve, object: nil)
+                    }
+                    .keyboardShortcut("S", modifiers: [.command, .shift]) // Cmd+Shift+S
                 }
             }
             

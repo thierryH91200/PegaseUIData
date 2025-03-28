@@ -164,7 +164,7 @@ struct TransactionLigne: View {
         }
         .padding(.vertical, 6) // Ajout d'un peu d'espace
         .background(backgroundColor)
-        .foregroundColor(textColor)
+        .foregroundColor( textColor )
         .cornerRadius(8) // Arrondi les coins du fond sélectionné
         .contentShape(Rectangle()) // Permet de cliquer sur toute la ligne
         .onTapGesture {

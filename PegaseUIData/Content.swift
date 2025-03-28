@@ -20,8 +20,7 @@ class ContentViewModel: ObservableObject {
 }
 
 class ColorManager: ObservableObject {
-    
-//    @Published var selectedColorType: String = "United"
+
     @AppStorage("colorChoix") var colorChoix : String = "United"
     
     func printColors() {
@@ -31,7 +30,7 @@ class ColorManager: ObservableObject {
     func colorForTransaction(_ transaction: EntityTransactions) -> Color {
         switch colorChoix {
         case "United":
-            return .black
+            return .primary
         case "Income/Expense":
             return transaction.amount >= 0 ? .green : .red
         case "Rubric":
@@ -65,7 +64,8 @@ struct ContentView100: View {
     @State private var selectedTransaction: EntityTransactions?
     @State private var isCreationMode : Bool = true
     
-    @State private var showCSVImporter = false
+    @State private var showCSVTransactionImporter = false
+    @State private var showCSVTransactionExporter = false
 
     var transactions: [EntityTransactions] = [] // Liste des transactions
 
@@ -109,10 +109,16 @@ struct ContentView100: View {
             Spacer(minLength: 10)
         }
         .onReceive(NotificationCenter.default.publisher(for: .importTransaction)) { _ in
-            showCSVImporter = true
+            showCSVTransactionImporter = true
         }
-        .sheet(isPresented: $showCSVImporter) {
-            CSVImportView() // Affiche la fenêtre d'importation CSV
+        .sheet(isPresented: $showCSVTransactionImporter) {
+            CSVImportTransactionView() // Affiche la fenêtre d'importation CSV
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .exportTransaction)) { _ in
+            showCSVTransactionExporter = true
+        }
+        .sheet(isPresented: $showCSVTransactionExporter) {
+            CSVEXportTransactionView() // Affiche la fenêtre d'exportation CSV
         }
 
         .toolbar {
@@ -200,10 +206,8 @@ struct ContentView100: View {
     }
 
     private func chooseCouleur(_ color: String) {
-//        colorManager.selectedColorType = color
         colorManager.colorChoix = color
         selectedColor = color
-//        isVisible = false // Modifie l'état pour rafraîchir l'UI
     }
 
     private func saveWindowSize(width: CGFloat, height: CGFloat) {

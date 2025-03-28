@@ -12,7 +12,7 @@ import SwiftData
 struct TransactionDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject var transactionManager: TransactionSelectionManager
+//    @EnvironmentObject var transactionManager: TransactionSelectionManager
     
     let transaction: EntityTransactions
     
@@ -127,7 +127,7 @@ struct TransactionDetailView: View {
             HStack {
                 Spacer()
                 Button(action: {
-                    transactionManager.selectedTransaction = nil
+//                    transactionManager.selectedTransaction = nil
                     dismiss()
                 }) {
                     Text("Close")

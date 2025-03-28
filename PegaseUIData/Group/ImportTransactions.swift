@@ -11,8 +11,7 @@ import Foundation
 import SwiftData
 
 
-
-struct CSVImportView: View {
+struct CSVImportTransactionView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
