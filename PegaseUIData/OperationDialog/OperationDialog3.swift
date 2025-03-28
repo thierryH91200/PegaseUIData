@@ -216,7 +216,6 @@ struct OperationDialogView: View {
         formState.currentTransaction?.status = formState.selectedStatus
         formState.currentTransaction?.checkNumber = String(formState.checkNumber)
         formState.currentTransaction?.account = account
-//        printsub()
     }
     
     func save() throws {
@@ -224,11 +223,18 @@ struct OperationDialogView: View {
     }
     
     func resetListTransactions() {
+        
+        PreferenceManager.shared.configure(with: modelContext)
+        let account = CurrentAccountManager.shared.getAccount()
+        let entityPreference = PreferenceManager.shared.getAllDatas(for: account)
+
+        formState.currentTransaction = nil
+        formState.currentSousTransaction = nil
+        formState.selectedMode = entityPreference?.paymentMode
+        formState.selectedStatus = entityPreference?.status
         formState.bankStatement = 0
         formState.checkNumber = 0
-        formState.currentSousTransaction = nil
-        formState.selectedMode = nil
-        formState.currentTransaction = nil
+
     }
 }
 

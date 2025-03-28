@@ -31,7 +31,7 @@ struct SubOperationDialog: View {
     @State private var entityRubric     : [EntityRubric] = []
     @State private var entityCategorie  : [EntityCategory] = []
     
-    @State private var isExpanded = false // Indicateur l'état de sélection du signe
+    @State private var isSigne = false // Indicateur l'état de sélection du signe
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -82,21 +82,21 @@ struct SubOperationDialog: View {
                 Text("Amount")
                 ZStack {
                     Rectangle()
-                        .fill(isExpanded ? .green : .red)
+                        .fill(isSigne ? .green : .red)
                         .frame(width: 30, height: 30)
                     
-                    Image(systemName: isExpanded ? "plus" : "minus")
+                    Image(systemName: isSigne ? "plus" : "minus")
                         .foregroundColor(.white)
                         .font(.system(size: 16, weight: .bold))
                 }
                 .onTapGesture {
-                    isExpanded.toggle()
+                    isSigne.toggle()
                 }
                 
                 TextField("Amount", text: $amount)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .font(.system(size: 20))
-                    .foregroundColor(isExpanded ? .green : .red)
+                    .foregroundColor(isSigne ? .green : .red)
                 
                     .accessibilityLabel(String(localized: "Amount field"))
                     .accessibilityHint(String(localized: "Enter the amount for this sub-operation"))
@@ -136,6 +136,7 @@ struct SubOperationDialog: View {
         }
         .padding()
         .onAppear {
+            
             Task {
                 do {
                     try await configureManagers()
@@ -145,7 +146,6 @@ struct SubOperationDialog: View {
                 }
             }
                 
-            
             if transactionManager.isCreationMode {
                 configureForm()
             }
@@ -158,12 +158,12 @@ struct SubOperationDialog: View {
                 if let sum = subOperation?.amount {
                     amount = String(abs(sum)) // Toujours positif à l'affichage
                     let shouldBeExpanded = sum >= 0.0
-                    if isExpanded != shouldBeExpanded { // Empêche un rafraîchissement visuel
-                        isExpanded = shouldBeExpanded
+                    if isSigne != shouldBeExpanded { 
+                        isSigne = shouldBeExpanded
                     }
                 } else {
                     amount = "0.0"
-                    isExpanded = false
+                    isSigne = false
                 }
             }
         }
@@ -189,7 +189,7 @@ struct SubOperationDialog: View {
         item.category = selectedCategorie
 
         if let value = Double(amount) {
-            let signedValue = isExpanded ? value : -value
+            let signedValue = isSigne ? value : -value
             
             // Vérification stricte pour éviter les mises à jour involontaires
             if item.amount != signedValue {
@@ -211,25 +211,16 @@ struct SubOperationDialog: View {
     }
     
     func configureForm() {
-        Task {
-            do {
-                try await configureManagers()
-                let account = CurrentAccountManager.shared.getAccount()
-                self.entityPreference = PreferenceManager.shared.getAllDatas(for: account)
-                
-                self.entityRubric = RubricManager.shared.getAllDatas()
-                
-                if let preference = entityPreference, let rubricIndex = entityRubric.firstIndex(where: { $0 == preference.category?.rubric }) {
-                    selectedRubric = entityRubric[rubricIndex]
-                    entityCategorie = entityRubric[rubricIndex].categorie.sorted { $0.name < $1.name }
-                    if let categoryIndex = entityCategorie.firstIndex(where: { $0 === preference.category }) {
-                        selectedCategorie = entityCategorie[categoryIndex]
-                    }
-                    isExpanded = preference.signe
-                }
-            } catch {
-                print("Failed to configure form: \(error)")
+        let account = CurrentAccountManager.shared.getAccount()
+        self.entityPreference = PreferenceManager.shared.getAllDatas(for: account)
+        
+        if let preference = entityPreference, let rubricIndex = entityRubric.firstIndex(where: { $0 == preference.category?.rubric }) {
+            selectedRubric = entityRubric[rubricIndex]
+            entityCategorie = entityRubric[rubricIndex].categorie.sorted { $0.name < $1.name }
+            if let categoryIndex = entityCategorie.firstIndex(where: { $0 === preference.category }) {
+                selectedCategorie = entityCategorie[categoryIndex]
             }
+            isSigne = preference.signe
         }
     }
 }

@@ -25,7 +25,7 @@ struct SplashScreenView: View {
                         .scaledToFit()
                         .frame(width: 100, height: 100)
 
-                    Text("Pegase UI Data") // Nom de l’app
+                    Text("PegaseUIData") // Nom de l’app
                         .font(.title)
                         .bold()
                         .foregroundColor(.black)

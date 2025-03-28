@@ -1971,8 +1971,15 @@
         }
       }
     },
-    "Pegase UI Data" : {
-
+    "PegaseUIData" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PegaseUIData"
+          }
+        }
+      }
     },
     "Phone" : {
       "localizations" : {

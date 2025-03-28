@@ -22,6 +22,9 @@ class RubriqueManager: ObservableObject {
 
 // MARK: - TransactionFormViewModel
 struct TransactionFormViewModel: View {
+    
+    @Environment(\.modelContext) private var modelContext: ModelContext
+
     @Binding var linkedAccount: [EntityAccount]
     
     @Binding var transactionDate: Date
@@ -31,6 +34,8 @@ struct TransactionFormViewModel: View {
     @Binding var bankStatement: Int
     @Binding var checkNumber: Int
     @Binding var amount: String
+    
+    @State private var entityPreference : EntityPreference?
     
     @Binding var selectedBankStatement: String
     @Binding var selectedStatus: EntityStatus?
@@ -115,14 +120,30 @@ struct TransactionFormViewModel: View {
             }
         }
         .onAppear {
-            selectedAccount = compteCurrent
+            
+            PreferenceManager.shared.configure(with: modelContext)
+            let account = CurrentAccountManager.shared.getAccount()
+            self.entityPreference = PreferenceManager.shared.getAllDatas(for: account)
+
+            if selectedAccount == nil, let firstAccount = linkedAccount.first {
+                selectedAccount = firstAccount // Initialisation avec un compte valide
+            }
             DispatchQueue.main.async {
-                selectedMode = modes.first ?? selectedMode
-                selectedStatus = status.first ?? selectedStatus
+                selectedMode = modes.first
+//                selectedMode = entityPreference?.paymentMode
+                selectedStatus = entityPreference?.status
                 selectedBankStatement = ""
             }
         }
-        
+        .onChange(of: selectedAccount) { old, newValue in
+            print("Selected Account: \(newValue?.name ?? "nil")")
+        }
+        .onChange(of: selectedMode) { old, newValue in
+            print("Selected Mode: \(newValue?.name ?? "nil")")
+        }
+        .onChange(of: selectedStatus) { old, newValue in
+            print("Selected Status: \(newValue?.name ?? "nil")")
+        }
         .onChange(of: compteCurrent) {old, new in
             selectedAccount = compteCurrent
         }
