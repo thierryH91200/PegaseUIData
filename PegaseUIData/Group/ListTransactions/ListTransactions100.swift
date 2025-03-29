@@ -41,6 +41,8 @@ struct ListTransactions200: View {
     
     @Binding var isVisible: Bool
     
+    @State private var refresh = false
+    
     @State private var selectedTransactions = Set<UUID>()
     
     @State var soldeBanque = 0.0
@@ -54,28 +56,40 @@ struct ListTransactions200: View {
             
             NavigationView {
                 
-                List {
-                    // Titres des colonnes
-                    HStack {
-                        Text("Date operation").bold().frame(width: 120, alignment: .leading)
-                        Text("Date of pointing").bold().frame(width: 120, alignment: .leading)
-                        Text("Comment").bold().frame(width: 150, alignment: .leading)
-                        Text("Rubric").bold().frame(width: 100, alignment: .leading)
-                        Text("Category").bold().frame(width: 100, alignment: .leading)
-                        Text("Bank Statement").bold().frame(width: 120, alignment: .leading)
-                        Text("Check Number").bold().frame(width: 120, alignment: .leading)
-                        Text("Status").bold().frame(width: 100, alignment: .leading)
-                        Text("Payment Mode").bold().frame(width: 120, alignment: .leading)
-                        Text("Amount").bold().frame(width: 100, alignment: .trailing)
+                GeometryReader { geometry in
+                    List {
+                        // Titres des colonnes
+                        HStack {
+                            Text("Date operation").bold().frame(width: 120, alignment: .leading)
+                            Text("Date of pointing").bold().frame(width: 120, alignment: .leading)
+                            Text("Comment").bold().frame(width: 150, alignment: .leading)
+                            Text("Rubric").bold().frame(width: 100, alignment: .leading)
+                            Text("Category").bold().frame(width: 100, alignment: .leading)
+                            Text("Bank Statement").bold().frame(width: 120, alignment: .leading)
+                            Text("Check Number").bold().frame(width: 120, alignment: .leading)
+                            Text("Status").bold().frame(width: 100, alignment: .leading)
+                            Text("Payment Mode").bold().frame(width: 120, alignment: .leading)
+                            Text("Amount").bold().frame(width: 100, alignment: .trailing)
+                        }
+                        .padding(.vertical)
+                        OperationRow()
                     }
-                    .padding(.vertical)
-                    OperationRow()
+                    .frame(minWidth: 800, maxWidth: geometry.size.width)
+                    .id(refresh)
                 }
+                .background(Color.white) // Ajoute un fond blanc derrière GeometryReader
             }
         }
         .onChange(of: colorManager.colorChoix) { old, new in
         }
-        
+        .onChange(of: currentAccountManager.currentAccount) { old, new in
+            print("Changement de compte détecté: \(String(describing: new))")
+            loadTransactions()
+            
+            withAnimation {
+                refresh.toggle()
+            }
+        }
         .onAppear() {
             balanceCalculation()
         }
@@ -84,6 +98,8 @@ struct ListTransactions200: View {
     @MainActor
     func loadTransactions() {
         dataManager.listTransactions = ListTransactionsManager.shared.getAllDatas(ascending: false)
+        print("Transactions chargées:", dataManager.listTransactions.count)
+
     }
     
     private func balanceCalculation() {

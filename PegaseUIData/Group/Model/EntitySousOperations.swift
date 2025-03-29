@@ -28,6 +28,7 @@ public class EntitySousOperations: Identifiable {
         self.transaction = transaction
     }
 }
+
 final class SubTransactionsManager {
     
     var formState : TransactionFormState = TransactionFormState()

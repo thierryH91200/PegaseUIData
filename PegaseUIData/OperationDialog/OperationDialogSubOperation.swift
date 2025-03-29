@@ -140,47 +140,47 @@ struct SubOperationDialog: View {
             Task {
                 do {
                     try await configureManagers()
-                    self.entityRubric = RubricManager.shared.getAllDatas()
                 } catch {
                     print("Failed to configure form: \(error)")
                 }
-            }
                 
-            if transactionManager.isCreationMode {
-                configureForm()
-            }
-            
-            if !transactionManager.isCreationMode {
-                comment = subOperation?.libelle ?? ""
-                selectedCategorie = subOperation?.category
-                selectedRubric = subOperation?.category?.rubric
+                self.entityRubric = RubricManager.shared.getAllDatas()
                 
-                if let sum = subOperation?.amount {
-                    amount = String(abs(sum)) // Toujours positif à l'affichage
-                    let shouldBeExpanded = sum >= 0.0
-                    if isSigne != shouldBeExpanded { 
-                        isSigne = shouldBeExpanded
+                if transactionManager.isCreationMode == false {
+                    comment = subOperation?.libelle ?? ""
+                    selectedCategorie = subOperation?.category
+                    selectedRubric = subOperation?.category?.rubric
+                    
+                    if let sum = subOperation?.amount {
+                        amount = String(abs(sum)) // Toujours positif à l'affichage
+                        let shouldBeExpanded = sum >= 0.0
+                        if isSigne != shouldBeExpanded { 
+                            isSigne = shouldBeExpanded
+                        }
+                    } else {
+                        amount = "0.0"
+                        isSigne = false
                     }
                 } else {
-                    amount = "0.0"
-                    isSigne = false
+                    configureForm()
                 }
             }
         }
     }
         
     func saveSubOperation() {
-        if transactionManager.isCreationMode { // Création
-            ListTransactionsManager.shared.configure(with: modelContext)
-            ListTransactionsManager.shared.createTransactions(formState: formState)
+        if transactionManager.isCreationMode == true { // Création
+//            ListTransactionsManager.shared.configure(with: modelContext)
+//            ListTransactionsManager.shared.createTransactions(formState: formState)
             formState.currentSousTransaction = EntitySousOperations()
+            subOperation = formState.currentSousTransaction
         }
-
+            
         if let subOperation = subOperation {
             updateSousOperation(subOperation)
         }
-
-        try? modelContext.save()
+        
+//        try? modelContext.save()
         dismiss() // Ferme la vue immédiatement après la sauvegarde
     }
     

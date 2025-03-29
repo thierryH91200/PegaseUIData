@@ -148,14 +148,22 @@ final class ListTransactionsManager: ListManaging {
     }
 
     // MARK: remove Transaction
-    func remove(entity: EntityTransactions)
-    {
-        validContext.undoManager?.beginUndoGrouping()
-        validContext.undoManager?.setActionName("DeleteTransaction")
-        validContext.delete(entity)
-        validContext.undoManager?.endUndoGrouping()
+    func remove(entity: EntityTransactions) {
+        
+        do {
+            validContext.undoManager?.beginUndoGrouping()
+            validContext.undoManager?.setActionName("DeleteTransaction")
+            
+            // Check if entity is still valid
+            validContext.delete(entity)
+            try validContext.save()
+            validContext.undoManager?.endUndoGrouping()
+            
+        } catch {
+            print("Erreur lors de la suppression: \(error)")
+        }
     }
-
+    
     func printTransactions() {
         for entity in entities {
             print(entity.datePointage!)

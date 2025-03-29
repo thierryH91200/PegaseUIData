@@ -66,7 +66,11 @@ import SwiftData
     }
 
     public init() {
-        let account = CurrentAccountManager.shared.getAccount() 
+        
+        self.createAt = Date().noon
+        self.updatedAt = Date().noon
+
+        let account = CurrentAccountManager.shared.getAccount()
         self.account = account!
     }
 }

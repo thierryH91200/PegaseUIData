@@ -153,19 +153,25 @@ struct OperationDialogView: View {
     }
     
     func saveActions() {
-        guard let account = CurrentAccountManager.shared.getAccount() else {
-            print("Erreur : Impossible de récupérer le compte")
-            return
-        }
         
         contextSaveEdition()
-        updateTransactionData(account)
+        
+        let sousTransaction = formState.currentSousTransaction
+        let transaction = formState.currentTransaction!
+        
+        if transactionManager.isCreationMode == true {
+            sousTransaction?.transaction = transaction
+            modelContext.insert(sousTransaction!)
+            transaction.addSubOperation(sousTransaction!)
+            modelContext.insert(transaction)
+        }
         
         do {
             try save()
         } catch {
             print("Erreur lors de l'enregistrement : \(error)")
         }
+        
         dataManager.loadTransactions()
         resetListTransactions()
     }
@@ -179,43 +185,43 @@ struct OperationDialogView: View {
         // Création d'une nouvelle transaction
         if transactionManager.isCreationMode == true {
             createNewTransaction(account)
-//            refreshData()
-            dataManager.loadTransactions()
-
+        } else {
+            updateTransaction(account)
         }
     }
     
+    // Création de l'entité transaction
     private func createNewTransaction(_ account: EntityAccount) {
-        // Création de l'entité transaction
-        if let transaction = formState.currentTransaction {
             
-            transaction.datePointage = formState.pointingDate.noon
-            transaction.dateOperation = formState.transactionDate.noon
-            transaction.paymentMode = formState.selectedMode
-            transaction.bankStatement = Double(formState.selectedBankStatement) ?? 0
-            transaction.status = formState.selectedStatus
-            transaction.checkNumber = String(formState.checkNumber)
-            if let transaction = formState.currentTransaction {
-                modelContext.insert(transaction)
-            }
-        }
+        let transaction  = EntityTransactions()
+        
+        transaction.dateOperation = formState.transactionDate.noon
+        transaction.datePointage = formState.pointingDate.noon
+        transaction.paymentMode = formState.selectedMode
+        transaction.status = formState.selectedStatus
+        transaction.bankStatement = Double(formState.selectedBankStatement) ?? 0
+        transaction.checkNumber = String(formState.checkNumber)
+        transaction.account = account
+        
+        formState.currentTransaction = transaction
     }
     
-    func printsub() {
-        print(  formState.currentTransaction!.sousOperations.first?.libelle ?? "default")
-        print(  formState.currentTransaction!.sousOperations.first?.category?.name ?? "nameCat")
-        print(  formState.currentTransaction!.sousOperations.first?.category?.rubric?.name ?? "nameRub")
-        print(  formState.currentTransaction!.sousOperations.first?.amount ?? 0.0)
-    }
     
-    private func updateTransactionData(_ account: EntityAccount) {
-        formState.currentTransaction?.datePointage = formState.pointingDate.noon
-        formState.currentTransaction?.dateOperation = formState.transactionDate.noon
-        formState.currentTransaction?.bankStatement = Double(formState.bankStatement)
-        formState.currentTransaction?.paymentMode = formState.selectedMode
-        formState.currentTransaction?.status = formState.selectedStatus
-        formState.currentTransaction?.checkNumber = String(formState.checkNumber)
-        formState.currentTransaction?.account = account
+    private func updateTransaction(_ account: EntityAccount) {
+        
+        let transaction = formState.currentTransaction
+        
+        transaction?.updatedAt = Date().noon
+        
+        transaction?.datePointage = formState.pointingDate.noon
+        transaction?.dateOperation = formState.transactionDate.noon
+        transaction?.paymentMode = formState.selectedMode
+        transaction?.status = formState.selectedStatus
+        transaction?.bankStatement = Double(formState.bankStatement)
+        transaction?.checkNumber = String(formState.checkNumber)
+        transaction?.account = account
+        
+        formState.currentTransaction = transaction
     }
     
     func save() throws {
@@ -234,7 +240,6 @@ struct OperationDialogView: View {
         formState.selectedStatus = entityPreference?.status
         formState.bankStatement = 0
         formState.checkNumber = 0
-
     }
 }
 

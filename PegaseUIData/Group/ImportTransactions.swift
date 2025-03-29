@@ -111,15 +111,15 @@ struct CSVImportTransactionView: View {
         
             let transaction = EntityTransactions()
             
-            transaction.createAt  = Date()
-            transaction.updatedAt = Date()
+            transaction.createAt  = Date().noon
+            transaction.updatedAt = Date().noon
 
-            transaction.dateOperation = dateOperation
-            transaction.datePointage  = datePointage
+            transaction.dateOperation = dateOperation?.noon
+            transaction.datePointage  = datePointage?.noon
             transaction.paymentMode   = entityModePaiement
             transaction.status        = entityStatus
             transaction.bankStatement = bankStatement
-            transaction.checkNumber   = ""
+            transaction.checkNumber   = "0"
             transaction.account       = account
             
             let sousTransaction = EntitySousOperations()

@@ -29,15 +29,7 @@ struct SummaryView: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            VStack {
-                Text("Executed")
-                Text(String(format: "%.2f €", executed))
-                    .font(.title)
-                    .foregroundColor(.blue)
-            }
-            .frame(maxWidth: .infinity)
-            .background(LinearGradient(gradient: Gradient(colors: [Color.cyan.opacity(0.1), Color.cyan.opacity(0.6)]), startPoint: .top, endPoint: .bottom))
-            .border(Color.black, width: 1)
+            
             VStack {
                 Text("Planned")
                 Text(String(format: "%.2f €", planned))
@@ -57,6 +49,17 @@ struct SummaryView: View {
             .frame(maxWidth: .infinity)
             .background(LinearGradient(gradient: Gradient(colors: [Color.cyan.opacity(0.1), Color.cyan.opacity(0.6)]), startPoint: .top, endPoint: .bottom))
             .border(Color.black, width: 1)
+            
+            VStack {
+                Text("Executed")
+                Text(String(format: "%.2f €", executed))
+                    .font(.title)
+                    .foregroundColor(.blue)
+            }
+            .frame(maxWidth: .infinity)
+            .background(LinearGradient(gradient: Gradient(colors: [Color.cyan.opacity(0.1), Color.cyan.opacity(0.6)]), startPoint: .top, endPoint: .bottom))
+            .border(Color.black, width: 1)
+
         }
         .frame(maxWidth: .infinity, maxHeight: 150)
     }
