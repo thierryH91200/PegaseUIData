@@ -77,10 +77,10 @@
 			isa = PBXGroup;
 			children = (
 				03DF76E52D9D183E00D179E1 /* README.md */,
+				03DF76E62D9D183E00D179E1 /* README_fr.md */,
 				03DF765E2D9D162100D179E1 /* Doc */,
 				03DF76512D9D15F300D179E1 /* PegaseUIData */,
 				03DF76502D9D15F300D179E1 /* Products */,
-				03DF76E62D9D183E00D179E1 /* README_fr.md */,
 				03DF76F22D9D18D900D179E1 /* Localizable.xcstrings */,
 				03DF76F32D9D18D900D179E1 /* Localizable.xcstrings.original */,
 				03DF76F42D9D18D900D179E1 /* Menu.xcstrings */,
