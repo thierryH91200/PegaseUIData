@@ -17,8 +17,13 @@ struct OperationRow: View {
     @Binding var selectedTransactions: Set<UUID>
     
     private var transactions: [EntityTransactions] { dataManager.listTransactions }
-    
-    @AppStorage("disclosureStates") private var disclosureStatesData: Data = Data()
+    // Récupère le compte courant de manière sécurisée.
+    var compteCurrent: EntityAccount? {
+        CurrentAccountManager.shared.getAccount()
+    }
+    @State var name : String = "NID"
+//    @AppStorage("disclosureStates" + name) var disclosureStatesData: Data = Data()
+
     @State private var disclosureStates: [String: Bool] = [:]
     
     private func isExpanded(for key: String) -> Binding<Bool> {
@@ -63,6 +68,15 @@ struct OperationRow: View {
             )
         }
         .onAppear(perform: loadDisclosureState)
+        .onAppear() {
+                name = compteCurrent?.name ?? "NID"
+                let key = "disclosureStates" + name
+                if let savedData = UserDefaults.standard.data(forKey: key),
+                   let loadedStates = try? JSONDecoder().decode([String: Bool].self, from: savedData) {
+                    disclosureStates = loadedStates
+                }
+            }
+        
         
         Spacer()
         Divider()
@@ -90,16 +104,17 @@ struct OperationRow: View {
     
     // Sauvegarde l'état des `DisclosureGroup`
     private func saveDisclosureState() {
+        let key = "disclosureStates" + name
         if let data = try? JSONEncoder().encode(disclosureStates) {
-            disclosureStatesData = data
+            UserDefaults.standard.set(data, forKey: key)
         }
     }
-    
     // Charge l'état sauvegardé au démarrage
     private func loadDisclosureState() {
-        if let loadedData = try? JSONDecoder().decode([String: Bool].self, from: disclosureStatesData) {
-            disclosureStates = loadedData
-        }
+        let key = "disclosureStates" + name
+        if let savedData = UserDefaults.standard.data(forKey: key),
+           let loadedStates = try? JSONDecoder().decode([String: Bool].self, from: savedData) {
+            disclosureStates = loadedStates        }
     }
 
     private func groupTransactionsByYear(transactions: [EntityTransactions]) -> [YearGroup] {
@@ -132,7 +147,6 @@ struct OperationRow: View {
         }
         return groupedItems
     }
-    
 }
 
 struct TransactionLigne: View {
@@ -232,7 +246,6 @@ struct TransactionLigne: View {
         }
     }
     
-
     private func transaction(for id: UUID) -> EntityTransactions? {
         _ = selectedTransactions.compactMap { id in
             transaction(for: id)

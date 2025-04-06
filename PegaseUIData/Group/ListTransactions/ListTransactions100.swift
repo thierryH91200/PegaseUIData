@@ -50,12 +50,19 @@ struct ListTransactions200: View {
     @State var soldeReel = 0.0
     @State var soldeFinal = 0.0
     
+    // Récupère le compte courant de manière sécurisée.
+    var compteCurrent: EntityAccount? {
+        CurrentAccountManager.shared.getAccount()
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             SummaryView(executed: soldeBanque, planned: soldeReel, engaged: soldeFinal)
                 .frame(maxWidth: .infinity, maxHeight: 100)
             
             VStack {
+                Text("\(compteCurrent?.name ?? "Aucun compte courant" )")
+
                 Text(String(localized: "Selections : \(selectedTransactions.count) transaction(s)"))
                     .padding()
                     .foregroundColor(.gray)
@@ -189,8 +196,6 @@ struct ListTransactions200: View {
         
         return groupedItems
     }
-
-
 }
 
 struct YearGroup {
