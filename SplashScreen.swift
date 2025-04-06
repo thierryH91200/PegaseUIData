@@ -23,7 +23,7 @@ struct SplashScreenView: View {
                     Image( "pegase" ) // Remplace par ton logo
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 400, height: 400)
+                        .frame(width: 800, height: 800)
 
                     Text("PegaseUIData") // Nom de l’app
                         .font(.title)

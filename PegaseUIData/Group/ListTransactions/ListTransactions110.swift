@@ -80,7 +80,7 @@ struct OperationRow: View {
     
 //    private func afficherDetails(_ transaction: EntityTransactions) {
 //        print("Afficher les détails de la transaction : \(transaction)")
-//        
+//
 //        if let index = dataManager.listTransactions.firstIndex(where: { $0.id == transaction.id }) {
 //            TransactionDetailView(currentSectionIndex: index, selectedTransaction: $selectedTransactions)
 //        } else {
@@ -232,6 +232,7 @@ struct TransactionLigne: View {
         }
     }
     
+
     private func transaction(for id: UUID) -> EntityTransactions? {
         _ = selectedTransactions.compactMap { id in
             transaction(for: id)
@@ -278,3 +279,5 @@ struct TransactionLigne: View {
         }
     }
 }
+
+
