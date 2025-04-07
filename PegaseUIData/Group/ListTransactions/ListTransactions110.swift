@@ -175,6 +175,7 @@ struct TransactionLigne: View {
         HStack {
             Text(transaction.dateOperationString).frame(width: 120, alignment: .leading)
             Text(transaction.datePointageString).frame(width: 120, alignment: .leading)
+            
             Text(transaction.sousOperations.first?.libelle ?? "—").frame(width: 150, alignment: .leading)
             Text(transaction.sousOperations.first?.category?.rubric?.name ?? "—").frame(width: 100, alignment: .leading)
             Text(transaction.sousOperations.first?.category?.name ?? "—").frame(width: 100, alignment: .leading)

@@ -21,10 +21,24 @@ class ContentViewModel: ObservableObject {
 
 class ColorManager: ObservableObject {
 
-    @AppStorage("colorChoix") var colorChoix : String = "United"
+    private let key: String
+    @Published var colorChoix: String {
+        didSet {
+            UserDefaults.standard.set(colorChoix, forKey: key)
+        }
+    }
+
+    init( ) {
+        
+        let account = CurrentAccountManager.shared.getAccount()
+
+        let name = account?.identity?.name ?? " "
+        let surName = account?.identity?.surName ?? ""
+        let accccountName = name + surName
+        
+        self.key = "colorChoix_" + accccountName
     
-    func printColors() {
-        print("ColorManager : ", colorChoix)
+        self.colorChoix = UserDefaults.standard.string(forKey: key) ?? "United"
     }
 
     func colorForTransaction(_ transaction: EntityTransactions) -> Color {
@@ -42,6 +56,10 @@ class ColorManager: ObservableObject {
         default:
             return .black
         }
+    }
+
+    func printColors() {
+        print("ColorManager : ", colorChoix)
     }
 }
 
