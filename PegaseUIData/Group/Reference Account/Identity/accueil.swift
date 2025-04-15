@@ -52,14 +52,12 @@ struct Accueil: View {
 
 struct Account: View {
     
-    @StateObject private var currentAccountManager = CurrentAccountManager.shared
     @StateObject private var initAccountViewManager = InitAccountDataManager()
 
     var body: some View {
         VStack {
             InitAccountView()
                 .environmentObject(initAccountViewManager)
-                .environmentObject(currentAccountManager)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .layoutPriority(1) // Priorité élevée pour occuper tout l’espace disponible
         }
@@ -69,14 +67,12 @@ struct Account: View {
 
 struct Bank: View {
     
-    @StateObject private var currentAccountManager = CurrentAccountManager.shared
     @StateObject private var banqueViewManager = BankDataManager()
     
     var body: some View {
         VStack {
             BankView()
                 .environmentObject(banqueViewManager)
-                .environmentObject(currentAccountManager)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .layoutPriority(1) // Priorité élevée pour occuper tout l’espace disponible
         }
@@ -85,14 +81,12 @@ struct Bank: View {
 }
 
 struct Identite: View {
-    @StateObject private var currentAccountManager = CurrentAccountManager.shared
     @StateObject private var identityViewManager = IdentityDataManager()
 
     var body: some View {
         VStack {
             IdentityView()
                 .environmentObject(identityViewManager)
-                .environmentObject(currentAccountManager)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .layoutPriority(1) // Priorité élevée pour occuper tout l’espace disponible
         }

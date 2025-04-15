@@ -14,20 +14,17 @@ struct OperationDialog: View {
     
     @EnvironmentObject var transactionManager: TransactionSelectionManager
 
-    @StateObject private var currentAccountManager = CurrentAccountManager.shared
     @StateObject private var formState = TransactionFormState()
     
     var body: some View {
         VStack {
             OperationDialogView()
-                .environmentObject(currentAccountManager)
                 .environmentObject(formState)
 
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .layoutPriority(1)
                 .onChange(of: transactionManager.selectedTransaction) {old, new in
                 }
-
         }
         .padding()
     }

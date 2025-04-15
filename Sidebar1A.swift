@@ -11,7 +11,6 @@ import SwiftData
 
 struct Sidebar1A: View {
     
-    
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \EntityFolderAccount.name, animation: .bouncy) var folders: [EntityFolderAccount]
     @StateObject private var viewModel = AccountViewModel()

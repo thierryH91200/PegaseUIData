@@ -152,9 +152,9 @@ struct OperationRow: View {
 struct TransactionLigne: View {
     
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var dataManager      : ListDataManager
-    @EnvironmentObject var transactionManager: TransactionSelectionManager
-    @EnvironmentObject private var colorManager: ColorManager
+    @EnvironmentObject private var dataManager  : ListDataManager
+    @EnvironmentObject var transactionManager   : TransactionSelectionManager
+    @EnvironmentObject private var colorManager : ColorManager
 
     let transaction: EntityTransactions
     @Binding var selectedTransactions: Set<UUID>
@@ -240,7 +240,7 @@ struct TransactionLigne: View {
                 TransactionDetailView(currentSectionIndex: index, selectedTransaction: $selectedTransactions)
                     .frame(minWidth: 400, minHeight: 300)
             } else {
-                Text("Erreur : transaction non trouvée dans la liste.")
+                Text("Error: Transaction not found in the list.")
                     .foregroundColor(.red)
                     .padding()
             }

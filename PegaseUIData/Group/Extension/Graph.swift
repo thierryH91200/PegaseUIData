@@ -6,7 +6,8 @@
 //
 
 import AppKit
-import Charts
+import SwiftUI
+import DGCharts
 
 struct DataGraph {
     
@@ -27,3 +28,22 @@ struct DataGraph {
     }
     
 }
+
+class CurrencyValueFormatter: NSObject, AxisValueFormatter
+{
+    let formatter = NumberFormatter()
+
+    public override init() {
+        super.init()
+        formatter.numberStyle = .currency
+        formatter.locale = Locale(identifier: Locale.current.identifier)
+        formatter.maximumFractionDigits = 2
+    }
+    
+    public func stringForValue(_ value: Double, axis: AxisBase?) -> String
+    {
+        let currency = formatter.string(from: value as NSNumber)!
+        return currency
+    }
+}
+

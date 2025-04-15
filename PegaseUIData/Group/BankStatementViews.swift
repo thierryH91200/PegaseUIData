@@ -38,12 +38,10 @@ struct BankStatementView: View {
     
     @Binding var isVisible: Bool
     @StateObject private var dataManager = StatementDataManager()
-    @StateObject private var currentAccountManager = CurrentAccountManager.shared
 
     var body: some View {
         BankStatementListView()
             .environmentObject(dataManager)
-            .environmentObject(currentAccountManager)
 
             .padding()
             .task {

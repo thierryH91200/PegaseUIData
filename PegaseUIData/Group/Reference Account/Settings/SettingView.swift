@@ -32,7 +32,6 @@ enum TabSelection: Hashable {
 }
 struct SettingTab: View {
     
-    @StateObject private var currentAccountManager = CurrentAccountManager.shared
     
     @StateObject private var chequeViewManager       = CheckDataManager()
     @StateObject private var modePaiementDataManager = ModePaiementDataManager()
@@ -52,14 +51,12 @@ struct SettingTab: View {
 //            }
 //        }
             RubricView()
-                .environmentObject(currentAccountManager)
                 .environmentObject(rubricDataManager)
                 .tabItem {
                     Label ("Rubric", systemImage: "house" )
                 }
 
             ModePaymentView()
-                .environmentObject(currentAccountManager)
                 .environmentObject(modePaiementDataManager)
 
                 .tabItem {
@@ -67,7 +64,6 @@ struct SettingTab: View {
                 }
             
             PreferenceTransactionView()
-                .environmentObject(currentAccountManager)
                 .environmentObject(preferenceDataManager)
             
                 .tabItem {
@@ -75,7 +71,6 @@ struct SettingTab: View {
                 }
             
             CheckView()
-                .environmentObject(currentAccountManager)
                 .environmentObject(chequeViewManager)
 
                 .tabItem {

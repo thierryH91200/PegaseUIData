@@ -11,13 +11,11 @@ import SwiftData
 
 struct ListTransactionsView100: View {
     
-    @StateObject private var currentAccountManager = CurrentAccountManager.shared
     @Binding var isVisible: Bool
     @State private var selectedTransactions: Set<UUID> = []
 
     var body: some View {
         ListTransactions200(isVisible: $isVisible, selectedTransactions: $selectedTransactions)
-            .environmentObject(currentAccountManager)
             .padding()
             .task {
                 await performFalseTask()

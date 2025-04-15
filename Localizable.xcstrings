@@ -6117,8 +6117,15 @@
         }
       }
     },
-    "Erreur : transaction non trouvée dans la liste." : {
-
+    "Error: Transaction not found in the list." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur : transaction non trouvée dans la liste."
+          }
+        }
+      }
     },
     "Executed" : {
       "localizations" : {
@@ -6324,6 +6331,16 @@
           "stringUnit" : {
             "state" : "error",
             "value" : ""
+          }
+        }
+      }
+    },
+    "Filter by period" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filtrer par période"
           }
         }
       }
@@ -6688,6 +6705,22 @@
           "stringUnit" : {
             "state" : "error",
             "value" : ""
+          }
+        }
+      }
+    },
+    "From %@ to %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "From %1$@ to %2$@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De %1$@ à %2$@"
           }
         }
       }
@@ -10559,7 +10592,14 @@
       }
     },
     "Sélections : %lld transaction(s)" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sélections : %lld transaction(s)"
+          }
+        }
+      }
     },
     "Settings" : {
       "localizations" : {

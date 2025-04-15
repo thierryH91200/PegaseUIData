@@ -74,10 +74,11 @@ struct ContentView100: View {
     @AppStorage("windowHeight")  var windowHeight: Double = 600
     @AppStorage("choixCouleur") var choixCouleur: String = "Unie"
 
-    @Environment(\.modelContext) private var modelContext
+//    @Environment(\.modelContext) private var modelContext
     @StateObject private var transactionManager = TransactionSelectionManager()
     @StateObject private var colorManager = ColorManager()
     @StateObject private var listDataManager = ListDataManager()
+    @StateObject private var currentAccountManager = CurrentAccountManager.shared
 
     @State private var selectedTransaction: EntityTransactions?
     @State private var isCreationMode : Bool = true
@@ -119,6 +120,7 @@ struct ContentView100: View {
             }
             .environmentObject(transactionManager)// Injection de l’EnvironmentObject
             .environmentObject(listDataManager)   // Injection de l’EnvironmentObject
+            .environmentObject(currentAccountManager)   // Injection de l’EnvironmentObject
             .navigationSplitViewStyle(.balanced)
 
             .onAppear {
@@ -214,7 +216,7 @@ struct ContentView100: View {
                 } label: {
                     Label("Choose the color", systemImage: "paintpalette")
                 }
-                if isVisible == false{
+                if isVisible == false {
 //                    ListTransactions(isVisible: $isVisible, selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)
 //                        .environmentObject(colorManager)
                 }

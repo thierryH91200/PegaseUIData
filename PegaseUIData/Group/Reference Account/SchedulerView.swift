@@ -36,7 +36,6 @@ final class SchedulerDataManager: ObservableObject {
 
 struct SchedulerView: View {
     
-    @StateObject private var currentAccountManager = CurrentAccountManager.shared
     @StateObject private var schedulerDataManager = SchedulerDataManager()
 
     @Binding var isVisible: Bool
@@ -44,8 +43,6 @@ struct SchedulerView: View {
     var body: some View {
         Scheduler()
             .environmentObject(schedulerDataManager)
-            .environmentObject(currentAccountManager)
-
             .padding()
             .task {
                 await performFalseTask()

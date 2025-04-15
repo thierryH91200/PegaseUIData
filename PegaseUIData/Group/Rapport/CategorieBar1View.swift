@@ -1,12 +1,9 @@
-//
-//  CategorieBar1View.swift
-//  PegaseUI
-//
-//  Created by Thierry hentic on 31/10/2024.
-//
 
 import SwiftUI
+import SwiftData
 import DGCharts
+
+
 
 struct CategorieBar1View: View {
     
@@ -53,6 +50,8 @@ struct DGBarChartView: NSViewRepresentable {
     }
 }
 
+
+
 struct CategorieBar1View1: View {
     var dataEntries: [BarChartDataEntry] = [
         BarChartDataEntry(x: 1.0, y: 500.0),
@@ -62,6 +61,11 @@ struct CategorieBar1View1: View {
         BarChartDataEntry(x: 5.0, y: 900.0)
     ]
 
+    @State private var minDate = Calendar.current.date(byAdding: .day, value: -30, to: Date())!
+    @State private var maxDate = Date()
+    @State private var selectedStart: Double = 0
+    @State private var selectedEnd: Double = 30
+
     var body: some View {
         VStack {
             Text("CategorieBar1View1")
@@ -70,7 +74,89 @@ struct CategorieBar1View1: View {
             DGBarChartView(entries: dataEntries)
                 .frame(width: 600, height: 400)
                 .padding()
+
+            GroupBox(label: Label("Filter by period", systemImage: "calendar")) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("From \(formattedDate(from: selectedStart)) to \(formattedDate(from: selectedEnd))")
+                        .font(.callout)
+                        .foregroundColor(.secondary)
+
+                    RangeSlider(minValue: 0,
+                                maxValue: maxDate.timeIntervalSince(minDate) / (60 * 60 * 24),
+                                lowerValue: $selectedStart,
+                                upperValue: $selectedEnd)
+                        .frame(height: 30)
+                }
+                .padding(.top, 4)
+                .padding(.horizontal)
+            }
+            .padding()
+            
             Spacer()
+        }
+    }
+
+    func formattedDate(from dayOffset: Double) -> String {
+        let date = Calendar.current.date(byAdding: .day, value: Int(dayOffset), to: minDate)!
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter.string(from: date)
+    }
+}
+
+struct RangeSlider: View {
+    let minValue: Double
+    let maxValue: Double
+
+    @Binding var lowerValue: Double
+    @Binding var upperValue: Double
+
+    var body: some View {
+        GeometryReader { geometry in
+            let width = geometry.size.width
+            let knobSize: CGFloat = 20
+            let range = maxValue - minValue
+
+            let lowerX = width * CGFloat((lowerValue - minValue) / range)
+            let upperX = width * CGFloat((upperValue - minValue) / range)
+
+            ZStack(alignment: .leading) {
+                Capsule()
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(height: 4)
+                Capsule()
+                    .fill(Color.blue)
+                    .frame(width: upperX - lowerX, height: 4)
+                    .offset(x: lowerX)
+
+                // Lower knob
+                Circle()
+                    .fill(Color.white)
+                    .frame(width: knobSize, height: knobSize)
+                    .shadow(radius: 2)
+                    .position(x: lowerX, y: 10)
+                    .gesture(DragGesture().onChanged { value in
+                        let percent = max(0, min(1, value.location.x / width))
+                        lowerValue = min(maxValue, max(minValue, percent * range))
+                        if lowerValue > upperValue {
+                            lowerValue = upperValue
+                        }
+                    })
+
+                // Upper knob
+                Circle()
+                    .fill(Color.white)
+                    .frame(width: knobSize, height: knobSize)
+                    .shadow(radius: 2)
+                    .position(x: upperX, y: 10)
+                    .gesture(DragGesture().onChanged { value in
+                        let percent = max(0, min(1, value.location.x / width))
+                        upperValue = min(maxValue, max(minValue, percent * range))
+                        if upperValue < lowerValue {
+                            upperValue = lowerValue
+                        }
+                    })
+            }
         }
     }
 }

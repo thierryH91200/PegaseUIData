@@ -10,12 +10,10 @@ import SwiftData
 struct NotesView: View {
     
     @Binding var isVisible: Bool
-    @StateObject private var currentAccountManager = CurrentAccountManager.shared
     @StateObject private var dataManager = StatementDataManager()
 
     var body: some View {
         NotesView10()
-            .environmentObject(currentAccountManager)
             .environmentObject(dataManager)
 
             .padding()
@@ -34,9 +32,9 @@ struct NotesView: View {
 struct NotesView10: View {
     @Environment(\.modelContext) private var modelContext: ModelContext
 
-    @StateObject private var dataManager = StatementDataManager()
+    @EnvironmentObject var dataManager: StatementDataManager
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
-    
+
     // Récupère le compte courant de manière sécurisée.
     var compteCurrent: EntityAccount? {
         CurrentAccountManager.shared.getAccount()
