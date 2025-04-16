@@ -26,7 +26,7 @@ import SwiftData
     @Relationship(deleteRule: .cascade, inverse: \EntitySousOperations.transaction)
     var sousOperations: [EntitySousOperations] = []
 
-    private(set) var amount: Double = 0.0
+//    private(set) var amount: Double = 0.0
 
     @Attribute(.ephemeral) var solde: Double? = 0.0
     
@@ -75,9 +75,9 @@ import SwiftData
         }
     }
     
-    func updateAmount() {
-        amount = sousOperations.reduce(0.0) { $0 + $1.amount }
-    }
+//    func updateAmount() {
+//        amount = sousOperations.reduce(0.0) { $0 + $1.amount }
+//    }
 }
 
 extension EntityTransactions {
@@ -88,7 +88,7 @@ extension EntityTransactions {
         }
         subOperation.transaction = self
         sousOperations.append(subOperation)
-        updateAmount() // Recalculer le montant
+//        updateAmount() // Recalculer le montant
     }
 }
 
@@ -116,6 +116,10 @@ extension EntityTransactions {
     var amountString: String {
         let price = formatPrice(amount)
         return price
+    }
+
+    var amount: Double {
+            sousOperations.reduce(0.0) { $0 + $1.amount }
     }
 }
 

@@ -285,7 +285,7 @@ struct DetailContainer: View {
             // Rapport
             String(localized: "Category Bar1",table: "Menu")            : { isVisible in AnyView(CategorieBar1View(isVisible         : isVisible)) },
             String(localized: "Category Bar2",table: "Menu")            : { isVisible in AnyView(CategorieBar2View(isVisible         : isVisible)) },
-            String(localized: "Payment method" ,table: "Menu")          : { isVisible in AnyView(ModePaiementBarView(isVisible       : isVisible)) },
+            String(localized: "Payment method" ,table: "Menu")          : { isVisible in AnyView(ModePaiementPieView(isVisible       : isVisible)) },
             String(localized: "Recipe / Expense Bar",table: "Menu")     : { isVisible in AnyView(RecetteDepenseBarView(isVisible     : isVisible)) },
             String(localized: "Recipe / Expense Pie",table: "Menu")     : { isVisible in AnyView(RecetteDepensePieView(isVisible     : isVisible)) },
             String(localized: "Rubric Bar",table: "Menu")               : { isVisible in AnyView(RubriqueBarView(isVisible           : isVisible)) },

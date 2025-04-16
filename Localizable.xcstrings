@@ -9991,7 +9991,14 @@
         }
       }
     },
+    "Recette Depense Pie" : {
+
+    },
+    "Recette Dépense Pie" : {
+
+    },
     "RecetteDepensePie" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

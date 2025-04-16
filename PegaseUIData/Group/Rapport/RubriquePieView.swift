@@ -36,8 +36,8 @@ struct DGPieChart1View1: NSViewRepresentable {
         
         let dataSet = PieChartDataSet(entries: entries, label: "Répartition des Rubriques")
         dataSet.colors = ChartColorTemplates.vordiplom() + ChartColorTemplates.joyful()
-        dataSet.valueTextColor = NSUIColor.black
-        dataSet.entryLabelColor = NSUIColor.black
+        dataSet.valueTextColor = .black
+        dataSet.entryLabelColor = .black
         dataSet.sliceSpace = 2.0
         
         let data = PieChartData(dataSet: dataSet)
@@ -63,7 +63,7 @@ struct RubriquePie: View {
 
     var body: some View {
         VStack {
-            Text("RecetteDepensePie")
+            Text(String(localized:"Recette Depense Pie"))
                 .font(.headline)
                 .padding()
             DGPieChart1View1(entries: pieDataEntries)

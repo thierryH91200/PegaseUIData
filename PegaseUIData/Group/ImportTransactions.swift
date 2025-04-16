@@ -129,7 +129,7 @@ struct CSVImportTransactionView: View {
             sousTransaction.transaction = transaction
             
             context.insert(sousTransaction)
-            transaction.updateAmount()
+//            transaction.updateAmount()
             transaction.addSubOperation(sousTransaction)
 
             context.insert(transaction)

@@ -130,7 +130,6 @@ struct CategorieBar2View2: View {
     @State private var chartViewRef: BarChartView?
     @State private var updateWorkItem: DispatchWorkItem?
 
-
     var body: some View {
         VStack {
             Text("CategorieBar2View2")
@@ -158,12 +157,10 @@ struct CategorieBar2View2: View {
         }
         
         .onChange(of: selectedStart) { _, newValue in
-            print("🎚️ selectedStart: \(newValue)")
             updateChartDebounced()
         }
         
         .onChange(of: selectedEnd) { _, newValue in
-            print("🎚️ selectedEnd: \(newValue)")
             updateChartDebounced()
         }
     }
@@ -176,7 +173,6 @@ struct CategorieBar2View2: View {
     }
     
     private func updateChart() {
-        print("🟦 Mise à jour du graphique")
         let start = Calendar.current.date(byAdding: .day, value: Int(selectedStart), to: minDate)!
         let end = Calendar.current.date(byAdding: .day, value: Int(selectedEnd), to: minDate)!
         let currentAccount = CurrentAccountManager.shared.getAccount()!
