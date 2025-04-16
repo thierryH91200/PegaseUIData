@@ -1117,6 +1117,9 @@
         }
       }
     },
+    "All select" : {
+
+    },
     "Alpha value:" : {
       "localizations" : {
         "de" : {
@@ -2338,6 +2341,9 @@
           }
         }
       }
+    },
+    "Catégories visibles" : {
+
     },
     "Category" : {
       "localizations" : {
@@ -4545,6 +4551,9 @@
         }
       }
     },
+    "Deselect all" : {
+
+    },
     "Discount" : {
       "localizations" : {
         "de" : {
@@ -6282,6 +6291,9 @@
           }
         }
       }
+    },
+    "Exporter en PNG" : {
+
     },
     "Eyes" : {
       "localizations" : {
@@ -11132,6 +11144,9 @@
           }
         }
       }
+    },
+    "Total: %@" : {
+
     },
     "Town" : {
       "localizations" : {

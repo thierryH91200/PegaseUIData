@@ -49,12 +49,13 @@ extension EntityFolderAccount {
 
     var name: String = ""
     var nameIcon: String = ""
-//    @Attribute(.ephemeral) var solde: Double? = 0.0
+    var currencyCode : String = "EUR"
     var dateEcheancier: Date = Date().noon
     var isDemo : Bool = false
     var isAccount : Bool = true
 
-    
+    //    @Attribute(.ephemeral) var solde: Double? = 0.0
+
     @Relationship(deleteRule: .cascade, inverse: \EntitySchedule.account)
     var echeanciers: [EntitySchedule]?
     

@@ -69,7 +69,7 @@ struct RecetteDepenseView: View {
             Text("ModePaiementView")
                 .font(.headline)
                 .padding()
-            DGBarChart2View2(entries: dataEntries)
+            DGBarChart4View4(entries: dataEntries)
                 .frame(width: 600, height: 400)
                 .padding()
             Spacer()

@@ -26,7 +26,6 @@ struct DataGraph {
         self.value  = value
         self.color  = color
     }
-    
 }
 
 class CurrencyValueFormatter: NSObject, AxisValueFormatter

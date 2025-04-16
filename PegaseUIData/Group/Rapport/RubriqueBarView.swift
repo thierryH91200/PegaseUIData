@@ -68,7 +68,7 @@ struct RubriqueBar: View {
             Text("ModePaiementView")
                 .font(.headline)
                 .padding()
-            DGBarChart2View2(entries: dataEntries)
+            DGBarChart5View5(entries: dataEntries)
                 .frame(width: .infinity, height: 400)
                 .padding()
             Spacer()

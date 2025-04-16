@@ -68,7 +68,7 @@ struct ModePaiementView: View {
             Text("ModePaiementView")
                 .font(.headline)
                 .padding()
-            DGBarChart2View2(entries: dataEntries)
+            DGBarChart3View3(entries: dataEntries)
                 .frame(width: 600, height: 400)
                 .padding()
             Spacer()
