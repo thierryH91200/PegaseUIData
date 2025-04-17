@@ -23,7 +23,6 @@ struct CategorieBar1View1: View {
     
     @State private var updateWorkItem: DispatchWorkItem?
 
-    // À remplacer par le vrai compte utilisateur si disponible
     let currentAccount: EntityAccount? = nil
 
     var body: some View {
@@ -38,7 +37,7 @@ struct CategorieBar1View1: View {
                 .padding(.bottom, 4)
             
             if !viewModel.labels.isEmpty {
-                DisclosureGroup("Catégories visibles") {
+                DisclosureGroup("Visible categories") {
                     Button(viewModel.selectedCategories.count < viewModel.labels.count ? "All select" : "Deselect all") {
                         if viewModel.selectedCategories.count < viewModel.labels.count {
                             viewModel.selectedCategories = Set(viewModel.labels)
@@ -66,7 +65,7 @@ struct CategorieBar1View1: View {
                 }
                 .padding()
             }
-            Button("Exporter en PNG") {
+            Button("Export to PNG") {
                 exportChartAsImage()
             }
             .padding(.bottom, 8)

@@ -1118,7 +1118,14 @@
       }
     },
     "All select" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sélectionner tout"
+          }
+        }
+      }
     },
     "Alpha value:" : {
       "localizations" : {
@@ -2342,9 +2349,6 @@
         }
       }
     },
-    "Catégories visibles" : {
-
-    },
     "Category" : {
       "localizations" : {
         "de" : {
@@ -3477,6 +3481,9 @@
         }
       }
     },
+    "Courbe de trésorerie" : {
+
+    },
     "CP" : {
       "localizations" : {
         "de" : {
@@ -4552,7 +4559,14 @@
       }
     },
     "Deselect all" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Déselectionner tout"
+          }
+        }
+      }
     },
     "Discount" : {
       "localizations" : {
@@ -6292,8 +6306,15 @@
         }
       }
     },
-    "Exporter en PNG" : {
-
+    "Export to PNG" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exporter au format PNG"
+          }
+        }
+      }
     },
     "Eyes" : {
       "localizations" : {
@@ -8049,57 +8070,8 @@
         }
       }
     },
-    "ModePaiementView" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ModePaiementView"
-          }
-        },
-        "he" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        }
-      }
+    "ModePaiement Pie" : {
+
     },
     "Month: %@" : {
       "localizations" : {
@@ -9991,64 +9963,18 @@
         }
       }
     },
-    "Recette Depense Pie" : {
-
-    },
     "Recette Dépense Pie" : {
-
-    },
-    "RecetteDepensePie" : {
-      "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "RecetteDepensePie"
-          }
-        },
-        "he" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "value" : "Diagramme des revenus et des dépenses"
           }
         }
       }
+    },
+    "RecetteDepenseBar3" : {
+
     },
     "Remove" : {
       "localizations" : {
@@ -10310,7 +10236,14 @@
         }
       }
     },
+    "Rubrique Bar" : {
+
+    },
+    "Rubrique pie" : {
+
+    },
     "Sales Line Chart" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -11153,7 +11086,14 @@
       }
     },
     "Total: %@" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total: %@"
+          }
+        }
+      }
     },
     "Town" : {
       "localizations" : {
@@ -11729,6 +11669,16 @@
           "stringUnit" : {
             "state" : "error",
             "value" : ""
+          }
+        }
+      }
+    },
+    "Visible categories" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Catégories visibles"
           }
         }
       }

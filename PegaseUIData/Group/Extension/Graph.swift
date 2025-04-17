@@ -46,6 +46,25 @@ class CurrencyValueFormatter: NSObject, AxisValueFormatter
     }
 }
 
+class CurrencyValueFormatter1: ValueFormatter {
+    private let formatter: NumberFormatter
+
+    init(currencyCode: String = "EUR") {
+        formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = currencyCode
+        formatter.maximumFractionDigits = 0
+        formatter.locale = Locale.current
+    }
+
+    public func stringForValue(_ value: Double,
+                                 entry: ChartDataEntry,
+                                 dataSetIndex: Int,
+                                 viewPortHandler: ViewPortHandler?) -> String {
+        return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
+    }
+}
+
 class PieValueFormatter: ValueFormatter {
     let formatter: NumberFormatter
 
@@ -61,5 +80,40 @@ class PieValueFormatter: ValueFormatter {
                                  dataSetIndex: Int,
                                  viewPortHandler: ViewPortHandler?) -> String {
         return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
+    }
+}
+
+// Résultat affiché : "1,2 k€", "850 €", etc.
+class CompactCurrencyFormatter: ValueFormatter {
+    private let numberFormatter: NumberFormatter
+
+    init() {
+        numberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .decimal
+        numberFormatter.maximumFractionDigits = 1
+    }
+
+    public func stringForValue(_ value: Double,
+                                 entry: ChartDataEntry,
+                                 dataSetIndex: Int,
+                                 viewPortHandler: ViewPortHandler?) -> String {
+        let absValue = abs(value)
+        let suffix: String
+        let displayValue: Double
+
+        switch absValue {
+        case 1_000_000...:
+            displayValue = absValue / 1_000_000
+            suffix = " M€"
+        case 1_000...:
+            displayValue = absValue / 1_000
+            suffix = " k€"
+        default:
+            displayValue = absValue
+            suffix = " €"
+        }
+
+        let formatted = numberFormatter.string(from: NSNumber(value: displayValue)) ?? "\(displayValue)"
+        return formatted + suffix
     }
 }

@@ -47,9 +47,37 @@
 		03DF770D2D9D19B100D179E1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		03F2579E2DB0EC090083E48A /* Exceptions for "PegaseUIData" folder in "PegaseUIData" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Group/Rapport/CategorieBar1View/CategorieBar1View.md,
+				Group/Rapport/CategorieBar2View/CategorieBarView2.md,
+				Group/Rapport/ModePaiementPieView/ModePaiementPieView.md,
+			);
+			target = 03DF764E2D9D15F300D179E1 /* PegaseUIData */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		03F2579F2DB0EC090083E48A /* Exceptions for "PegaseUIData" folder in "Compile Sources" phase from "PegaseUIData" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 03DF764B2D9D15F300D179E1 /* Sources */;
+			membershipExceptions = (
+				Group/Rapport/CategorieBar1View/CategorieBar1View.md,
+				Group/Rapport/CategorieBar2View/CategorieBarView2.md,
+				Group/Rapport/ModePaiementPieView/ModePaiementPieView.md,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		03DF76512D9D15F300D179E1 /* PegaseUIData */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				03F2579E2DB0EC090083E48A /* Exceptions for "PegaseUIData" folder in "PegaseUIData" target */,
+				03F2579F2DB0EC090083E48A /* Exceptions for "PegaseUIData" folder in "Compile Sources" phase from "PegaseUIData" target */,
+			);
 			path = PegaseUIData;
 			sourceTree = "<group>";
 		};

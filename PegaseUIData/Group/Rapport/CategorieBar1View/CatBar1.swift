@@ -13,6 +13,7 @@ class CategorieBar1ViewModel: ObservableObject {
     @Published var resultArray: [DataGraph] = []
     @Published var dataEntries: [BarChartDataEntry] = []
     @Published var currencyCode: String = Locale.current.currency?.identifier ?? "EUR"
+    
     @Published var selectedCategories: Set<String> = []
     
     var totalValue: Double {
