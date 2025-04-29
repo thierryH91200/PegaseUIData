@@ -14,10 +14,13 @@ struct DGLineChartView: NSViewRepresentable {
 //    @Binding var chartViewRef: LineChartView?
 
     @State private var selectedType: String = "Tous"
+    
+    @State var chartView = LineChartView()
+
     private let transactionTypes = ["Tous", "Achat", "Salaire", "Virement"]
 
     func makeNSView(context: Context) -> LineChartView {
-        let chartView = LineChartView()
+//        chartView = LineChartView()
         chartView.noDataText = String(localized:"No chart data available.")
         let safeEntries = entries.isEmpty ? [ChartDataEntry(x: 0, y: 1), ChartDataEntry(x: 1, y: 2)] : entries
         
@@ -33,7 +36,7 @@ struct DGLineChartView: NSViewRepresentable {
         chartView.data = data
         
         chartView.xAxis.axisMinimum = 0
-        chartView.xAxis.axisMaximum = 100  // éviter plage nulle
+        chartView.xAxis.axisMaximum = 200  // éviter plage nulle
         
         chartView.xAxis.labelPosition = .bottom
         chartView.xAxis.granularity = 1
@@ -89,5 +92,4 @@ struct DGLineChartView: NSViewRepresentable {
         dataSet.colors = [color]
         return dataSet
     }
-
 }

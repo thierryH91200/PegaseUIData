@@ -17,9 +17,20 @@ class TresuryLineViewModel: ObservableObject {
     @Published var currencyCode: String = Locale.current.currency?.identifier ?? "EUR"
     
     @Published var listTransactions : [EntityTransactions] = []
+    @Published var selectedStart: Double = 0
+    @Published var selectedEnd: Double = 30
     
     @Published var selectedCategories: Set<String> = []
     
+    let hourSeconds = 3600.0 * 24.0 // one day
+    var firstDate: TimeInterval = 0.0
+    var lastDate: TimeInterval = 200.0
+    
+    var chartView : LineChartView?
+    var rangeSlider : RangeSlider?
+    
+    static let shared = TresuryLineViewModel()
+
     var totalValue: Double {
         resultArray.map { $0.value }.reduce(0, +)
     }
@@ -28,6 +39,11 @@ class TresuryLineViewModel: ObservableObject {
         resultArray.map { $0.name }
     }
     
+    func configure(with chartView: LineChartView)
+    {
+        self .chartView = chartView
+    }
+
     let formatterPrice: NumberFormatter = {
         let _formatter = NumberFormatter()
         _formatter.locale = Locale.current
@@ -35,16 +51,29 @@ class TresuryLineViewModel: ObservableObject {
         return _formatter
     }()
     
+    func updateAccount () {
+        listTransactions = ListTransactionsManager.shared.getAllDatas()
+        if listTransactions.isEmpty == false {
+            
+            firstDate = (listTransactions.first?.dateOperation.timeIntervalSince1970)!
+            lastDate = (listTransactions.last?.dateOperation.timeIntervalSince1970)!
+            
+//            sliderViewHorizontalController?.initData(firstDate: firstDate, lastDate: lastDate)
+            rangeSlider?.minValue = firstDate
+            rangeSlider?.maxValue = lastDate
+        }
+    }
+    
+    
     func updateChartData(modelContext: ModelContext, currentAccount: EntityAccount?, startDate: Date, endDate: Date) {
         
-        var firstDate: TimeInterval = 0.0
-//        var lastDate: TimeInterval = 30.0
-        let hourSeconds = 3600.0 * 24.0 // one day
-
+        let firstDate: TimeInterval = 0.0
+        //        var lastDate: TimeInterval = 30.0
+        
         ListTransactionsManager.shared.configure(with: modelContext)
         listTransactions = ListTransactionsManager.shared.getAllDatas()
         guard listTransactions.isEmpty == false else { return }
-
+        
         self.dataGraph.removeAll()
         
         var dataTresorerie = DataTresorerie()
@@ -88,8 +117,8 @@ class TresuryLineViewModel: ObservableObject {
                         _ = 1
                     case .some(_):
                         _ = 1
-
                     }
+                    
                     index += 1
                     if index == listTransactions.count {
                         sameDate = false
@@ -104,9 +133,9 @@ class TresuryLineViewModel: ObservableObject {
             let entries = listTransactions.enumerated().map { index, item in
                 ChartDataEntry(x: Double(index), y: item.amount)
             }
-
+            
             self.dataEntries = entries
-                       
+            
             self.dataEntries = entries.filter { $0.x.isFinite && $0.y.isFinite && $0.y != 0 }
             
             dataTresorerie.x = Double(indexSlider)
@@ -117,7 +146,25 @@ class TresuryLineViewModel: ObservableObject {
         }
     }
     
-    
+    func addLimit( index: Double, x: Double) {
+        
+        let calendar = Calendar.current
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMM yy"
+        
+        let date2 = Date(timeIntervalSince1970: x )
+        if calendar.day(date2) == 1 {
+            let dateStr = dateFormatter.string(from: date2)
+            let llXAxis = ChartLimitLine(limit: index, label: dateStr)
+            llXAxis.lineColor = .linkColor
+            llXAxis.valueTextColor = NSColor.controlAccentColor
+            llXAxis.valueFont = NSFont.systemFont(ofSize: CGFloat(12.0))
+            llXAxis.labelPosition = .rightBottom
+            
+            let xAxis = chartView?.xAxis
+            xAxis?.addLimitLine(llXAxis)
+        }
+    }
     
     func setData(_ chartView: LineChartView)
     {
@@ -128,8 +175,8 @@ class TresuryLineViewModel: ObservableObject {
             chartView.notifyDataSetChanged()
             return }
         
-        chartView.xAxis.axisMaximum = 0.0
-        chartView.xAxis.axisMinimum = 200
+        chartView.xAxis.axisMinimum = 0.0
+        chartView.xAxis.axisMaximum = 200.0
         
         chartView.xAxis.removeAllLimitLines()
         
@@ -146,29 +193,29 @@ class TresuryLineViewModel: ObservableObject {
             values1.append(ChartDataEntry(x: dataGraph[i].x, y: dataGraph[i].soldeEngage))
             values2.append(ChartDataEntry(x: dataGraph[i].x, y: dataGraph[i].soldePrevu))
             
-//            addLimit(index: dataGraph[i].x, x: (dataGraph[i].x * hourSeconds) + firstDate)
+            addLimit(index: dataGraph[i].x, x: (dataGraph[i].x * hourSeconds) + firstDate)
         }
         
         if values0.isEmpty == true {
             chartView.data = nil
-//            sliderViewHorizontalController?.mySlider.isEnabled = false
+            //            sliderViewHorizontalController?.mySlider.isEnabled = false
             return
         }
         
-//        sliderViewHorizontalController?.mySlider.isEnabled = true
+        //        sliderViewHorizontalController?.mySlider.isEnabled = true
         chartView.xAxis.labelCount = 300
-//        chartView.xAxis.valueFormatter = DateValueFormatter(miniTime: firstDate, interval: hourSeconds)
+        //        chartView.xAxis.valueFormatter = DateValueFormatter(miniTime: firstDate, interval: hourSeconds)
         
         // MARK: Marker
-//        let  marker = RectMarker( color: .gray,
-//                                  font: NSFont.systemFont(ofSize: 12.0),
-//                                  insets: NSEdgeInsets(top: 8.0, left: 8.0, bottom: 20.0, right: 8.0))
-//        
-//        marker.minimumSize = CGSize( width: 80.0, height: 40.0)
-//        marker.chartView = chartView
-//        chartView.marker = marker
-//        marker.miniTime = firstDate
-//        marker.interval = hourSeconds
+        //        let  marker = RectMarker( color: .gray,
+        //                                  font: NSFont.systemFont(ofSize: 12.0),
+        //                                  insets: NSEdgeInsets(top: 8.0, left: 8.0, bottom: 20.0, right: 8.0))
+        //
+        //        marker.minimumSize = CGSize( width: 80.0, height: 40.0)
+        //        marker.chartView = chartView
+        //        chartView.marker = marker
+        //        marker.miniTime = firstDate
+        //        marker.interval = hourSeconds
         
         // MARK: LineChartDataSet
         

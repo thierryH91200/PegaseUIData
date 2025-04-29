@@ -22,6 +22,10 @@ struct TreasuryCurve: View {
     @State private var selectedStart: Double = 0
     @State private var selectedEnd: Double = 30
     
+    var chartView : LineChartView?
+//    var rangeSlider : RangeSlider?
+
+    
     var body: some View {
         GeometryReader { geometry in
             VStack {
@@ -46,15 +50,19 @@ struct TreasuryCurve: View {
                     }
                     .padding(.top, 4)
                     .padding(.horizontal)
-
-                    
                 }
                 .onAppear {
                     updateChart()
+                    if let chartView = chartView {
+                        TresuryLineViewModel.shared.configure(with: chartView)
+                    }
                 }
-                .onChange(of: selectedStart) { _, _ in updateChart() }
-                .onChange(of: selectedEnd) { _, _ in updateChart() }
-            }
+                .onChange(of: selectedStart) { _, newStart in
+                    viewModel.selectedStart = newStart
+                }
+                .onChange(of: selectedEnd) { _, newEnd in
+                    viewModel.selectedEnd = newEnd
+                }            }
         }
     }
     

@@ -188,7 +188,6 @@ final class AccountManager {
         account.identity = identity
         
         do {
-            // Tente de créer un compte initial
             let initAccount = try InitAccountManager.shared.create(numAccount: numAccount, for: account)
             initAccount.account = account
             account.initAccount = initAccount
@@ -278,5 +277,4 @@ final class CurrentAccountManager : ObservableObject {
        currentAccount = nil
     }
 }
-
 

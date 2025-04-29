@@ -11,8 +11,8 @@ import DGCharts
 
 
 struct RangeSlider: View {
-    let minValue: Double
-    let maxValue: Double
+    var minValue: Double
+    var maxValue: Double
 
     @Binding var lowerValue: Double
     @Binding var upperValue: Double
