@@ -82,7 +82,7 @@ struct CategorieBar1View1: View {
                         .font(.callout)
                         .foregroundColor(.secondary)
 
-                    let range = RangeSlider(minValue: 0,
+                    RangeSlider(minValue: 0,
                                 maxValue: maxDate.timeIntervalSince(minDate) / (60 * 60 * 24),
                                 lowerValue: $selectedStart,
                                 upperValue: $selectedEnd)

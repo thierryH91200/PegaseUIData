@@ -62,10 +62,12 @@ struct RecetteDepenseView: View {
     }
     private func updatePieData() {
         
-        let start = Calendar.current.date(byAdding: .day, value: Int(selectedStart), to: minDate)!
-        let end = Calendar.current.date(byAdding: .day, value: Int(selectedEnd), to: minDate)!
-        let currentAccount = CurrentAccountManager.shared.getAccount()!
-        viewModel.updateChartData(modelContext: modelContext, currentAccount: currentAccount, startDate: start, endDate: end)
+//        let listTransactions = $viewModel.listTransactions
+//        firstDate = viewModel.firstDate
+//        lastDate = viewModel.lastDate
+//        guard let currentAccount = CurrentAccountManager.shared.getAccount() else { return }
+//
+//        viewModel.updateChartData(modelContext: modelContext, currentAccount: currentAccount, startDate: start, endDate: end)
     }
 
     func formattedDate(from dayOffset: Double) -> String {
@@ -74,7 +76,6 @@ struct RecetteDepenseView: View {
         formatter.dateStyle = .medium
         return formatter.string(from: date)
     }
-
 }
 
 

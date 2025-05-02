@@ -20,7 +20,7 @@ struct DGLineChartView: NSViewRepresentable {
     private let transactionTypes = ["Tous", "Achat", "Salaire", "Virement"]
 
     func makeNSView(context: Context) -> LineChartView {
-//        chartView = LineChartView()
+
         chartView.noDataText = String(localized:"No chart data available.")
         let safeEntries = entries.isEmpty ? [ChartDataEntry(x: 0, y: 1), ChartDataEntry(x: 1, y: 2)] : entries
         

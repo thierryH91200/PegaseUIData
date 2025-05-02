@@ -52,8 +52,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Group/Rapport/CategorieBar1View/CategorieBar1View.md,
-				Group/Rapport/CategorieBar2View/CategorieBarView2.md,
-				Group/Rapport/ModePaiementPieView/ModePaiementPieView.md,
 			);
 			target = 03DF764E2D9D15F300D179E1 /* PegaseUIData */;
 		};
@@ -65,8 +63,6 @@
 			buildPhase = 03DF764B2D9D15F300D179E1 /* Sources */;
 			membershipExceptions = (
 				Group/Rapport/CategorieBar1View/CategorieBar1View.md,
-				Group/Rapport/CategorieBar2View/CategorieBarView2.md,
-				Group/Rapport/ModePaiementPieView/ModePaiementPieView.md,
 			);
 		};
 /* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
@@ -377,7 +373,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.9;
+				MARKETING_VERSION = 0.91;
 				PRODUCT_BUNDLE_IDENTIFIER = perso.PegaseUIData;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -405,7 +401,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.9;
+				MARKETING_VERSION = 0.91;
 				PRODUCT_BUNDLE_IDENTIFIER = perso.PegaseUIData;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;

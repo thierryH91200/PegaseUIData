@@ -36,6 +36,24 @@ struct RubriqueBar: View {
                            chartViewRef: $chartViewRef)
                 .frame(width: 600, height: 400)
                 .padding()
+            
+            GroupBox(label: Label("Filter by period", systemImage: "calendar")) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("From \(formattedDate(from: selectedStart)) to \(formattedDate(from: selectedEnd))")
+                        .font(.callout)
+                        .foregroundColor(.secondary)
+
+                    RangeSlider(minValue: 0,
+                                maxValue: maxDate.timeIntervalSince(minDate) / (60 * 60 * 24),
+                                lowerValue: $selectedStart,
+                                upperValue: $selectedEnd)
+                        .frame(height: 30)
+                }
+                .padding(.top, 4)
+                .padding(.horizontal)
+            }
+            .padding()
+            
             Spacer()
         }
         .onAppear {
@@ -43,6 +61,7 @@ struct RubriqueBar: View {
         }
 
     }
+    
     private func updatePieData() {
         
         let start = Calendar.current.date(byAdding: .day, value: Int(selectedStart), to: minDate)!
@@ -51,5 +70,10 @@ struct RubriqueBar: View {
         viewModel.updateChartData(modelContext: modelContext, currentAccount: currentAccount, startDate: start, endDate: end)
     }
 
-
+    func formattedDate(from dayOffset: Double) -> String {
+        let date = Calendar.current.date(byAdding: .day, value: Int(dayOffset), to: minDate)!
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter.string(from: date)
+    }
 }

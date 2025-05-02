@@ -18,6 +18,8 @@ class ModePaymentPieViewModel: ObservableObject {
     
     @Published var currencyCode: String = Locale.current.currency?.identifier ?? "EUR"
     
+    var listTransactions: [EntityTransactions] = []
+
     var labelsExpense: [String] {
         depenseArray.map { $0.name }
     }
@@ -49,7 +51,7 @@ class ModePaymentPieViewModel: ObservableObject {
             sortBy: sort
         )
 
-        var listTransactions: [EntityTransactions] = []
+        listTransactions.removeAll()
         do {
             listTransactions = try modelContext.fetch(descriptor)
         } catch {

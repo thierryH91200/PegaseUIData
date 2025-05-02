@@ -41,7 +41,9 @@ struct DGBarChartView: NSViewRepresentable {
         initChart()
         chartView.animate(yAxisDuration: 1.5)
         
-        self.chartViewRef = chartView
+        DispatchQueue.main.async {
+            self.chartViewRef = chartView
+        }
         return chartView
     }
 

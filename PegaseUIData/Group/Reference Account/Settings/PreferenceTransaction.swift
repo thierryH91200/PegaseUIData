@@ -146,32 +146,29 @@ struct PreferenceTransactionView: View {
         .onChange(of: currentAccountManager.currentAccount) { _, newAccount in
             changeCounter += 1
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                Task.detached {
-                    // Récupérer les valeurs dans le contexte MainActor avant d'entrer dans Task.detached
-                    let status = await MainActor.run { selectedStatus }
-                    let mode = await MainActor.run { selectedMode }
-                    let rubric = await MainActor.run { selectedRubric }
-                    let category = await MainActor.run { selectedCategory }
-                    let preference = await MainActor.run { entityPreference }
-                    let sign = await MainActor.run { isExpanded }
-                    
-                    await updatePreference(status: status!,
-                                           mode: mode!,
-                                           rubric: rubric!,
-                                           category: category!,
-                                           preference: preference!,
-                                           sign: sign)
-                    
+                Task {
+                    guard let status = selectedStatus,
+                          let mode = selectedMode,
+                          let rubric = selectedRubric,
+                          let category = selectedCategory,
+                          let preference = entityPreference else { return }
+
+                    await updatePreference(status: status,
+                                           mode: mode,
+                                           rubric: rubric,
+                                           category: category,
+                                           preference: preference,
+                                           sign: isExpanded)
+
                     if let account = newAccount {
-                        await MainActor.run {
-                            dataManager.preferenceTransaction = nil
-                            dataManager.currentAccount = account
-                        }
+                        dataManager.preferenceTransaction = nil
+                        dataManager.currentAccount = account
                         try await refreshData(for: account)
                     }
                 }
             }
-        }        .cornerRadius(10)
+        }
+        .cornerRadius(10)
         .shadow(radius: 5)
         .padding()
     }

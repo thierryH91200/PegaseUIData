@@ -20,7 +20,6 @@ struct RubricColor : Hashable {
     }
 }
 
-
 struct CategorieBar2View2: View {
     
     @Environment(\.modelContext) private var modelContext
@@ -34,6 +33,10 @@ struct CategorieBar2View2: View {
     @State private var selectedEnd: Double = 30
     @State private var chartViewRef: BarChartView?
     @State private var updateWorkItem: DispatchWorkItem?
+    
+    @State private var firstDate: TimeInterval = 0.0
+    @State private var lastDate: TimeInterval = 0.0
+
 
     var body: some View {
         VStack {
@@ -46,11 +49,22 @@ struct CategorieBar2View2: View {
                            chartViewRef: $chartViewRef)
                 .frame(width: 600, height: 400)
                 .padding()
-            RangeSlider(minValue: 0,
-                        maxValue: maxDate.timeIntervalSince(minDate) / (60 * 60 * 24),
-                        lowerValue: $selectedStart,
-                        upperValue: $selectedEnd)
-                .frame(height: 30)
+            GroupBox(label: Label("Filter by period", systemImage: "calendar")) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("From \(formattedDate(from: selectedStart)) to \(formattedDate(from: selectedEnd))")
+                        .font(.callout)
+                        .foregroundColor(.secondary)
+
+                    RangeSlider(minValue: 0,
+                                maxValue: maxDate.timeIntervalSince(minDate) / (60 * 60 * 24),
+                                lowerValue: $selectedStart,
+                                upperValue: $selectedEnd)
+                        .frame(height: 30)
+                }
+                .padding(.top, 4)
+                .padding(.horizontal)
+            }
+            .padding()
 
             Spacer()
         }
@@ -60,11 +74,9 @@ struct CategorieBar2View2: View {
             let currentAccount = CurrentAccountManager.shared.getAccount()!
             viewModel.updateChartData(modelContext: modelContext, currentAccount: currentAccount, startDate: start, endDate: end)
         }
-        
         .onChange(of: selectedStart) { _, newValue in
             updateChartDebounced()
         }
-        
         .onChange(of: selectedEnd) { _, newValue in
             updateChartDebounced()
         }
@@ -78,9 +90,19 @@ struct CategorieBar2View2: View {
     }
     
     private func updateChart() {
-        let start = Calendar.current.date(byAdding: .day, value: Int(selectedStart), to: minDate)!
-        let end = Calendar.current.date(byAdding: .day, value: Int(selectedEnd), to: minDate)!
-        let currentAccount = CurrentAccountManager.shared.getAccount()!
-        viewModel.updateChartData(modelContext: modelContext, currentAccount: currentAccount, startDate: start, endDate: end)
+//        let listTransactions = viewModel.listTransactions
+//        firstDate = viewModel.firstDate
+//        lastDate = viewModel.lastDate
+//        guard let currentAccount = CurrentAccountManager.shared.getAccount() else { return }
+//
+//        viewModel.updateChartData(modelContext: modelContext, currentAccount: currentAccount, startDate: firstDate, endDate: lastDate)
     }
+    
+    func formattedDate(from dayOffset: Double) -> String {
+        let date = Calendar.current.date(byAdding: .day, value: Int(dayOffset), to: minDate)!
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter.string(from: date)
+    }
+
 }

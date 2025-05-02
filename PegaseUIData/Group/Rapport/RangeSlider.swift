@@ -1,5 +1,5 @@
 //
-//  Untitled.swift
+//  RangeSlider.swift
 //  PegaseUIData
 //
 //  Created by Thierry hentic on 16/04/2025.

@@ -24,8 +24,8 @@ class TresuryLineViewModel: ObservableObject {
     
     let hourSeconds = 3600.0 * 24.0 // one day
     var firstDate: TimeInterval = 0.0
-    var lastDate: TimeInterval = 200.0
-    
+    var lastDate: TimeInterval = 0.0
+
     var chartView : LineChartView?
     var rangeSlider : RangeSlider?
     
@@ -58,7 +58,6 @@ class TresuryLineViewModel: ObservableObject {
             firstDate = (listTransactions.first?.dateOperation.timeIntervalSince1970)!
             lastDate = (listTransactions.last?.dateOperation.timeIntervalSince1970)!
             
-//            sliderViewHorizontalController?.initData(firstDate: firstDate, lastDate: lastDate)
             rangeSlider?.minValue = firstDate
             rangeSlider?.maxValue = lastDate
         }
@@ -68,7 +67,6 @@ class TresuryLineViewModel: ObservableObject {
     func updateChartData(modelContext: ModelContext, currentAccount: EntityAccount?, startDate: Date, endDate: Date) {
         
         let firstDate: TimeInterval = 0.0
-        //        var lastDate: TimeInterval = 30.0
         
         ListTransactionsManager.shared.configure(with: modelContext)
         listTransactions = ListTransactionsManager.shared.getAllDatas()

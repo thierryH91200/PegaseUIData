@@ -15,6 +15,9 @@ class CategorieBar2ViewModel: ObservableObject {
     @Published var currencyCode: String = Locale.current.currency?.identifier ?? "EUR"
     @Published var selectedCategories: Set<String> = []
     
+    var firstDate: TimeInterval = 0.0
+    var lastDate: TimeInterval = 0.0
+
     var labels: [String] {
         resultArray.map { $0.name }
     }
