@@ -81,7 +81,7 @@ struct OperationRow: View {
         Spacer()
         Divider()
         VStack {
-            Text("Sélections : \(selectedTransactions.count) transaction(s)")
+            Text(String(localized: "Selections : \(selectedTransactions.count) transaction(s)"))
                 .padding()
                 .foregroundColor(.gray)
             Spacer()

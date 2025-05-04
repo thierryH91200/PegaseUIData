@@ -41,7 +41,7 @@ class TresuryLineViewModel: ObservableObject {
     
     func configure(with chartView: LineChartView)
     {
-        self .chartView = chartView
+        self.chartView = chartView
     }
 
     let formatterPrice: NumberFormatter = {
@@ -52,24 +52,25 @@ class TresuryLineViewModel: ObservableObject {
     }()
     
     func updateAccount () {
-        listTransactions = ListTransactionsManager.shared.getAllDatas()
+        // Filter transactions for the last month
+        let endDate = Date()
+        let startDate = Calendar.current.date(byAdding: .month, value: -1, to: endDate) ?? endDate
+        listTransactions = ListTransactionsManager.shared.getAllDatas(from: startDate, to: endDate)
         if listTransactions.isEmpty == false {
-            
             firstDate = (listTransactions.first?.dateOperation.timeIntervalSince1970)!
             lastDate = (listTransactions.last?.dateOperation.timeIntervalSince1970)!
-            
             rangeSlider?.minValue = firstDate
             rangeSlider?.maxValue = lastDate
         }
     }
-    
     
     func updateChartData(modelContext: ModelContext, currentAccount: EntityAccount?, startDate: Date, endDate: Date) {
         
         let firstDate: TimeInterval = 0.0
         
         ListTransactionsManager.shared.configure(with: modelContext)
-        listTransactions = ListTransactionsManager.shared.getAllDatas()
+        listTransactions = ListTransactionsManager.shared.getAllDatas(from: startDate, to: endDate)
+        
         guard listTransactions.isEmpty == false else { return }
         
         self.dataGraph.removeAll()
@@ -164,7 +165,7 @@ class TresuryLineViewModel: ObservableObject {
         }
     }
     
-    func setData(_ chartView: LineChartView)
+    func setData(chartView: LineChartView)
     {
         var listTransactions : [EntityTransactions] = []
         guard listTransactions.isEmpty == false || dataGraph.isEmpty == false  || listTransactions.count == 1 else {
@@ -202,7 +203,7 @@ class TresuryLineViewModel: ObservableObject {
         
         //        sliderViewHorizontalController?.mySlider.isEnabled = true
         chartView.xAxis.labelCount = 300
-        //        chartView.xAxis.valueFormatter = DateValueFormatter(miniTime: firstDate, interval: hourSeconds)
+        chartView.xAxis.valueFormatter = DateValueFormatter(miniTime: firstDate, interval: hourSeconds)
         
         // MARK: Marker
         //        let  marker = RectMarker( color: .gray,
@@ -270,6 +271,66 @@ class TresuryLineViewModel: ObservableObject {
         dataSet.formSize = 15.0
         dataSet.colors = [color]
         return dataSet
+    }
+    
+    func initGraph(chartView: LineChartView) {
+        
+        // MARK: General
+//        chartView.delegate = self
+        
+        chartView.dragEnabled = false
+        chartView.setScaleEnabled(true)
+        chartView.pinchZoomEnabled = false
+        chartView.drawGridBackgroundEnabled = false
+        chartView.highlightPerDragEnabled = true
+        chartView.noDataText = String(localized:"No chart data available.")
+        
+        chartView.scaleYEnabled = false
+        chartView.scaleXEnabled = false
+        
+        // MARK: xAxis
+        let xAxis                             = chartView.xAxis
+        xAxis.labelPosition                   = .bottom
+        xAxis.labelFont                       = NSFont(name : "HelveticaNeue-Light", size : CGFloat(10.0))!
+        xAxis.drawAxisLineEnabled             = true
+        xAxis.drawGridLinesEnabled            = true
+        xAxis.drawLimitLinesBehindDataEnabled = true
+        xAxis.avoidFirstLastClippingEnabled   = false
+        xAxis.granularity                     = 1.0
+        xAxis.spaceMin                        = xAxis.granularity / 5
+        xAxis.spaceMax                        = xAxis.granularity / 5
+        xAxis.labelRotationAngle              = -45.0
+        xAxis.labelTextColor                  = .labelColor
+        
+        //        xAxis.nameAxis = "Date (s)"
+        //        xAxis.nameAxisEnabled = true
+        
+        // MARK: leftAxis
+        let leftAxis                  = chartView.leftAxis
+        leftAxis.labelPosition        = .outsideChart
+        leftAxis.labelFont            = NSFont(name : "HelveticaNeue-Light", size : CGFloat(12.0))!
+        leftAxis.drawGridLinesEnabled = true
+        leftAxis.granularityEnabled   = true
+        leftAxis.yOffset              = -9.0
+        leftAxis.labelTextColor       = .labelColor
+        
+        //        leftAxis.nameAxis = "Amount"
+        //        leftAxis.nameAxisEnabled = true
+        
+        // MARK: rightAxis
+        chartView.rightAxis.enabled = false
+        
+        // MARK: legend
+        let legend                 = chartView.legend
+        legend.enabled             = true
+        legend.form                = .square
+        legend.drawInside          = false
+        legend.orientation         = .horizontal
+        legend.verticalAlignment   = .bottom
+        legend.horizontalAlignment = .left
+        
+        // MARK: description
+        chartView.chartDescription.enabled = false
     }
 }
 

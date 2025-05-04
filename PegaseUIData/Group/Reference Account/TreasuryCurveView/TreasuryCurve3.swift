@@ -17,19 +17,18 @@ struct TreasuryCurve: View {
     @State var lineDataEntries: [ChartDataEntry] = []
     @StateObject private var viewModel = TresuryLineViewModel()
     
-    @State private var minDate = Calendar.current.date(byAdding: .day, value: -30, to: Date())!
+    @State private var minDate = Date()
     @State private var maxDate = Date()
     @State private var selectedStart: Double = 0
     @State private var selectedEnd: Double = 30
-    
-    var chartView : LineChartView?
-//    var rangeSlider : RangeSlider?
+    private let oneDay = 3600.0 * 24.0 // one day
 
-    
+    @State private var chartView : LineChartView?
+
     var body: some View {
         GeometryReader { geometry in
             VStack {
-                Text("Courbe de trésorerie")
+                Text("Cash flow curve")
                     .font(.headline)
                     .padding()
                 
@@ -42,8 +41,8 @@ struct TreasuryCurve: View {
                             .font(.callout)
                             .foregroundColor(.secondary)
                         
-                        RangeSlider(minValue: 0,
-                                    maxValue: maxDate.timeIntervalSince(minDate) / (60 * 60 * 24),
+                        RangeSlider(minValue: minDate.timeIntervalSince(minDate) / (oneDay),
+                                    maxValue: maxDate.timeIntervalSince(minDate) / (oneDay),
                                     lowerValue: $selectedStart,
                                     upperValue: $selectedEnd)
                         .frame(height: 30)
@@ -52,17 +51,28 @@ struct TreasuryCurve: View {
                     .padding(.horizontal)
                 }
                 .onAppear {
-                    updateChart()
+                    
+                    ListTransactionsManager.shared.configure(with: modelContext)
+                    let listTransactions = ListTransactionsManager.shared.getAllDatas()
+                    minDate = listTransactions.first!.dateOperation
+                    maxDate = listTransactions.last!.dateOperation
+
+                    chartView = LineChartView()
                     if let chartView = chartView {
                         TresuryLineViewModel.shared.configure(with: chartView)
                     }
+                    updateChart()
+
                 }
                 .onChange(of: selectedStart) { _, newStart in
                     viewModel.selectedStart = newStart
+                    updateChart()
                 }
                 .onChange(of: selectedEnd) { _, newEnd in
                     viewModel.selectedEnd = newEnd
-                }            }
+                    updateChart()
+                }
+            }
         }
     }
     
@@ -71,7 +81,9 @@ struct TreasuryCurve: View {
         let end = Calendar.current.date(byAdding: .day, value: Int(selectedEnd), to: minDate)!
         guard let currentAccount = CurrentAccountManager.shared.getAccount() else { return }
 
+        viewModel.initGraph(chartView: chartView!)
         viewModel.updateChartData(modelContext: modelContext, currentAccount: currentAccount, startDate: start, endDate: end)
+        viewModel.setData(chartView: chartView!)
     }
 
     func formattedDate(from dayOffset: Double) -> String {
@@ -80,5 +92,4 @@ struct TreasuryCurve: View {
         formatter.dateStyle = .medium
         return formatter.string(from: date)
     }
-
 }

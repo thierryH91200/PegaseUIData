@@ -123,7 +123,6 @@ extension EntityTransactions {
     }
 }
 
-
 actor ListTransactionsCache {
     // Configuration du cache
     private struct Config {

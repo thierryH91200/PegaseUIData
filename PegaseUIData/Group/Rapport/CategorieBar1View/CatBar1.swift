@@ -16,6 +16,17 @@ class CategorieBar1ViewModel: ObservableObject {
     
     @Published var selectedCategories: Set<String> = []
     
+    @Published var listTransactions : [EntityTransactions] = []
+    @Published var selectedStart: Double = 0
+    @Published var selectedEnd: Double = 30
+    
+    var chartView : BarChartView?
+    var rangeSlider : RangeSlider?
+
+
+    static let shared = CategorieBar1ViewModel()
+
+    
     var totalValue: Double {
         resultArray.map { $0.value }.reduce(0, +)
     }
@@ -30,31 +41,43 @@ class CategorieBar1ViewModel: ObservableObject {
         _formatter.numberStyle = .currency
         return _formatter
     }()
+    
+    func configure(with chartView: BarChartView)
+    {
+        self.chartView = chartView
+    }
+
 
     func updateChartData(modelContext: ModelContext, currentAccount: EntityAccount?, startDate: Date, endDate: Date) {
         
-        guard let currentAccount else { return }
-        self.currencyCode = currentAccount.currencyCode
+        ListTransactionsManager.shared.configure(with: modelContext)
+        listTransactions = ListTransactionsManager.shared.getAllDatas(from: startDate, to: endDate)
 
-        let sort = [SortDescriptor(\EntityTransactions.dateOperation, order: .reverse)]
-        let lhs = currentAccount.uuid
+        guard listTransactions.isEmpty == false else { return }
 
-        let descriptor = FetchDescriptor<EntityTransactions>(
-            predicate: #Predicate { transaction in
-                transaction.account.uuid == lhs &&
-                transaction.dateOperation >= startDate &&
-                transaction.dateOperation <= endDate
-            },
-            sortBy: sort
-        )
-
-        var listTransactions: [EntityTransactions] = []
-        do {
-            listTransactions = try modelContext.fetch(descriptor)
-        } catch {
-            print("Erreur lors de la récupération des transactions :", error)
-            return
-        }
+        
+//        guard let currentAccount else { return }
+//        self.currencyCode = currentAccount.currencyCode
+//
+//        let sort = [SortDescriptor(\EntityTransactions.dateOperation, order: .reverse)]
+//        let lhs = currentAccount.uuid
+//
+//        let descriptor = FetchDescriptor<EntityTransactions>(
+//            predicate: #Predicate { transaction in
+//                transaction.account.uuid == lhs &&
+//                transaction.dateOperation >= startDate &&
+//                transaction.dateOperation <= endDate
+//            },
+//            sortBy: sort
+//        )
+//
+//        var listTransactions: [EntityTransactions] = []
+//        do {
+//            listTransactions = try modelContext.fetch(descriptor)
+//        } catch {
+//            print("Erreur lors de la récupération des transactions :", error)
+//            return
+//        }
 
         var dataArray: [DataGraph] = []
 

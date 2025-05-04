@@ -14,12 +14,14 @@ struct CategorieBar1View1: View {
     @Environment(\.modelContext) private var modelContext
 
     @StateObject private var viewModel = CategorieBar1ViewModel()
-
-    @State private var minDate = Calendar.current.date(byAdding: .day, value: -30, to: Date())!
+   
+    @State private var minDate = Date()
     @State private var maxDate = Date()
     @State private var selectedStart: Double = 0
     @State private var selectedEnd: Double = 30
-    @State private var chartViewRef: BarChartView?
+    private let oneDay = 3600.0 * 24.0 // one day
+
+    @State private var chartView: BarChartView?
     
     @State private var updateWorkItem: DispatchWorkItem?
 
@@ -72,7 +74,7 @@ struct CategorieBar1View1: View {
             
             DGBarChartView(entries: viewModel.dataEntries,
                            labels: viewModel.labels,
-                           chartViewRef: $chartViewRef)
+                           chartViewRef: $chartView)
                 .frame(width: 600, height: 400)
                 .padding()
 
@@ -82,7 +84,7 @@ struct CategorieBar1View1: View {
                         .font(.callout)
                         .foregroundColor(.secondary)
 
-                    RangeSlider(minValue: 0,
+                    RangeSlider(minValue: minDate.timeIntervalSince(minDate) / (oneDay),
                                 maxValue: maxDate.timeIntervalSince(minDate) / (60 * 60 * 24),
                                 lowerValue: $selectedStart,
                                 upperValue: $selectedEnd)
@@ -96,14 +98,20 @@ struct CategorieBar1View1: View {
             Spacer()
         }
         .onAppear {
-            let start = Calendar.current.date(byAdding: .day, value: Int(selectedStart), to: minDate)!
-            let end = Calendar.current.date(byAdding: .day, value: Int(selectedEnd), to: minDate)!
-            let currentAccount = CurrentAccountManager.shared.getAccount()!
-            viewModel.updateChartData(modelContext: modelContext, currentAccount: currentAccount, startDate: start, endDate: end)
+            ListTransactionsManager.shared.configure(with: modelContext)
+            let listTransactions = ListTransactionsManager.shared.getAllDatas()
+            minDate = listTransactions.first!.dateOperation
+            maxDate = listTransactions.last!.dateOperation
+
+            updateChart()
+            if let chartView = chartView {
+                CategorieBar1ViewModel.shared.configure(with: chartView)
+            }
         }
         
-        .onChange(of: selectedStart) { _, newValue in
-            updateChartDebounced()
+        .onChange(of: selectedStart) { _, newStart in
+            viewModel.selectedStart = newStart
+            updateChart()
         }
         
         .onChange(of: selectedEnd) { _, newValue in
@@ -119,7 +127,7 @@ struct CategorieBar1View1: View {
     }
     
     private func exportChartAsImage() {
-        guard let chartView = chartViewRef else { return }
+        guard let chartView = chartView else { return }
 
         let panel = NSSavePanel()
         panel.allowedContentTypes = [.png]

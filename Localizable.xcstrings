@@ -2193,6 +2193,16 @@
         }
       }
     },
+    "Cash flow curve" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Courbe de trésorerie"
+          }
+        }
+      }
+    },
     "Cash withdrawal" : {
       "localizations" : {
         "de" : {
@@ -3480,9 +3490,6 @@
           }
         }
       }
-    },
-    "Courbe de trésorerie" : {
-
     },
     "CP" : {
       "localizations" : {
@@ -8071,7 +8078,14 @@
       }
     },
     "ModePaiement Pie" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ModePaiement Pie"
+          }
+        }
+      }
     },
     "Month: %@" : {
       "localizations" : {
@@ -9974,7 +9988,14 @@
       }
     },
     "RecetteDepenseBar3" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RecetteDepenseBar3"
+          }
+        }
+      }
     },
     "Remove" : {
       "localizations" : {
@@ -10237,60 +10258,21 @@
       }
     },
     "Rubrique Bar" : {
-
-    },
-    "Rubrique pie" : {
-
-    },
-    "Sales Line Chart" : {
-      "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Graphique en Lignes des Ventes"
+            "value" : "Rubrique Bar"
           }
-        },
-        "he" : {
+        }
+      }
+    },
+    "Rubrique pie" : {
+      "localizations" : {
+        "fr" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Rubrique pie"
           }
         }
       }
@@ -10539,16 +10521,6 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "Sélections : %lld transaction(s)" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sélections : %lld transaction(s)"
           }
         }
       }
