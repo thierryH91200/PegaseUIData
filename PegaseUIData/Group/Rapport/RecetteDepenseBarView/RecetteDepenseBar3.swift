@@ -29,11 +29,11 @@ struct RecetteDepenseView: View {
                 .padding()
             
             HStack {
-                DGBarChart4View4(entries: viewModel.dataEntriesDepense, title: "Dépenses")
+                DGBarChart4Representable(entries: viewModel.dataEntriesDepense, title: "Dépenses")
                     .frame(width: 600, height: 400)
                     .padding()
                 
-                DGBarChart4View4(entries: viewModel.dataEntriesRecette, title: "Recettes")
+                DGBarChart4Representable(entries: viewModel.dataEntriesRecette, title: "Recettes")
                     .frame(width: 600, height: 400)
                     .padding()
             }

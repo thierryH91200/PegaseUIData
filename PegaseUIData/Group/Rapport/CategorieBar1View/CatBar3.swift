@@ -72,7 +72,7 @@ struct CategorieBar1View1: View {
             }
             .padding(.bottom, 8)
             
-            DGBarChartView(entries: viewModel.dataEntries,
+            DGBarChart1Representable(entries: viewModel.dataEntries,
                            labels: viewModel.labels,
                            chartViewRef: $chartView)
                 .frame(width: 600, height: 400)

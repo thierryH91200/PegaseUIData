@@ -32,9 +32,13 @@ struct TreasuryCurve: View {
                     .font(.headline)
                     .padding()
                 
-                DGLineChartView(entries: viewModel.dataEntries)
+                DGLineChartRepresentable(viewModel: viewModel, entries: viewModel.dataEntries)
                     .frame(width: geometry.size.width, height: 400)
                     .padding()
+                    .onAppear {
+                        viewModel.updateAccount()
+                    }
+
                 GroupBox(label: Label("Filter by period", systemImage: "calendar")) {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("From \(formattedDate(from: selectedStart)) to \(formattedDate(from: selectedEnd))")
@@ -77,13 +81,16 @@ struct TreasuryCurve: View {
     }
     
     private func updateChart() {
-        let start = Calendar.current.date(byAdding: .day, value: Int(selectedStart), to: minDate)!
-        let end = Calendar.current.date(byAdding: .day, value: Int(selectedEnd), to: minDate)!
-        guard let currentAccount = CurrentAccountManager.shared.getAccount() else { return }
+//        let start = Calendar.current.date(byAdding: .day, value: Int(selectedStart), to: minDate)!
+//        let end = Calendar.current.date(byAdding: .day, value: Int(selectedEnd), to: minDate)!
+//        guard let currentAccount = CurrentAccountManager.shared.getAccount() else { return }
+        
+        ListTransactionsManager.shared.configure(with: modelContext)
+        InitAccountManager.shared.configure(with: modelContext)
 
-        viewModel.initGraph(chartView: chartView!)
-        viewModel.updateChartData(modelContext: modelContext, currentAccount: currentAccount, startDate: start, endDate: end)
-        viewModel.setData(chartView: chartView!)
+//        viewModel.initGraph(chartView: chartView!)
+//        viewModel.updateChartData(modelContext: modelContext, currentAccount: currentAccount, startDate: start, endDate: end)
+//        viewModel.setData(chartView: chartView!)
     }
 
     func formattedDate(from dayOffset: Double) -> String {

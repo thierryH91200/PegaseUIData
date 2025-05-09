@@ -10,7 +10,7 @@ import SwiftData
 import DGCharts
 
 
-struct DGBarChart4View4: NSViewRepresentable {
+struct DGBarChart4Representable: NSViewRepresentable {
     
     let entries: [BarChartDataEntry]
     let title: String

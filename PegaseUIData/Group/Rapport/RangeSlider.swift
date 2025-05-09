@@ -22,9 +22,10 @@ struct RangeSlider: View {
             let width = geometry.size.width
             let knobSize: CGFloat = 20
             let range = maxValue - minValue
+            let safeRange = range == 0 ? 1 : range
 
-            let lowerX = width * CGFloat((lowerValue - minValue) / range)
-            let upperX = width * CGFloat((upperValue - minValue) / range)
+            let lowerX = width * CGFloat((lowerValue - minValue) / safeRange)
+            let upperX = width * CGFloat((upperValue - minValue) / safeRange)
 
             ZStack(alignment: .leading) {
                 Capsule()
@@ -32,7 +33,7 @@ struct RangeSlider: View {
                     .frame(height: 4)
                 Capsule()
                     .fill(Color.blue)
-                    .frame(width: upperX - lowerX, height: 4)
+                    .frame(width: max(0, upperX - lowerX), height: 4)
                     .offset(x: lowerX)
 
                 // Lower knob
@@ -64,6 +65,8 @@ struct RangeSlider: View {
                     })
             }
         }
+        .animation(.easeInOut(duration: 0.2), value: lowerValue)
+        .animation(.easeInOut(duration: 0.2), value: upperValue)
     }
 }
 

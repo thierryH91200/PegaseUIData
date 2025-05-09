@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 import DGCharts
 
-struct DGBarChartView: NSViewRepresentable {
+struct DGBarChart1Representable: NSViewRepresentable {
     
     @Environment(\.modelContext) var modelContext
 

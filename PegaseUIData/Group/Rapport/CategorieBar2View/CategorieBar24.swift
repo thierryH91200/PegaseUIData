@@ -10,7 +10,7 @@ import SwiftData
 import DGCharts
 
 
-struct DGBarChart2View2: NSViewRepresentable {
+struct DGBarChart2Representable: NSViewRepresentable {
     
     let entries: [BarChartDataEntry]
     let labels: [String]
@@ -25,7 +25,6 @@ struct DGBarChart2View2: NSViewRepresentable {
     @State var numericIDs  = [String]()
     var arrayUniqueRubriques   = [RubricColor]()
 
-    
     let formatterPrice: NumberFormatter = {
         let _formatter = NumberFormatter()
         _formatter.locale = Locale.current

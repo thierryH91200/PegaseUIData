@@ -31,7 +31,7 @@ struct RubriqueBar: View {
                 .font(.headline)
                 .padding()
             
-            DGBarChartView(entries: viewModel.dataEntries,
+            DGBarChart1Representable(entries: viewModel.dataEntries,
                            labels: viewModel.labels,
                            chartViewRef: $chartViewRef)
                 .frame(width: 600, height: 400)

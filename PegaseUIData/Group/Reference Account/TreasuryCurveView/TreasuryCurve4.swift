@@ -1,4 +1,11 @@
 //
+//  Untitled.swift
+//  PegaseUIData
+//
+//  Created by Thierry hentic on 06/05/2025.
+//
+
+//
 //  Untitled 4.swift
 //  PegaseUIData
 //
@@ -9,114 +16,149 @@ import SwiftUI
 import SwiftData
 import DGCharts
 
-struct DGLineChartView: NSViewRepresentable {
+struct DataTresorerie : Equatable{
+    var x: Double = 0.0
+    var soldeRealise: Double = 0.0
+    var soldeEngage: Double = 0.0
+    var soldePrevu: Double = 0.0
+
+    init(x: Double, soldeRealise: Double, soldeEngage: Double, soldePrevu: Double)
+    {
+        self.x  = x
+        self.soldeRealise = soldeRealise
+        self.soldeEngage = soldeEngage
+        self.soldePrevu = soldePrevu
+    }
+    init() {
+        self.x  = 0
+        self.soldeRealise = 0
+        self.soldeEngage = 0
+        self.soldePrevu = 0
+    }
+}
+
+struct DGLineChartRepresentable: NSViewRepresentable {
+    @ObservedObject var viewModel: TresuryLineViewModel
     let entries: [ChartDataEntry]
-//    @Binding var chartViewRef: LineChartView?
 
     @State private var selectedType: String = "Tous"
     
-    @State var chartView = LineChartView()
-    @StateObject private var viewModel = TresuryLineViewModel()
+    @State var listTransactions : [EntityTransactions] = []
+    @State var firstDate: TimeInterval = 0.0
+    @State var lastDate: TimeInterval = 0.0
     
-//    func makeCoordinator() -> Coordinator {
-//      Coordinator(parent: self)
-//    }
-
+    let hourSeconds = 3600.0 * 24.0 // one day
 
     func makeNSView(context: Context) -> LineChartView {
-        initGraph()
-//        chartView.delegate = context.coordinator
+        let chartView = LineChartView()
+        initGraph(on: chartView)
         return chartView
     }
 
-
-//    func makeNSView(context: Context) -> LineChartView {
-//
-//        chartView.noDataText = String(localized:"No chart data available.")
-//        let safeEntries = entries.isEmpty ? [ChartDataEntry(x: 0, y: 1), ChartDataEntry(x: 1, y: 2)] : entries
-//        
-//        let dataSet = LineChartDataSet(entries: safeEntries, label: "Évolution Mensuelle")
-//        
-//        dataSet.colors = [NSUIColor.systemBlue]
-//        dataSet.circleColors = [NSUIColor.systemRed]
-//        dataSet.circleRadius = 1
-//        dataSet.drawCirclesEnabled = false
-//        dataSet.lineWidth = 1.5
-//        dataSet.drawValuesEnabled = true
-//        
-//        let data = LineChartData(dataSet: dataSet)
-//        chartView.data = data
-//        
-//        chartView.xAxis.axisMinimum = 0
-//        chartView.xAxis.axisMaximum = 200  // éviter plage nulle
-//        
-//        chartView.xAxis.labelPosition = .bottom
-//        chartView.xAxis.granularity = 1
-//        chartView.animate(xAxisDuration: 1.0, yAxisDuration: 1.0)
-//        
-//        if let minX = entries.map(\.x).min(),
-//           let maxX = entries.map(\.x).max(),
-//           minX != maxX {
-//            chartView.xAxis.axisMinimum = minX
-//            chartView.xAxis.axisMaximum = maxX
-//        } else {
-//            chartView.xAxis.axisMinimum = 0
-//            chartView.xAxis.axisMaximum = 200
-//        }
-//        return chartView
-//    }
-
     func updateNSView(_ nsView: LineChartView, context: Context) {
+        DispatchQueue.main.async {
+            self.updateAccount()
+            let oldGraph = self.viewModel.dataGraph
+            self.updateChartData(for: nsView)
+            if oldGraph != self.viewModel.dataGraph {
+                self.setData(on: nsView, with: self.viewModel.dataGraph)
+            }
+        }
+    }
+    
+    func updateAccount () {
         
-        
-//        let data = nsView.
-//        let dataset = LineChartDataSet(entries: data)
-//        
-//        dataset.drawCirclesEnabled = false
-//        dataset.drawValuesEnabled = false
-//        dataset.drawFilledEnabled = true
-//        dataset.label = label
-//        dataset.setColor(chartColor)
-//        dataset.fillColor = chartColor.withAlphaComponent(0.2)
-//        
-//        nsView.data = LineChartData(dataSet: dataset)
+        listTransactions = viewModel.listTransactions
 
-        let dataSet = LineChartDataSet(entries: entries, label: "Realisé")
-        dataSet.axisDependency = .left
-        dataSet.mode = .stepped
-        dataSet.valueTextColor = #colorLiteral(red: 0.4745098054, green: 0.8392156959, blue: 0.9764705896, alpha: 1)
-        dataSet.lineWidth = 1.5
-        
-        dataSet.drawCirclesEnabled = false
-        dataSet.drawValuesEnabled = true
-//        dataSet.valueFormatter = DefaultValueFormatter(formatter: pFormatter  )
-        
-        dataSet.drawFilledEnabled = false //true
-        dataSet.fillAlpha = 0.26
-        dataSet.fillColor = #colorLiteral(red: 0.2745098174, green: 0.4862745106, blue: 0.1411764771, alpha: 1)
-        dataSet.highlightColor = #colorLiteral(red: 0.4513868093, green: 0.9930960536, blue: 1, alpha: 1)
-        dataSet.highlightLineWidth = 4.0
-        dataSet.drawHorizontalHighlightIndicatorEnabled = false
-        dataSet.formSize = 15.0
-        dataSet.colors = [.black]
-
-        let data = LineChartData(dataSet: dataSet)
-        nsView.data = data
-
-        nsView.data?.notifyDataChanged()
-        nsView.notifyDataSetChanged()
+        if listTransactions.isEmpty == false {
+            
+            firstDate = (listTransactions.first?.dateOperation.timeIntervalSince1970)!
+            lastDate = (listTransactions.last?.dateOperation.timeIntervalSince1970)!
+            
+//            sliderViewHorizontalController?.initData(firstDate: firstDate, lastDate: lastDate)
+//            sliderViewHorizontalController?.mySlider.isEnabled = true
+            
+        } else {
+//            sliderViewHorizontalController?.mySlider.isEnabled = false
+        }
     }
 
-//    private func updateChart() {
-//        let start = Calendar.current.date(byAdding: .day, value: Int(selectedStart), to: minDate)!
-//        let end = Calendar.current.date(byAdding: .day, value: Int(selectedEnd), to: minDate)!
-//        guard let currentAccount = CurrentAccountManager.shared.getAccount() else { return }
-//
-//        viewModel.initGraph(chartView: chartView!)
-//        viewModel.updateChartData(modelContext: modelContext, currentAccount: currentAccount, startDate: start, endDate: end)
-//        viewModel.setData(chartView: chartView!)
-//    }
+    
+    func addLimit( on nsView: LineChartView, index: Double, x: Double) {
+        
+        let calendar = Calendar.current
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMM yy"
+        
+        let date2 = Date(timeIntervalSince1970: x )
+        if calendar.day(date2) == 1 {
+            let dateStr = dateFormatter.string(from: date2)
+            let llXAxis = ChartLimitLine(limit: index, label: dateStr)
+            llXAxis.lineColor = .linkColor
+            llXAxis.valueTextColor = NSColor.controlAccentColor
+            llXAxis.valueFont = NSFont.systemFont(ofSize: CGFloat(12.0))
+            llXAxis.labelPosition = .rightBottom
+            
+            let xAxis = nsView.xAxis
+            xAxis.addLimitLine(llXAxis)
+        }
+    }
+        
+    func setData(on nsView: LineChartView, with data: [DataTresorerie]) {
+        guard !data.isEmpty else {
+            nsView.data = nil
+            nsView.data?.notifyDataChanged()
+            nsView.notifyDataSetChanged()
+            return
+        }
 
+        nsView.xAxis.axisMinimum = 0.0
+        nsView.xAxis.axisMaximum = 100.0
+        nsView.xAxis.removeAllLimitLines()
+        
+        var values0 = [ChartDataEntry]()
+        var values1 = [ChartDataEntry]()
+        var values2 = [ChartDataEntry]()
+
+        let from = 0
+        let to = min(data.count, 100)
+
+        for i in from..<to {
+            values0.append(ChartDataEntry(x: data[i].x, y: data[i].soldeRealise))
+            values1.append(ChartDataEntry(x: data[i].x, y: data[i].soldeEngage))
+            values2.append(ChartDataEntry(x: data[i].x, y: data[i].soldePrevu))
+
+            addLimit(on: nsView, index: data[i].x, x: (data[i].x * hourSeconds) + firstDate)
+        }
+
+        nsView.xAxis.labelCount = 300
+        nsView.xAxis.valueFormatter = DateValueFormatter(miniTime: firstDate, interval: hourSeconds)
+
+        // MARK: Marker
+        let marker = RectMarker(
+            color: #colorLiteral(red: 0.921431005, green: 0.9214526415, blue: 0.9214410186, alpha: 1),
+            font: NSFont.systemFont(ofSize: 12.0),
+            insets: NSEdgeInsets(top: 8.0, left: 8.0, bottom: 20.0, right: 8.0)
+        )
+        marker.minimumSize = CGSize(width: 80.0, height: 40.0)
+        marker.chartView = nsView
+        nsView.marker = marker
+        marker.miniTime = firstDate
+        marker.interval = hourSeconds
+
+        // MARK: Datasets
+        let set1 = setDataSet(values: values0, label: "Realise", color: #colorLiteral(red: 0.2745098174, green: 0.4862745106, blue: 0.1411764771, alpha: 1))
+        let set2 = setDataSet(values: values1, label: "Engaged", color: #colorLiteral(red: 0.5058823824, green: 0.3372549117, blue: 0.06666667014, alpha: 1))
+        let set3 = setDataSet(values: values2, label: "Planifie", color: #colorLiteral(red: 0.9529411793, green: 0.6862745285, blue: 0.1333333403, alpha: 1))
+
+        let dataSet = LineChartData(dataSets: [set1, set2, set3])
+        dataSet.setValueTextColor(.black)
+        dataSet.setValueFont(NSFont(name: "HelveticaNeue-Light", size: CGFloat(9.0))!)
+
+
+        nsView.data = dataSet
+    }
+    
     func setDataSet (values : [ChartDataEntry], label: String, color : NSColor) -> LineChartDataSet
     {
         var dataSet =  LineChartDataSet()
@@ -146,23 +188,21 @@ struct DGLineChartView: NSViewRepresentable {
         return dataSet
     }
     
-    func initGraph() {
+    func initGraph(on nsView: LineChartView) {
         
         // MARK: General
-//        chartView.delegate = self
+        nsView.dragEnabled = false
+        nsView.setScaleEnabled(true)
+        nsView.pinchZoomEnabled = false
+        nsView.drawGridBackgroundEnabled = false
+        nsView.highlightPerDragEnabled = true
+        nsView.noDataText = String(localized:"No chart data available.")
         
-        chartView.dragEnabled = false
-        chartView.setScaleEnabled(true)
-        chartView.pinchZoomEnabled = false
-        chartView.drawGridBackgroundEnabled = false
-        chartView.highlightPerDragEnabled = true
-        chartView.noDataText = String(localized:"No chart data available.")
-        
-        chartView.scaleYEnabled = false
-        chartView.scaleXEnabled = false
+        nsView.scaleYEnabled = false
+        nsView.scaleXEnabled = false
         
         // MARK: xAxis
-        let xAxis                             = chartView.xAxis
+        let xAxis                             = nsView.xAxis
         xAxis.labelPosition                   = .bottom
         xAxis.labelFont                       = NSFont(name : "HelveticaNeue-Light", size : CGFloat(10.0))!
         xAxis.drawAxisLineEnabled             = true
@@ -174,12 +214,9 @@ struct DGLineChartView: NSViewRepresentable {
         xAxis.spaceMax                        = xAxis.granularity / 5
         xAxis.labelRotationAngle              = -45.0
         xAxis.labelTextColor                  = .labelColor
-        
-        //        xAxis.nameAxis = "Date (s)"
-        //        xAxis.nameAxisEnabled = true
-        
+                
         // MARK: leftAxis
-        let leftAxis                  = chartView.leftAxis
+        let leftAxis                  = nsView.leftAxis
         leftAxis.labelPosition        = .outsideChart
         leftAxis.labelFont            = NSFont(name : "HelveticaNeue-Light", size : CGFloat(12.0))!
         leftAxis.drawGridLinesEnabled = true
@@ -187,14 +224,11 @@ struct DGLineChartView: NSViewRepresentable {
         leftAxis.yOffset              = -9.0
         leftAxis.labelTextColor       = .labelColor
         
-        //        leftAxis.nameAxis = "Amount"
-        //        leftAxis.nameAxisEnabled = true
-        
         // MARK: rightAxis
-        chartView.rightAxis.enabled = false
+        nsView.rightAxis.enabled = false
         
         // MARK: legend
-        let legend                 = chartView.legend
+        let legend                 = nsView.legend
         legend.enabled             = true
         legend.form                = .square
         legend.drawInside          = false
@@ -203,69 +237,104 @@ struct DGLineChartView: NSViewRepresentable {
         legend.horizontalAlignment = .left
         
         // MARK: description
-        chartView.chartDescription.enabled = false
+        nsView.chartDescription.enabled = false
     }
     
-    func updateChartData() {
+    func updateChartData(for nsView: LineChartView) {
         
-//            self.dataGraph.removeAll()
-//            guard listTransactions.isEmpty == false else { return }
-//            
-//            var dataTresorerie = DataTresorerie()
-//            var index = 0
-//            var indexDate = 0.0
-//            var sameDate = true
-//            
-//            let initAccount = InitAccount.shared.getAllDatas()
-//            
-//            var soldeRealise = initAccount.realise
-//            var soldePrevu   = initAccount.prevu
-//            var soldeEngage  = initAccount.engage
-//            
-//            var prevu  = 0.0
-//            var engage = 0.0
-//            
-//            let minValue = Int((sliderViewHorizontalController?.mySlider.minValue)!)
-//            let maxValue = Int((sliderViewHorizontalController?.mySlider.maxValue)!)
-//            
-//            for indexSlider in minValue..<maxValue + 1 {
-//                
-//                sameDate = true
-//                while sameDate == true {
-//                    
-//                    indexDate = ( (listTransactions[index ].datePointage?.timeIntervalSince1970)! - firstDate ) / hourSeconds
-//                    
-//                    // même jour mais le statut peut être différent ??
-//                    if Int(indexDate) == indexSlider {
-//                        
-//                        let propertyEnum = Statut.TypeOfStatut(rawValue: listTransactions[index].statut)!
-//                        switch propertyEnum
-//                        {
-//                        case .planifie:
-//                            prevu += listTransactions[index].amount
-//                        case .engage:
-//                            engage += listTransactions[index].amount
-//                        case .realise:
-//                            soldeRealise += listTransactions[index].amount
-//                        }
-//                        index += 1
-//                        if index == listTransactions.count {
-//                            sameDate = false
-//                        }
-//                    } else {
-//                        sameDate = false
-//                    }
-//                }
-//                soldePrevu = soldeRealise + engage + prevu
-//                soldeEngage = soldeRealise + engage
-//                
-//                dataTresorerie.x = Double(indexSlider)
-//                dataTresorerie.soldeRealise = soldeRealise
-//                dataTresorerie.soldeEngage = soldeEngage
-//                dataTresorerie.soldePrevu = soldePrevu
-//                dataGraph.append(dataTresorerie)
-//            }
+        let transactions = viewModel.listTransactions
+        
+        guard !transactions.isEmpty else { return }
+
+        var localGraph: [DataTresorerie] = []
+
+        var dataTresorerie = DataTresorerie()
+        var index = 0
+        var indexDate = 0.0
+        var sameDate = true
+
+        let initAccount = InitAccountManager.shared.getAllDatas()
+
+        var soldeRealise = initAccount?.realise ?? 0
+        var soldePrevu   = initAccount?.prevu ?? 0
+        var soldeEngage  = initAccount?.engage ?? 0
+
+        var prevu  = 0.0
+        var engage = 0.0
+
+        let calendar = Calendar.current
+        // Normalize firstDate to midnight using Calendar
+        firstDate = calendar.startOfDay(for: transactions.first!.datePointage).timeIntervalSince1970
+        let minValue = Double(firstDate / hourSeconds)
+        let maxValue = Double(calendar.startOfDay(for: transactions.last!.datePointage).timeIntervalSince1970 / hourSeconds)
+        let minIndex = 0
+        let maxIndex = Int((maxValue - minValue))
+        for indexSlider in minIndex..<maxIndex + 1 {
+
+            sameDate = true
+            while sameDate == true && index < transactions.count {
+                // Use calendar to get current day and offset
+                let currentDay = calendar.startOfDay(for: transactions[index].datePointage)
+                let dayOffset = Int(currentDay.timeIntervalSince1970 - firstDate) / Int(hourSeconds)
+
+                // même jour mais le statut peut être différent ??
+                if dayOffset == indexSlider {
+
+                    print("Index:", index)
+
+                    switch transactions[index].status?.type
+                    {
+                    case 0:
+                        prevu += transactions[index].amount
+                    case 1:
+                        engage += transactions[index].amount
+                    case 2, .none, .some(_):
+                        soldeRealise += transactions[index].amount
+                    }
+
+                    index += 1
+                } else {
+                    sameDate = false
+                }
+            }
+
+            soldePrevu = soldeRealise + engage + prevu
+            soldeEngage = soldeRealise + engage
+
+            dataTresorerie = DataTresorerie(
+                x: Double(indexSlider),
+                soldeRealise: soldeRealise,
+                soldeEngage: soldeEngage,
+                soldePrevu: soldePrevu
+            )
+            localGraph.append(dataTresorerie)
         }
+        if localGraph.count != viewModel.dataGraph.count {
+            viewModel.dataGraph = localGraph
+        } else {
+            var isDifferent = false
+            for (a, b) in zip(localGraph, viewModel.dataGraph) {
+                if a != b {
+                    isDifferent = true
+                    break
+                }
+            }
+            if isDifferent {
+                viewModel.dataGraph = localGraph
+            }
+        }
+    }
+    
+//    func calcStartEndDate() -> (Date, Date) {
+        
+//        let calendar = Calendar.current
+//
+//        var date2 = Date(timeIntervalSince1970: ((mySlider.start * self.oneDay) + self.firstDate))
+//        self.startDate = calendar.startOfDay(for: date2)
+//
+//        date2 = Date(timeIntervalSince1970: ((mySlider.end * self.oneDay) + self.firstDate))
+//        self.endDate = calendar.endOfDay(date: date2 )
+//        return (startDate, endDate)
+//    }
 
 }
-

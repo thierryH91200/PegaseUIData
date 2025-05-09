@@ -30,9 +30,12 @@ import SwiftUI
 
 protocol StatusManaging {
     func configure(with modelContext: ModelContext)
-    func defaultStatus(account: EntityAccount)
+    func create(account: EntityAccount?, name: String, type: Int, color: NSColor) throws -> EntityStatus?
+    func find( account: EntityAccount?, name: String) -> EntityStatus?
+
     func getAllDatas(for account: EntityAccount?) -> [EntityStatus]?
     func saveContext()
+    func defaultStatus(account: EntityAccount)
 }
 
 //@Observable
@@ -68,9 +71,7 @@ final class StatusManager: StatusManaging {
         try save()
         return newMode
     }
-    
-    
-    
+
     func find( account: EntityAccount? = nil, name: String) -> EntityStatus? {
         
         let account = CurrentAccountManager.shared.getAccount()!
@@ -114,8 +115,6 @@ final class StatusManager: StatusManaging {
         return entityStatus
     }
     
-
-
     func save () throws {
         
         do {
