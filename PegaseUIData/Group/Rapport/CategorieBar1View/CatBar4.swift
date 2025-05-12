@@ -11,7 +11,9 @@ import DGCharts
 
 struct DGBarChart1Representable: NSViewRepresentable {
     
-    @Environment(\.modelContext) var modelContext
+//    @Environment(\.modelContext) var modelContext
+    @ObservedObject var viewModel: TresuryLineViewModel
+
 
     let entries: [BarChartDataEntry]
     let labels: [String]
@@ -31,19 +33,8 @@ struct DGBarChart1Representable: NSViewRepresentable {
 
     func makeNSView(context: Context) -> BarChartView {
 
-        let dataSet = BarChartDataSet(entries: entries, label: "Categorie Bar1")
-        dataSet.colors = ChartColorTemplates.colorful()
-
-        let data = BarChartData(dataSet: dataSet)
-        chartView.data = data
-
-        // Personnalisation du graphique
-        initChart()
-        chartView.animate(yAxisDuration: 1.5)
-        
-        DispatchQueue.main.async {
-            self.chartViewRef = chartView
-        }
+        let chartView = BarChartView()
+        initChart(on: chartView)
         return chartView
     }
 
@@ -69,7 +60,7 @@ struct DGBarChart1Representable: NSViewRepresentable {
         nsView.notifyDataSetChanged()
     }
     
-    func initChart() {
+    func initChart(on nsView: BarChartView) {
         
         chartView.xAxis.valueFormatter = CurrencyValueFormatter()
         

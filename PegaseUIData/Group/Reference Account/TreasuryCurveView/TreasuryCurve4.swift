@@ -67,19 +67,32 @@ struct DGLineChartRepresentable: NSViewRepresentable {
     }
     
     func updateAccount () {
-        
-        listTransactions = viewModel.listTransactions
+        // Charger toutes les transactions d'abord
+        let allTransactions = ListTransactionsManager.shared.getAllDatas()
 
-        if listTransactions.isEmpty == false {
-            
-            firstDate = (listTransactions.first?.dateOperation.timeIntervalSince1970)!
-            lastDate = (listTransactions.last?.dateOperation.timeIntervalSince1970)!
-            
-//            sliderViewHorizontalController?.initData(firstDate: firstDate, lastDate: lastDate)
-//            sliderViewHorizontalController?.mySlider.isEnabled = true
-            
-        } else {
-//            sliderViewHorizontalController?.mySlider.isEnabled = false
+        guard !allTransactions.isEmpty else {
+            DispatchQueue.main.async {
+                self.listTransactions = []
+            }
+            return
+        }
+
+        let firstOpDate = Calendar.current.startOfDay(for: allTransactions.first!.dateOperation)
+        let lastOpDate = Calendar.current.startOfDay(for: allTransactions.last!.dateOperation)
+
+        self.firstDate = firstOpDate.timeIntervalSince1970
+        self.lastDate = lastOpDate.timeIntervalSince1970
+
+        // Appliquer la plage sélectionnée
+        let startDate = Calendar.current.date(byAdding: .day, value: Int(self.viewModel.selectedStart), to: firstOpDate)!
+        let endDate = Calendar.current.date(byAdding: .day, value: Int(self.viewModel.selectedEnd), to: firstOpDate)!
+
+        let filteredTransactions = allTransactions.filter {
+            $0.dateOperation >= startDate && $0.dateOperation <= endDate
+        }
+
+        DispatchQueue.main.async {
+            self.listTransactions = filteredTransactions
         }
     }
 
@@ -248,11 +261,6 @@ struct DGLineChartRepresentable: NSViewRepresentable {
 
         var localGraph: [DataTresorerie] = []
 
-        var dataTresorerie = DataTresorerie()
-        var index = 0
-        var indexDate = 0.0
-        var sameDate = true
-
         let initAccount = InitAccountManager.shared.getAllDatas()
 
         var soldeRealise = initAccount?.realise ?? 0
@@ -269,40 +277,32 @@ struct DGLineChartRepresentable: NSViewRepresentable {
         let maxValue = Double(calendar.startOfDay(for: transactions.last!.datePointage).timeIntervalSince1970 / hourSeconds)
         let minIndex = 0
         let maxIndex = Int((maxValue - minValue))
-        for indexSlider in minIndex..<maxIndex + 1 {
+        
+        let grouped = Dictionary(grouping: transactions, by: { calendar.startOfDay(for: $0.datePointage) })
 
-            sameDate = true
-            while sameDate == true && index < transactions.count {
-                // Use calendar to get current day and offset
-                let currentDay = calendar.startOfDay(for: transactions[index].datePointage)
-                let dayOffset = Int(currentDay.timeIntervalSince1970 - firstDate) / Int(hourSeconds)
+        let selectedStartOffset = Int(viewModel.selectedStart)
+        let selectedEndOffset = min(Int(viewModel.selectedEnd), maxIndex)
 
-                // même jour mais le statut peut être différent ??
-                if dayOffset == indexSlider {
+        for offset in selectedStartOffset...selectedEndOffset {
+            let dayDate = Date(timeIntervalSince1970: firstDate + Double(offset) * hourSeconds)
+            let dayTransactions = grouped[dayDate] ?? []
 
-                    print("Index:", index)
-
-                    switch transactions[index].status?.type
-                    {
-                    case 0:
-                        prevu += transactions[index].amount
-                    case 1:
-                        engage += transactions[index].amount
-                    case 2, .none, .some(_):
-                        soldeRealise += transactions[index].amount
-                    }
-
-                    index += 1
-                } else {
-                    sameDate = false
+            for tx in dayTransactions {
+                switch tx.status?.type {
+                case 0:
+                    prevu += tx.amount
+                case 1:
+                    engage += tx.amount
+                case 2, .none, .some(_):
+                    soldeRealise += tx.amount
                 }
             }
 
             soldePrevu = soldeRealise + engage + prevu
             soldeEngage = soldeRealise + engage
 
-            dataTresorerie = DataTresorerie(
-                x: Double(indexSlider),
+            let dataTresorerie = DataTresorerie(
+                x: Double(offset),
                 soldeRealise: soldeRealise,
                 soldeEngage: soldeEngage,
                 soldePrevu: soldePrevu

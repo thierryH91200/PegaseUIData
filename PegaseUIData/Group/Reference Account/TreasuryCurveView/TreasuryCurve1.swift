@@ -1,5 +1,5 @@
 //
-//  Untitled.swift
+//  Untitled 2.swift
 //  PegaseUIData
 //
 //  Created by Thierry hentic on 17/04/2025.
@@ -10,41 +10,19 @@ import SwiftData
 import DGCharts
 
 
-class TresuryLineViewModel: ObservableObject {
+struct TreasuryCurveView: View {
     
-    @Published var listTransactions: [EntityTransactions] = []
-    @Published var dataGraph: [DataTresorerie] = []
-    @Published var dataEntries: [ChartDataEntry] = []
+    @Binding var isVisible: Bool
 
-    @Published var firstDate: TimeInterval = 0.0
-    @Published var lastDate: TimeInterval = 0.0
-
-    @Published var selectedStart: Double = 0
-    @Published var selectedEnd: Double = 30
-    
-    @State private var chartView : LineChartView?
-    
-    static let shared = TresuryLineViewModel()
-
-    func configure(with chartView: LineChartView)
-    {
-        self.chartView = chartView
-    }
-    
-    func updateAccount() {
-        let startDate: Date? = nil
-        let endDate: Date? = nil
-        let transactions = ListTransactionsManager.shared.getAllDatas(from: startDate, to: endDate)
-
-        DispatchQueue.main.async {
-            self.listTransactions = transactions
-            if let first = transactions.first?.dateOperation.timeIntervalSince1970,
-               let last = transactions.last?.dateOperation.timeIntervalSince1970 {
-                self.firstDate = first
-                self.lastDate = last
+    var body: some View {
+        TreasuryCurve()
+            .task {
+                await performFalseTask()
             }
-        }
+    }
+    private func performFalseTask() async {
+        // Exécuter une tâche asynchrone (par exemple, un délai)
+        try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 seconde de délai
+        isVisible = false
     }
 }
-
-

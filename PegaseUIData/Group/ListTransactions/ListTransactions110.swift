@@ -92,6 +92,73 @@ struct OperationRow: View {
         .frame(maxHeight: .infinity) // Assure l'extension verticale de la vue
     }
     
+//    func selectionDidChange(_ notification: Notification) {
+//        
+//        let outlineView = notification.object as? NSOutlineView
+//        guard  outlineView == outlineListView else { return }
+//        
+//        let selectedRow = (outlineView?.selectedRowIndexes)!
+//        let selectRow = (outlineView?.selectedRow)!
+//        
+//        guard selectRow != -1 else {
+//            resetChange()
+//            return }
+//        
+//        let rowView = outlineView?.rowView(atRow: selectRow, makeIfNecessary: false)
+//        rowView?.isEmphasized = true
+//        
+//        if selectedRow.isEmpty == false {
+//            
+//            self.removeButton.isHidden = false
+//            var transactionsSelected = [EntityTransactions]()
+//            
+//            var amount = 0.0
+//            var solde = 0.0
+//            var expense = 0.0
+//            var income = 0.0
+//            var select = ""
+//            
+//            let formatter = NumberFormatter()
+//            formatter.locale = Locale.current
+//            formatter.numberStyle = .currency
+//            
+//            for row in selectedRow {
+//                let item = outlineView?.item(atRow: row) as? Transaction
+//                guard item != nil else { return }
+//                
+//                transactionsSelected.append((item?.entityTransaction)!)
+//                
+//                amount = (item?.entityTransaction.amount)!
+//                solde += amount
+//                if amount < 0 {
+//                    expense += amount
+//                } else {
+//                    income += amount
+//                }
+//            }
+//            
+//            // Info
+//            let amountStr = formatter.string(from: solde as NSNumber)!
+//            let strExpense = formatter.string(from: expense as NSNumber)!
+//            let strIncome = formatter.string(from: income as NSNumber)!
+//            let count = selectedRow.count
+//            
+//            if count < 2 {
+//                select =   Localizations.ListTransaction.transaction.selectionnee.singular
+//            } else {
+//                select =   Localizations.ListTransaction.transaction.selectionnee.plural(count)
+//            }
+//            let info = select + Localizations.ListTransaction.info( strExpense, strIncome, amountStr)
+//            
+//            let attributedText = NSAttributedString(string: info, attributes: attribute)
+//            self.labelInfo.attributedStringValue = attributedText
+//            
+//            self.delegate?.editionOperations(transactionsSelected)
+//            self.becomeFirstResponder()
+//        }
+//    }
+
+    
 //    private func afficherDetails(_ transaction: EntityTransactions) {
 //        print("Afficher les détails de la transaction : \(transaction)")
 //

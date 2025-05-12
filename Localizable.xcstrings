@@ -2194,6 +2194,7 @@
       }
     },
     "Cash flow curve" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -4246,6 +4247,9 @@
           }
         }
       }
+    },
+    "Début : %lld" : {
+
     },
     "Decrease" : {
       "localizations" : {
@@ -6385,6 +6389,9 @@
         }
       }
     },
+    "Fin : %lld" : {
+
+    },
     "Final balance" : {
       "localizations" : {
         "de" : {
@@ -6760,7 +6767,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "De %1$@ à %2$@"
+            "value" : "Du %1$@ au %2$@"
           }
         }
       }
@@ -11381,6 +11388,16 @@
           "stringUnit" : {
             "state" : "error",
             "value" : ""
+          }
+        }
+      }
+    },
+    "Treasury curve" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Courbe de la trésorerie"
           }
         }
       }
