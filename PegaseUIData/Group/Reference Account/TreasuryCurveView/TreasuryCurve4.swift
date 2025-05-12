@@ -1,5 +1,5 @@
 //
-//  Untitled.swift
+//  TreasuryCurve4.swift
 //  PegaseUIData
 //
 //  Created by Thierry hentic on 06/05/2025.
@@ -125,23 +125,27 @@ struct DGLineChartRepresentable: NSViewRepresentable {
             return
         }
 
-        nsView.xAxis.axisMinimum = 0.0
-        nsView.xAxis.axisMaximum = 100.0
+        let filteredData = data.filter {
+            $0.x >= viewModel.selectedStart && $0.x <= viewModel.selectedEnd
+        }
+
+        if let minX = filteredData.map(\.x).min(),
+           let maxX = filteredData.map(\.x).max() {
+            nsView.xAxis.axisMinimum = minX
+            nsView.xAxis.axisMaximum = maxX
+        }
+        
         nsView.xAxis.removeAllLimitLines()
         
         var values0 = [ChartDataEntry]()
         var values1 = [ChartDataEntry]()
         var values2 = [ChartDataEntry]()
 
-        let from = 0
-        let to = min(data.count, 100)
-
-        for i in from..<to {
-            values0.append(ChartDataEntry(x: data[i].x, y: data[i].soldeRealise))
-            values1.append(ChartDataEntry(x: data[i].x, y: data[i].soldeEngage))
-            values2.append(ChartDataEntry(x: data[i].x, y: data[i].soldePrevu))
-
-            addLimit(on: nsView, index: data[i].x, x: (data[i].x * hourSeconds) + firstDate)
+        for entry in filteredData {
+            values0.append(ChartDataEntry(x: entry.x, y: entry.soldeRealise))
+            values1.append(ChartDataEntry(x: entry.x, y: entry.soldeEngage))
+            values2.append(ChartDataEntry(x: entry.x, y: entry.soldePrevu))
+            addLimit(on: nsView, index: entry.x, x: (entry.x * hourSeconds) + firstDate)
         }
 
         nsView.xAxis.labelCount = 300
@@ -168,7 +172,6 @@ struct DGLineChartRepresentable: NSViewRepresentable {
         dataSet.setValueTextColor(.black)
         dataSet.setValueFont(NSFont(name: "HelveticaNeue-Light", size: CGFloat(9.0))!)
 
-
         nsView.data = dataSet
     }
     
@@ -184,7 +187,7 @@ struct DGLineChartRepresentable: NSViewRepresentable {
         dataSet.axisDependency = .left
         dataSet.mode = .stepped
         dataSet.valueTextColor = #colorLiteral(red: 0.4745098054, green: 0.8392156959, blue: 0.9764705896, alpha: 1)
-        dataSet.lineWidth = 1.5
+        dataSet.lineWidth = 2.0
         
         dataSet.drawCirclesEnabled = false
         dataSet.drawValuesEnabled = true

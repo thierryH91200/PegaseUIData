@@ -2194,7 +2194,7 @@
       }
     },
     "Cash flow curve" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -4247,9 +4247,6 @@
           }
         }
       }
-    },
-    "Début : %lld" : {
-
     },
     "Decrease" : {
       "localizations" : {
@@ -6388,9 +6385,6 @@
           }
         }
       }
-    },
-    "Fin : %lld" : {
-
     },
     "Final balance" : {
       "localizations" : {
@@ -10108,6 +10102,16 @@
         }
       }
     },
+    "Reset the range" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réinitialiser la plage"
+          }
+        }
+      }
+    },
     "Rubric" : {
       "localizations" : {
         "de" : {
@@ -10736,6 +10740,16 @@
           "stringUnit" : {
             "state" : "error",
             "value" : ""
+          }
+        }
+      }
+    },
+    "Sound feedback" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\"Retour sonore\";"
           }
         }
       }

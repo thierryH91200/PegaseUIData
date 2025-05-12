@@ -1,7 +1,7 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "Bank Statement" : {
+    "Bank statement" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -21,7 +21,7 @@
         }
       }
     },
-    "Cash Flow Curve" : {
+    "Cash flow curve" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -71,7 +71,18 @@
         }
       }
     },
+    "List of transactions" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Liste des transactions"
+          }
+        }
+      }
+    },
     "List of Transactions" : {
+      "extractionState" : "manual",
       "localizations" : {
         "fr" : {
           "stringUnit" : {

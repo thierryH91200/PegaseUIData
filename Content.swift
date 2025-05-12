@@ -274,12 +274,12 @@ struct DetailContainer: View {
 
     var detailViews: [String: (Binding<Bool>) -> AnyView] {
         [
-            String(localized: "List of Transactions",table: "Menu")     : { isVisible in AnyView(ListTransactionsView100(isVisible    : isVisible)) },
+            String(localized: "List of transactions",table: "Menu")     : { isVisible in AnyView(ListTransactionsView100(isVisible    : isVisible)) },
             //selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)) },
-            String(localized: "Cash Flow Curve",table: "Menu")          : { isVisible in AnyView(TreasuryCurveView(isVisible          : isVisible)) },
+            String(localized: "Cash flow curve",table: "Menu")          : { isVisible in AnyView(TreasuryCurveView(isVisible          : isVisible)) },
             String(localized: "Bank website",table: "Menu")             : { isVisible in AnyView(BankWebsiteView(isVisible            : isVisible)) },
             String(localized: "Internet rapprochement",table: "Menu")   : { isVisible in AnyView(InternetReconciliationView(isVisible : isVisible)) },
-            String(localized: "Bank Statement",table: "Menu")           : { isVisible in AnyView(BankStatementView(isVisible          : isVisible)) },
+            String(localized: "Bank statement",table: "Menu")           : { isVisible in AnyView(BankStatementView(isVisible          : isVisible)) },
             String(localized: "Notes",table: "Menu")                    : { isVisible in AnyView(NotesView(isVisible                  : isVisible)) },
             
             // Rapport
@@ -312,6 +312,7 @@ struct DetailContainer: View {
 
     func localizedDetailView(for selection: String?) -> ((Binding<Bool>) -> AnyView)? {
         guard let selection = selection else { return nil }
+        print (detailViews)
         return detailViews[selection]
     }
 }

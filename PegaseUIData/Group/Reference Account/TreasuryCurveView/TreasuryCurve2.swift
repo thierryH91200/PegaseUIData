@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftData
 import DGCharts
-
+import AppKit
 
 struct TreasuryCurve: View {
     
@@ -24,6 +24,9 @@ struct TreasuryCurve: View {
     private let oneDay = 3600.0 * 24.0 // one day
 
     @State private var chartView : LineChartView?
+    @State private var rotationAngle: Double = 0
+    
+    @AppStorage("enableSoundFeedback") private var enableSoundFeedback: Bool = true
 
     var body: some View {
         GeometryReader { geometry in
@@ -50,9 +53,40 @@ struct TreasuryCurve: View {
                                     lowerValue: $selectedStart,
                                     upperValue: $selectedEnd)
                         .frame(height: 30)
+                        
                     }
                     .padding(.top, 4)
                     .padding(.horizontal)
+                    
+                    if selectedStart > 0 || selectedEnd < maxDate.timeIntervalSince(minDate) / oneDay {
+                        Toggle(isOn: $enableSoundFeedback) {
+                            Label("Sound feedback", systemImage: "speaker.wave.2.fill")
+                        }
+                        .toggleStyle(.switch)
+                        .padding(.top, 8)
+                        
+                        Button {
+                            withAnimation {
+                                selectedStart = 0
+                                selectedEnd = maxDate.timeIntervalSince(minDate) / oneDay
+                            }
+                            rotationAngle += 360
+                            if enableSoundFeedback {
+                                NSSound(named: NSSound.Name("Pop"))?.play()
+                            }
+                            updateChart()
+                        } label: {
+                            Label {
+                                Text("Reset the range")
+                            } icon: {
+                                Image(systemName: "arrow.counterclockwise")
+                                    .rotationEffect(.degrees(rotationAngle))
+                                    .animation(.easeInOut(duration: 0.4), value: rotationAngle)
+                            }
+                        }
+                        .buttonStyle(.bordered)
+                        .padding(.top, 8)
+                    }
                 }
                 .onAppear {
                     
@@ -84,9 +118,12 @@ struct TreasuryCurve: View {
     }
     
     private func updateChart() {
+        
+        guard let chartView = chartView else { return }
+        
         ListTransactionsManager.shared.configure(with: modelContext)
         InitAccountManager.shared.configure(with: modelContext)
-        viewModel.configure(with: chartView!)
+        viewModel.configure(with: chartView)
         viewModel.updateAccount(minDate: minDate) // ← cette ligne est manquante
     }
     
