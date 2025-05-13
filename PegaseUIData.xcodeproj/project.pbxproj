@@ -156,6 +156,8 @@
 				en,
 				Base,
 				fr,
+				es,
+				it,
 			);
 			mainGroup = 03DF76462D9D15F300D179E1;
 			minimizedProjectReferenceProxies = 1;

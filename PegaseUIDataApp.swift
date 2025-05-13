@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftData
 import UniformTypeIdentifiers
 
+
 @main
 struct PegaseUIDataApp: App {
     
@@ -49,11 +50,34 @@ struct PegaseUIDataApp: App {
         }
     }
     
+    @State private var loadDemoTrigger = false
+    @State private var resetTrigger = false
+
     var body: some Scene {
         Window("Pegase", id: "main") {
 //        WindowGroup {
             SplashScreenView( )
+                .onChange(of: loadDemoTrigger) { _, newValue in
+                    if newValue {
+                        NotificationCenter.default.post(name: .loadDemoRequested, object: nil)
+                        loadDemoTrigger = false
+                    }
+                }
+                .onChange(of: resetTrigger) { _, newValue in
+                    if newValue {
+                        NotificationCenter.default.post(name: .resetDatabaseRequested, object: nil)
+                        resetTrigger = false
+                    }
+                }
+
         }
+        .commands {
+            DemoDataCommand(
+                loadDemoAction: { loadDemoTrigger = true },
+                resetAction: { resetTrigger = true }
+            )
+        }
+        
         .commands {
             CommandGroup(after: .newItem) {
                 Menu("Import") { // Création d'un menu "Import"
@@ -87,7 +111,6 @@ struct PegaseUIDataApp: App {
                 .keyboardShortcut(",", modifiers: .command)
             }
         }
-
         .modelContainer(container)
     }
     

@@ -7922,6 +7922,16 @@
         }
       }
     },
+    "Load demo data" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Charger les données de démonstration"
+          }
+        }
+      }
+    },
     "Match the columns :" : {
       "localizations" : {
         "de" : {
@@ -10098,6 +10108,16 @@
           "stringUnit" : {
             "state" : "error",
             "value" : ""
+          }
+        }
+      }
+    },
+    "Reset the base" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réinitialiser la base"
           }
         }
       }

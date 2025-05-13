@@ -69,11 +69,12 @@ struct CategorieBar1View1: View {
             }
             .padding(.bottom, 8)
             
-//            DGBarChart1Representable(entries: viewModel.dataEntries,
-//                           labels: viewModel.labels,
-//                           chartViewRef: $chartView)
-//                .frame(width: 600, height: 400)
-//                .padding()
+            DGBarChart1Representable(viewModel: viewModel,
+                                     entries: viewModel.dataEntries,
+                                     labels: viewModel.labels,
+                                     chartViewRef: $chartView)
+                .frame(width: 600, height: 400)
+                .padding()
 
             GroupBox(label: Label("Filter by period", systemImage: "calendar")) {
                 VStack(alignment: .leading, spacing: 8) {
@@ -99,6 +100,7 @@ struct CategorieBar1View1: View {
             let listTransactions = ListTransactionsManager.shared.getAllDatas()
             minDate = listTransactions.first!.dateOperation
             maxDate = listTransactions.last!.dateOperation
+            selectedEnd = maxDate.timeIntervalSince(minDate) / oneDay
 
             chartView = BarChartView()
             if let chartView = chartView {

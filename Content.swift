@@ -312,7 +312,6 @@ struct DetailContainer: View {
 
     func localizedDetailView(for selection: String?) -> ((Binding<Bool>) -> AnyView)? {
         guard let selection = selection else { return nil }
-        print (detailViews)
         return detailViews[selection]
     }
 }

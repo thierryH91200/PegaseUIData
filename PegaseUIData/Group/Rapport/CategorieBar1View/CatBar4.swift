@@ -12,7 +12,7 @@ import DGCharts
 struct DGBarChart1Representable: NSViewRepresentable {
     
 //    @Environment(\.modelContext) var modelContext
-    @ObservedObject var viewModel: TresuryLineViewModel
+    @ObservedObject var viewModel: CategorieBar1ViewModel
 
 
     let entries: [BarChartDataEntry]

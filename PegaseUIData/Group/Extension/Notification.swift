@@ -14,4 +14,8 @@ extension Notification.Name {
     static let importReleve      = Notification.Name("importReleve")
     static let exportTransaction = Notification.Name("exportTransaction")
     static let exportReleve      = Notification.Name("exportReleve")
+        
+    static let loadDemoRequested = Notification.Name("loadDemoRequested")
+    static let resetDatabaseRequested = Notification.Name("resetDatabaseRequested")
+
 }

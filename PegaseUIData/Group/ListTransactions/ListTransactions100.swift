@@ -11,21 +11,60 @@ import SwiftData
 
 struct ListTransactionsView100: View {
     
+    @Environment(\.modelContext) private var modelContext
+    
     @Binding var isVisible: Bool
     @State private var selectedTransactions: Set<UUID> = []
 
     var body: some View {
-        ListTransactions200(isVisible: $isVisible, selectedTransactions: $selectedTransactions)
-            .padding()
-            .task {
-                await performFalseTask()
+        VStack {
+#if DEBUG
+            Button("Load demo data") {
+                loadDemoData()
             }
+            .textCase(.lowercase) // ← empêche SwiftUI de mettre en majuscules
+            .padding(.bottom)
+#endif
+            ListTransactions200(isVisible: $isVisible, selectedTransactions: $selectedTransactions)
+                .padding()
+                .task {
+                    await performFalseTask()
+                }
+                .onReceive(NotificationCenter.default.publisher(for: .loadDemoRequested)) { _ in
+                    loadDemoData()
+                }
+                .onReceive(NotificationCenter.default.publisher(for: .resetDatabaseRequested)) { _ in
+                    resetDatabase()
+                }
+        }
+    }
+    
+    @MainActor
+    func resetDatabase() {
+        let transactions = ListTransactionsManager.shared.getAllDatas()
+        
+        for transaction in transactions {
+            modelContext.delete(transaction)
+        }
+
+        try? modelContext.save()
     }
     
     private func performFalseTask() async {
         // Exécuter une tâche asynchrone (par exemple, un délai)
         try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 seconde de délai
         isVisible = true
+    }
+    @MainActor
+    func loadDemoData() {
+        let demoTransactions: [(String, Double, Int)] = [
+            ("Achat supermarché", -45.60, 2),
+            ("Salaire", 2000.00, 0),
+            ("Facture électricité", -120.75, 1),
+            ("Virement reçu", 350.00, 2),
+            ("Abonnement streaming", -12.99, 1)
+        ]
+
     }
 }
 
@@ -114,6 +153,19 @@ struct ListTransactions200: View {
     @MainActor
     func loadTransactions() {
         dataManager.listTransactions = ListTransactionsManager.shared.getAllDatas(ascending: false)
+    }
+    
+    @MainActor
+    func resetDatabase(using context: ModelContext) {
+        let transactions = ListTransactionsManager.shared.getAllDatas()
+        
+        for transaction in transactions {
+            context.delete(transaction)
+        }
+
+        try? context.save()
+        loadTransactions()
+        balanceCalculation()
     }
     
     private func balanceCalculation() {
