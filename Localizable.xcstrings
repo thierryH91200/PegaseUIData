@@ -63,8 +63,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "(no transfer)"
           }
         },
         "es" : {
@@ -115,8 +115,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "%.2f €"
           }
         },
         "es" : {
@@ -167,8 +167,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "%@"
           }
         },
         "es" : {
@@ -219,8 +219,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "%@ €"
           }
         },
         "es" : {
@@ -271,8 +271,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "%lld"
           }
         },
         "es" : {
@@ -323,8 +323,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "%lld Account"
           }
         },
         "es" : {
@@ -381,8 +381,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "🎯 %@"
           }
         },
         "es" : {
@@ -439,8 +439,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Account"
           }
         },
         "es" : {
@@ -491,8 +491,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Account: %@"
           }
         },
         "es" : {
@@ -549,8 +549,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Add"
           }
         },
         "es" : {
@@ -601,8 +601,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Add Account"
           }
         },
         "es" : {
@@ -653,8 +653,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Add CheckBook"
           }
         },
         "es" : {
@@ -705,8 +705,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Add Group Account"
           }
         },
         "es" : {
@@ -757,8 +757,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Add Payment Mode"
           }
         },
         "es" : {
@@ -809,8 +809,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Add scheduler"
           }
         },
         "es" : {
@@ -861,8 +861,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Add Sub-operation"
           }
         },
         "es" : {
@@ -913,8 +913,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Add the category"
           }
         },
         "es" : {
@@ -965,8 +965,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Add the rubric"
           }
         },
         "es" : {
@@ -1023,8 +1023,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Address"
           }
         },
         "es" : {
@@ -1075,8 +1075,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "All"
           }
         },
         "es" : {
@@ -1119,6 +1119,12 @@
     },
     "All select" : {
       "localizations" : {
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All select"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1137,8 +1143,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "All select"
           }
         },
         "es" : {
@@ -1189,8 +1195,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Amount"
           }
         },
         "es" : {
@@ -1241,8 +1247,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Amount :"
           }
         },
         "es" : {
@@ -1293,8 +1299,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Amount field"
           }
         },
         "es" : {
@@ -1345,8 +1351,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Appearance"
           }
         },
         "es" : {
@@ -1397,8 +1403,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Background color:"
           }
         },
         "es" : {
@@ -1449,8 +1455,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Bank"
           }
         },
         "es" : {
@@ -1501,8 +1507,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Account"
           }
         },
         "es" : {
@@ -1553,8 +1559,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Bank Card"
           }
         },
         "es" : {
@@ -1611,8 +1617,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Bank references"
           }
         },
         "es" : {
@@ -1663,8 +1669,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Bank Statement"
           }
         },
         "es" : {
@@ -1715,8 +1721,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Bank Statement :"
           }
         },
         "es" : {
@@ -1767,8 +1773,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Bank withdrawal"
           }
         },
         "es" : {
@@ -1826,8 +1832,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Bank_Card"
           }
         },
         "es" : {
@@ -1878,8 +1884,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "BankWebsiteView"
           }
         },
         "es" : {
@@ -1936,8 +1942,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "BIC"
           }
         },
         "es" : {
@@ -1995,8 +2001,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Cancel"
           }
         },
         "es" : {
@@ -2047,8 +2053,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Cancel operation"
           }
         },
         "es" : {
@@ -2099,8 +2105,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Cancel sub-operation"
           }
         },
         "es" : {
@@ -2151,8 +2157,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Cash"
           }
         },
         "es" : {
@@ -2196,6 +2202,12 @@
     "Cash flow curve" : {
       "extractionState" : "manual",
       "localizations" : {
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cash flow curve"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2214,8 +2226,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Cash withdrawal"
           }
         },
         "es" : {
@@ -2266,8 +2278,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "CategorieBar1View1"
           }
         },
         "es" : {
@@ -2318,8 +2330,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "CategorieBar1View2"
           }
         },
         "es" : {
@@ -2370,8 +2382,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Category"
           }
         },
         "es" : {
@@ -2422,8 +2434,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Category :"
           }
         },
         "es" : {
@@ -2474,8 +2486,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Category selection"
           }
         },
         "es" : {
@@ -2526,8 +2538,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "CB Balance"
           }
         },
         "es" : {
@@ -2578,8 +2590,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "CB Date"
           }
         },
         "es" : {
@@ -2636,8 +2648,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Check"
           }
         },
         "es" : {
@@ -2688,8 +2700,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Check Number"
           }
         },
         "es" : {
@@ -2740,8 +2752,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Choose a category within the selected rubric"
           }
         },
         "es" : {
@@ -2792,8 +2804,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Choose a rubric for categorizing this sub-operation"
           }
         },
         "es" : {
@@ -2844,8 +2856,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Choose the color"
           }
         },
         "es" : {
@@ -2896,8 +2908,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Close"
           }
         },
         "es" : {
@@ -2948,8 +2960,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Color"
           }
         },
         "es" : {
@@ -3000,8 +3012,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Colunn %lld"
           }
         },
         "es" : {
@@ -3058,8 +3070,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Comment"
           }
         },
         "es" : {
@@ -3110,8 +3122,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Comment :"
           }
         },
         "es" : {
@@ -3162,8 +3174,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Comment field"
           }
         },
         "es" : {
@@ -3214,8 +3226,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Complement"
           }
         },
         "es" : {
@@ -3273,8 +3285,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Account"
           }
         },
         "es" : {
@@ -3333,8 +3345,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Content"
           }
         },
         "es" : {
@@ -3391,8 +3403,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Content pour Sidebar 2 %@"
           }
         },
         "es" : {
@@ -3450,8 +3462,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Country"
           }
         },
         "es" : {
@@ -3508,8 +3520,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "CP"
           }
         },
         "es" : {
@@ -3560,8 +3572,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Create new operation screen"
           }
         },
         "es" : {
@@ -3604,6 +3616,12 @@
     },
     "Created at :" : {
       "localizations" : {
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Created at :"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3622,8 +3640,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Creation Mode"
           }
         },
         "es" : {
@@ -3674,8 +3692,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "CSV Preview"
           }
         },
         "es" : {
@@ -3726,8 +3744,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Current Account: %@"
           }
         },
         "es" : {
@@ -3778,8 +3796,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Current account1"
           }
         },
         "es" : {
@@ -3830,8 +3848,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Current account2"
           }
         },
         "es" : {
@@ -3882,8 +3900,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Current account3"
           }
         },
         "es" : {
@@ -3940,8 +3958,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Dark"
           }
         },
         "es" : {
@@ -3992,8 +4010,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Date CB"
           }
         },
         "es" : {
@@ -4050,8 +4068,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Date of pointing"
           }
         },
         "es" : {
@@ -4102,8 +4120,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Date of pointing :"
           }
         },
         "es" : {
@@ -4154,8 +4172,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Date operation"
           }
         },
         "es" : {
@@ -4206,8 +4224,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Date operation :"
           }
         },
         "es" : {
@@ -4256,10 +4274,16 @@
             "value" : ""
           }
         },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decrease"
+          }
+        },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Decrease"
           }
         },
         "es" : {
@@ -4310,8 +4334,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Default sign"
           }
         },
         "es" : {
@@ -4362,8 +4386,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Default values ​​for transactions for this account."
           }
         },
         "es" : {
@@ -4420,8 +4444,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Delete"
           }
         },
         "es" : {
@@ -4470,10 +4494,16 @@
             "value" : ""
           }
         },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete sub-operation"
+          }
+        },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Delete sub-operation"
           }
         },
         "es" : {
@@ -4522,10 +4552,16 @@
             "value" : ""
           }
         },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete the rubric"
+          }
+        },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Delete the rubric"
           }
         },
         "es" : {
@@ -4568,6 +4604,12 @@
     },
     "Deselect all" : {
       "localizations" : {
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deselect all"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4586,8 +4628,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Discount"
           }
         },
         "es" : {
@@ -4644,8 +4686,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Display"
           }
         },
         "es" : {
@@ -4696,8 +4738,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Displayed sub-operations: %lld"
           }
         },
         "es" : {
@@ -4748,8 +4790,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Document PDF"
           }
         },
         "es" : {
@@ -4800,8 +4842,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Double tap to delete %@"
           }
         },
         "es" : {
@@ -4852,8 +4894,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Double tap to discard changes"
           }
         },
         "es" : {
@@ -4904,8 +4946,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Double tap to discard changes and close"
           }
         },
         "es" : {
@@ -4956,8 +4998,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Double tap to edit %@"
           }
         },
         "es" : {
@@ -5008,8 +5050,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Double tap to save all changes"
           }
         },
         "es" : {
@@ -5060,8 +5102,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Drop your PDF here"
           }
         },
         "es" : {
@@ -5112,8 +5154,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Edit"
           }
         },
         "es" : {
@@ -5164,8 +5206,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Edit CheckBook"
           }
         },
         "es" : {
@@ -5216,8 +5258,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Edit Mode"
           }
         },
         "es" : {
@@ -5268,8 +5310,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Edit operation screen"
           }
         },
         "es" : {
@@ -5320,8 +5362,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Edit Payment Mode"
           }
         },
         "es" : {
@@ -5372,8 +5414,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Edit Rubric"
           }
         },
         "es" : {
@@ -5424,8 +5466,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Edit scheduler"
           }
         },
         "es" : {
@@ -5476,8 +5518,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Edit statement"
           }
         },
         "es" : {
@@ -5528,8 +5570,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Edit sub-operation"
           }
         },
         "es" : {
@@ -5580,8 +5622,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Edit the category"
           }
         },
         "es" : {
@@ -5632,8 +5674,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Edit the rubric"
           }
         },
         "es" : {
@@ -5684,8 +5726,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Email"
           }
         },
         "es" : {
@@ -5736,8 +5778,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "End balance"
           }
         },
         "es" : {
@@ -5794,8 +5836,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Engaged"
           }
         },
         "es" : {
@@ -5846,8 +5888,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Engaged"
           }
         },
         "es" : {
@@ -5898,8 +5940,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Enter a description for this sub-operation"
           }
         },
         "es" : {
@@ -5950,8 +5992,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Enter Engaged value"
           }
         },
         "es" : {
@@ -6002,8 +6044,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Enter Executed value"
           }
         },
         "es" : {
@@ -6054,8 +6096,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Enter planned value"
           }
         },
         "es" : {
@@ -6106,8 +6148,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Enter the amount for this sub-operation"
           }
         },
         "es" : {
@@ -6150,6 +6192,12 @@
     },
     "Error: Transaction not found in the list." : {
       "localizations" : {
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error: Transaction not found in the list."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6168,8 +6216,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Executed"
           }
         },
         "es" : {
@@ -6220,8 +6268,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Export"
           }
         },
         "es" : {
@@ -6272,8 +6320,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Export CSV"
           }
         },
         "es" : {
@@ -6316,6 +6364,12 @@
     },
     "Export to PNG" : {
       "localizations" : {
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export to PNG"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6334,8 +6388,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Eyes"
           }
         },
         "es" : {
@@ -6378,6 +6432,12 @@
     },
     "Filter by period" : {
       "localizations" : {
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filter by period"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6396,8 +6456,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Final balance"
           }
         },
         "es" : {
@@ -6448,8 +6508,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Find"
           }
         },
         "es" : {
@@ -6500,8 +6560,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "First name"
           }
         },
         "es" : {
@@ -6552,8 +6612,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "First Number"
           }
         },
         "es" : {
@@ -6604,8 +6664,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Foreground color:"
           }
         },
         "es" : {
@@ -6656,8 +6716,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Frequency"
           }
         },
         "es" : {
@@ -6708,8 +6768,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Frequency type"
           }
         },
         "es" : {
@@ -6758,6 +6818,12 @@
             "value" : "From %1$@ to %2$@"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "From %1$@ to %2$@"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6776,8 +6842,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Function"
           }
         },
         "es" : {
@@ -6828,8 +6894,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "General"
           }
         },
         "es" : {
@@ -6880,8 +6946,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "General information"
           }
         },
         "es" : {
@@ -6932,8 +6998,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "IBAN"
           }
         },
         "es" : {
@@ -6984,8 +7050,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Identities"
           }
         },
         "es" : {
@@ -7036,8 +7102,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Identity"
           }
         },
         "es" : {
@@ -7088,8 +7154,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Identity title"
           }
         },
         "es" : {
@@ -7140,8 +7206,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Ignore"
           }
         },
         "es" : {
@@ -7192,8 +7258,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Import"
           }
         },
         "es" : {
@@ -7244,8 +7310,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Import a CSV file"
           }
         },
         "es" : {
@@ -7296,8 +7362,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Income/Expense"
           }
         },
         "es" : {
@@ -7346,10 +7412,16 @@
             "value" : ""
           }
         },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Increase"
+          }
+        },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Increase"
           }
         },
         "es" : {
@@ -7400,8 +7472,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Indicative"
           }
         },
         "es" : {
@@ -7452,8 +7524,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Initial balance"
           }
         },
         "es" : {
@@ -7504,8 +7576,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Initial report"
           }
         },
         "es" : {
@@ -7556,8 +7628,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Inter balance"
           }
         },
         "es" : {
@@ -7614,8 +7686,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Inter Date"
           }
         },
         "es" : {
@@ -7666,8 +7738,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "InternetReconciliationView"
           }
         },
         "es" : {
@@ -7724,8 +7796,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Key"
           }
         },
         "es" : {
@@ -7776,8 +7848,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Launch at login"
           }
         },
         "es" : {
@@ -7828,8 +7900,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Light"
           }
         },
         "es" : {
@@ -7880,8 +7952,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Linked Account"
           }
         },
         "es" : {
@@ -7924,6 +7996,12 @@
     },
     "Load demo data" : {
       "localizations" : {
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Load demo data"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7942,8 +8020,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Match the columns :"
           }
         },
         "es" : {
@@ -7994,8 +8072,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Mobile"
           }
         },
         "es" : {
@@ -8046,8 +8124,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Mode"
           }
         },
         "es" : {
@@ -8090,6 +8168,12 @@
     },
     "ModePaiement Pie" : {
       "localizations" : {
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ModePaiement Pie"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8108,8 +8192,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Month: %@"
           }
         },
         "es" : {
@@ -8160,8 +8244,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "N/A"
           }
         },
         "es" : {
@@ -8212,8 +8296,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "N°"
           }
         },
         "es" : {
@@ -8270,8 +8354,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Name"
           }
         },
         "es" : {
@@ -8322,8 +8406,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "New checkBook"
           }
         },
         "es" : {
@@ -8374,8 +8458,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "New scheduler"
           }
         },
         "es" : {
@@ -8426,8 +8510,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "New statement"
           }
         },
         "es" : {
@@ -8478,8 +8562,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Next"
           }
         },
         "es" : {
@@ -8530,8 +8614,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Next Number"
           }
         },
         "es" : {
@@ -8572,58 +8656,6 @@
         }
       }
     },
-    "next Occurence" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Prochaine occurence"
-          }
-        },
-        "he" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        }
-      }
-    },
     "Next occurence" : {
       "localizations" : {
         "de" : {
@@ -8634,8 +8666,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Next occurence"
           }
         },
         "es" : {
@@ -8686,8 +8718,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "No account selected."
           }
         },
         "es" : {
@@ -8738,8 +8770,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "No amount entered"
           }
         },
         "es" : {
@@ -8796,8 +8828,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "No bank information available"
           }
         },
         "es" : {
@@ -8848,8 +8880,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "No chart data available."
           }
         },
         "es" : {
@@ -8900,8 +8932,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "No label"
           }
         },
         "es" : {
@@ -8952,8 +8984,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "No PDF available"
           }
         },
         "es" : {
@@ -9004,8 +9036,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "No sub-operations available"
           }
         },
         "es" : {
@@ -9056,8 +9088,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "No transaction selected"
           }
         },
         "es" : {
@@ -9108,8 +9140,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "NotesView"
           }
         },
         "es" : {
@@ -9166,8 +9198,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "NotesView"
           }
         },
         "es" : {
@@ -9218,8 +9250,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Number of Checks"
           }
         },
         "es" : {
@@ -9270,8 +9302,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Objectif"
           }
         },
         "es" : {
@@ -9322,8 +9354,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Occurence"
           }
         },
         "es" : {
@@ -9374,8 +9406,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "OK"
           }
         },
         "es" : {
@@ -9426,8 +9458,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Outline View in SwiftUI"
           }
         },
         "es" : {
@@ -9478,8 +9510,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Payment method"
           }
         },
         "es" : {
@@ -9530,8 +9562,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Year: %@"
           }
         },
         "es" : {
@@ -9572,58 +9604,6 @@
         }
       }
     },
-    "Payment Mode" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mode de paiement"
-          }
-        },
-        "he" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        }
-      }
-    },
     "Pegase" : {
       "localizations" : {
         "de" : {
@@ -9634,8 +9614,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Pegase"
           }
         },
         "es" : {
@@ -9686,8 +9666,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "PegaseUIData"
           }
         },
         "es" : {
@@ -9738,8 +9718,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Phone"
           }
         },
         "es" : {
@@ -9790,8 +9770,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Planned"
           }
         },
         "es" : {
@@ -9842,8 +9822,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Postal Code"
           }
         },
         "es" : {
@@ -9894,8 +9874,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Preferences…"
           }
         },
         "es" : {
@@ -9946,8 +9926,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Prefix"
           }
         },
         "es" : {
@@ -9990,6 +9970,12 @@
     },
     "Recette Dépense Pie" : {
       "localizations" : {
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recette Dépense Pie"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10000,6 +9986,12 @@
     },
     "RecetteDepenseBar3" : {
       "localizations" : {
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RecetteDepenseBar3"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10018,8 +10010,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Remove"
           }
         },
         "es" : {
@@ -10070,8 +10062,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Remove the category"
           }
         },
         "es" : {
@@ -10114,6 +10106,12 @@
     },
     "Reset the base" : {
       "localizations" : {
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reset the base"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10124,6 +10122,12 @@
     },
     "Reset the range" : {
       "localizations" : {
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reset the range"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10142,8 +10146,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Rubric"
           }
         },
         "es" : {
@@ -10194,8 +10198,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Rubric :"
           }
         },
         "es" : {
@@ -10246,8 +10250,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Rubric selection"
           }
         },
         "es" : {
@@ -10290,6 +10294,12 @@
     },
     "Rubrique Bar" : {
       "localizations" : {
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rubrique Bar"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10300,6 +10310,12 @@
     },
     "Rubrique pie" : {
       "localizations" : {
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rubrique pie"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10318,8 +10334,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Save"
           }
         },
         "es" : {
@@ -10370,8 +10386,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Save operation"
           }
         },
         "es" : {
@@ -10422,8 +10438,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Select a statement"
           }
         },
         "es" : {
@@ -10474,8 +10490,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Selected PDF"
           }
         },
         "es" : {
@@ -10536,6 +10552,24 @@
             }
           }
         },
+        "en-GB" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Selection : %lld transaction"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Selections : %lld transactions"
+                }
+              }
+            }
+          }
+        },
         "fr" : {
           "variations" : {
             "plural" : {
@@ -10566,8 +10600,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Settings"
           }
         },
         "es" : {
@@ -10618,8 +10652,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Show details"
           }
         },
         "es" : {
@@ -10670,8 +10704,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Show in menu bar (hide from Dock)"
           }
         },
         "es" : {
@@ -10722,8 +10756,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Show inspector"
           }
         },
         "es" : {
@@ -10766,6 +10800,12 @@
     },
     "Sound feedback" : {
       "localizations" : {
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sound feedback"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10784,8 +10824,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Split Transactions"
           }
         },
         "es" : {
@@ -10842,8 +10882,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Start Date"
           }
         },
         "es" : {
@@ -10894,8 +10934,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Statement"
           }
         },
         "es" : {
@@ -10946,8 +10986,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Status"
           }
         },
         "es" : {
@@ -10988,54 +11028,12 @@
         }
       }
     },
-    "Statut :" : {
+    "Status :" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
             "state" : "translated",
-            "value" : "Statut :"
-          }
-        },
-        "he" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "value" : "Status :"
           }
         }
       }
@@ -11056,8 +11054,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Surname"
           }
         },
         "es" : {
@@ -11100,6 +11098,12 @@
     },
     "Total: %@" : {
       "localizations" : {
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total: %@"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11124,8 +11128,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Town"
           }
         },
         "es" : {
@@ -11176,8 +11180,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Transaction"
           }
         },
         "es" : {
@@ -11228,8 +11232,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Transaction Date"
           }
         },
         "es" : {
@@ -11280,8 +11284,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Transaction Details"
           }
         },
         "es" : {
@@ -11332,8 +11336,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Transaction form section"
           }
         },
         "es" : {
@@ -11384,8 +11388,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Transfers"
           }
         },
         "es" : {
@@ -11428,6 +11432,12 @@
     },
     "Treasury curve" : {
       "localizations" : {
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Treasury curve"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11446,8 +11456,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "United"
           }
         },
         "es" : {
@@ -11498,8 +11508,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Update"
           }
         },
         "es" : {
@@ -11550,8 +11560,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Update at :"
           }
         },
         "es" : {
@@ -11602,8 +11612,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Value Date"
           }
         },
         "es" : {
@@ -11654,8 +11664,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Version %@ (Build %@)"
           }
         },
         "es" : {
@@ -11698,6 +11708,12 @@
     },
     "Visible categories" : {
       "localizations" : {
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visible categories"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11716,8 +11732,8 @@
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Year: %@"
           }
         },
         "es" : {

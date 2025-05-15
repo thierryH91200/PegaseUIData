@@ -3,6 +3,12 @@
   "strings" : {
     "Bank statement" : {
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bank statement"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -25,6 +31,12 @@
     },
     "Bank website" : {
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bank website"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -47,6 +59,12 @@
     },
     "Cash flow curve" : {
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cash flow curve"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -69,6 +87,12 @@
     },
     "Category Bar1" : {
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Category Bar1"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -91,6 +115,12 @@
     },
     "Category Bar2" : {
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Category Bar2"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -113,6 +143,12 @@
     },
     "Identity" : {
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Identity"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -135,6 +171,12 @@
     },
     "Internet rapprochement" : {
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Internet rapprochement"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -157,6 +199,12 @@
     },
     "List of transactions" : {
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "List of transactions"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -180,6 +228,12 @@
     "List of Transactions" : {
       "extractionState" : "manual",
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "List of Transactions"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -202,6 +256,12 @@
     },
     "Notes" : {
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notes"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -224,6 +284,12 @@
     },
     "Payment method" : {
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Payment method"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -246,6 +312,12 @@
     },
     "Recipe / Expense Bar" : {
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recipe / Expense Bar"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -268,6 +340,12 @@
     },
     "Recipe / Expense Pie" : {
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recipe / Expense Pie"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -290,6 +368,12 @@
     },
     "Rubric Bar" : {
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rubric Bar"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -312,6 +396,12 @@
     },
     "Rubric Pie" : {
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rubric Pie"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -334,6 +424,12 @@
     },
     "Scheduler" : {
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scheduler"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -356,6 +452,12 @@
     },
     "Settings" : {
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",

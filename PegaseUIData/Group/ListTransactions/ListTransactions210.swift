@@ -110,7 +110,7 @@ struct TransactionDetailView: View {
             }
             
             HStack {
-                Text("Statut :")
+                Text("Status :")
                     .bold()
                 Spacer()
                 Text(transaction.status?.name ?? "N/A")

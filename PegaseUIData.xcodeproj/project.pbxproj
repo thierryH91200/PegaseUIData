@@ -11,7 +11,6 @@
 		03DF76E82D9D183E00D179E1 /* README_fr.md in Resources */ = {isa = PBXBuildFile; fileRef = 03DF76E62D9D183E00D179E1 /* README_fr.md */; };
 		03DF76F52D9D18DA00D179E1 /* Menu.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03DF76F42D9D18D900D179E1 /* Menu.xcstrings */; };
 		03DF76F62D9D18DA00D179E1 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03DF76F22D9D18D900D179E1 /* Localizable.xcstrings */; };
-		03DF76F72D9D18DA00D179E1 /* Localizable.xcstrings.original in Resources */ = {isa = PBXBuildFile; fileRef = 03DF76F32D9D18D900D179E1 /* Localizable.xcstrings.original */; };
 		03DF77002D9D194200D179E1 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 03DF76F92D9D194200D179E1 /* Info.plist */; };
 		03DF77012D9D194200D179E1 /* OutlineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DF76FA2D9D194200D179E1 /* OutlineViewController.swift */; };
 		03DF77022D9D194200D179E1 /* Sidebar1A.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DF76FE2D9D194200D179E1 /* Sidebar1A.swift */; };
@@ -19,7 +18,6 @@
 		03DF77042D9D194200D179E1 /* PegaseUIDataApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DF76FC2D9D194200D179E1 /* PegaseUIDataApp.swift */; };
 		03DF77052D9D194200D179E1 /* SplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DF76FF2D9D194200D179E1 /* SplashScreen.swift */; };
 		03DF77062D9D194200D179E1 /* setupForNilLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DF76FD2D9D194200D179E1 /* setupForNilLibrary.swift */; };
-		03DF77092D9D196200D179E1 /* LICENSE1 in Resources */ = {isa = PBXBuildFile; fileRef = 03DF77082D9D196200D179E1 /* LICENSE1 */; };
 		03DF770A2D9D196200D179E1 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 03DF77072D9D196200D179E1 /* LICENSE */; };
 		03DF770C2D9D19A500D179E1 /* Account.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03DF770B2D9D19A500D179E1 /* Account.xcstrings */; };
 		03DF770E2D9D19B100D179E1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03DF770D2D9D19B100D179E1 /* Assets.xcassets */; };
@@ -32,7 +30,6 @@
 		03DF76E52D9D183E00D179E1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		03DF76E62D9D183E00D179E1 /* README_fr.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README_fr.md; sourceTree = "<group>"; };
 		03DF76F22D9D18D900D179E1 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
-		03DF76F32D9D18D900D179E1 /* Localizable.xcstrings.original */ = {isa = PBXFileReference; lastKnownFileType = text; path = Localizable.xcstrings.original; sourceTree = "<group>"; };
 		03DF76F42D9D18D900D179E1 /* Menu.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Menu.xcstrings; sourceTree = "<group>"; };
 		03DF76F82D9D194200D179E1 /* Content.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Content.swift; sourceTree = "<group>"; };
 		03DF76F92D9D194200D179E1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -42,7 +39,6 @@
 		03DF76FE2D9D194200D179E1 /* Sidebar1A.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sidebar1A.swift; sourceTree = "<group>"; };
 		03DF76FF2D9D194200D179E1 /* SplashScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreen.swift; sourceTree = "<group>"; };
 		03DF77072D9D196200D179E1 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		03DF77082D9D196200D179E1 /* LICENSE1 */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE1; sourceTree = "<group>"; };
 		03DF770B2D9D19A500D179E1 /* Account.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Account.xcstrings; sourceTree = "<group>"; };
 		03DF770D2D9D19B100D179E1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -82,7 +78,6 @@
 				03DF76512D9D15F300D179E1 /* PegaseUIData */,
 				03DF76502D9D15F300D179E1 /* Products */,
 				03DF76F22D9D18D900D179E1 /* Localizable.xcstrings */,
-				03DF76F32D9D18D900D179E1 /* Localizable.xcstrings.original */,
 				03DF76F42D9D18D900D179E1 /* Menu.xcstrings */,
 				03DF76F82D9D194200D179E1 /* Content.swift */,
 				03DF76F92D9D194200D179E1 /* Info.plist */,
@@ -92,7 +87,6 @@
 				03DF76FE2D9D194200D179E1 /* Sidebar1A.swift */,
 				03DF76FF2D9D194200D179E1 /* SplashScreen.swift */,
 				03DF77072D9D196200D179E1 /* LICENSE */,
-				03DF77082D9D196200D179E1 /* LICENSE1 */,
 				03DF770B2D9D19A500D179E1 /* Account.xcstrings */,
 				03DF770D2D9D19B100D179E1 /* Assets.xcassets */,
 			);
@@ -182,14 +176,12 @@
 			files = (
 				03DF77002D9D194200D179E1 /* Info.plist in Resources */,
 				03DF770E2D9D19B100D179E1 /* Assets.xcassets in Resources */,
-				03DF77092D9D196200D179E1 /* LICENSE1 in Resources */,
 				03DF770A2D9D196200D179E1 /* LICENSE in Resources */,
 				03DF76E72D9D183E00D179E1 /* README.md in Resources */,
 				03DF76E82D9D183E00D179E1 /* README_fr.md in Resources */,
 				03DF770C2D9D19A500D179E1 /* Account.xcstrings in Resources */,
 				03DF76F52D9D18DA00D179E1 /* Menu.xcstrings in Resources */,
 				03DF76F62D9D18DA00D179E1 /* Localizable.xcstrings in Resources */,
-				03DF76F72D9D18DA00D179E1 /* Localizable.xcstrings.original in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -356,7 +348,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.91;
+				MARKETING_VERSION = 0.93;
 				PRODUCT_BUNDLE_IDENTIFIER = perso.PegaseUIData;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -385,7 +377,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.91;
+				MARKETING_VERSION = 0.93;
 				PRODUCT_BUNDLE_IDENTIFIER = perso.PegaseUIData;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;

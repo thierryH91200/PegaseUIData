@@ -10,7 +10,12 @@ PegaseUIData is a macOS application developed in **SwiftUI**, designed to **mana
 
 ## 📸 Overview
 
-![Interface](assets/screenshot.png)
+<p align="center">
+<img src="Doc/Capture2En.png" alt="Bank statement">
+<p align="center">
+<em>Bank statement</em>
+</p>
+</p>
 
 ## 🚀 Features
 

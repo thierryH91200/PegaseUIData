@@ -333,7 +333,7 @@ struct SchedulerFormView: View {
             HStack {
                 Text("Next occurence")
                     .frame(width: 100, alignment: .leading)
-                TextField("next Occurence", text: $nextOccurence)
+                TextField("Next occurence", text: $nextOccurence)
                     .textFieldStyle(.roundedBorder)
             }
             

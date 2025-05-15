@@ -123,7 +123,7 @@ struct ListTransactions200: View {
                             Text("Bank Statement").bold().frame(width: 120, alignment: .leading)
                             Text("Check Number").bold().frame(width: 120, alignment: .leading)
                             Text("Status").bold().frame(width: 100, alignment: .leading)
-                            Text("Payment Mode").bold().frame(width: 120, alignment: .leading)
+                            Text("Payment method").bold().frame(width: 120, alignment: .leading)
                             Text("Amount").bold().frame(width: 100, alignment: .trailing)
                         }
                         .padding(.vertical)
