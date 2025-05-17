@@ -120,6 +120,7 @@ struct ListTransactions200: View {
                             Text("Comment").bold().frame(width: 150, alignment: .leading)
                             Text("Rubric").bold().frame(width: 100, alignment: .leading)
                             Text("Category").bold().frame(width: 100, alignment: .leading)
+                            Text("Amount").bold().frame(width: 100, alignment: .leading)
                             Text("Bank Statement").bold().frame(width: 120, alignment: .leading)
                             Text("Check Number").bold().frame(width: 120, alignment: .leading)
                             Text("Status").bold().frame(width: 100, alignment: .leading)

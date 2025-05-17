@@ -96,7 +96,6 @@ struct DGLineChartRepresentable: NSViewRepresentable {
         }
     }
 
-    
     func addLimit( on nsView: LineChartView, index: Double, x: Double) {
         
         let calendar = Calendar.current

@@ -35,7 +35,8 @@ struct TreasuryCurve: View {
                     .font(.headline)
                     .padding()
                 
-                DGLineChartRepresentable(viewModel: viewModel, entries: viewModel.dataEntries)
+                DGLineChartRepresentable(viewModel: viewModel,
+                                         entries: viewModel.dataEntries)
                     .frame(width: geometry.size.width, height: 400)
                     .padding()
                     .onAppear {

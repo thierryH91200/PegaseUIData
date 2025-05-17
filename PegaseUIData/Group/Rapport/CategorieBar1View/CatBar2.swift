@@ -70,9 +70,8 @@ struct CategorieBar1View1: View {
             .padding(.bottom, 8)
             
             DGBarChart1Representable(viewModel: viewModel,
-                                     entries: viewModel.dataEntries,
-                                     labels: viewModel.labels,
-                                     chartViewRef: $chartView)
+                                     entries: viewModel.dataEntries)
+            
                 .frame(width: 600, height: 400)
                 .padding()
 

@@ -9,7 +9,7 @@ import AppKit
 import SwiftUI
 import DGCharts
 
-struct DataGraph {
+struct DataGraph : Equatable{
     
     var section = ""
     var name = ""

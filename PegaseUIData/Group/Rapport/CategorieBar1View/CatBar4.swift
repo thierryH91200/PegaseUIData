@@ -11,25 +11,17 @@ import DGCharts
 
 struct DGBarChart1Representable: NSViewRepresentable {
     
-//    @Environment(\.modelContext) var modelContext
     @ObservedObject var viewModel: CategorieBar1ViewModel
-
-
     let entries: [BarChartDataEntry]
-    let labels: [String]
-    @Binding var chartViewRef: BarChartView?
     
-    @State var chartView = BarChartView()
+//    let labels: [String]
+//    @Binding var chartViewRef: BarChartView?
     
-    @State var resultArray = [DataGraph]()
-    @State var label  = [String]()
-
-    let formatterPrice: NumberFormatter = {
-        let _formatter = NumberFormatter()
-        _formatter.locale = Locale.current
-        _formatter.numberStyle = .currency
-        return _formatter
-    }()
+    @State var listTransactions : [EntityTransactions] = []
+    @State var firstDate: TimeInterval = 0.0
+    @State var lastDate: TimeInterval = 0.0
+    
+    let hourSeconds = 3600.0 * 24.0 // one day
 
     func makeNSView(context: Context) -> BarChartView {
 
@@ -39,34 +31,25 @@ struct DGBarChart1Representable: NSViewRepresentable {
     }
 
     func updateNSView(_ nsView: BarChartView, context: Context) {
-        // Crée un nouveau DataSet avec les nouvelles entrées
-        let dataSet = BarChartDataSet(entries: entries, label: "Categorie Bar1")
-        dataSet.colors = ChartColorTemplates.colorful()
-        dataSet.drawValuesEnabled = true
- 
-        let data = BarChartData(dataSet: dataSet)
-//        data.setValueFormatter(DefaultValueFormatter(formatter: formatterPrice))
-        data.setValueFont(NSFont(name: "HelveticaNeue-Light", size: CGFloat(11.0))!)
-        data.setValueTextColor(NSColor.black)
-        
-        let formatter = CurrencyValueFormatter1()
-        data.setValueFormatter(formatter)
-        data.setValueFont(.systemFont(ofSize: 10))
-        data.setValueTextColor(.black)
- 
-        nsView.data = data
-        nsView.xAxis.valueFormatter = IndexAxisValueFormatter(values: labels)
-        nsView.data?.notifyDataChanged()
-        nsView.notifyDataSetChanged()
+        DispatchQueue.main.async {
+            self.updateAccount()
+            let oldGraph = self.viewModel.resultArray
+            self.updateChartData(for: nsView)
+            if oldGraph != self.viewModel.resultArray {
+                self.setData(on: nsView, with: self.viewModel.resultArray)
+            }
+        }
     }
     
-    func initChart(on nsView: BarChartView) {
+    func setData(on nsView: BarChartView, with data: [DataGraph]) {
+
+    }
+    
+    func initChart(on chartView: BarChartView) {
         
         chartView.xAxis.valueFormatter = CurrencyValueFormatter()
         
         // MARK: General
-//        chartView.delegate = self
-        
         chartView.drawBarShadowEnabled      = false
 
         chartView.drawValueAboveBarEnabled  = true
@@ -82,7 +65,7 @@ struct DGBarChart1Representable: NSViewRepresentable {
         chartView.noDataText = String(localized:"No chart data available.")
         
         // MARK: Axis
-        setUpAxis()
+        setUpAxis(chartView: chartView)
         
         // MARK: Legend
         initializeLegend(chartView.legend)
@@ -109,7 +92,7 @@ struct DGBarChart1Representable: NSViewRepresentable {
         legend.xEntrySpace                   = 4.0
     }
     
-    func setUpAxis() {
+    func setUpAxis(chartView: BarChartView) {
         // MARK: xAxis
         let xAxis                      = chartView.xAxis
         xAxis.labelPosition            = .bottom
@@ -135,4 +118,82 @@ struct DGBarChart1Representable: NSViewRepresentable {
         chartView.rightAxis.enabled    = false
     }
     
+    func updateAccount () {
+        // Charger toutes les transactions d'abord
+        let allTransactions = ListTransactionsManager.shared.getAllDatas()
+
+        guard !allTransactions.isEmpty else {
+            DispatchQueue.main.async {
+                self.listTransactions = []
+            }
+            return
+        }
+
+        let firstOpDate = Calendar.current.startOfDay(for: allTransactions.first!.dateOperation)
+        let lastOpDate = Calendar.current.startOfDay(for: allTransactions.last!.dateOperation)
+
+        self.firstDate = firstOpDate.timeIntervalSince1970
+        self.lastDate = lastOpDate.timeIntervalSince1970
+
+        // Appliquer la plage sélectionnée
+        let startDate = Calendar.current.date(byAdding: .day, value: Int(self.viewModel.selectedStart), to: firstOpDate)!
+        let endDate = Calendar.current.date(byAdding: .day, value: Int(self.viewModel.selectedEnd), to: firstOpDate)!
+
+        let filteredTransactions = allTransactions.filter {
+            $0.dateOperation >= startDate && $0.dateOperation <= endDate
+        }
+
+        DispatchQueue.main.async {
+            self.listTransactions = filteredTransactions
+        }
+    }
+    
+    private func updateChartData( for nsView: BarChartView)
+    {
+//           
+//            let context = mainObjectContext
+//            
+//            (startDate, endDate) = (sliderViewController?.calcStartEndDate())!
+//            
+//            let p1 = NSPredicate(format: "account == %@", currentAccount!)
+//            let p2 = NSPredicate(format: "dateOperation >= %@", startDate as CVarArg )
+//            let p3 = NSPredicate(format: "dateOperation <= %@", endDate as CVarArg )
+//            let predicate = NSCompoundPredicate(type: .and, subpredicates: [p1, p2, p3])
+//            
+//            let fetchRequest = NSFetchRequest<EntityTransactions>(entityName: "EntityTransactions")
+//            fetchRequest.predicate = predicate
+//            fetchRequest.sortDescriptors = [NSSortDescriptor(key: "dateOperation", ascending: true)]
+//            
+//            do {
+//                listTransactions = try context!.fetch(fetchRequest)
+//            } catch {
+//                print("Error fetching data from CoreData")
+//            }
+//            
+//            // grouped and sum
+//            var dataArray = [DataGraph]()
+//            
+//            var name = ""
+//            var value = 0.0
+//            var color = NSColor.blue
+//            
+//            for listTransaction in listTransactions {
+//                let sousOperations = listTransaction.sousOperations?.allObjects  as! [EntitySousOperations]
+//                for sousOperation in sousOperations {
+//                    name  = (sousOperation.category?.rubric!.name)!
+//                    value = sousOperation.amount
+//                    color = sousOperation.category?.rubric?.color as! NSColor
+//                }
+//                dataArray.append( DataGraph(name: name, value: value, color: color))
+//            }
+//            
+//            resultArray.removeAll()
+//            let allKeys = Set<String>(dataArray.map { $0.name })
+//            for key in allKeys {
+//                let data = dataArray.filter({ $0.name == key })
+//                let sum = data.map({ $0.value }).reduce(0, +)
+//                resultArray.append(DataGraph(name: key, value: sum, color: data[0].color))
+//            }
+//            resultArray = resultArray.sorted(by: { $0.name < $1.name })
+    }
 }
