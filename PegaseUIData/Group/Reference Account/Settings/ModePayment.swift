@@ -279,7 +279,7 @@ struct ModePaiementFormView: View {
             newItem = existing
         } else {
             let color = NSColor.fromSwiftUIColor(selectedColor)
-            newItem = EntityPaymentMode(name: name, color: color, account: account!)
+            newItem = EntityPaymentMode(name: name, color: color)
             modelContext.insert(newItem)
             modePaiementViewManager.modePayments?.append(newItem) // ✅ Ajouter à la liste
         }

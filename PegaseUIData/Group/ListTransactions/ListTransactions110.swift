@@ -15,6 +15,7 @@ struct OperationRow: View {
     @EnvironmentObject private var colorManager          : ColorManager
     
     @Binding var selectedTransactions: Set<UUID>
+    @State private var info: String = ""
     
     private var transactions: [EntityTransactions] { dataManager.listTransactions }
     // Récupère le compte courant de manière sécurisée.
@@ -37,38 +38,47 @@ struct OperationRow: View {
     }
     
     var body: some View {
-
-        ForEach(groupTransactionsByYear(transactions: transactions), id: \.year) { yearGroup in
-            let yearKey = "year_\(yearGroup.year)" // Clé unique pour chaque année
-            
-            DisclosureGroup(
-                isExpanded: isExpanded(for: yearKey),
-                content: {
-                    ForEach(yearGroup.monthGroups, id: \.month) { monthGroup in
-                        let monthKey = "month_\(yearGroup.year)_\(monthGroup.month)" // Clé unique pour chaque mois
-                        
-                        DisclosureGroup(
-                            isExpanded: isExpanded(for: monthKey),
-                            content: {
-                                VStack {
-                                    List(monthGroup.transactions, selection: $selectedTransactions) { transaction in
-                                        TransactionLigne(transaction: transaction, selectedTransactions: $selectedTransactions)
-                                            .foregroundColor(.black)
-                                            .frame(minHeight: 30)
+        VStack(spacing: 0) {
+            ScrollView {
+                ForEach(groupTransactionsByYear(transactions: transactions), id: \.year) { yearGroup in
+                    let yearKey = "year_\(yearGroup.year)"
+                    DisclosureGroup(
+                        isExpanded: isExpanded(for: yearKey),
+                        content: {
+                            ForEach(yearGroup.monthGroups, id: \.month) { monthGroup in
+                                let monthKey = "month_\(yearGroup.year)_\(monthGroup.month)"
+                                DisclosureGroup(
+                                    isExpanded: isExpanded(for: monthKey),
+                                    content: {
+                                        VStack {
+                                            List(monthGroup.transactions,
+                                                 selection: $selectedTransactions) { transaction in
+                                                TransactionLigne(transaction: transaction,
+                                                                 selectedTransactions: $selectedTransactions)
+                                                    .foregroundColor(.black)
+                                                    .frame(minHeight: 30)
+                                            }
+                                            .frame(minHeight: 800)
+                                        }
+                                    },
+                                    label: {
+                                        Label("Month: \(monthGroup.month)", systemImage: "calendar")
+                                            .font(.subheadline.bold())
+                                            .foregroundColor(.primary)
                                     }
-                                    .frame(minHeight: 800)
-                                    Spacer()
-                                }
-                            },
-                            label: { Text("Month: \(monthGroup.month)") }
-                        )
-                    }
-                },
-                label: { Text("Year: \(yearGroup.year)") }
-            )
-        }
-        .onAppear(perform: loadDisclosureState)
-        .onAppear() {
+                                )
+                            }
+                        },
+                        label: {
+                            Label("Year: \(yearGroup.year)", systemImage: "clock.arrow.circlepath")
+                                .font(.headline)
+                                .foregroundColor(.accentColor)
+                        }
+                    )
+                }
+            }
+            .onAppear(perform: loadDisclosureState)
+            .onAppear {
                 name = compteCurrent?.name ?? "NID"
                 let key = "disclosureStates" + name
                 if let savedData = UserDefaults.standard.data(forKey: key),
@@ -76,89 +86,9 @@ struct OperationRow: View {
                     disclosureStates = loadedStates
                 }
             }
-        
-        
-        Spacer()
-        Divider()
-        VStack {
-            Text(String(localized: "Selections : \(selectedTransactions.count) transaction(s)"))
-                .padding()
-                .foregroundColor(.gray)
-            Spacer()
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(NSColor.windowBackgroundColor))
-        .frame(maxHeight: .infinity, alignment: .bottom) // Permet d'étendre la liste sur toute la hauteur disponible
-        .frame(maxHeight: .infinity) // Assure l'extension verticale de la vue
     }
-    
-//    func selectionDidChange(_ notification: Notification) {
-//        
-//        let outlineView = notification.object as? NSOutlineView
-//        guard  outlineView == outlineListView else { return }
-//        
-//        let selectedRow = (outlineView?.selectedRowIndexes)!
-//        let selectRow = (outlineView?.selectedRow)!
-//        
-//        guard selectRow != -1 else {
-//            resetChange()
-//            return }
-//        
-//        let rowView = outlineView?.rowView(atRow: selectRow, makeIfNecessary: false)
-//        rowView?.isEmphasized = true
-//        
-//        if selectedRow.isEmpty == false {
-//            
-//            self.removeButton.isHidden = false
-//            var transactionsSelected = [EntityTransactions]()
-//            
-//            var amount = 0.0
-//            var solde = 0.0
-//            var expense = 0.0
-//            var income = 0.0
-//            var select = ""
-//            
-//            let formatter = NumberFormatter()
-//            formatter.locale = Locale.current
-//            formatter.numberStyle = .currency
-//            
-//            for row in selectedRow {
-//                let item = outlineView?.item(atRow: row) as? Transaction
-//                guard item != nil else { return }
-//                
-//                transactionsSelected.append((item?.entityTransaction)!)
-//                
-//                amount = (item?.entityTransaction.amount)!
-//                solde += amount
-//                if amount < 0 {
-//                    expense += amount
-//                } else {
-//                    income += amount
-//                }
-//            }
-//            
-//            // Info
-//            let amountStr = formatter.string(from: solde as NSNumber)!
-//            let strExpense = formatter.string(from: expense as NSNumber)!
-//            let strIncome = formatter.string(from: income as NSNumber)!
-//            let count = selectedRow.count
-//            
-//            if count < 2 {
-//                select =   Localizations.ListTransaction.transaction.selectionnee.singular
-//            } else {
-//                select =   Localizations.ListTransaction.transaction.selectionnee.plural(count)
-//            }
-//            let info = select + Localizations.ListTransaction.info( strExpense, strIncome, amountStr)
-//            
-//            let attributedText = NSAttributedString(string: info, attributes: attribute)
-//            self.labelInfo.attributedStringValue = attributedText
-//            
-//            self.delegate?.editionOperations(transactionsSelected)
-//            self.becomeFirstResponder()
-//        }
-//    }
 
-    
 //    private func afficherDetails(_ transaction: EntityTransactions) {
 //        print("Afficher les détails de la transaction : \(transaction)")
 //
@@ -216,6 +146,20 @@ struct OperationRow: View {
     }
 }
 
+enum ColumnWidths {
+    static let dateOperation: CGFloat = 120
+    static let datePointage: CGFloat = 120
+    static let libelle: CGFloat = 150
+    static let rubrique: CGFloat = 100
+    static let categorie: CGFloat = 100
+    static let sousMontant: CGFloat = 100
+    static let releve: CGFloat = 120
+    static let cheque: CGFloat = 120
+    static let statut: CGFloat = 100
+    static let modePaiement: CGFloat = 120
+    static let montant: CGFloat = 100
+}
+
 struct TransactionLigne: View {
     
     @Environment(\.modelContext) private var modelContext
@@ -239,24 +183,46 @@ struct TransactionLigne: View {
         var backgroundColor = isSelected ? Color.blue.opacity(0.5) : Color.clear
         let textColor = isSelected ? Color.white : colorManager.colorForTransaction(transaction)
 
-        HStack {
-            Text(transaction.dateOperationString).frame(width: 120, alignment: .leading)
-            Text(transaction.datePointageString).frame(width: 120, alignment: .leading)
-            
-            Text(transaction.sousOperations.first?.libelle ?? "—").frame(width: 150, alignment: .leading)
-            Text(transaction.sousOperations.first?.category?.rubric?.name ?? "—").frame(width: 100, alignment: .leading)
-            Text(transaction.sousOperations.first?.category?.name ?? "—").frame(width: 100, alignment: .leading)
-            Text(transaction.sousOperations.first?.amountString ?? "—").frame(width: 150, alignment: .leading)
-
-            Text(transaction.bankStatementString).frame(width: 120, alignment: .leading)
-            Text(transaction.checkNumber).frame(width: 120, alignment: .leading)
-            Text(transaction.statusString).frame(width: 100, alignment: .leading)
-            Text(transaction.paymentModeString).frame(width: 120, alignment: .leading)
-            Text(transaction.amountString).frame(width: 100, alignment: .trailing)
+        ScrollView(.horizontal) {
+            HStack(spacing: 0) {
+                Group {
+                    Text(transaction.dateOperationString).frame(width: ColumnWidths.dateOperation, alignment: .leading)
+                    verticalDivider()
+                    Text(transaction.datePointageString).frame(width: ColumnWidths.datePointage, alignment: .leading)
+                    verticalDivider()
+                    Text(transaction.sousOperations.first?.libelle ?? "—").frame(width: ColumnWidths.libelle, alignment: .leading)
+                    verticalDivider()
+                    Text(transaction.sousOperations.first?.category?.rubric?.name ?? "—").frame(width: ColumnWidths.rubrique, alignment: .leading)
+                    verticalDivider()
+                    Text(transaction.sousOperations.first?.category?.name ?? "—").frame(width: ColumnWidths.categorie, alignment: .leading)
+                    verticalDivider()
+                    Text(transaction.sousOperations.first?.amountString ?? "—").frame(width: ColumnWidths.sousMontant, alignment: .leading)
+                    verticalDivider()
+                    Text(transaction.bankStatementString).frame(width: ColumnWidths.releve, alignment: .leading)
+                    verticalDivider()
+                    Text(transaction.checkNumber).frame(width: ColumnWidths.cheque, alignment: .leading)
+                    verticalDivider()
+                }
+                Group {
+                    Text(transaction.statusString).frame(width: ColumnWidths.statut, alignment: .leading)
+                    verticalDivider()
+                    Text(transaction.paymentModeString).frame(width: ColumnWidths.modePaiement, alignment: .leading)
+                    verticalDivider()
+                    Text(transaction.amountString).frame(width: ColumnWidths.montant, alignment: .trailing)
+                }
+            }
         }
-        .padding(.vertical, 6) // Ajout d'un peu d'espace
-        .background(backgroundColor)
-        .foregroundColor( textColor )
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .listRowInsets(EdgeInsets()) // ⬅️ Supprime la marge à gauche des lignes
+        .padding(.vertical, 6)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(isSelected ? Color.accentColor.opacity(0.2) : Color(NSColor.controlBackgroundColor))
+        )
+        .shadow(color: Color.black.opacity(0.05), radius: 1, x: 0, y: 1)
+        .padding(.horizontal, 4)
+        .padding(.vertical, 2)
+        .foregroundColor(textColor)
         .cornerRadius(8) // Arrondi les coins du fond sélectionné
         .contentShape(Rectangle()) // Permet de cliquer sur toute la ligne
         .onTapGesture {
@@ -269,10 +235,9 @@ struct TransactionLigne: View {
                 }
             }
         }
-
         .gesture(
             DragGesture(minimumDistance: 0)
-                .updating($isCmdPressed) { _, state, _ in state = NSEvent.modifierFlags.contains(.command) }
+                .updating($isCmdPressed)   { _, state, _ in state = NSEvent.modifierFlags.contains(.command) }
                 .updating($isShiftPressed) { _, state, _ in state = NSEvent.modifierFlags.contains(.shift) }
         )
         .contextMenu {
@@ -283,25 +248,22 @@ struct TransactionLigne: View {
             }) {
                 Label("Show details", systemImage: "info.circle")
             }
-            
+            Menu {
+                Button("Checked") { mettreAJourStatusPourSelection(nouveauStatus: "Checked") }
+                Button("Pending") { mettreAJourStatusPourSelection(nouveauStatus: "Pending") }
+                Button("Rejected") { mettreAJourStatusPourSelection(nouveauStatus: "Rejected") }
+            } label: {
+                Label("Change status", systemImage: "square.and.pencil")
+            }
+            .disabled(selectedTransactions.isEmpty)
             Button(role: .destructive, action: {
                 supprimerTransactionsSelectionnees()
             }) {
                 Label("Remove", systemImage: "trash")
             }
-            .disabled(selectedTransactions.isEmpty) // Désactive le bouton si rien n'est sélectionné
+            .disabled(selectedTransactions.isEmpty)
             .padding()
         }
-//        .sheet(isPresented: $showTransactionInfo) {
-//            if let index = dataManager.listTransactions.firstIndex(where: { $0.id == transaction.id }) {
-//                TransactionDetailView(currentSectionIndex: index, selectedTransaction: $selectedTransactions)
-//                    .frame(minWidth: 400, minHeight: 300)
-//            } else {
-//                Text("Erreur : transaction non trouvée dans la liste.")
-//                    .foregroundColor(.red)
-//                    .padding()
-//            }
-//        }
         .popover(isPresented: $showTransactionInfo, arrowEdge: .top) {
             if let index = dataManager.listTransactions.firstIndex(where: { $0.id == transaction.id }) {
                 TransactionDetailView(currentSectionIndex: index, selectedTransaction: $selectedTransactions)
@@ -314,6 +276,14 @@ struct TransactionLigne: View {
         }
     }
     
+    @ViewBuilder
+    func verticalDivider() -> some View {
+        Rectangle()
+            .fill(Color.gray.opacity(0.4))
+            .frame(width: 2, height: 20)
+            .padding(.horizontal, 2)
+    }
+
     private func transaction(for id: UUID) -> EntityTransactions? {
         _ = selectedTransactions.compactMap { id in
             transaction(for: id)
@@ -339,8 +309,7 @@ struct TransactionLigne: View {
         if let firstSelectedId = selectedTransactions.first {
             transactionManager.selectedTransaction = dataManager.listTransactions.first { $0.id == firstSelectedId }
         }
-        print("Transaction sélectionnée : \(transactionManager.selectedTransaction?.id.uuidString ?? "Aucune")")
-
+        transactionManager.selectedTransactions = dataManager.listTransactions.filter { selectedTransactions.contains($0.id) }
         transactionManager.isCreationMode = false
     }
     
@@ -357,6 +326,16 @@ struct TransactionLigne: View {
             // Met à jour la liste des transactions après suppression
             dataManager.listTransactions.removeAll { selectedTransactions.contains($0.id) }
             selectedTransactions.removeAll()
+        }
+    }
+
+    private func mettreAJourStatusPourSelection(nouveauStatus: String) {
+        withAnimation {
+            let selected = dataManager.listTransactions.filter { selectedTransactions.contains($0.id) }
+//            let status = EntityStatus
+            for transaction in selected {
+//                transaction.status = nouveauStatus
+            }
         }
     }
 }

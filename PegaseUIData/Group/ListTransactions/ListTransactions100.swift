@@ -13,8 +13,8 @@ struct ListTransactionsView100: View {
     
     @Environment(\.modelContext) private var modelContext
     
-    @Binding var isVisible: Bool
     @State private var selectedTransactions: Set<UUID> = []
+    @Binding var isVisible: Bool
 
     var body: some View {
         VStack {
@@ -64,7 +64,6 @@ struct ListTransactionsView100: View {
             ("Virement reçu", 350.00, 2),
             ("Abonnement streaming", -12.99, 1)
         ]
-
     }
 }
 
@@ -76,12 +75,14 @@ struct ListTransactions200: View {
     @EnvironmentObject private var dataManager           : ListDataManager
     @EnvironmentObject private var colorManager          : ColorManager
     
+    private var transactions: [EntityTransactions] { dataManager.listTransactions }
+
     @Binding var isVisible: Bool
-    
+    @Binding var selectedTransactions: Set<UUID>
+    @State private var info: String = ""
+
     @State private var refresh = false
     @State private var currentSectionIndex: Int = 0
-
-    @Binding var selectedTransactions: Set<UUID>
     
     @State var soldeBanque = 0.0
     @State var soldeReel = 0.0
@@ -98,11 +99,14 @@ struct ListTransactions200: View {
                 .frame(maxWidth: .infinity, maxHeight: 100)
             
             VStack {
-                Text("\(compteCurrent?.name ?? "Aucun compte courant" )")
-
-                Text(String(localized: "Selections : \(selectedTransactions.count) transaction(s)"))
-                    .padding()
-                    .foregroundColor(.gray)
+                Text("\(compteCurrent?.name ?? String(localized:"No checking account"))")
+                Image(systemName: "info.circle")
+                    .foregroundColor(.accentColor)
+                Text(info)
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color(NSColor.windowBackgroundColor))
@@ -113,23 +117,43 @@ struct ListTransactions200: View {
                     let width = max(800, geometry.size.width > 0 ? geometry.size.width : 800) // Sécurisation
 
                     List {
-                        // Titres des colonnes
-                        HStack {
-                            Text("Date operation").bold().frame(width: 120, alignment: .leading)
-                            Text("Date of pointing").bold().frame(width: 120, alignment: .leading)
-                            Text("Comment").bold().frame(width: 150, alignment: .leading)
-                            Text("Rubric").bold().frame(width: 100, alignment: .leading)
-                            Text("Category").bold().frame(width: 100, alignment: .leading)
-                            Text("Amount").bold().frame(width: 100, alignment: .leading)
-                            Text("Bank Statement").bold().frame(width: 120, alignment: .leading)
-                            Text("Check Number").bold().frame(width: 120, alignment: .leading)
-                            Text("Status").bold().frame(width: 100, alignment: .leading)
-                            Text("Payment method").bold().frame(width: 120, alignment: .leading)
-                            Text("Amount").bold().frame(width: 100, alignment: .trailing)
+                        Section(header: EmptyView()) {
+                            
+                            // Titres des colonnes
+                            HStack(spacing: 0) {
+                                Group {
+                                    Text("Date operation").bold().frame(width: ColumnWidths.dateOperation, alignment: .leading)
+                                    verticalDivider()
+                                    Text("Date of pointing").bold().frame(width: ColumnWidths.datePointage, alignment: .leading)
+                                    verticalDivider()
+                                    Text("Comment").bold().frame(width: ColumnWidths.libelle, alignment: .leading)
+                                    verticalDivider()
+                                    Text("Rubric").bold().frame(width: ColumnWidths.rubrique, alignment: .leading)
+                                    verticalDivider()
+                                    Text("Category").bold().frame(width: ColumnWidths.categorie, alignment: .leading)
+                                    verticalDivider()
+                                    Text("Amount").bold().frame(width: ColumnWidths.sousMontant, alignment: .leading)
+                                    verticalDivider()
+                                    Text("Bank Statement").bold().frame(width: ColumnWidths.releve, alignment: .leading)
+                                    verticalDivider()
+                                    Text("Check Number").bold().frame(width: ColumnWidths.cheque, alignment: .leading)
+                                    verticalDivider()
+                                }
+                                Group {
+                                    Text("Status").bold().frame(width: ColumnWidths.statut, alignment: .leading)
+                                    verticalDivider()
+                                    Text("Payment method").bold().frame(width: ColumnWidths.modePaiement, alignment: .leading)
+                                    verticalDivider()
+                                    Text("Amount").bold().frame(width: ColumnWidths.montant, alignment: .trailing)
+                                }
+                            }
                         }
-                        .padding(.vertical)
+                        .listRowInsets(EdgeInsets()) // ⬅️ Supprime les marges par défaut
+                        .padding(.vertical, 6)
+                        .background(Color.gray.opacity(0.1))
                         OperationRow(selectedTransactions: $selectedTransactions)
                     }
+                    .listStyle(.plain) // ⬅️ Important pour éviter le style inset
                     .frame(minWidth: 800, maxWidth: 1200) // Prévenir les valeurs invalides
                     .id(refresh)
                 }
@@ -146,9 +170,24 @@ struct ListTransactions200: View {
                 refresh.toggle()
             }
         }
+        
+        .onChange(of: selectedTransactions) { _, _ in
+            selectionDidChange()
+        }
+
         .onAppear() {
             balanceCalculation()
+            selectionDidChange()
+
         }
+    }
+    
+    @ViewBuilder
+    func verticalDivider() -> some View {
+        Rectangle()
+            .fill(Color.gray.opacity(0.4))
+            .frame(width: 2, height: 20)
+            .padding(.horizontal, 2)
     }
     
     @MainActor
@@ -168,6 +207,49 @@ struct ListTransactions200: View {
         loadTransactions()
         balanceCalculation()
     }
+    
+    func selectionDidChange() {
+
+        let selectedRow = selectedTransactions
+        if selectedRow.isEmpty == false {
+
+            var transactionsSelected = [EntityTransactions]()
+
+            var solde = 0.0
+            var expense = 0.0
+            var income = 0.0
+            
+            let formatter = NumberFormatter()
+            formatter.locale = Locale.current
+            formatter.numberStyle = .currency
+
+            // Filtrer les transactions correspondantes
+            let selectedEntities = transactions.filter { selectedRow.contains($0.id) }
+
+            for transaction in selectedEntities {
+                transactionsSelected.append(transaction)
+                let amount = transaction.amount ?? 0.0
+
+                solde += amount
+                if amount < 0 {
+                    expense += amount
+                } else {
+                    income += amount
+                }
+            }
+
+            // Info
+            let amountStr = formatter.string(from: solde as NSNumber)!
+            let strExpense = formatter.string(from: expense as NSNumber)!
+            let strIncome = formatter.string(from: income as NSNumber)!
+            let count = selectedEntities.count
+
+            self.info = "Selected \(count) transaction(s). Expenses: \(strExpense), Incomes: \(strIncome), Total: \(amountStr)"
+//            let attributedText = NSAttributedString(string: info, attributes: attribute)
+//            self.labelInfo.attributedStringValue = attributedText
+        }
+    }
+
     
     private func balanceCalculation() {
         // Récupère les données de l'init

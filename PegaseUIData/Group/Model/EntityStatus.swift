@@ -20,11 +20,18 @@ import SwiftUI
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
 
-    public init(account: EntityAccount, name: String, type: Int, color: NSColor ) {
+    public init(name: String, type: Int, color: NSColor ) {
         self.name = name
         self.type = type
         self.color = color
-        self.account = account
+        self.account = CurrentAccountManager.shared.getAccount()!
+    }
+    init() {
+        name = "test"
+        self.color = .black
+
+        self.account = CurrentAccountManager.shared.getAccount()!
+
     }
 }
 
@@ -66,7 +73,7 @@ final class StatusManager: StatusManaging {
             throw EnumError.accountNotFound
         }
                 
-        let newMode = EntityStatus(account: account, name: name, type: type, color: color)
+        let newMode = EntityStatus(name: name, type: type, color: color)
         validContext.insert(newMode)
         try save()
         return newMode

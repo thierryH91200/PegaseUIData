@@ -65,7 +65,12 @@ class ColorManager: ObservableObject {
 
 class TransactionSelectionManager: ObservableObject , Identifiable {
     @Published var selectedTransaction: EntityTransactions?
+    @Published var selectedTransactions: [EntityTransactions] = []
     @Published var isCreationMode: Bool = true
+    
+    var isMultiSelection: Bool {
+        selectedTransactions.count > 1
+    }
 }
 
 struct ContentView100: View {

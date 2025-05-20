@@ -20,7 +20,6 @@ struct OperationDialog: View {
         VStack {
             OperationDialogView()
                 .environmentObject(formState)
-
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .layoutPriority(1)
                 .onChange(of: transactionManager.selectedTransaction) {old, new in
@@ -29,5 +28,8 @@ struct OperationDialog: View {
         .padding()
     }
 }
+
+
+//let selectedEntities = transactions.filter { selectedRow.contains($0.id) }
 
 

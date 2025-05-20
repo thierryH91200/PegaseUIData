@@ -19,10 +19,10 @@ import SwiftData
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
     
-    init(name: String, color: NSColor, account: EntityAccount ) {
+    init(name: String = "Test", color: NSColor = .black ) {
         self.name = name
         self.color = color
-        self.account = account
+        self.account = CurrentAccountManager.shared.getAccount()!
     }
 
     // Implémentez `Hashable`
@@ -84,7 +84,7 @@ final class PaymentModeManager {
             throw EnumError.accountNotFound
         }
                 
-        let newMode = EntityPaymentMode(name: name, color: color, account: account)
+        let newMode = EntityPaymentMode(name: name, color: color)
         validContext.insert(newMode)
         try save()
         return newMode

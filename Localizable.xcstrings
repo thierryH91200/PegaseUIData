@@ -53,6 +53,9 @@
         }
       }
     },
+    "—" : {
+
+    },
     "(no transfer)" : {
       "localizations" : {
         "de" : {
@@ -2632,6 +2635,9 @@
         }
       }
     },
+    "Change status" : {
+
+    },
     "Check" : {
       "localizations" : {
         "de" : {
@@ -2741,6 +2747,9 @@
           }
         }
       }
+    },
+    "Checked" : {
+
     },
     "Choose a category within the selected rubric" : {
       "localizations" : {
@@ -3328,7 +3337,6 @@
       }
     },
     "Content" : {
-      "comment" : "Contenu",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
@@ -4051,6 +4059,12 @@
           }
         }
       }
+    },
+    "Date d'opération" : {
+
+    },
+    "Date de pointage" : {
+
     },
     "Date of pointing" : {
       "localizations" : {
@@ -8166,6 +8180,9 @@
         }
       }
     },
+    "Mode de paiement" : {
+
+    },
     "ModePaiement Pie" : {
       "localizations" : {
         "en-GB" : {
@@ -8181,6 +8198,12 @@
           }
         }
       }
+    },
+    "Modification de %lld transactions" : {
+
+    },
+    "Modification multiple" : {
+
     },
     "Month: %@" : {
       "localizations" : {
@@ -8922,6 +8945,22 @@
         }
       }
     },
+    "No checking account" : {
+      "localizations" : {
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No checking account"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas de compte courant"
+          }
+        }
+      }
+    },
     "No label" : {
       "localizations" : {
         "de" : {
@@ -9199,7 +9238,7 @@
         "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "NotesView"
+            "value" : "Number"
           }
         },
         "es" : {
@@ -9708,6 +9747,9 @@
         }
       }
     },
+    "Pending" : {
+
+    },
     "Phone" : {
       "localizations" : {
         "de" : {
@@ -9999,6 +10041,9 @@
           }
         }
       }
+    },
+    "Rejected" : {
+
     },
     "Remove" : {
       "localizations" : {
@@ -10533,6 +10578,7 @@
       }
     },
     "Selections : %lld transaction(s)" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "variations" : {
@@ -11037,6 +11083,9 @@
           }
         }
       }
+    },
+    "Statut" : {
+
     },
     "Surname" : {
       "localizations" : {
