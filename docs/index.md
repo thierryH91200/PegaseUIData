@@ -1,12 +1,11 @@
-
 ---
 title: PegaseUIData
-lang: en
 layout: default
 ---
 
-[🇫🇷 Version française](index.fr.md)
+# Welcome to PegaseUIData
 
-# PegaseUIData
+🌍 Please select a language:
 
-PegaseUIData is a free and open-source personal finance manager...
+- [🇫🇷 Version française](index.fr.md)
+- [🇬🇧 English version](index.en.md)

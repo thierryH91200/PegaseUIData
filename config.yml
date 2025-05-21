@@ -4,10 +4,12 @@ remote_theme: pages-themes/cayman@v0.2.0
 plugins:
   - jekyll-remote-theme
 
-# Navigation links
-# Note: These links will appear as top navigation if supported by the theme.
+# Dossier source
+source: docs
+
+# Navigation
 navigation:
   - title: Français
-    url: index.fr.md
+    url: /index.fr.md
   - title: English
-    url: index.en.md
+    url: /index.en.md
