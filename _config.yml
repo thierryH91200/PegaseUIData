@@ -1,15 +1,11 @@
 title: PegaseUIData
-description: Gestion financière personnelle gratuite pour macOS
-remote_theme: pages-themes/cayman@v0.2.0
+remote_theme: just-the-docs/just-the-docs
 plugins:
   - jekyll-remote-theme
 
-# Dossier source
 source: docs
 
-# Navigation
-navigation:
-  - title: Français
-    url: /index.fr.md
-  - title: English
-    url: /index.en.md
+aux_links:
+  GitHub: https://github.com/thierryH91200/PegaseUIData
+
+nav_sort: case_sensitive

@@ -1,11 +1,14 @@
 ---
-title: PegaseUIData
-layout: default
+layout: home
+title: PegaseUIData Documentation
+nav_order: 1
 ---
 
-# Welcome to PegaseUIData
+# Welcome to PegaseUIData Documentation
 
-🌍 Please select a language:
+> 📌 PegaseUIData is a free and open-source personal finance manager for macOS, built with SwiftUI.
 
-- [🇫🇷 Version française](index.fr.md)
-- [🇬🇧 English version](index.en.md)
+## 🌍 Languages
+
+- [🇬🇧 English Documentation](overview.md)
+- [🇫🇷 Documentation française](overview-fr.md)

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		03CE48922DDDBE90002BE441 /* _config.yml in Resources */ = {isa = PBXBuildFile; fileRef = 03CE48912DDDBE88002BE441 /* _config.yml */; };
 		03DF76E72D9D183E00D179E1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 03DF76E52D9D183E00D179E1 /* README.md */; };
 		03DF76E82D9D183E00D179E1 /* README_fr.md in Resources */ = {isa = PBXBuildFile; fileRef = 03DF76E62D9D183E00D179E1 /* README_fr.md */; };
 		03DF76F52D9D18DA00D179E1 /* Menu.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03DF76F42D9D18D900D179E1 /* Menu.xcstrings */; };
@@ -24,10 +23,10 @@
 		03DF770E2D9D19B100D179E1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03DF770D2D9D19B100D179E1 /* Assets.xcassets */; };
 		03DF77A02D9D1D1500D179E1 /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = 03DF779F2D9D1D1500D179E1 /* DGCharts */; };
 		03DF78972D9D30FE00D179E1 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = 03DF78962D9D30FE00D179E1 /* LaunchAtLogin */; };
+		03F4FC602DDE4452005C2F14 /* _config.yml in Resources */ = {isa = PBXBuildFile; fileRef = 03F4FC5F2DDE4452005C2F14 /* _config.yml */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		03CE48912DDDBE88002BE441 /* _config.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = _config.yml; sourceTree = "<group>"; };
 		03DF764F2D9D15F300D179E1 /* PegaseUIData.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PegaseUIData.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		03DF76E52D9D183E00D179E1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		03DF76E62D9D183E00D179E1 /* README_fr.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README_fr.md; sourceTree = "<group>"; };
@@ -43,6 +42,7 @@
 		03DF77072D9D196200D179E1 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		03DF770B2D9D19A500D179E1 /* Account.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Account.xcstrings; sourceTree = "<group>"; };
 		03DF770D2D9D19B100D179E1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		03F4FC5F2DDE4452005C2F14 /* _config.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = _config.yml; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -79,7 +79,7 @@
 		03DF76462D9D15F300D179E1 = {
 			isa = PBXGroup;
 			children = (
-				03CE48912DDDBE88002BE441 /* _config.yml */,
+				03F4FC5F2DDE4452005C2F14 /* _config.yml */,
 				03CE48972DDDCAC3002BE441 /* docs */,
 				03DF76E52D9D183E00D179E1 /* README.md */,
 				03DF76E62D9D183E00D179E1 /* README_fr.md */,
@@ -186,8 +186,8 @@
 			files = (
 				03DF77002D9D194200D179E1 /* Info.plist in Resources */,
 				03DF770E2D9D19B100D179E1 /* Assets.xcassets in Resources */,
-				03CE48922DDDBE90002BE441 /* _config.yml in Resources */,
 				03DF770A2D9D196200D179E1 /* LICENSE in Resources */,
+				03F4FC602DDE4452005C2F14 /* _config.yml in Resources */,
 				03DF76E72D9D183E00D179E1 /* README.md in Resources */,
 				03DF76E82D9D183E00D179E1 /* README_fr.md in Resources */,
 				03DF770C2D9D19A500D179E1 /* Account.xcstrings in Resources */,

@@ -170,7 +170,7 @@ final class RubricManager {
     
     func defaultRubric(for account: EntityAccount) {
         guard let url = Bundle.main.url(forResource: "rubrique", withExtension: "csv") else {
-            print("Error: File not found.")
+            print("Error: File not found. ressources : rubrique.csv")
             return
         }
         importCSV(from: url, account: account)
