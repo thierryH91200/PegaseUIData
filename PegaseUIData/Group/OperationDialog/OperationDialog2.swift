@@ -416,7 +416,7 @@ struct BatchEditFormView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Multiple modification")
+            Text("Multiple modifications")
                 .font(.title3)
             
             modePaiementPicker

@@ -249,9 +249,9 @@ struct TransactionLigne: View {
                 Label("Show details", systemImage: "info.circle")
             }
             Menu {
-                Button("Checked") { mettreAJourStatusPourSelection(nouveauStatus: "Checked") }
-                Button("Pending") { mettreAJourStatusPourSelection(nouveauStatus: "Pending") }
-                Button("Rejected") { mettreAJourStatusPourSelection(nouveauStatus: "Rejected") }
+                Button("Executed") { mettreAJourStatusPourSelection(nouveauStatus: "Executed") }
+                Button("Engaged") { mettreAJourStatusPourSelection(nouveauStatus: "Engaged") }
+                Button("Planned") { mettreAJourStatusPourSelection(nouveauStatus: "Planned") }
             } label: {
                 Label("Change status", systemImage: "square.and.pencil")
             }

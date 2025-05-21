@@ -54,7 +54,7 @@
       }
     },
     "—" : {
-
+      "shouldTranslate" : false
     },
     "(no transfer)" : {
       "localizations" : {
@@ -2637,6 +2637,12 @@
     },
     "Change status" : {
       "localizations" : {
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change status"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2751,16 +2757,6 @@
           "stringUnit" : {
             "state" : "error",
             "value" : ""
-          }
-        }
-      }
-    },
-    "Checked" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Réalisé"
           }
         }
       }
@@ -3468,7 +3464,6 @@
       }
     },
     "Country" : {
-      "comment" : "Country",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -5741,6 +5736,24 @@
     "Editing %lld transactions" : {
       "localizations" : {
         "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Editing %lld transaction"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "new",
+                  "value" : "Editing %lld transactions"
+                }
+              }
+            }
+          }
+        },
+        "en-GB" : {
           "variations" : {
             "plural" : {
               "one" : {
@@ -8296,8 +8309,21 @@
         }
       }
     },
-    "Multiple modification" : {
-
+    "Multiple modifications" : {
+      "localizations" : {
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Multiple modifications"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Multiple modifications"
+          }
+        }
+      }
     },
     "N/A" : {
       "localizations" : {
@@ -9531,6 +9557,12 @@
     },
     "Operation Date" : {
       "localizations" : {
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Operation Date"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9799,16 +9831,6 @@
         }
       }
     },
-    "Pending" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "En cours"
-          }
-        }
-      }
-    },
     "Phone" : {
       "localizations" : {
         "de" : {
@@ -9915,6 +9937,12 @@
     },
     "Pointage Date" : {
       "localizations" : {
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pointage Date"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10110,9 +10138,6 @@
           }
         }
       }
-    },
-    "Rejected" : {
-
     },
     "Remove" : {
       "localizations" : {
