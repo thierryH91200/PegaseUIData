@@ -15,3 +15,5 @@ PegaseUIData est une application macOS développée avec SwiftUI permettant de g
 - Afficher des graphiques interactifs
 - Importer/exporter les données (CSV)
 - Interface multilingue
+
+
