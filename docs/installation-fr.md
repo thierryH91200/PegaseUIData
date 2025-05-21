@@ -21,3 +21,8 @@ open PegaseUIData.xcodeproj
 ```
 
 Puis, compilez et exécutez l'application avec Xcode.
+
+---
+⬅️ [Page précédente : Présentation](overview-fr.md)
+
+➡️ [Page suivante : Guide d'utilisation](usage-fr.md)

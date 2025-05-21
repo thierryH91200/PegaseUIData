@@ -12,3 +12,8 @@ nav_order: 4
 2. Créez ou importez vos comptes
 3. Ajoutez des opérations financières
 4. Explorez vos données avec les graphiques et filtres
+
+---
+⬅️ [Page précédente : Installation](installation-fr.md)
+
+➡️ [Page suivante : FAQ](faq-fr.md)

@@ -14,3 +14,6 @@ Les contributions sont les bienvenues ! Pour commencer :
 4. Poussez et ouvrez une Pull Request
 
 Pour la traduction, voir `Resources/*.lproj`
+
+---
+⬅️ [Page précédente : FAQ](faq-fr.md)

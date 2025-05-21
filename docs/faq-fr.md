@@ -17,3 +17,8 @@ Oui, l'import de fichiers CSV est pris en charge.
 
 ### Puis-je contribuer ?
 Oui ! Toute contribution ou aide à la traduction est bienvenue.
+
+---
+⬅️ [Page précédente : Guide d'utilisation](usage-fr.md)
+
+➡️ [Page suivante : Contribuer](contribute-fr.md)
