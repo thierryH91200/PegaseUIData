@@ -86,3 +86,35 @@ This project is licensed under the **MIT** License. See the [LICENSE](LICENSE) f
 
 Thank you for using **PegaseUIData**! If this project has helped you, **don't forget to leave a ⭐ on GitHub** 🚀.
 
+
+## FAQ – Frequently Asked Questions
+
+### Is PegaseUIData really free?
+
+Yes. PegaseUIData is completely free and open-source. It is released under the MIT license, meaning you can use, modify, and even redistribute your own version.
+
+### Are my data stored online?
+
+No. All data are stored **locally on your Mac**. There is no transmission of your information to any remote server.
+
+### Can I import my bank data?
+
+Yes. PegaseUIData supports importing **CSV files** (and other formats to come). Make sure your file follows the expected structure (date, amount, description, etc.).
+
+### Can I manage multiple accounts?
+
+Yes. You can create and track as many accounts as you want (checking, savings, business, etc.).
+
+### Can transactions be categorized automatically?
+
+A semi-automatic categorization is available. PegaseUIData learns to recognize frequent descriptions and suggests categories. You can also modify them manually.
+
+### Can I contribute to translation?
+
+Yes! Translation contributions are welcome. Localization files are available in the `Resources/*.lproj` directory.
+
+### Is there a Windows / Linux version?
+
+No. PegaseUIData is built with SwiftUI for macOS only. A cross-platform version is
+
+
