@@ -108,12 +108,14 @@ struct OperationDialogView: View {
         let uniqueMode = transactionManager.selectedTransactions.compactMap { $0.paymentMode }.uniqueElement
         let uniqueDate = transactionManager.selectedTransactions.map { $0.dateOperation }.uniqueElement
         let uniquePointingDate = transactionManager.selectedTransactions.map { $0.datePointage }.uniqueElement
+        let uniqueBankStatement = transactionManager.selectedTransactions.map { $0.bankStatement }.uniqueElement
 
         BatchEditFormView(
             uniqueStatus: uniqueStatus,
             uniqueMode: uniqueMode,
             uniqueDate: uniqueDate,
-            uniquePointingDate: uniquePointingDate
+            uniquePointingDate: uniquePointingDate,
+            uniqueBankStatement: uniqueBankStatement
         )
     }
     
@@ -174,7 +176,7 @@ struct OperationDialogView: View {
         formState.pointingDate           = transaction.datePointage.noon
         formState.selectedMode           = transaction.paymentMode
         formState.checkNumber            = Int(transaction.checkNumber) ?? 0
-        formState.bankStatement          = Int(transaction.bankStatement)
+        formState.bankStatementString    = String(transaction.bankStatement)
         formState.selectedStatus         = transaction.status
         formState.selectedAccount        = transaction.account
         
@@ -208,7 +210,7 @@ struct OperationDialogView: View {
                 transaction.dateOperation = formState.transactionDate.noon
                 transaction.paymentMode = formState.selectedMode
                 transaction.status = formState.selectedStatus
-                transaction.bankStatement = Double(formState.bankStatement)
+                transaction.bankStatement = Double(formState.bankStatementString) ?? 0.0
                 transaction.checkNumber = String(formState.checkNumber)
                 transaction.account = formState.selectedAccount!
             }
@@ -222,8 +224,6 @@ struct OperationDialogView: View {
         }
 
         dataManager.loadTransactions()
-        print("🔄 Transactions rechargées :", dataManager.listTransactions.count)
-
         resetListTransactions()
     }
     
@@ -257,7 +257,6 @@ struct OperationDialogView: View {
         formState.currentTransaction = transaction
     }
     
-    
     private func updateTransaction(_ account: EntityAccount) {
         
         let transaction = formState.currentTransaction
@@ -268,7 +267,7 @@ struct OperationDialogView: View {
         transaction?.dateOperation = formState.transactionDate.noon
         transaction?.paymentMode = formState.selectedMode
         transaction?.status = formState.selectedStatus
-        transaction?.bankStatement = Double(formState.bankStatement)
+        transaction?.bankStatement = Double(formState.bankStatement!)
         transaction?.checkNumber = String(formState.checkNumber)
         transaction?.account = account
         
@@ -289,7 +288,7 @@ struct OperationDialogView: View {
         formState.currentSousTransaction = nil
         formState.selectedMode = entityPreference?.paymentMode
         formState.selectedStatus = entityPreference?.status
-        formState.bankStatement = 0
+        formState.bankStatementString = "0.0"
         formState.checkNumber = 0
     }
     
@@ -299,8 +298,6 @@ struct OperationDialogView: View {
         let timeElapsed = CFAbsoluteTimeGetCurrent() - startTime
         print("Time elapsed for \(title): \(timeElapsed) s.")
     }
-
-
 }
 
 // MARK: 3. Composant d'en-tête
@@ -316,7 +313,7 @@ struct HeaderView: View {
     var body: some View {
         VStack(alignment: .leading) {
             if transactionCount > 1 {
-                Text("Modification de \(transactionCount) transactions")
+                Text("Editing \(transactionCount) transactions")
                     .font(.title2)
             } else if let title = title {
                 Text(title)
@@ -353,7 +350,7 @@ struct TransactionFormView: View {
             modes                 : $formState.paymentModes,
             pointingDate          : $formState.pointingDate,
             status                : $formState.status,
-            bankStatement         : $formState.bankStatement,
+            bankStatement         : $formState.bankStatementString,
             checkNumber           : $formState.checkNumber,
             amount                : $formState.amount,
             selectedBankStatement : $formState.selectedBankStatement,
@@ -408,24 +405,43 @@ struct BatchEditFormView: View {
     let uniqueMode: EntityPaymentMode?
     let uniqueDate: Date?
     let uniquePointingDate: Date?
+    let uniqueBankStatement: Double?
+    
+    private var integerFormatter: NumberFormatter {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 0
+        return formatter
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Modification multiple")
+            Text("Multiple modification")
                 .font(.title3)
             
             modePaiementPicker
             statutPicker
             
-            DatePicker("Date d'opération", selection: $formState.transactionDate, displayedComponents: .date)
+            DatePicker("Operation Date", selection: $formState.transactionDate, displayedComponents: .date)
                 .foregroundStyle(uniqueDate == nil ? .secondary : .primary)
             
-            DatePicker("Date de pointage", selection: $formState.pointingDate, displayedComponents: .date)
+            DatePicker("Pointage Date", selection: $formState.pointingDate, displayedComponents: .date)
                 .foregroundStyle(uniquePointingDate == nil ? .secondary : .primary)
+            
+            FormField(label: String(localized: "Bank Statement")) {
+                TextField("", text: $formState.bankStatementString)
+                    .foregroundStyle(uniqueBankStatement == nil ? .secondary : .primary)
+            }
         }
         .padding()
         .background(Color.gray.opacity(0.05))
         .cornerRadius(8)
+        .onAppear {
+            if let value = uniqueBankStatement {
+                formState.bankStatementString = String(format: "%.2f", value)
+            }
+        }
+
     }
     
     // Picker du mode de paiement
@@ -439,7 +455,7 @@ struct BatchEditFormView: View {
             }
         )
         
-        return Picker("Mode de paiement", selection: binding) {
+        return Picker("Payment method", selection: binding) {
             if uniqueMode == nil {
                 Text("—").tag(EntityPaymentMode())
             }
@@ -460,12 +476,12 @@ struct BatchEditFormView: View {
             }
         )
         
-        return Picker("Statut", selection: binding) {
+        return Picker("Status", selection: binding) {
             if uniqueStatus == nil {
                 Text("—").tag(EntityStatus())
             }
             ForEach(formState.status, id: \.self) { status in
-                Text(status.name ?? "Inconnu").tag(status)
+                Text(status.name).tag(status)
             }
         }
     }

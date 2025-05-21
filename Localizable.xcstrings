@@ -2636,7 +2636,14 @@
       }
     },
     "Change status" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change le statut"
+          }
+        }
+      }
     },
     "Check" : {
       "localizations" : {
@@ -2749,7 +2756,14 @@
       }
     },
     "Checked" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réalisé"
+          }
+        }
+      }
     },
     "Choose a category within the selected rubric" : {
       "localizations" : {
@@ -4059,12 +4073,6 @@
           }
         }
       }
-    },
-    "Date d'opération" : {
-
-    },
-    "Date de pointage" : {
-
     },
     "Date of pointing" : {
       "localizations" : {
@@ -5726,6 +5734,46 @@
           "stringUnit" : {
             "state" : "error",
             "value" : ""
+          }
+        }
+      }
+    },
+    "Editing %lld transactions" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Editing %lld transaction"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "new",
+                  "value" : "Editing %lld transactions"
+                }
+              }
+            }
+          }
+        },
+        "fr" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Modification de %lld transaction"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Modification de %lld transactions"
+                }
+              }
+            }
           }
         }
       }
@@ -8180,9 +8228,6 @@
         }
       }
     },
-    "Mode de paiement" : {
-
-    },
     "ModePaiement Pie" : {
       "localizations" : {
         "en-GB" : {
@@ -8198,12 +8243,6 @@
           }
         }
       }
-    },
-    "Modification de %lld transactions" : {
-
-    },
-    "Modification multiple" : {
-
     },
     "Month: %@" : {
       "localizations" : {
@@ -8256,6 +8295,9 @@
           }
         }
       }
+    },
+    "Multiple modification" : {
+
     },
     "N/A" : {
       "localizations" : {
@@ -9487,6 +9529,16 @@
         }
       }
     },
+    "Operation Date" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date de l’opération"
+          }
+        }
+      }
+    },
     "Outline View in SwiftUI" : {
       "localizations" : {
         "de" : {
@@ -9748,7 +9800,14 @@
       }
     },
     "Pending" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En cours"
+          }
+        }
+      }
     },
     "Phone" : {
       "localizations" : {
@@ -9850,6 +9909,16 @@
           "stringUnit" : {
             "state" : "error",
             "value" : ""
+          }
+        }
+      }
+    },
+    "Pointage Date" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date de pointage"
           }
         }
       }
@@ -10577,65 +10646,6 @@
         }
       }
     },
-    "Selections : %lld transaction(s)" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Selection : %lld transaction"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Selections : %lld transactions"
-                }
-              }
-            }
-          }
-        },
-        "en-GB" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Selection : %lld transaction"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Selections : %lld transactions"
-                }
-              }
-            }
-          }
-        },
-        "fr" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Sélection : %lld transaction"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Sélections : %lld transactions"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "Settings" : {
       "localizations" : {
         "de" : {
@@ -11081,11 +11091,14 @@
             "state" : "translated",
             "value" : "Status :"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Statut :"
+          }
         }
       }
-    },
-    "Statut" : {
-
     },
     "Surname" : {
       "localizations" : {

@@ -47,7 +47,6 @@ final class ListDataManager: ObservableObject {
     func loadTransactions() {
         
         self.listTransactions = ListTransactionsManager.shared.getAllDatas(ascending: false)
-        print("loadTransactions : \(listTransactions.count) transactions ")
         objectWillChange.send()
     }
 }

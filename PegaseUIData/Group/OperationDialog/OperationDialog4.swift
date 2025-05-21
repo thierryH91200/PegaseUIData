@@ -22,7 +22,10 @@ class TransactionFormState: ObservableObject {
     @Published var pointingDate: Date = Date()
     @Published var status: [EntityStatus] = []
     
-    @Published var bankStatement: Int = 0
+    @Published var bankStatementString: String = ""
+    var bankStatement: Double? {
+        Double(bankStatementString)
+    }
     @Published var checkNumber: Int = 0
     
     @Published var amount: String = "0,00 €"

@@ -31,7 +31,7 @@ struct TransactionFormViewModel: View {
     @Binding var modes: [EntityPaymentMode]
     @Binding var pointingDate: Date
     @Binding var status: [EntityStatus]
-    @Binding var bankStatement: Int
+    @Binding var bankStatement: String
     @Binding var checkNumber: Int
     @Binding var amount: String
     
