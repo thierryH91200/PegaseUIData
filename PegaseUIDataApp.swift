@@ -54,6 +54,8 @@ struct PegaseUIDataApp: App {
     @State private var resetTrigger = false
 
     var body: some Scene {
+//        DocumentGroup(editing: .flashCards, migrationPlan: PegaseUIDataMigrationPlan.self) {
+        
         Window("Pegase", id: "main") {
 //        WindowGroup {
             SplashScreenView( )
@@ -144,6 +146,11 @@ extension UTType {
         UTType(importedAs: "com.example.item-document")
     }
 }
+
+extension UTType {
+    static var flashCards = UTType(exportedAs: "com.example.item-document")
+}
+
 
 struct PegaseUIDataMigrationPlan: SchemaMigrationPlan {
     static var schemas: [VersionedSchema.Type] = [

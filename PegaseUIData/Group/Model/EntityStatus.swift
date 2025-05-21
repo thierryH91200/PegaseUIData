@@ -21,10 +21,17 @@ import SwiftUI
     public var id: UUID { uuid }
 
     public init(name: String, type: Int, color: NSColor ) {
+        guard let account = CurrentAccountManager.shared.getAccount() else {
+            self.name = name
+            self.type = type
+            self.color = color
+            self.account = EntityAccount()
+            return
+        }
         self.name = name
         self.type = type
         self.color = color
-        self.account = CurrentAccountManager.shared.getAccount()!
+        self.account = account
     }
     init() {
         name = "test"

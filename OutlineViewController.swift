@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-
 import AppKit
 
 class OutlineViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDelegate {

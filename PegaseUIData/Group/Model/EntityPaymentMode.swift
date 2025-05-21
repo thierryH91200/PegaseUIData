@@ -20,9 +20,15 @@ import SwiftData
     public var id: UUID { uuid }
     
     init(name: String = "Test", color: NSColor = .black ) {
+        guard let account = CurrentAccountManager.shared.getAccount() else {
+            self.name = name
+            self.color = color
+            self.account = EntityAccount()
+            return
+        }
         self.name = name
         self.color = color
-        self.account = CurrentAccountManager.shared.getAccount()!
+        self.account = account
     }
 
     // Implémentez `Hashable`

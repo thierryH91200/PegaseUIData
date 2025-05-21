@@ -448,7 +448,7 @@ struct BatchEditFormView: View {
     private var modePaiementPicker: some View {
         let binding = Binding<EntityPaymentMode>(
             get: {
-                uniqueMode! //?? EntityPaymentMode() // ou formState.paymentModes.first ?? EntityPaymentMode()
+                uniqueMode ?? EntityPaymentMode() // ou formState.paymentModes.first ?? EntityPaymentMode()
             },
             set: { newValue in
                 formState.selectedMode = newValue
