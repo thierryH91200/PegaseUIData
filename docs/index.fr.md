@@ -6,11 +6,11 @@ layout: default
 
 [🇬🇧 English version](index.en.md)
 
-# PegaseUIData
-
-![Swift](https://img.shields.io/badge/Swift-5.7-orange) ![macOS](https://img.shields.io/badge/macOS-14-blue) ![License](https://img.shields.io/badge/License-MIT-green)
-
-PegaseUIData est une application macOS développée en **SwiftUI**, permettant de **gérer et visualiser des transactions financières** de manière intuitive et efficace.
+<p align="center">
+  <a href="https://github.com/thierryH91200/PegaseUIData/releases/latest/download/PegaseUIData-macOS.zip" class="btn" style="display:inline-block;padding:0.8em 1.5em;margin:1em auto;color:white;background:#28a745;border-radius:6px;text-decoration:none;font-size:1.1em;font-weight:bold;">
+    ⬇️ Télécharger PegaseUIData pour macOS
+  </a>
+</p>
 
 ## 📸 Aperçu
 

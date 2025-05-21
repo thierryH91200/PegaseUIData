@@ -1,4 +1,3 @@
-
 ---
 title: PegaseUIData
 layout: default
@@ -11,8 +10,11 @@ layout: default
     <a href="https://github.com/thierryH91200/PegaseUIData/releases/latest" alt="Downloads">
           <img src="https://img.shields.io/github/downloads/thierryH91200/PegaseUIData/total.svg" /></a>
 
-
-PegaseUIData is a macOS application developed in **SwiftUI**, designed to **manage and visualize financial transactions** in an intuitive and efficient way.
+<p align="center">
+  <a href="https://github.com/thierryH91200/PegaseUIData/releases/latest/download/PegaseUIData-macOS.zip" class="btn" style="display:inline-block;padding:0.8em 1.5em;margin:1em auto;color:white;background:#28a745;border-radius:6px;text-decoration:none;font-size:1.1em;font-weight:bold;">
+    ⬇️ Download PegaseUIData for macOS
+  </a>
+</p>
 
 ## 📸 Overview
 
@@ -114,5 +116,4 @@ Yes! Translation contributions are welcome. Localization files are available in 
 ### Is there a Windows / Linux version?
 
 No. PegaseUIData is built with SwiftUI for macOS only. A cross-platform version is
-
 
