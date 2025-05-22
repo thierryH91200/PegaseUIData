@@ -21,3 +21,8 @@ open PegaseUIData.xcodeproj
 ```
 
 Then build and run the app using Xcode.
+
+---
+⬅️ [Previous: Overview](overview.md)
+
+➡️ [Next: User Guide](usage.md)

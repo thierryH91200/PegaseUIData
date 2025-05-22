@@ -12,3 +12,8 @@ nav_order: 4
 2. Create or import your accounts
 3. Add financial operations
 4. Explore your data with charts and filters
+
+---
+⬅️ [Previous: Installation](installation.md)
+
+➡️ [Next: FAQ](faq.md)

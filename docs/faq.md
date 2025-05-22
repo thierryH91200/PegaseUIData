@@ -17,3 +17,8 @@ Yes, CSV import is supported.
 
 ### Can I contribute?
 Yes! Contributions and translations are welcome.
+
+---
+⬅️ [Previous: User Guide](usage.md)
+
+➡️ [Next: Contribute](contribute.md)
