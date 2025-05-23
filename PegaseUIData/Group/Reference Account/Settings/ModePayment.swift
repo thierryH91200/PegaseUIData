@@ -157,7 +157,7 @@ struct ModePaymentView: View {
         PaymentModeManager.shared.configure(with: modelContext)
         dataManager.configure(with: modelContext)
         if let account = currentAccountManager.currentAccount {
-            dataManager.modePayments = PaymentModeManager.shared.getAllDatas(for: account)
+            dataManager.modePayments = PaymentModeManager.shared.getAllDatas()
         }
     }
 
@@ -172,7 +172,7 @@ struct ModePaymentView: View {
     
     private func refreshData() {
         guard let account = currentAccountManager.currentAccount else { return }
-        dataManager.modePayments = PaymentModeManager.shared.getAllDatas(for: account)
+        dataManager.modePayments = PaymentModeManager.shared.getAllDatas()
     }
 }
 

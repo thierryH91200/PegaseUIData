@@ -106,13 +106,14 @@ final class PaymentModeManager {
         }
     }
 
-    func getAllDatas(for account: EntityAccount?) -> [EntityPaymentMode]? {
-        
-        guard let account = account else {
+    func getAllDatas() -> [EntityPaymentMode]? {
+                
+        let account = CurrentAccountManager.shared.getAccount()
+        guard account != nil else {
             return []
         }
 
-        let lhs = account.uuid
+        let lhs = account!.uuid
         let predicate = #Predicate<EntityPaymentMode> { entity in entity.account.uuid == lhs }
         let sort = [SortDescriptor(\EntityPaymentMode.name, order: .forward)]
         
@@ -133,7 +134,7 @@ final class PaymentModeManager {
     func getAllNames(for account: EntityAccount) -> [String] {
         var names = [String]()
         
-        let modePayments =  getAllDatas(for: account)
+        let modePayments =  getAllDatas()
         
         for modePayment in modePayments ?? [] {
             names.append(modePayment.name)
@@ -263,7 +264,7 @@ class PaymentModeViewModel: ObservableObject {
     
     // MARK: Actions utilisateur :
     private func loadInitialData() {
-        modePayments = manager.getAllDatas(for: account)!
+        modePayments = manager.getAllDatas()!
     }
 
     func add(name: String, color: Color) {
@@ -296,7 +297,7 @@ class PaymentModeViewModel: ObservableObject {
     // MARK: Communication avec les services ou les managers :
     @discardableResult
     func reloadData() -> [EntityPaymentMode] {
-        modePayments = manager.getAllDatas(for: account)!
+        modePayments = manager.getAllDatas()!
         return modePayments
     }
     

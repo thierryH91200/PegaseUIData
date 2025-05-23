@@ -191,6 +191,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             preferencesItem.target = self
             appMenu?.insertItem(preferencesItem, at: 1)
         }
+        // ✅ Demande de permission pour les notifications
+        NotificationManager.shared.requestPermission()
     }
     
     @objc func openPreferences() {

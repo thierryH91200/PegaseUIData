@@ -195,7 +195,7 @@ struct PreferenceTransactionView: View {
     func configureFormState() async throws {
         PaymentModeManager.shared.configure(with: modelContext)
         if let account = CurrentAccountManager.shared.getAccount(),
-           let modes = PaymentModeManager.shared.getAllDatas(for: account) {
+           let modes = PaymentModeManager.shared.getAllDatas() {
             selectedMode = entityPreference?.paymentMode
             entityPaymentMode = modes
         }
@@ -208,7 +208,7 @@ struct PreferenceTransactionView: View {
             }
         }
     }
-    
+
     // Rafraîchir les données du formulaire
     private func refreshData(for account: EntityAccount) async throws {
         PreferenceManager.shared.configure(with: modelContext)
@@ -223,7 +223,7 @@ struct PreferenceTransactionView: View {
         isExpanded = entityPreference.signe
         
         entityStatus = StatusManager.shared.getAllDatas(for: account) ?? []
-        entityPaymentMode = PaymentModeManager.shared.getAllDatas(for: account) ?? []
+        entityPaymentMode = PaymentModeManager.shared.getAllDatas()!
         entityRubric = RubricManager.shared.getAllDatas()
         entityCategorie = selectedRubric?.categorie ?? []
     }

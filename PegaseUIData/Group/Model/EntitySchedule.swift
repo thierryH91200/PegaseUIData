@@ -10,7 +10,6 @@ import Foundation
 import SwiftData
 import SwiftUI
 
-
 @Model public class EntitySchedule : Identifiable{
     var amount: Double = 0.0
     var dateCree: Date = Date()
@@ -29,9 +28,9 @@ import SwiftUI
 
     var account: EntityAccount
     var category: EntityCategory?
-    @Relationship(inverse: \EntityAccount.compteLie) var linkedAccount: EntityAccount?
     var paymentMode: EntityPaymentMode?
-    
+    @Relationship(inverse: \EntityAccount.compteLie) var linkedAccount: EntityAccount?
+
     public init() {
         self.account = CurrentAccountManager.shared.getAccount()!
     }
@@ -152,6 +151,88 @@ final class SchedulerManager {
         return entities
     }
     
+    func createTransaction (entitySchedule: EntitySchedule) {
+
+        entitySchedule.nextOccurence += 1
+        let account = CurrentAccountManager.shared.getAccount()!
+        let entityStatus = StatusManager.shared.getAllDatas(for: account) ?? []
+        
+        let dateValeur = entitySchedule.dateValeur.noon
+        
+        let entityTransaction = EntityTransactions()
+        
+        entityTransaction.createAt       = Date().noon
+        entityTransaction.updatedAt    = Date().noon
+        entityTransaction.dateOperation  = dateValeur
+        entityTransaction.datePointage   = dateValeur
+
+        entityTransaction.account        = entitySchedule.account
+                
+        entityTransaction.paymentMode    = entitySchedule.paymentMode
+        entityTransaction.status         = Date() >= dateValeur ? entityStatus[2] : entityStatus[1]
+        
+        entityTransaction.bankStatement = 0
+        entityTransaction.uuid           = UUID()
+
+        // create sous transaction
+        let entitySousOperation = createSousOperation(for: entitySchedule)
+        
+        // addd sous transaction
+        entityTransaction.addSubOperation(  entitySousOperation)
+        
+        if entitySchedule.linkedAccount != nil {
+//            createComptelie()
+        }
+        do {
+            try save()
+        } catch {
+            
+        }
+    }
+    
+    func createComptelie() {
+        //            let entityTransactionsTransfert = NSEntityDescription.insertNewObject(forEntityName: "EntityTransactions", into: viewContext!) as! EntityTransactions
+        //
+        //            entityTransactionsTransfert.dateCree      = entityTransaction.dateCree
+        //            entityTransactionsTransfert.dateModifie   = entityTransaction.dateModifie
+        //            entityTransactionsTransfert.dateOperation = entityTransaction.dateOperation
+        //            entityTransactionsTransfert.datePointage  = entityTransaction.datePointage
+        //
+        //            let compteLie = entitySchedule.compteLie!
+        //            entityTransactionsTransfert.account        = compteLie
+        //
+        //            entityTransactionsTransfert.statut        = entityTransaction.statut
+        //            entityTransactionsTransfert.bankStatement = entityTransaction.bankStatement
+        //
+        //            // le modePaiement existe t il ??
+        //            var name = entityTransactionsTransfert.paymentMode?.name ?? "nil"
+        //            let color = entityTransactionsTransfert.paymentMode?.color as? NSColor ?? NSColor.black
+        //            let uuid = entityTransactionsTransfert.paymentMode?.uuid ?? UUID()
+        //            let entityModePaiement = PaymentMode.shared.findOrCreate(account: compteLie, name: name, color: color , uuid: uuid)
+        //            entityTransactionsTransfert.paymentMode  = entityModePaiement
+        //
+        //
+        //            let entitySousOperations = entityTransactionsTransfert.sousOperations
+        //            let entitySplitTransactions = entitySousOperations!.allObjects as! [EntitySousOperations]
+        //            let entitySplitTransaction = entitySplitTransactions.first
+        //
+        //            let entityRubric = Rubric.shared.findOrCreate(account: compteLie, name: name, color: color, uuid: uuid)
+        //
+        //            // la categorie existe t elle ?
+        //            name = entitySchedule.category?.name ?? "nil"
+        //            let objectif = entitySchedule.category?.objectif
+        //            let entityCategorie = Categories.shared.findOrCreate(account: compteLie, name: name, objectif: objectif!, uuid: uuid)
+        //
+        //            entitySplitTransaction?.category = entityCategorie
+        //            entitySplitTransaction?.category?.rubric = entityRubric
+        //            entitySplitTransaction?.amount       = -entitySchedule.amount
+        //
+        //            entityTransactionsTransfert.addToSousOperations(entitySousOperation)
+        //
+        //            entityTransactionsTransfert.uuid          = UUID()
+
+    }
+
     // Créer une sous-opération
     func createSousOperation(for schedule: EntitySchedule) -> EntitySousOperations {
         let sousOperation = EntitySousOperations()
@@ -159,6 +240,7 @@ final class SchedulerManager {
         let rubricName = schedule.category?.rubric?.name ?? ""
         _ = schedule.category?.rubric?.color ?? .black
 //        let rubricUUID = schedule.category?.rubric?.uuid ?? UUID()
+        let account = CurrentAccountManager.shared.getAccount()
         let rubric = RubricManager.shared.findOrCreate(account: schedule.account, name: rubricName, color: NSColor.blue)
         
         let categoryName = schedule.category?.name ?? ""

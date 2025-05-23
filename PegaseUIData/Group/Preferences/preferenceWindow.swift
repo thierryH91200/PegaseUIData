@@ -7,6 +7,7 @@
 
 import Cocoa
 import SwiftUI
+import UserNotifications
 
 class PreferencesWindowController: NSWindowController, NSWindowDelegate {
     static let shared = PreferencesWindowController()
@@ -62,15 +63,48 @@ struct PreferencesView: View {
 struct GeneralSettingsView: View {
     @AppStorage("launchAtLogin") private var launchAtLogin = false
     @AppStorage("showInMenuBar") private var showInMenuBar = false
+    @State private var notificationsEnabled: Bool = true
+    @State private var justGrantedNotifications: Bool = false
+
+    private let refreshTimer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
 
     var body: some View {
         VStack(alignment: .leading) {
-            Toggle("Launch at login", isOn: .constant(true))
-            Toggle("Show in menu bar (hide from Dock)", isOn: .constant(false))
-            
+            Toggle("Launch at login", isOn: $launchAtLogin)
+            Toggle("Show in menu bar (hide from Dock)", isOn: $showInMenuBar)
+            if !notificationsEnabled {
+                Text("🔕 Notifications are disabled. Enable them in System Settings.")
+                    .foregroundColor(.red)
+                Button {
+                    if let url = URL(string: "x-apple.systempreferences:com.apple.preference.notifications") {
+                        NSWorkspace.shared.open(url)
+                    }
+                } label: {
+                    Label("Open System Settings", systemImage: "gearshape")
+                }
+                .buttonStyle(.borderedProminent)
+            }
+            if justGrantedNotifications {
+                Text("✅ Notifications have been successfully enabled.")
+                    .foregroundColor(.green)
+            }
             Spacer()
         }
         .padding()
+        .onReceive(refreshTimer) { _ in
+            UNUserNotificationCenter.current().getNotificationSettings { settings in
+                DispatchQueue.main.async {
+                    let newStatus = settings.authorizationStatus == .authorized
+                    if newStatus && !notificationsEnabled {
+                        justGrantedNotifications = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                            justGrantedNotifications = false
+                        }
+                    }
+                    notificationsEnabled = newStatus
+                }
+            }
+        }
     }
 }
 

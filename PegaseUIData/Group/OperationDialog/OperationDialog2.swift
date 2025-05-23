@@ -153,13 +153,12 @@ struct OperationDialogView: View {
         
         // Configuration des modes de paiement
         PaymentModeManager.shared.configure(with: modelContext)
-        if let account = CurrentAccountManager.shared.getAccount() {
-            if let modes = PaymentModeManager.shared.getAllDatas(for: account) {
-                formState.paymentModes = modes
-                // Sélection sécurisée du premier mode de paiement
-                formState.selectedMode = modes.first
-            }
+        if let modes = PaymentModeManager.shared.getAllDatas() {
+            formState.paymentModes = modes
+            // Sélection sécurisée du premier mode de paiement
+            formState.selectedMode = modes.first
         }
+
         // Configuration des différents status
         StatusManager.shared.configure(with: modelContext)
         if let account = CurrentAccountManager.shared.getAccount() {

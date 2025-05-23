@@ -113,6 +113,7 @@ final class StatusManager: StatusManaging {
             print("Erreur : Account est nil")
             return nil
         }
+
         let accountID = account.uuid
         let predicate = #Predicate<EntityStatus> { entity in entity.account.uuid == accountID }
         let sort = [SortDescriptor(\EntityStatus.type, order: .forward)]

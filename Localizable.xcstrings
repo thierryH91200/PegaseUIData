@@ -374,6 +374,16 @@
     "◀️" : {
       "shouldTranslate" : false
     },
+    "✅ Notifications have been successfully enabled." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✅ Les notifications ont été activées avec succès."
+          }
+        }
+      }
+    },
     "🎯 %@" : {
       "localizations" : {
         "de" : {
@@ -397,7 +407,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎯 🎯 %@"
+            "value" : "🎯 %@"
           }
         },
         "he" : {
@@ -422,6 +432,26 @@
           "stringUnit" : {
             "state" : "error",
             "value" : ""
+          }
+        }
+      }
+    },
+    "🔔 Upcoming Reminders" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🔔 Rappels à venir"
+          }
+        }
+      }
+    },
+    "🔕 Notifications are disabled. Enable them in System Settings." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🔕 Les notifications sont désactivées. Activez-les dans les paramètres système."
           }
         }
       }
@@ -4013,6 +4043,16 @@
           "stringUnit" : {
             "state" : "error",
             "value" : ""
+          }
+        }
+      }
+    },
+    "Date : %@" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date : %@"
           }
         }
       }
@@ -9133,6 +9173,16 @@
         }
       }
     },
+    "No scheduled operations." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune opération planifiée."
+          }
+        }
+      }
+    },
     "No sub-operations available" : {
       "localizations" : {
         "de" : {
@@ -9551,6 +9601,16 @@
           "stringUnit" : {
             "state" : "error",
             "value" : ""
+          }
+        }
+      }
+    },
+    "Open System Settings" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrir les paramètres système"
           }
         }
       }
