@@ -58,12 +58,28 @@ final class CacheEntry<T> {
 }
 
 
+protocol PaymentModeManaging {
+    
+    func configure(with modelContext: ModelContext)
+    func create(account: EntityAccount?, name: String, color: NSColor) throws -> EntityPaymentMode? 
+    func update(entity: EntityPaymentMode, name: String, color: NSColor) 
+    func getAllDatas() -> [EntityPaymentMode]?
+    func getAllNames(for account: EntityAccount) -> [String]
+    func findOrCreate(account: EntityAccount, name: String, color: Color, uuid: UUID) -> EntityPaymentMode
+    func find( account: EntityAccount?, name: String) -> EntityPaymentMode?
+    func delete(entity: EntityPaymentMode)
+    func defaultModePaiement(for account: EntityAccount)
+
+    func save () throws
+
+}
+
 //Gère les opérations CRUD (Create, Read, Update, Delete)
 //Interagit directement avec SwiftData
 //Contient la logique métier complexe
 //Est un singleton (shared)
 //Gère les données par défaut
-final class PaymentModeManager {
+final class PaymentModeManager : PaymentModeManaging {
     
     static let shared = PaymentModeManager()
     
@@ -86,14 +102,11 @@ final class PaymentModeManager {
     }
     
     func create(account: EntityAccount?, name: String, color: NSColor) throws -> EntityPaymentMode? {
-        guard let account = account else {
-            throw EnumError.accountNotFound
-        }
                 
-        let newMode = EntityPaymentMode(name: name, color: color)
-        validContext.insert(newMode)
+        let mode = EntityPaymentMode(name: name, color: color)
+        validContext.insert(mode)
         try save()
-        return newMode
+        return mode
     }
 
     func update(entity: EntityPaymentMode, name: String, color: NSColor) {
@@ -151,15 +164,6 @@ final class PaymentModeManager {
         }
     }
     
-    // MARK: save ModePaiement
-    func save () throws {
-        
-        do {
-            try validContext.save()
-        } catch {
-            throw EnumError.saveFailed
-        }
-    }
 
     // MARK: find ModePaiement
     func find( account: EntityAccount? = nil, name: String) -> EntityPaymentMode? {
@@ -210,7 +214,8 @@ final class PaymentModeManager {
                       String(localized :"Bank withdrawal"),
                       String(localized :"Discount"),
                       String(localized :"Cash withdrawal"),
-                      String(localized :"Transfers")]
+                      String(localized :"Transfers"),
+                      String(localized :"Direct debit")]
         let paymentModes: [(name: String, color: NSColor)] = [
             ( names[0], .red),
             ( names[1], .green),
@@ -218,7 +223,8 @@ final class PaymentModeManager {
             ( names[3], .blue),
             ( names[4], .red),
             ( names[5], .gray),
-            ( names[6], .brown)
+            ( names[6], .brown),
+            ( names[6], .black)
         ]
         
         // Création des entités de mode de paiement
@@ -241,8 +247,17 @@ final class PaymentModeManager {
             print("Erreur lors de la récupération des modes de paiement : \(error.localizedDescription)")
         }
     }
+    
+    // MARK: save ModePaiement
+    func save () throws {
+        
+        do {
+            try validContext.save()
+        } catch {
+            throw EnumError.saveFailed
+        }
+    }
 }
-
 
 // Fait le lien entre la Vue (UI) et le Manager
 // Gère l'état de l'interface (@Published)

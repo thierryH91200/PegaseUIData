@@ -10,42 +10,43 @@ import Foundation
 import SwiftData
 import SwiftUI
 
-@Model public class EntitySchedule : Identifiable{
-    var amount: Double = 0.0
-    var dateCree: Date = Date()
-    var dateDebut: Date = Date()
-    var dateFin: Date = Date()
-    var dateModifie: Date = Date()
-    var dateValeur: Date = Date()
-    var frequence: Int16 = 0
-    var libelle: String = ""
-    var nextOccurence: Int16 = 0
-    var occurence: Int16 = 0
-    var typeFrequence: Int16 = 0
+@Model
+public class EntitySchedule : Identifiable{
+    var amount                   : Double = 0.0
+    var dateCree                 : Date   = Date()
+    var dateDebut                : Date   = Date()
+    var dateFin                  : Date   = Date()
+    var dateModifie              : Date   = Date()
+    var dateValeur               : Date   = Date()
+    var frequence                : Int16  = 0
+    var libelle                  : String = ""
+    var nextOccurence            : Int16  = 0
+    var occurence                : Int16  = 0
+    var typeFrequence            : Int16  = 0
 
-    @Attribute(.unique) var uuid: UUID = UUID()
-    public var id: UUID { uuid }
+    @Attribute(.unique) var uuid : UUID   = UUID()
+    public var id                : UUID { uuid }
 
-    var account: EntityAccount
-    var category: EntityCategory?
-    var paymentMode: EntityPaymentMode?
-    @Relationship(inverse: \EntityAccount.compteLie) var linkedAccount: EntityAccount?
+    var account                  : EntityAccount
+    var category                 : EntityCategory?
+    var paymentMode              : EntityPaymentMode?
+    @Relationship(inverse        : \EntityAccount.compteLie) var linkedAccount : EntityAccount?
 
     public init() {
         self.account = CurrentAccountManager.shared.getAccount()!
     }
 
     public init(
-        amount: Double,
-        dateValeur: Date,
-        dateDebut: Date,
-        dateFin: Date,
-        frequence: Int16,
-        libelle: String,
-        nextOccurence: Int16,
-        occurence: Int16,
-        typeFrequence: Int16,
-        account: EntityAccount ){
+        amount        : Double,
+        dateValeur    : Date,
+        dateDebut     : Date,
+        dateFin       : Date,
+        frequence     : Int16,
+        libelle       : String,
+        nextOccurence : Int16,
+        occurence     : Int16,
+        typeFrequence : Int16,
+        account       : EntityAccount ){
             
             self.amount = amount
             self.libelle = libelle
@@ -58,16 +59,15 @@ import SwiftUI
             self.occurence = occurence
             self.typeFrequence = typeFrequence
             self.account = account
-    }
+        }
 }
 
 final class SchedulerManager {
 
-    static let shared = SchedulerManager()
-
     @Published var entities = [EntitySchedule]()
     
     var currentAccount: EntityAccount?
+    static let shared = SchedulerManager()
 
     // Contexte pour les modifications
     var modelContext : ModelContext?
@@ -100,7 +100,6 @@ final class SchedulerManager {
 
     // Suppression d'une entité
     func remove(entity: EntitySchedule) {
-
         validContext.delete(entity)
     }
 
@@ -238,10 +237,9 @@ final class SchedulerManager {
         let sousOperation = EntitySousOperations()
         
         let rubricName = schedule.category?.rubric?.name ?? ""
-        _ = schedule.category?.rubric?.color ?? .black
+        let color = schedule.category?.rubric?.color ?? .black
 //        let rubricUUID = schedule.category?.rubric?.uuid ?? UUID()
-        let account = CurrentAccountManager.shared.getAccount()
-        let rubric = RubricManager.shared.findOrCreate(account: schedule.account, name: rubricName, color: NSColor.blue)
+        let rubric = RubricManager.shared.findOrCreate(account: schedule.account, name: rubricName, color: color)
         
         let categoryName = schedule.category?.name ?? ""
         let objectif = schedule.category?.objectif ?? 0.0

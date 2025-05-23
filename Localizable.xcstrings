@@ -833,6 +833,7 @@
       }
     },
     "Add scheduler" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4675,6 +4676,16 @@
         }
       }
     },
+    "Direct debit" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prélèvement"
+          }
+        }
+      }
+    },
     "Discount" : {
       "localizations" : {
         "de" : {
@@ -6845,58 +6856,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fréquence"
-          }
-        },
-        "he" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        }
-      }
-    },
-    "Frequency type" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Frequency type"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Type de fréquence"
           }
         },
         "he" : {
@@ -11589,6 +11548,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Courbe de la trésorerie"
+          }
+        }
+      }
+    },
+    "Type" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Type"
           }
         }
       }

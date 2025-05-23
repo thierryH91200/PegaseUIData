@@ -228,7 +228,7 @@ struct ListTransactions200: View {
 
             for transaction in selectedEntities {
                 transactionsSelected.append(transaction)
-                let amount = transaction.amount ?? 0.0
+                let amount = transaction.amount
 
                 solde += amount
                 if amount < 0 {

@@ -315,20 +315,21 @@ struct TransactionLigne: View {
     
     private func supprimerTransactionsSelectionnees() {
         withAnimation {
+            // Copie locale des éléments à supprimer
             let transactionsToDelete = dataManager.listTransactions.filter { selectedTransactions.contains($0.id) }
 
+            // Supprime du contexte si non déjà supprimé
             for transaction in transactionsToDelete {
                 if !transaction.isDeleted {
                     modelContext.delete(transaction)
                 }
             }
 
-            // Met à jour la liste des transactions après suppression
-            dataManager.listTransactions.removeAll { selectedTransactions.contains($0.id) }
+            // Vide la sélection
             selectedTransactions.removeAll()
+            dataManager.loadTransactions()
         }
     }
-
     private func mettreAJourStatusPourSelection(nouveauStatus: String) {
         withAnimation {
             let selected = dataManager.listTransactions.filter { selectedTransactions.contains($0.id) }

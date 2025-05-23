@@ -97,8 +97,7 @@ struct OperationDialogView: View {
                 }
             }
             setStatut = Set(transactionManager.selectedTransactions.map { $0.status! })
-            setModePaiement = Set(transactionManager.selectedTransactions.map { $0.paymentMode!})
-
+            setModePaiement = Set(transactionManager.selectedTransactions.map { $0.paymentMode ?? EntityPaymentMode()})
         }
     }
     
