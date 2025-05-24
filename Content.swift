@@ -89,6 +89,7 @@ struct ContentView100: View {
     @State private var isCreationMode : Bool = true
     
     @State private var showCSVTransactionImporter = false
+    @State private var showOFXTransactionImporter = false
     @State private var showCSVTransactionExporter = false
 
     var transactions: [EntityTransactions] = [] // Liste des transactions
@@ -137,8 +138,16 @@ struct ContentView100: View {
             showCSVTransactionImporter = true
         }
         .sheet(isPresented: $showCSVTransactionImporter) {
-            CSVImportTransactionView() // Affiche la fenêtre d'importation CSV
+            ImportTransactionFileView() // Affiche la fenêtre d'importation CSV
         }
+        
+        .onReceive(NotificationCenter.default.publisher(for: .importTransactionOFX)) { _ in
+            showOFXTransactionImporter = true
+        }
+        .sheet(isPresented: $showCSVTransactionImporter) {
+//            OFXImportTransactionView() // Affiche la fenêtre d'importation CSV
+        }
+        
         .onReceive(NotificationCenter.default.publisher(for: .exportTransaction)) { _ in
             showCSVTransactionExporter = true
         }

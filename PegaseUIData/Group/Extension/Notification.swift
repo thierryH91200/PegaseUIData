@@ -11,6 +11,7 @@ import SwiftUI
 
 extension Notification.Name {
     static let importTransaction = Notification.Name("importTransaction")
+    static let importTransactionOFX = Notification.Name("importTransactionOFX")
     static let importReleve      = Notification.Name("importReleve")
     static let exportTransaction = Notification.Name("exportTransaction")
     static let exportReleve      = Notification.Name("exportReleve")

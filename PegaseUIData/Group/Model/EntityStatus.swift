@@ -76,9 +76,9 @@ final class StatusManager: StatusManaging {
     }
     
     func create(account: EntityAccount?, name: String, type: Int, color: NSColor) throws -> EntityStatus? {
-        guard let account = account else {
-            throw EnumError.accountNotFound
-        }
+//        guard let account = account else {
+//            throw EnumError.accountNotFound
+//        }
                 
         let newMode = EntityStatus(name: name, type: type, color: color)
         validContext.insert(newMode)

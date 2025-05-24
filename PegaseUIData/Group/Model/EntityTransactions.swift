@@ -11,11 +11,11 @@ import SwiftData
 
 @Model public class EntityTransactions {
 
-    var createAt:  Date = Date()
-    var updatedAt: Date = Date()
+    var createAt:  Date = Date().noon
+    var updatedAt: Date = Date().noon
 
-    var dateOperation: Date = Date()
-    var datePointage:  Date = Date()
+    var dateOperation: Date = Date().noon
+    var datePointage:  Date = Date().noon
 
     var bankStatement: Double = 0.0
     var checkNumber: String = ""

@@ -22,6 +22,8 @@ struct AccountFactory {
         
     static func createOptionAccount(modelContext: ModelContext, account : EntityAccount, idName: String, idSurName: String, numAccount: String) -> EntityAccount {
         
+        CurrentAccountManager.shared.setAccount(account )
+        
         let identity = EntityIdentity(name: idName, surName: idSurName, account: account)
         account.identity = identity
         
@@ -32,7 +34,7 @@ struct AccountFactory {
         initAccount.codeAccount = numAccount
         initAccount.account = account
         account.initAccount = initAccount
-
+        
         PaymentModeManager.shared.configure(with: modelContext)
         PaymentModeManager.shared.defaultModePaiement(for: account)
         account.paymentMode = PaymentModeManager.shared.entities

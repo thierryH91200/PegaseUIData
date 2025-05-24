@@ -83,15 +83,13 @@ final class RubricManager {
     @discardableResult
     func getAllDatas(account: EntityAccount? = nil) -> [EntityRubric] {
         
-        var currentAccount : EntityAccount?
+//        var currentAccount : EntityAccount?
         
-        if account == nil  {
-            currentAccount = CurrentAccountManager.shared.getAccount()!
+        let currentAccount = CurrentAccountManager.shared.getAccount()
+        guard currentAccount != nil else {
+            return []
         }
-        else {
-            currentAccount = account
-        }
-        
+
         let lhs = currentAccount!.uuid
         let predicate = #Predicate<EntityRubric>{ entity in entity.account.uuid == lhs }
         let sort = [SortDescriptor(\EntityRubric.name, order: .forward)]
@@ -134,6 +132,7 @@ final class RubricManager {
             if columns.count >= 5 {
                 let rubriqueName = columns[0]
                 let categoryName = columns[1]
+                let type         = columns[2]
                 let objectif = Double(columns[3]) ?? 0.0
                 let nscolor = colorFromName(columns[4])
 
@@ -177,7 +176,6 @@ final class RubricManager {
     }
     
     func save () throws {
-        
         do {
             try validContext.save()
         } catch {

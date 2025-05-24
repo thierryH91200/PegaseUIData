@@ -227,7 +227,6 @@ struct CheckBookTable: View {
         }
 
     }
-
 }
 
 // Vue pour la boîte de dialogue d'ajout

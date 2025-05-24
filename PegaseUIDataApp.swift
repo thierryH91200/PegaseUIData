@@ -88,6 +88,11 @@ struct PegaseUIDataApp: App {
                     }
                     .keyboardShortcut("T", modifiers: [.command, .shift]) // Cmd+Shift+T
                     
+                    Button("Transaction OFX") {
+                        NotificationCenter.default.post(name: .importTransactionOFX, object: nil)
+                    }
+                    .keyboardShortcut("O", modifiers: [.command, .shift]) // Cmd+Shift+O
+
                     Button("Statement") {
                         NotificationCenter.default.post(name: .importReleve, object: nil)
                     }

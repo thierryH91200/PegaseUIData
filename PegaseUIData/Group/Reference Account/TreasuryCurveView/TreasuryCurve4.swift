@@ -277,7 +277,7 @@ struct DGLineChartRepresentable: NSViewRepresentable {
         firstDate = calendar.startOfDay(for: transactions.first!.datePointage).timeIntervalSince1970
         let minValue = Double(firstDate / hourSeconds)
         let maxValue = Double(calendar.startOfDay(for: transactions.last!.datePointage).timeIntervalSince1970 / hourSeconds)
-        let minIndex = 0
+//        let minIndex = 0
         let maxIndex = Int((maxValue - minValue))
         
         let grouped = Dictionary(grouping: transactions, by: { calendar.startOfDay(for: $0.datePointage) })

@@ -7426,6 +7426,9 @@
         }
       }
     },
+    "Import an OFX file" : {
+
+    },
     "Income/Expense" : {
       "localizations" : {
         "de" : {
@@ -8747,6 +8750,7 @@
       }
     },
     "Next occurence" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -8797,6 +8801,9 @@
           }
         }
       }
+    },
+    "Next occurrence" : {
+
     },
     "No account selected." : {
       "localizations" : {
@@ -9461,6 +9468,7 @@
       }
     },
     "Occurence" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -9511,6 +9519,9 @@
           }
         }
       }
+    },
+    "Occurrence" : {
+
     },
     "OK" : {
       "localizations" : {
@@ -11483,6 +11494,9 @@
           }
         }
       }
+    },
+    "Transaction OFX" : {
+
     },
     "Transfers" : {
       "localizations" : {

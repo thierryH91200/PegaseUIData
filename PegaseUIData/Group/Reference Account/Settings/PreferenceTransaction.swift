@@ -194,7 +194,7 @@ struct PreferenceTransactionView: View {
     // Configuration initiale du formulaire
     func configureFormState() async throws {
         PaymentModeManager.shared.configure(with: modelContext)
-        if let account = CurrentAccountManager.shared.getAccount(),
+        if /*let account = CurrentAccountManager.shared.getAccount(),*/
            let modes = PaymentModeManager.shared.getAllDatas() {
             selectedMode = entityPreference?.paymentMode
             entityPaymentMode = modes

@@ -20,8 +20,8 @@ public class EntitySchedule : Identifiable{
     var dateValeur               : Date   = Date()
     var frequence                : Int16  = 0
     var libelle                  : String = ""
-    var nextOccurence            : Int16  = 0
-    var occurence                : Int16  = 0
+    var nextOccurrence           : Int16  = 0
+    var occurrence               : Int16  = 0
     var typeFrequence            : Int16  = 0
 
     @Attribute(.unique) var uuid : UUID   = UUID()
@@ -43,8 +43,8 @@ public class EntitySchedule : Identifiable{
         dateFin       : Date,
         frequence     : Int16,
         libelle       : String,
-        nextOccurence : Int16,
-        occurence     : Int16,
+        nextOccurrence : Int16,
+        occurrence    : Int16,
         typeFrequence : Int16,
         account       : EntityAccount ){
             
@@ -55,8 +55,8 @@ public class EntitySchedule : Identifiable{
             self.dateValeur = dateValeur
             self.frequence =  frequence
             self.libelle = libelle
-            self.nextOccurence = nextOccurence
-            self.occurence = occurence
+            self.nextOccurrence = nextOccurrence
+            self.occurrence = occurrence
             self.typeFrequence = typeFrequence
             self.account = account
         }
@@ -152,7 +152,7 @@ final class SchedulerManager {
     
     func createTransaction (entitySchedule: EntitySchedule) {
 
-        entitySchedule.nextOccurence += 1
+        entitySchedule.nextOccurrence += 1
         let account = CurrentAccountManager.shared.getAccount()!
         let entityStatus = StatusManager.shared.getAllDatas(for: account) ?? []
         
@@ -259,7 +259,7 @@ final class SchedulerManager {
     }
     
     func createTransaction(for schedule: EntitySchedule, on dateValeur: Date) {
-        schedule.nextOccurence += 1
+        schedule.nextOccurrence += 1
 
         let transaction = EntityTransactions()
         

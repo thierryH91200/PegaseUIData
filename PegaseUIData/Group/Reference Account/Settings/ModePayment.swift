@@ -156,9 +156,9 @@ struct ModePaymentView: View {
     private func setupDataManager() {
         PaymentModeManager.shared.configure(with: modelContext)
         dataManager.configure(with: modelContext)
-        if let account = currentAccountManager.currentAccount {
+//        if let account = currentAccountManager.currentAccount {
             dataManager.modePayments = PaymentModeManager.shared.getAllDatas()
-        }
+//        }
     }
 
     private func removeSelectedItem() {
@@ -171,7 +171,7 @@ struct ModePaymentView: View {
     }
     
     private func refreshData() {
-        guard let account = currentAccountManager.currentAccount else { return }
+//        guard let account = currentAccountManager.currentAccount else { return }
         dataManager.modePayments = PaymentModeManager.shared.getAllDatas()
     }
 }
@@ -273,7 +273,7 @@ struct ModePaiementFormView: View {
     
     private func save() {
         let newItem: EntityPaymentMode
-        let account = currentAccountManager.currentAccount
+//        let account = currentAccountManager.currentAccount
         
         if let existing = modePaiement {
             newItem = existing

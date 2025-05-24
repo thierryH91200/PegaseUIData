@@ -114,7 +114,7 @@ struct ListTransactions200: View {
             NavigationView {
                 
                 GeometryReader { geometry in
-                    let width = max(800, geometry.size.width > 0 ? geometry.size.width : 800) // Sécurisation
+//                    let width = max(800, geometry.size.width > 0 ? geometry.size.width : 800) // Sécurisation
 
                     List {
                         Section(header: EmptyView()) {

@@ -8,7 +8,7 @@
 import AppKit
 import SwiftUI
 import SwiftData
- 
+
 
 final class SchedulerDataManager: ObservableObject {
     @Published var schedulers: [EntitySchedule] = [] {
@@ -74,10 +74,10 @@ struct Scheduler: View {
     @State private var selected: EntitySchedule?
     @State private var selectedSchedule: EntitySchedule?
     @State private var upcoming: [EntitySchedule] = []
-
+    
     @State private var frequenceType     : [String]    = []
     @State var selectedType     : String
-
+    
     @State private var isAddDialogPresented = false
     @State private var isEditDialogPresented = false // Nouveau état pour afficher le dialog d'édition
     @State private var modeCreate = false
@@ -98,11 +98,9 @@ struct Scheduler: View {
             
             SchedulerTable(schedulers: dataManager.schedulers, selection: $selectedItem)
                 .frame(height: 300)
-            
                 .onAppear {
                     setupDataManager()
                 }
-            
                 .onChange(of: selectedItem) { oldValue, newValue in
                     if let selected = newValue {
                         selectedItem = selected
@@ -228,6 +226,10 @@ struct Scheduler: View {
 
 struct SchedulerTable: View {
     
+    
+    var schedulers: [EntitySchedule]
+    @Binding var selection: UUID?
+    
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
@@ -235,65 +237,61 @@ struct SchedulerTable: View {
         return formatter
     }()
     
-    var schedulers: [EntitySchedule]
-    @Binding var selection: UUID?
-    
     var body: some View {
         
-        ScrollViewReader { proxy in
-            Table(schedulers, selection: $selection) {
-                //                Group {
-                TableColumn("Value Date") { item in
-                    Text(dateFormatter.string(from: item.dateValeur))
-                        .id(item.id)
-                }
-                TableColumn("Start Date") { item in
-                    Text(dateFormatter.string(from: item.dateDebut))
-                }
-                TableColumn("End Date") { item in
-                    Text(dateFormatter.string(from: item.dateFin))
-                }
-                TableColumn("Amount") { item in
-                    Text(String(item.amount))
-                }
-                TableColumn("Frequency") { item in
-                    Text(String(item.frequence))
-                }
-                TableColumn("Comment") { item in
-                    Text(item.libelle)
-                }
-                TableColumn("Next") { item in
-                    Text(String(item.nextOccurence))
-                }
-                TableColumn("Occurence") { item in
-                    Text(String(item.occurence))
-                }
-                //                }
-                //                Group {
-                TableColumn("Mode") { item in
-                    Text(String(item.paymentMode?.name ?? "N/A"  ))
-                }
-                //                    TableColumn("Rubric") { item in
-                //                        Text(String(item.category?.rubric?.name ?? "N/A"))
-                //                    }
-                TableColumn("Category") { item in
-                    Text(String(item.category?.name  ?? "N/A"))
-                }
-                //                    TableColumn("Name") { item in
-                //                        Text(item.account.identity?.name ?? "")
-                //                    }
-                //                    TableColumn("Number") { item in
-                //                        Text(item.account.initAccount?.codeAccount ?? "")
-                //                    }
-                //                }
+        
+        //        ScrollViewReader { proxy in
+        Table(schedulers, selection: $selection) {
+
+            TableColumn("Value Date") { (item: EntitySchedule) in
+                let valueDate = dateFormatter.string(from: item.dateValeur)
+                Text(valueDate)
             }
-            .onChange(of: selection) { old, newID in
-                if let newID = newID {
-                    withAnimation {
-                        proxy.scrollTo(newID, anchor: .center)
-                    }
-                }
+            TableColumn("Start Date") { (item: EntitySchedule) in
+                let startDate = dateFormatter.string(from: item.dateValeur)
+                Text(startDate)
             }
+            TableColumn("End Date") { (item: EntitySchedule) in
+                let endDate = dateFormatter.string(from: item.dateFin)
+                Text(endDate)
+            }
+            TableColumn("Amount") { (item: EntitySchedule) in
+                Text(String(item.amount))
+            }
+            TableColumn("Frequency") { (item: EntitySchedule) in
+                Text(String(item.frequence))
+            }
+            TableColumn("Comment") { (item: EntitySchedule) in
+                Text(item.libelle)
+            }
+            TableColumn("Next") { (item: EntitySchedule) in
+                Text(String(item.nextOccurrence))
+            }
+            TableColumn("Occurrence") { (item: EntitySchedule) in
+                Text(String(item.occurrence))
+            }
+            TableColumn("Mode") { (item: EntitySchedule) in
+                Text(String(item.paymentMode?.name ?? "N/A"  ))
+            }
+            TableColumn("Rubric") { (item: EntitySchedule) in
+                Text(String(item.category?.rubric?.name ?? "N/A"))
+            }
+//            TableColumn("Category") { (item: EntitySchedule) in
+//                Text(String(item.category?.name  ?? "N/A"))
+//            }
+//            TableColumn("Name") { (item: EntitySchedule) in
+//                Text(item.account.identity?.name ?? "")
+//            }
+//            TableColumn("Number") {  (item: EntitySchedule) in
+//                Text(item.account.initAccount?.codeAccount ?? "")
+//            }
         }
+        //        .onChange(of: selection) { old, newID in
+        //            if let newID = newID {
+        //                withAnimation {
+        //                    proxy.scrollTo(newID, anchor: .center)
+        //                }
+        //            }
+        //        }
     }
 }

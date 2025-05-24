@@ -11,6 +11,7 @@
 		03A862B52DE0CE0300D377CE /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03DF76F22D9D18D900D179E1 /* Localizable.xcstrings */; };
 		03A862B72DE0CE0300D377CE /* Menu.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03DF76F42D9D18D900D179E1 /* Menu.xcstrings */; };
 		03A862BA2DE0D2AF00D377CE /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = 03A862B92DE0D2AF00D377CE /* DGCharts */; };
+		03B4CB672DE0F6F500D0FB7F /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = 03B4CB662DE0F6F500D0FB7F /* SwiftDate */; };
 		03DF76E72D9D183E00D179E1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 03DF76E52D9D183E00D179E1 /* README.md */; };
 		03DF76E82D9D183E00D179E1 /* README_fr.md in Resources */ = {isa = PBXBuildFile; fileRef = 03DF76E62D9D183E00D179E1 /* README_fr.md */; };
 		03DF77002D9D194200D179E1 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 03DF76F92D9D194200D179E1 /* Info.plist */; };
@@ -67,6 +68,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03B4CB672DE0F6F500D0FB7F /* SwiftDate in Frameworks */,
 				03A862BA2DE0D2AF00D377CE /* DGCharts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -130,6 +132,7 @@
 			name = PegaseUIData;
 			packageProductDependencies = (
 				03A862B92DE0D2AF00D377CE /* DGCharts */,
+				03B4CB662DE0F6F500D0FB7F /* SwiftDate */,
 			);
 			productName = PegaseUIData;
 			productReference = 03DF764F2D9D15F300D179E1 /* PegaseUIData.app */;
@@ -164,6 +167,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				03A862B82DE0D2AF00D377CE /* XCRemoteSwiftPackageReference "Charts" */,
+				03B4CB652DE0F6F500D0FB7F /* XCRemoteSwiftPackageReference "SwiftDate" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 03DF76502D9D15F300D179E1 /* Products */;
@@ -429,6 +433,14 @@
 				minimumVersion = 5.1.0;
 			};
 		};
+		03B4CB652DE0F6F500D0FB7F /* XCRemoteSwiftPackageReference "SwiftDate" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/malcommac/SwiftDate";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -436,6 +448,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 03A862B82DE0D2AF00D377CE /* XCRemoteSwiftPackageReference "Charts" */;
 			productName = DGCharts;
+		};
+		03B4CB662DE0F6F500D0FB7F /* SwiftDate */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03B4CB652DE0F6F500D0FB7F /* XCRemoteSwiftPackageReference "SwiftDate" */;
+			productName = SwiftDate;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
