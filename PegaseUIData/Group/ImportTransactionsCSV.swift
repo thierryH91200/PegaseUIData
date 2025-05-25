@@ -121,23 +121,23 @@ struct ImportTransactionFileView: View {
 
         for row in csvData.dropFirst() { // Ignorer l'en-tête
             
-            let dateOperation = getDate(from: row, index: columnMapping["Operation Date"])
-            let datePointage =  getDate(from: row, index: columnMapping["Pointage Date"])
-            let libelle = getString(from: row, index: columnMapping["Comment"])
+            let dateOperation = getDate(from: row, index: columnMapping[String(localized:"Operation Date")])
+            let datePointage =  getDate(from: row, index: columnMapping[String(localized:"Pointage Date")])
+            let libelle = getString(from: row, index: columnMapping[String(localized:"Comment")])
 
            let bankStatement = 0.0
             
-            let rubric = getString(from: row, index: columnMapping["Rubric"])
-            let category = getString(from: row, index: columnMapping["Category"])
+            let rubric = getString(from: row, index: columnMapping[String(localized:"Rubric")])
+            let category = getString(from: row, index: columnMapping[String(localized:"Category")])
             let entityCategory = CategoriesManager.shared.find(account: account, name: category) ?? entityPreference?.category
 
-            let paymentMode = getString(from: row, index: columnMapping["Payment method"])
+            let paymentMode = getString(from: row, index: columnMapping[String(localized:"Payment method")])
             let entityModePaiement = PaymentModeManager.shared.find(account: account, name: paymentMode) ?? entityPreference?.paymentMode
 
-            let status = getString(from: row, index: columnMapping["Status"])
+            let status = getString(from: row, index: columnMapping[String(localized:"Status")])
             let entityStatus = StatusManager.shared.find(name: status) ?? entityPreference?.status
             
-            let amount = getDouble(from: row, index: columnMapping["Amount"])
+            let amount = getDouble(from: row, index: columnMapping[String(localized:"Amount")])
             
             let transaction = EntityTransactions()
             
