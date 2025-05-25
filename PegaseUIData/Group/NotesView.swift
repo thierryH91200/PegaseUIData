@@ -53,6 +53,6 @@ struct NotesView10: View {
     }
     private func refreshData() {
         BankStatementManager.shared.configure(with: modelContext)
-        dataManager.statements = BankStatementManager.shared.getAllDatas()
+        dataManager.statements = BankStatementManager.shared.getAllData()
     }
 }

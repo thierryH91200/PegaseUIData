@@ -47,7 +47,7 @@ protocol StatusManaging {
     func create(account: EntityAccount?, name: String, type: Int, color: NSColor) throws -> EntityStatus?
     func find( account: EntityAccount?, name: String) -> EntityStatus?
 
-    func getAllDatas(for account: EntityAccount?) -> [EntityStatus]?
+    func getAllData(for account: EntityAccount?) -> [EntityStatus]?
     func saveContext()
     func defaultStatus(account: EntityAccount)
 }
@@ -108,7 +108,7 @@ final class StatusManager: StatusManaging {
         }
     }
 
-    func getAllDatas(for account: EntityAccount?) -> [EntityStatus]? {
+    func getAllData(for account: EntityAccount?) -> [EntityStatus]? {
         guard let account = account else {
             print("Erreur : Account est nil")
             return nil

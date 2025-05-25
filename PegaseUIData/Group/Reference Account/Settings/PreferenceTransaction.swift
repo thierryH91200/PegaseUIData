@@ -195,13 +195,13 @@ struct PreferenceTransactionView: View {
     func configureFormState() async throws {
         PaymentModeManager.shared.configure(with: modelContext)
         if /*let account = CurrentAccountManager.shared.getAccount(),*/
-           let modes = PaymentModeManager.shared.getAllDatas() {
+           let modes = PaymentModeManager.shared.getAllData() {
             selectedMode = entityPreference?.paymentMode
             entityPaymentMode = modes
         }
         StatusManager.shared.configure(with: modelContext)
         if let account = CurrentAccountManager.shared.getAccount() {
-            if let status = StatusManager.shared.getAllDatas(for: account) {
+            if let status = StatusManager.shared.getAllData(for: account) {
                 // Sélection sécurisée du premier status
                 selectedStatus = entityPreference?.status
                 entityStatus = status
@@ -212,7 +212,7 @@ struct PreferenceTransactionView: View {
     // Rafraîchir les données du formulaire
     private func refreshData(for account: EntityAccount) async throws {
         PreferenceManager.shared.configure(with: modelContext)
-        dataManager.preferenceTransaction = PreferenceManager.shared.getAllDatas(for: account)
+        dataManager.preferenceTransaction = PreferenceManager.shared.getAllData(for: account)
         guard let entityPreference = dataManager.preferenceTransaction else { return }
         
         self.entityPreference = entityPreference
@@ -222,9 +222,9 @@ struct PreferenceTransactionView: View {
         selectedCategory = entityPreference.category
         isExpanded = entityPreference.signe
         
-        entityStatus = StatusManager.shared.getAllDatas(for: account) ?? []
-        entityPaymentMode = PaymentModeManager.shared.getAllDatas()!
-        entityRubric = RubricManager.shared.getAllDatas()
+        entityStatus = StatusManager.shared.getAllData(for: account) ?? []
+        entityPaymentMode = PaymentModeManager.shared.getAllData()!
+        entityRubric = RubricManager.shared.getAllData()
         entityCategorie = selectedRubric?.categorie ?? []
     }
 }

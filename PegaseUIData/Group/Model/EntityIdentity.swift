@@ -101,7 +101,7 @@ final class IdentityManager  {
     }
     
     @discardableResult
-    func getAllDatas() -> EntityIdentity? {
+    func getAllData() -> EntityIdentity? {
         // Filtre pour l'entité liée à `currentAccount`
         
         guard let currentAccount = CurrentAccountManager.shared.getAccount() else {

@@ -45,7 +45,7 @@ struct AccountFactory {
         
         RubricManager.shared.configure(with: modelContext)  
         RubricManager.shared.defaultRubric(for: account)
-        let rubric = RubricManager.shared.getAllDatas(account: account)
+        let rubric = RubricManager.shared.getAllData(account: account)
         account.rubric = rubric
 
         PreferenceManager.shared.configure(with: modelContext)

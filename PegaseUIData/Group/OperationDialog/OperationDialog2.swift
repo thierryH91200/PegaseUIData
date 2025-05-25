@@ -141,7 +141,7 @@ struct OperationDialogView: View {
     
     private func refreshData() {
         ListTransactionsManager.shared.configure(with: modelContext)
-        dataManager.listTransactions = ListTransactionsManager.shared.getAllDatas()
+        dataManager.listTransactions = ListTransactionsManager.shared.getAllData()
     }
     
     func configureFormState() async throws {
@@ -152,7 +152,7 @@ struct OperationDialogView: View {
         
         // Configuration des modes de paiement
         PaymentModeManager.shared.configure(with: modelContext)
-        if let modes = PaymentModeManager.shared.getAllDatas() {
+        if let modes = PaymentModeManager.shared.getAllData() {
             formState.paymentModes = modes
             // Sélection sécurisée du premier mode de paiement
             formState.selectedMode = modes.first
@@ -161,7 +161,7 @@ struct OperationDialogView: View {
         // Configuration des différents status
         StatusManager.shared.configure(with: modelContext)
         if let account = CurrentAccountManager.shared.getAccount() {
-            if let status = StatusManager.shared.getAllDatas(for: account) {
+            if let status = StatusManager.shared.getAllData(for: account) {
                 formState.status = status
                 // Sélection sécurisée du premier status
                 formState.selectedStatus = status.first
@@ -280,7 +280,7 @@ struct OperationDialogView: View {
         
         PreferenceManager.shared.configure(with: modelContext)
         let account = CurrentAccountManager.shared.getAccount()
-        let entityPreference = PreferenceManager.shared.getAllDatas(for: account)
+        let entityPreference = PreferenceManager.shared.getAllData(for: account)
 
         formState.currentTransaction = nil
         formState.currentSousTransaction = nil

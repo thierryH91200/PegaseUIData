@@ -106,7 +106,7 @@ final class ChequeBookManager : ObservableObject {
         return entity
     }
 
-    func getAllDatas() -> [EntityCheckBook]? {
+    func getAllData() -> [EntityCheckBook]? {
         
         guard let account = CurrentAccountManager.shared.getAccount() else {
             print("Erreur : aucun compte courant trouvé.")
@@ -192,7 +192,7 @@ class ChequeBookViewModel: ObservableObject {
     
     @MainActor
     private func loadInitialData() async {
-        carnetCheques = manager.getAllDatas() ?? []
+        carnetCheques = manager.getAllData() ?? []
     }
     
     func add(name: String) {
@@ -209,6 +209,6 @@ class ChequeBookViewModel: ObservableObject {
     }
     
     func reloadData() async {
-        carnetCheques = manager.getAllDatas() ?? []
+        carnetCheques = manager.getAllData() ?? []
     }
 }

@@ -676,6 +676,16 @@
         }
       }
     },
+    "Add Category" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter une catégorie"
+          }
+        }
+      }
+    },
     "Add CheckBook" : {
       "localizations" : {
         "de" : {
@@ -832,55 +842,12 @@
         }
       }
     },
-    "Add scheduler" : {
-      "extractionState" : "stale",
+    "Add Rubric" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Add scheduler"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ajouter un écheancier"
-          }
-        },
-        "he" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "value" : "Ajouter une rubrique"
           }
         }
       }
@@ -4544,6 +4511,26 @@
         }
       }
     },
+    "Delete Category" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer une catégorie"
+          }
+        }
+      }
+    },
+    "Delete Rubric" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer une rubrique"
+          }
+        }
+      }
+    },
     "Delete sub-operation" : {
       "localizations" : {
         "de" : {
@@ -5260,6 +5247,16 @@
           "stringUnit" : {
             "state" : "error",
             "value" : ""
+          }
+        }
+      }
+    },
+    "Edit Category" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editer une catégorie"
           }
         }
       }
@@ -7427,7 +7424,14 @@
       }
     },
     "Import an OFX file" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importer un ficher OFX"
+          }
+        }
+      }
     },
     "Income/Expense" : {
       "localizations" : {
@@ -8749,61 +8753,15 @@
         }
       }
     },
-    "Next occurence" : {
-      "extractionState" : "stale",
+    "Next occurrence" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Next occurence"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Prochaine occurence"
-          }
-        },
-        "he" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "value" : "Prochaine occurrence"
           }
         }
       }
-    },
-    "Next occurrence" : {
-
     },
     "No account selected." : {
       "localizations" : {
@@ -9467,61 +9425,15 @@
         }
       }
     },
-    "Occurence" : {
-      "extractionState" : "stale",
+    "Occurrence" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Occurence"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Occurence"
-          }
-        },
-        "he" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "value" : "Occurrence"
           }
         }
       }
-    },
-    "Occurrence" : {
-
     },
     "OK" : {
       "localizations" : {
@@ -11496,56 +11408,21 @@
       }
     },
     "Transaction OFX" : {
-
-    },
-    "Transfers" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Transfers"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Virement"
+            "value" : "Transaction OFX"
           }
-        },
-        "he" : {
+        }
+      }
+    },
+    "Transfers" : {
+      "localizations" : {
+        "fr" : {
           "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "state" : "translated",
+            "value" : "Transfert"
           }
         }
       }
@@ -11562,17 +11439,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Courbe de la trésorerie"
-          }
-        }
-      }
-    },
-    "Type" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Type"
           }
         }
       }

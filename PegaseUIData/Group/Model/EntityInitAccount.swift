@@ -41,8 +41,11 @@ final class InitAccountManager {
     private var initAccounts = [EntityInitAccount]()
     private var initAccount : EntityInitAccount?
 
-    var account: EntityAccount?
-    
+    // Contexte pour les modifications
+    var currentAccount: EntityAccount {
+        CurrentAccountManager.shared.getAccount()!
+    }
+
     // Contexte pour les modifications
     var modelContext : ModelContext?
     var validContext: ModelContext {
@@ -61,7 +64,7 @@ final class InitAccountManager {
     }
 
     // Utiliser un seul contexte pour la gestion des données
-    func getAllDatas() -> EntityInitAccount? {
+    func getAllData() -> EntityInitAccount? {
         
         guard let account = CurrentAccountManager.shared.getAccount() else {
             print("Erreur : aucun compte courant trouvé.")
@@ -108,6 +111,7 @@ final class InitAccountManager {
         entity.prevu = 0
         entity.realise = 0
         entity.account = account // Associe le compte à l'entité
+        
         validContext.insert(entity)
         initAccounts.append(entity) // Mise à jour de la liste locale
         
@@ -119,7 +123,7 @@ final class InitAccountManager {
         validContext.delete( entityInitAccount) // Appelle la méthode sans try
         initAccount = nil
  
-        initAccount = getAllDatas()      // Recharger depuis la base de données
+        initAccount = getAllData()      // Recharger depuis la base de données
     }
     func save () throws {
         
@@ -145,7 +149,7 @@ class InitAccountViewModel: ObservableObject {
     
     // MARK: Actions utilisateur :
     private func loadInitialData() {
-        initAccount = manager.getAllDatas()
+        initAccount = manager.getAllData()
     }
 
     func add(name: String) {
@@ -174,7 +178,7 @@ class InitAccountViewModel: ObservableObject {
     // MARK: Communication avec les services ou les managers :
     @discardableResult
     func reloadData() -> EntityInitAccount {
-        let initAccounts = manager.getAllDatas()
+        let initAccounts = manager.getAllData()
         return initAccounts!
     }
     

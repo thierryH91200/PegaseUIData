@@ -120,7 +120,7 @@ struct DGBarChart1Representable: NSViewRepresentable {
     
     func updateAccount () {
         // Charger toutes les transactions d'abord
-        let allTransactions = ListTransactionsManager.shared.getAllDatas()
+        let allTransactions = ListTransactionsManager.shared.getAllData()
 
         guard !allTransactions.isEmpty else {
             DispatchQueue.main.async {

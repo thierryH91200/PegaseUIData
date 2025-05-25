@@ -41,7 +41,7 @@ struct ListTransactionsView100: View {
     
     @MainActor
     func resetDatabase() {
-        let transactions = ListTransactionsManager.shared.getAllDatas()
+        let transactions = ListTransactionsManager.shared.getAllData()
         
         for transaction in transactions {
             modelContext.delete(transaction)
@@ -192,12 +192,12 @@ struct ListTransactions200: View {
     
     @MainActor
     func loadTransactions() {
-        dataManager.listTransactions = ListTransactionsManager.shared.getAllDatas(ascending: false)
+        dataManager.listTransactions = ListTransactionsManager.shared.getAllData(ascending: false)
     }
     
     @MainActor
     func resetDatabase(using context: ModelContext) {
-        let transactions = ListTransactionsManager.shared.getAllDatas()
+        let transactions = ListTransactionsManager.shared.getAllData()
         
         for transaction in transactions {
             context.delete(transaction)
@@ -254,7 +254,7 @@ struct ListTransactions200: View {
     private func balanceCalculation() {
         // Récupère les données de l'init
         InitAccountManager.shared.configure(with: modelContext)
-        guard let initCompte = InitAccountManager.shared.getAllDatas() else { return }
+        guard let initCompte = InitAccountManager.shared.getAllData() else { return }
         
         // Initialisation des soldes
         var balanceRealise = initCompte.realise

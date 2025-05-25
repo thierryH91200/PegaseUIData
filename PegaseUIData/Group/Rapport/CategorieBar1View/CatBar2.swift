@@ -96,7 +96,7 @@ struct CategorieBar1View1: View {
         .onAppear {
             
             ListTransactionsManager.shared.configure(with: modelContext)
-            let listTransactions = ListTransactionsManager.shared.getAllDatas()
+            let listTransactions = ListTransactionsManager.shared.getAllData()
             minDate = listTransactions.first!.dateOperation
             maxDate = listTransactions.last!.dateOperation
             selectedEnd = maxDate.timeIntervalSince(minDate) / oneDay

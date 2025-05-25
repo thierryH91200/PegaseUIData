@@ -68,7 +68,7 @@ struct DGLineChartRepresentable: NSViewRepresentable {
     
     func updateAccount () {
         // Charger toutes les transactions d'abord
-        let allTransactions = ListTransactionsManager.shared.getAllDatas()
+        let allTransactions = ListTransactionsManager.shared.getAllData()
 
         guard !allTransactions.isEmpty else {
             DispatchQueue.main.async {
@@ -263,7 +263,7 @@ struct DGLineChartRepresentable: NSViewRepresentable {
 
         var localGraph: [DataTresorerie] = []
 
-        let initAccount = InitAccountManager.shared.getAllDatas()
+        let initAccount = InitAccountManager.shared.getAllData()
 
         var soldeRealise = initAccount?.realise ?? 0
         var soldePrevu   = initAccount?.prevu ?? 0

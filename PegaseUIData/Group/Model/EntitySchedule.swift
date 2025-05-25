@@ -125,7 +125,7 @@ final class SchedulerManager {
     }
     
     // Récupérer toutes les données filtrées par compte
-    func getAllDatas() -> [EntitySchedule]? {
+    func getAllData() -> [EntitySchedule]? {
 
         guard let currentAccount = CurrentAccountManager.shared.getAccount() else {
             print("Erreur : aucun compte courant trouvé.")
@@ -154,7 +154,7 @@ final class SchedulerManager {
 
         entitySchedule.nextOccurrence += 1
         let account = CurrentAccountManager.shared.getAccount()!
-        let entityStatus = StatusManager.shared.getAllDatas(for: account) ?? []
+        let entityStatus = StatusManager.shared.getAllData(for: account) ?? []
         
         let dateValeur = entitySchedule.dateValeur.noon
         

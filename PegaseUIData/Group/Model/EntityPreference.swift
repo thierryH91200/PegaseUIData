@@ -40,7 +40,7 @@ import SwiftUI
 protocol PreferenceManaging {
     func configure(with modelContext: ModelContext)
     func defaultPref(account: EntityAccount) -> EntityPreference?
-    func getAllDatas(for account: EntityAccount?) -> EntityPreference?
+    func getAllData(for account: EntityAccount?) -> EntityPreference?
     func saveContext()
 }
 
@@ -70,22 +70,22 @@ final class PreferenceManager: PreferenceManaging {
     // MARK: - default
     func defaultPref(account: EntityAccount) -> EntityPreference? {
         // Vérifie si une préférence existe déjà
-        if let existingPreference = getAllDatas(for: account) {
+        if let existingPreference = getAllData(for: account) {
             return existingPreference
         }
 
         let newPreference = EntityPreference(account: account)
         
         if newPreference.category == nil,
-           let rubric = RubricManager.shared.getAllDatas(account: account).first {
+           let rubric = RubricManager.shared.getAllData(account: account).first {
             if let category = rubric.categorie.sorted(by: { $0.name < $1.name }).first {
                 newPreference.category = category
             }
         }
         
-        newPreference.paymentMode = PaymentModeManager.shared.getAllDatas()?.first
+        newPreference.paymentMode = PaymentModeManager.shared.getAllData()?.first
 
-        let rubrics = RubricManager.shared.getAllDatas(account: account)
+        let rubrics = RubricManager.shared.getAllData(account: account)
         if let firstRubric = rubrics.first {
             newPreference.category = firstRubric.categorie.first
             newPreference.category?.rubric = firstRubric
@@ -93,7 +93,7 @@ final class PreferenceManager: PreferenceManaging {
         
         // Configuration de status
         StatusManager.shared.configure(with: validContext)
-        newPreference.status = StatusManager.shared.getAllDatas(for: account)?.first
+        newPreference.status = StatusManager.shared.getAllData(for: account)?.first
 
         newPreference.signe = true
         newPreference.account = account
@@ -105,7 +105,7 @@ final class PreferenceManager: PreferenceManaging {
         return newPreference
     }
     
-    func getAllDatas(for account: EntityAccount?) -> EntityPreference? {
+    func getAllData(for account: EntityAccount?) -> EntityPreference? {
         guard let account = account else {
             print("Erreur : Account est nil")
             return nil

@@ -90,7 +90,7 @@ struct BankStatementListView: View {
                     if dataManager.statements == nil {
 
                         BankStatementManager.shared.configure(with: modelContext)
-                        let statements = BankStatementManager.shared.getAllDatas()
+                        let statements = BankStatementManager.shared.getAllData()
                         dataManager.statements = statements
                     }
                 }
@@ -186,7 +186,7 @@ struct BankStatementListView: View {
     }
     
     private func refreshData() {
-        dataManager.statements = BankStatementManager.shared.getAllDatas()
+        dataManager.statements = BankStatementManager.shared.getAllData()
     }
 }
 

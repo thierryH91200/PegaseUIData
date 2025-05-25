@@ -47,7 +47,7 @@ struct Sidebar1A: View {
                 
                 // Exécute le code asynchrone dans une Task
                 Task {
-                    let modes = PaymentModeManager.shared.getAllDatas()
+                    let modes = PaymentModeManager.shared.getAllData()
                     
                     // Mettez à jour les données sur le thread principal
                     DispatchQueue.main.async {

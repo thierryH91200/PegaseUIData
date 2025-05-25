@@ -70,7 +70,7 @@ struct RubricView: View {
                         selectedCategory = nil
                         selectedRubric = nil
                         
-                        rubriques = RubricManager.shared.getAllDatas()
+                        rubriques = RubricManager.shared.getAllData()
                         dataManager.rubrics = rubriques
                     }
                 }
@@ -79,7 +79,7 @@ struct RubricView: View {
                     dataManager.configure(with: modelContext)
                     RubricManager.shared.configure(with: modelContext)
                     
-                    rubriques = RubricManager.shared.getAllDatas()
+                    rubriques = RubricManager.shared.getAllData()
                     dataManager.rubrics = rubriques
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -99,7 +99,7 @@ struct RubricView: View {
                             isAddDialogCategoryPresented = true
                         }
                     }) {
-                        let label = selectedRubric != nil ? "Add Rubric" : "Add Category"
+                        let label = selectedRubric != nil ? String(localized:"Add Rubric") : String(localized:"Add Category")
                         Label(label, systemImage: "plus")
                             .padding()
                             .background(Color.blue)
@@ -118,7 +118,7 @@ struct RubricView: View {
                         }
 
                     }) {
-                        let label = selectedRubric != nil ? "Edit Rubric" : "Edit Category"
+                        let label = selectedRubric != nil ? String(localized:"Edit Rubric") : String(localized:"Edit Category")
                         Label(label, systemImage: "pencil")
                             .padding()
                             .background((selectedRubric == nil && selectedCategory == nil) ? Color.gray : Color.green) // Fond gris si désactivé
@@ -135,7 +135,7 @@ struct RubricView: View {
                         refreshData()
                     })
                     {
-                        let label = selectedRubric != nil ? "Delete Rubric" : "Delete Category"
+                        let label = selectedRubric != nil ? String(localized:"Delete Rubric") : String(localized:"Delete Category")
                         Label(label, systemImage: "trash")
                             .padding()
                             .background((selectedRubric == nil && selectedCategory == nil) ? Color.gray : Color.red) // Fond gris si désactivé
@@ -178,7 +178,7 @@ struct RubricView: View {
     }
     
     func refreshData() {
-        rubriques = RubricManager.shared.getAllDatas()
+        rubriques = RubricManager.shared.getAllData()
         dataManager.rubrics = rubriques
     }
     

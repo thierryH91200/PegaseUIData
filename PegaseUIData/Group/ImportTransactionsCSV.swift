@@ -21,7 +21,14 @@ struct ImportTransactionFileView: View {
     @State private var columnMapping: [String: Int] = [:] // Associe les attributs aux colonnes
 
     // Attributs disponibles
-    let transactionAttributes = ["datePointage", "dateOperation", "libelle", "category", "paymentMode", "amount"]
+    let transactionAttributes = [String(localized:"Pointage Date"),
+                                 String(localized:"Operation Date"),
+                                 String(localized:"Comment"),
+                                 String(localized:"Rubric"),
+                                 String(localized:"Category"),
+                                 String(localized:"Payment method"),
+                                 String(localized:"Status"),
+                                 String(localized:"Amount")]
     
     var body: some View {
         VStack {
@@ -110,26 +117,28 @@ struct ImportTransactionFileView: View {
         StatusManager.shared.configure(with: context)
         CategoriesManager.shared.configure(with: context)
         
-        let entityPreference = PreferenceManager.shared.getAllDatas(for: account)
+        let entityPreference = PreferenceManager.shared.getAllData(for: account)
 
         for row in csvData.dropFirst() { // Ignorer l'en-tête
             
-            let dateOperation = getDate(from: row, index: columnMapping["dateOperation"])
-            let datePointage =  getDate(from: row, index: columnMapping["datePointage"])
+            let dateOperation = getDate(from: row, index: columnMapping["Operation Date"])
+            let datePointage =  getDate(from: row, index: columnMapping["Pointage Date"])
+            let libelle = getString(from: row, index: columnMapping["Comment"])
+
+           let bankStatement = 0.0
             
-            let paymentMode = getString(from: row, index: columnMapping["paymentMode"])
+            let rubric = getString(from: row, index: columnMapping["Rubric"])
+            let category = getString(from: row, index: columnMapping["Category"])
+            let entityCategory = CategoriesManager.shared.find(account: account, name: category) ?? entityPreference?.category
+
+            let paymentMode = getString(from: row, index: columnMapping["Payment method"])
             let entityModePaiement = PaymentModeManager.shared.find(account: account, name: paymentMode) ?? entityPreference?.paymentMode
 
-            let status = getString(from: row, index: columnMapping["status"])
+            let status = getString(from: row, index: columnMapping["Status"])
             let entityStatus = StatusManager.shared.find(name: status) ?? entityPreference?.status
             
-           let bankStatement = 0.0
-
-            let libelle = getString(from: row, index: columnMapping["libelle"])
-            let amount = getDouble(from: row, index: columnMapping["amount"])
-            let category = getString(from: row, index: columnMapping["category"])
-            let entityCategory = CategoriesManager.shared.find(account: account, name: category) ?? entityPreference?.category
-        
+            let amount = getDouble(from: row, index: columnMapping["Amount"])
+            
             let transaction = EntityTransactions()
             
             transaction.createAt  = Date().noon
@@ -150,7 +159,6 @@ struct ImportTransactionFileView: View {
             sousTransaction.transaction = transaction
             
             context.insert(sousTransaction)
-//            transaction.updateAmount()
             transaction.addSubOperation(sousTransaction)
 
             context.insert(transaction)
@@ -258,9 +266,10 @@ func importOFXTransactions(from url: URL, context: ModelContext) {
             return after.prefix(while: { $0 != "\n" && $0 != "\r" }).trimmingCharacters(in: .whitespaces)
         }
 
-        let type = extract("TRNTYPE")
+//        let type = extract("TRNTYPE")
         let name = extract("NAME")
-        let memo = extract("MEMO")
+//        let memo = extract("MEMO")
+        
         let amountString = extract("TRNAMT").replacingOccurrences(of: "+", with: "")
         let amount = Double(amountString) ?? 0.0
         let dateString = extract("DTPOSTED").prefix(8)
@@ -275,7 +284,7 @@ func importOFXTransactions(from url: URL, context: ModelContext) {
         entityTransaction.checkNumber = "0"
         entityTransaction.bankStatement = 0.0
 
-        let preference = PreferenceManager.shared.getAllDatas(for: account)
+        let preference = PreferenceManager.shared.getAllData(for: account)
         entityTransaction.status = preference?.status
         entityTransaction.paymentMode = preference?.paymentMode
 
@@ -293,11 +302,11 @@ func importOFXTransactions(from url: URL, context: ModelContext) {
     try? context.save()
 }
 
-//extension DateFormatter {
-//    static let ofxDate: DateFormatter = {
-//        let df = DateFormatter()
-//        df.dateFormat = "yyyyMMdd"
-//        df.timeZone = TimeZone(secondsFromGMT: 0)
-//        return df
-//    }()
-//}
+extension DateFormatter {
+    static let ofxDate: DateFormatter = {
+        let df = DateFormatter()
+        df.dateFormat = "yyyyMMdd"
+        df.timeZone = TimeZone(secondsFromGMT: 0)
+        return df
+    }()
+}

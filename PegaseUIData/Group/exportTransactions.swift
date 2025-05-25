@@ -59,7 +59,7 @@ struct CSVDocument: FileDocument {
 
 
 func exportTransactions(to url: URL) {
-    let transactions = ListTransactionsManager.shared.getAllDatas()
+    let transactions = ListTransactionsManager.shared.getAllData()
     
     let header = "datePointage,dateOperation,libelle,category,rubric,paymentMode,status,amount"
     var csvContent = "\(header)\n"

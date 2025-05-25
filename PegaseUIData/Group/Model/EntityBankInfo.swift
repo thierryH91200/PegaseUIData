@@ -38,7 +38,17 @@ public class EntityBanqueInfo : Identifiable{
 
 }
 
-final class BankManager {
+protocol BankManaging {
+    func configure(with modelContext: ModelContext)
+    func create(account: EntityAccount?) throws -> EntityBanqueInfo
+    func update()
+    func delete(entity: EntityBanqueInfo)
+
+    func getAllData() -> EntityBanqueInfo? 
+    func save() throws
+}
+
+final class BankManager : BankManaging {
     
     static let shared = BankManager()
     var entitiesBank = [EntityBanqueInfo]()
@@ -84,17 +94,15 @@ final class BankManager {
     }
     
     func update() {
-        
     }
-    func save() throws {
-    }
+    
     
     func delete(entity: EntityBanqueInfo) {
         validContext.delete(entity  )
     }
     
     @discardableResult
-    func getAllDatas() -> EntityBanqueInfo? {
+    func getAllData() -> EntityBanqueInfo? {
         
         guard let account = CurrentAccountManager.shared.getAccount() else {
             print("Erreur : aucun compte courant trouvé.")
@@ -118,6 +126,10 @@ final class BankManager {
         }
         return entitiesBank.first
     }
+    
+    func save() throws {
+    }
+
 }
 
 class BankViewModel: ObservableObject {
@@ -136,7 +148,7 @@ class BankViewModel: ObservableObject {
     
     // MARK: Actions utilisateur :
     private func loadInitialData() {
-        bank = manager.getAllDatas()
+        bank = manager.getAllData()
     }
     
     func add(name: String) {
@@ -162,7 +174,7 @@ class BankViewModel: ObservableObject {
     // MARK: Communication avec les services ou les managers :
     @discardableResult
     func reloadData() -> EntityBanqueInfo {
-        bank = manager.getAllDatas()
+        bank = manager.getAllData()
         return bank!
     }
     

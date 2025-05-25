@@ -65,7 +65,7 @@ struct BankView: View {
             if dataManager.banqueInfo == nil {
 
                 BankManager.shared.configure(with: modelContext)
-                let banqueInfo = BankManager.shared.getAllDatas()
+                let banqueInfo = BankManager.shared.getAllData()
                 dataManager.banqueInfo = banqueInfo
 
                 if banqueInfo == nil {
@@ -103,7 +103,7 @@ struct BankView: View {
         guard let account else { return }
 
         BankManager.shared.configure(with: modelContext)
-        dataManager.banqueInfo = BankManager.shared.getAllDatas() ?? {
+        dataManager.banqueInfo = BankManager.shared.getAllData() ?? {
             let entity = EntityBanqueInfo()
             entity.account = account
             modelContext.insert(entity)

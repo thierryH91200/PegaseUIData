@@ -54,7 +54,7 @@ class CategorieBar1ViewModel: ObservableObject {
     func updateAccount() {
         let startDate: Date? = nil
         let endDate: Date? = nil
-        let transactions = ListTransactionsManager.shared.getAllDatas(from: startDate, to: endDate)
+        let transactions = ListTransactionsManager.shared.getAllData(from: startDate, to: endDate)
 
         DispatchQueue.main.async {
             self.listTransactions = transactions
@@ -70,7 +70,7 @@ class CategorieBar1ViewModel: ObservableObject {
 //    func updateChartData(modelContext: ModelContext, currentAccount: EntityAccount?, startDate: Date, endDate: Date) {
 //        
 //        ListTransactionsManager.shared.configure(with: modelContext)
-//        listTransactions = ListTransactionsManager.shared.getAllDatas(from: startDate, to: endDate)
+//        listTransactions = ListTransactionsManager.shared.getAllData(from: startDate, to: endDate)
 //
 //        guard listTransactions.isEmpty == false else { return }
 //

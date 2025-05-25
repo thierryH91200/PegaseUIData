@@ -86,11 +86,11 @@ struct SchedulerFormView: View {
                 String(localized :"Year",table : "Account")]
             
             PreferenceManager.shared.configure(with: modelContext)
-            let entityPreference = PreferenceManager.shared.getAllDatas(for: account)
+            let entityPreference = PreferenceManager.shared.getAllData(for: account)
             PaymentModeManager.shared.configure(with: modelContext)
             RubricManager.shared.configure(with: modelContext)
-            entityPaymentMode = PaymentModeManager.shared.getAllDatas()!
-            entityRubric = RubricManager.shared.getAllDatas()
+            entityPaymentMode = PaymentModeManager.shared.getAllData()!
+            entityRubric = RubricManager.shared.getAllData()
             
             if let scheduler = scheduler {
                 //                scheduler.account = currentAccount
@@ -293,7 +293,7 @@ struct SchedulerFormView: View {
             newItem.account = CurrentAccountManager.shared.getAccount()!
             
             try? modelContext.save()
-            let allSchedulers = SchedulerManager.shared.getAllDatas()!
+            let allSchedulers = SchedulerManager.shared.getAllData()!
             schedulerDataManager.schedulers = allSchedulers
             if let last = allSchedulers.sorted(by: { $0.dateValeur < $1.dateValeur }).last {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {

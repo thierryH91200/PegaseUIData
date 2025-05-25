@@ -111,38 +111,7 @@ final class ListTransactionsManager: ListManaging {
         }
     }
 
-    
-//    func getAllDatas1(from startDate: Date, to endDate: Date, ascending: Bool = true) -> [EntityTransactions] {
-//        guard let currentAccount = CurrentAccountManager.shared.getAccount() else { return [] }
-//        self.ascending = ascending
-//        let currentAccountID = currentAccount.uuid
-//
-//        let predicate = #Predicate<EntityTransactions> {
-//            $0.account.uuid == currentAccountID &&
-//            $0.datePointage >= startDate &&
-//            $0.datePointage <= endDate
-//        }
-//
-//        let sort = [
-//            SortDescriptor(\EntityTransactions.datePointage, order: ascending ? .forward : .reverse),
-//            SortDescriptor(\EntityTransactions.dateOperation, order: ascending ? .forward : .reverse)
-//        ]
-//
-//        let fetchDescriptor = FetchDescriptor<EntityTransactions>(predicate: predicate, sortBy: sort)
-//
-//        do {
-//            entities = try validContext.fetch(fetchDescriptor)
-//            if currentAccount.isDemo {
-//                adjustDate(for: currentAccount)
-//            }
-//            return entities
-//        } catch {
-//            print("Erreur lors du fetch filtré : \(error)")
-//            return []
-//        }
-//    }
-    
-    func getAllDatas(from startDate: Date? = nil, to endDate: Date? = nil, ascending: Bool = true) -> [EntityTransactions] {
+    func getAllData(from startDate: Date? = nil, to endDate: Date? = nil, ascending: Bool = true) -> [EntityTransactions] {
         let all = loadAllTransactions(ascending: ascending) // Méthode qui charge toutes les transactions
         guard let start = startDate, let end = endDate else {
             return all
@@ -150,7 +119,7 @@ final class ListTransactionsManager: ListManaging {
         return all.filter { $0.datePointage >= start && $0.datePointage <= end }
     }
     
-    // MARK: getAllDatas
+    // MARK: getAllData
     func loadAllTransactions( ascending: Bool = true) -> [EntityTransactions] {
 
         let currentAccount = CurrentAccountManager.shared.getAccount()
@@ -270,7 +239,7 @@ class ListTransactionsViewModel: ObservableObject {
     }
 
     private func loadInitialData() {
-        listTransactions = manager.getAllDatas()
+        listTransactions = manager.getAllData()
     }
 
     

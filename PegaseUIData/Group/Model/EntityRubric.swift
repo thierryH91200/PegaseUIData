@@ -39,7 +39,10 @@ final class RubricManager {
     static let shared = RubricManager()
     
     // Contexte pour les modifications
-    var currentAccount: EntityAccount = EntityAccount()
+    var currentAccount: EntityAccount {
+        CurrentAccountManager.shared.getAccount()!
+    }
+
     var entitiesRubric: [EntityRubric] = []
     
     // Contexte pour les modifications
@@ -69,7 +72,7 @@ final class RubricManager {
         entitiesRubric.append(newRubric)
         return newRubric
     }
-    
+
     func find(account: EntityAccount, name: String) -> EntityRubric? {
         let result = entitiesRubric.first { $0.account.id == account.id && $0.name == name }
         return result
@@ -81,16 +84,9 @@ final class RubricManager {
     }
     
     @discardableResult
-    func getAllDatas(account: EntityAccount? = nil) -> [EntityRubric] {
-        
-//        var currentAccount : EntityAccount?
-        
-        let currentAccount = CurrentAccountManager.shared.getAccount()
-        guard currentAccount != nil else {
-            return []
-        }
-
-        let lhs = currentAccount!.uuid
+    func getAllData(account: EntityAccount? = nil) -> [EntityRubric] {
+               
+        let lhs = currentAccount.uuid
         let predicate = #Predicate<EntityRubric>{ entity in entity.account.uuid == lhs }
         let sort = [SortDescriptor(\EntityRubric.name, order: .forward)]
         
@@ -103,15 +99,14 @@ final class RubricManager {
 
         } catch {
             print("Erreur lors de la récupération des données : \(error.localizedDescription)")
-
         }
         if entitiesRubric.isEmpty {
-            defaultRubric(for : currentAccount!  )
+            defaultRubric(for : currentAccount  )
         }
         return entitiesRubric
     }
         
-    func importCSV(from fileURL: URL, account: EntityAccount) {
+    func importCSV(from fileURL: URL) {
         guard let content = try? String(contentsOf: fileURL, encoding: .utf8) else {
             print("Erreur de lecture du fichier")
             return
@@ -119,10 +114,8 @@ final class RubricManager {
 
         let lines = content.components(separatedBy: .newlines).filter { !$0.isEmpty }
         guard !lines.isEmpty else { return }
-        
-        let account = account // ✅ Récupérer une seule fois le compte
 
-        var currentRubric: EntityRubric?
+//        let account = currentAccount
 
         for (index, line) in lines.enumerated() {
             let columns = line.components(separatedBy: ";")
@@ -133,31 +126,16 @@ final class RubricManager {
                 let rubriqueName = columns[0]
                 let categoryName = columns[1]
                 let type         = columns[2]
-                let objectif = Double(columns[3]) ?? 0.0
-                let nscolor = colorFromName(columns[4])
+                let objectif     = Double(columns[3]) ?? 0.0
+                let nscolor      = colorFromName(columns[4])
 
-                // Vérifier si la rubrique existe déjà
-                if currentRubric?.name != rubriqueName {
-                    // Sauvegarder l'ancienne rubrique avant d'en créer une nouvelle
-                    if let rubric = currentRubric {
-                        validContext.insert(rubric)
-                    }
-                    // Créer une nouvelle rubrique
-                    currentRubric = EntityRubric(name: rubriqueName, color: nscolor, account: account)
-                    validContext.insert(currentRubric!)
-                }
+                // 🔁 Trouve ou crée la rubrique (robuste même si non consécutif)
+                let rubric = findOrCreate(account: currentAccount, name: rubriqueName, color: nscolor)
 
-                // Ajouter une catégorie
-                if let rubric = currentRubric {
-                    let category = EntityCategory(name: categoryName, objectif: objectif, rubric: rubric)
-                    rubric.categorie.append(category)
-                }
+                // ✅ Ajouter une catégorie à cette rubrique
+                let category = EntityCategory(name: categoryName, objectif: objectif, rubric: rubric)
+                rubric.categorie.append(category)
             }
-        }
-
-        // Sauvegarder la dernière rubrique
-        if let rubric = currentRubric {
-            validContext.insert(rubric)
         }
 
         do {
@@ -172,7 +150,7 @@ final class RubricManager {
             print("Error: File not found. ressources : rubrique.csv")
             return
         }
-        importCSV(from: url, account: account)
+        importCSV(from: url)
     }
     
     func save () throws {

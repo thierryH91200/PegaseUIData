@@ -166,6 +166,7 @@ struct TransactionLigne: View {
     @EnvironmentObject private var dataManager  : ListDataManager
     @EnvironmentObject var transactionManager   : TransactionSelectionManager
     @EnvironmentObject private var colorManager : ColorManager
+    // Use TransactionSelectionManager for lastSelectedTransactionID
 
     let transaction: EntityTransactions
     @Binding var selectedTransactions: Set<UUID>
@@ -274,6 +275,29 @@ struct TransactionLigne: View {
                     .padding()
             }
         }
+        // Keyboard shortcut: Cmd+A to select all transactions, Escape to deselect all
+        .onAppear {
+            NSEvent.addLocalMonitorForEvents(matching: [.keyDown]) { event in
+                if event.modifierFlags.contains(.command), event.charactersIgnoringModifiers == "a" {
+                    // Tout sélectionner
+                    for transaction in dataManager.listTransactions {
+                        selectedTransactions.insert(transaction.id)
+                    }
+                    transactionManager.selectedTransactions = dataManager.listTransactions
+                    return nil
+                }
+
+                if event.keyCode == 53 { // Escape key
+                    // Tout désélectionner
+                    selectedTransactions.removeAll()
+                    transactionManager.selectedTransaction = nil
+                    transactionManager.selectedTransactions = []
+                    return nil
+                }
+
+                return event
+            }
+        }
     }
     
     @ViewBuilder
@@ -292,20 +316,31 @@ struct TransactionLigne: View {
     }
     
     private func toggleSelection() {
-        if NSEvent.modifierFlags.contains(.command) || NSEvent.modifierFlags.contains(.shift) {
-            // Mode sélection multiple : ajoute ou enlève de la sélection
+        let isCommand = NSEvent.modifierFlags.contains(.command)
+        let isShift = NSEvent.modifierFlags.contains(.shift)
+
+        if isShift, let lastID = transactionManager.lastSelectedTransactionID,
+           let lastIndex = dataManager.listTransactions.firstIndex(where: { $0.id == lastID }),
+           let currentIndex = dataManager.listTransactions.firstIndex(where: { $0.id == transaction.id }) {
+
+            let range = lastIndex < currentIndex ? lastIndex...currentIndex : currentIndex...lastIndex
+            let idsInRange = dataManager.listTransactions[range].map { $0.id }
+            selectedTransactions.formUnion(idsInRange)
+
+        } else if isCommand {
             if selectedTransactions.contains(transaction.id) {
                 selectedTransactions.remove(transaction.id)
             } else {
                 selectedTransactions.insert(transaction.id)
             }
+            transactionManager.lastSelectedTransactionID = transaction.id
+
         } else {
-            // Mode sélection unique : efface la sélection précédente
             selectedTransactions.removeAll()
             selectedTransactions.insert(transaction.id)
+            transactionManager.lastSelectedTransactionID = transaction.id
         }
 
-        // Met à jour la transaction sélectionnée dans le manager
         if let firstSelectedId = selectedTransactions.first {
             transactionManager.selectedTransaction = dataManager.listTransactions.first { $0.id == firstSelectedId }
         }
@@ -340,5 +375,3 @@ struct TransactionLigne: View {
         }
     }
 }
-
-

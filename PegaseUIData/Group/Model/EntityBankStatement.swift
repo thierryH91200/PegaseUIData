@@ -130,7 +130,7 @@ final class BankStatementManager {
     }
     
     // MARK: - Public Methods
-    func getAllDatas() -> [EntityBankStatement]? {
+    func getAllData() -> [EntityBankStatement]? {
         
         guard let currentAccount = CurrentAccountManager.shared.getAccount() else {
             print("Erreur : aucun compte courant trouvé.")

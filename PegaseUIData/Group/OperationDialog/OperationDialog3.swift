@@ -122,14 +122,14 @@ struct TransactionFormViewModel: View {
         .onAppear {
             PreferenceManager.shared.configure(with: modelContext)
             let account = CurrentAccountManager.shared.getAccount()
-            self.entityPreference = PreferenceManager.shared.getAllDatas(for: account)
+            self.entityPreference = PreferenceManager.shared.getAllData(for: account)
 
             if selectedAccount == nil, let firstAccount = linkedAccount.first {
                 selectedAccount = firstAccount // Initialisation avec un compte valide
             }
             DispatchQueue.main.async {
                 selectedMode = modes.first
-//                selectedMode = entityPreference?.paymentMode
+                selectedMode = entityPreference?.paymentMode
                 selectedStatus = entityPreference?.status
                 selectedBankStatement = ""
             }

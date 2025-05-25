@@ -67,6 +67,7 @@ class TransactionSelectionManager: ObservableObject , Identifiable {
     @Published var selectedTransaction: EntityTransactions?
     @Published var selectedTransactions: [EntityTransactions] = []
     @Published var isCreationMode: Bool = true
+    @Published var lastSelectedTransactionID: UUID?
     
     var isMultiSelection: Bool {
         selectedTransactions.count > 1

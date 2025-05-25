@@ -69,7 +69,7 @@ struct IdentityView: View {
             // Créer un nouvel enregistrement si la base de données est vide
             if dataManager.identity == nil {
                 IdentityManager.shared.configure(with: modelContext)
-                let identity = IdentityManager.shared.getAllDatas()
+                let identity = IdentityManager.shared.getAllData()
                 dataManager.identity = identity
 
                 if identity == nil {
@@ -106,7 +106,7 @@ struct IdentityView: View {
     private func loadOrCreate(for account: EntityAccount) {
         
         IdentityManager.shared.configure(with: modelContext)
-        if let existingIdentity = IdentityManager.shared.getAllDatas() {
+        if let existingIdentity = IdentityManager.shared.getAllData() {
             dataManager.identity = existingIdentity
         } else {
             let entity = EntityIdentity()

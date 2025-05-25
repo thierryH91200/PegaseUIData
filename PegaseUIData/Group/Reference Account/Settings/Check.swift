@@ -168,7 +168,7 @@ struct CheckView: View {
     private func setupDataManager() {
         ChequeBookManager.shared.configure(with: modelContext)
         dataManager.configure(with: modelContext)
-        dataManager.checkBooks = ChequeBookManager.shared.getAllDatas()
+        dataManager.checkBooks = ChequeBookManager.shared.getAllData()
     }
     
     // Supprime un carnet de chèques sélectionné
@@ -182,7 +182,7 @@ struct CheckView: View {
     
     // Rafraîchit la liste des carnets de chèques
     private func refreshData() {
-        dataManager.checkBooks = ChequeBookManager.shared.getAllDatas()
+        dataManager.checkBooks = ChequeBookManager.shared.getAllData()
     }
 }
 

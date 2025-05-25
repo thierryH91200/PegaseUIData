@@ -200,7 +200,7 @@ struct Scheduler: View {
         dataManager.configure(with: modelContext)
         
         if currentAccountManager.currentAccount != nil {
-            dataManager.schedulers = SchedulerManager.shared.getAllDatas()!
+            dataManager.schedulers = SchedulerManager.shared.getAllData()!
         }
     }
     
@@ -215,7 +215,7 @@ struct Scheduler: View {
         }
     }
     private func refreshData() {
-        dataManager.schedulers = SchedulerManager.shared.getAllDatas()!
+        dataManager.schedulers = SchedulerManager.shared.getAllData()!
     }
     
     private func indexForSelectedType() -> Int {

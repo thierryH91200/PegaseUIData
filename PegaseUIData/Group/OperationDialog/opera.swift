@@ -330,7 +330,7 @@
 //        self.setStatut.insert(0)
 //        self.setNumber.insert("")
 //
-//        self.entityPreference = Preference.shared.getAllDatas()
+//        self.entityPreference = Preference.shared.getAllData()
 //
 //        self.loadAccount()
 //        self.popUpTransfert.itemTitle(at: 0)

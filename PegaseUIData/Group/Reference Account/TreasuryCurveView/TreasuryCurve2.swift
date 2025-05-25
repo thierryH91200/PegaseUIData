@@ -92,7 +92,7 @@ struct TreasuryCurve: View {
                 .onAppear {
                     
                     ListTransactionsManager.shared.configure(with: modelContext)
-                    let allTransactions = ListTransactionsManager.shared.getAllDatas()
+                    let allTransactions = ListTransactionsManager.shared.getAllData()
                     guard let first = allTransactions.first?.dateOperation,
                           let last = allTransactions.last?.dateOperation else { return }
 

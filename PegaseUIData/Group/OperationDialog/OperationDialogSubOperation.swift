@@ -144,7 +144,7 @@ struct SubOperationDialog: View {
                     print("Failed to configure form: \(error)")
                 }
                 
-                self.entityRubric = RubricManager.shared.getAllDatas()
+                self.entityRubric = RubricManager.shared.getAllData()
                 
                 if transactionManager.isCreationMode == false {
                     comment = subOperation?.libelle ?? ""
@@ -212,7 +212,7 @@ struct SubOperationDialog: View {
     
     func configureForm() {
         let account = CurrentAccountManager.shared.getAccount()
-        self.entityPreference = PreferenceManager.shared.getAllDatas(for: account)
+        self.entityPreference = PreferenceManager.shared.getAllData(for: account)
         
         if let preference = entityPreference, let rubricIndex = entityRubric.firstIndex(where: { $0 == preference.category?.rubric }) {
             selectedRubric = entityRubric[rubricIndex]

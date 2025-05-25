@@ -63,7 +63,7 @@ protocol PaymentModeManaging {
     func configure(with modelContext: ModelContext)
     func create(account: EntityAccount?, name: String, color: NSColor) throws -> EntityPaymentMode? 
     func update(entity: EntityPaymentMode, name: String, color: NSColor) 
-    func getAllDatas() -> [EntityPaymentMode]?
+    func getAllData() -> [EntityPaymentMode]?
     func getAllNames(for account: EntityAccount) -> [String]
     func findOrCreate(account: EntityAccount, name: String, color: Color, uuid: UUID) -> EntityPaymentMode
     func find( account: EntityAccount?, name: String) -> EntityPaymentMode?
@@ -119,7 +119,7 @@ final class PaymentModeManager : PaymentModeManaging {
         }
     }
 
-    func getAllDatas() -> [EntityPaymentMode]? {
+    func getAllData() -> [EntityPaymentMode]? {
                 
         let account = CurrentAccountManager.shared.getAccount()
         guard account != nil else {
@@ -147,7 +147,7 @@ final class PaymentModeManager : PaymentModeManaging {
     func getAllNames(for account: EntityAccount) -> [String] {
         var names = [String]()
         
-        let modePayments =  getAllDatas()
+        let modePayments =  getAllData()
         
         for modePayment in modePayments ?? [] {
             names.append(modePayment.name)
@@ -279,7 +279,7 @@ class PaymentModeViewModel: ObservableObject {
     
     // MARK: Actions utilisateur :
     private func loadInitialData() {
-        modePayments = manager.getAllDatas()!
+        modePayments = manager.getAllData()!
     }
 
     func add(name: String, color: Color) {
@@ -312,7 +312,7 @@ class PaymentModeViewModel: ObservableObject {
     // MARK: Communication avec les services ou les managers :
     @discardableResult
     func reloadData() -> [EntityPaymentMode] {
-        modePayments = manager.getAllDatas()!
+        modePayments = manager.getAllData()!
         return modePayments
     }
     

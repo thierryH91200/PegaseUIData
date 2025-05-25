@@ -46,7 +46,7 @@ final class ListDataManager: ObservableObject {
     @MainActor
     func loadTransactions() {
         
-        self.listTransactions = ListTransactionsManager.shared.getAllDatas(ascending: false)
+        self.listTransactions = ListTransactionsManager.shared.getAllData(ascending: false)
         objectWillChange.send()
     }
 }

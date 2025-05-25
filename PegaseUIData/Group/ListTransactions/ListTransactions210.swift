@@ -190,3 +190,30 @@ struct TransactionDetailView: View {
     }
 }
 
+
+
+
+
+
+
+
+//    .onAppear {
+//        NSEvent.addLocalMonitorForEvents(matching: [.keyDown]) { event in
+//            if event.modifierFlags.contains(.command), event.charactersIgnoringModifiers == "a" {
+//                // Tout sélectionner
+//                for transaction in dataManager.listTransactions {
+//                    selectedTransactions.insert(transaction.id)
+//                }
+//                transactionManager.selectedTransactions = dataManager.listTransactions
+//                return nil
+//            }
+//            if event.keyCode == 53 { // Escape key
+//                // Tout désélectionner
+//                selectedTransactions.removeAll()
+//                transactionManager.selectedTransaction = nil
+//                transactionManager.selectedTransactions = []
+//                return nil
+//            }
+//            return event
+//        }
+//    }
