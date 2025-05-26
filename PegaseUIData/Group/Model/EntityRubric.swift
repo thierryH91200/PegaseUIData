@@ -16,13 +16,11 @@ public class EntityRubric: Identifiable {
     
     var name: String = ""
     @Attribute(.transformable(by: ColorTransformer.self)) var color: NSColor
-    
     @Attribute(.ephemeral) var total: Double = 0.0
     
+    @Relationship(deleteRule: .cascade) var categorie : [EntityCategory] = []
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
-    
-    @Relationship(deleteRule: .cascade) var categorie : [EntityCategory] = []
     var account: EntityAccount
     
     init( name: String, color: NSColor, account: EntityAccount) {
@@ -125,7 +123,6 @@ final class RubricManager {
             if columns.count >= 5 {
                 let rubriqueName = columns[0]
                 let categoryName = columns[1]
-                let type         = columns[2]
                 let objectif     = Double(columns[3]) ?? 0.0
                 let nscolor      = colorFromName(columns[4])
 

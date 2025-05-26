@@ -174,7 +174,7 @@ struct OperationDialogView: View {
         formState.pointingDate           = transaction.datePointage.noon
         formState.selectedMode           = transaction.paymentMode
         formState.checkNumber            = Int(transaction.checkNumber) ?? 0
-        formState.bankStatementString    = String(transaction.bankStatement)
+        formState.bankStatement          = transaction.bankStatement
         formState.selectedStatus         = transaction.status
         formState.selectedAccount        = transaction.account
         
@@ -208,7 +208,8 @@ struct OperationDialogView: View {
                 transaction.dateOperation = formState.transactionDate.noon
                 transaction.paymentMode = formState.selectedMode
                 transaction.status = formState.selectedStatus
-                transaction.bankStatement = Double(formState.bankStatementString) ?? 0.0
+//                transaction.bankStatement = Double(formState.bankStatementString) ?? 0.0
+                transaction.bankStatement = formState.bankStatement
                 transaction.checkNumber = String(formState.checkNumber)
                 transaction.account = formState.selectedAccount!
             }
@@ -265,7 +266,7 @@ struct OperationDialogView: View {
         transaction?.dateOperation = formState.transactionDate.noon
         transaction?.paymentMode = formState.selectedMode
         transaction?.status = formState.selectedStatus
-        transaction?.bankStatement = Double(formState.bankStatement!)
+        transaction?.bankStatement = formState.bankStatement
         transaction?.checkNumber = String(formState.checkNumber)
         transaction?.account = account
         
@@ -286,7 +287,7 @@ struct OperationDialogView: View {
         formState.currentSousTransaction = nil
         formState.selectedMode = entityPreference?.paymentMode
         formState.selectedStatus = entityPreference?.status
-        formState.bankStatementString = "0.0"
+        formState.bankStatement = 0.0
         formState.checkNumber = 0
     }
     
@@ -348,7 +349,7 @@ struct TransactionFormView: View {
             modes                 : $formState.paymentModes,
             pointingDate          : $formState.pointingDate,
             status                : $formState.status,
-            bankStatement         : $formState.bankStatementString,
+            bankStatement         : $formState.bankStatement,
             checkNumber           : $formState.checkNumber,
             amount                : $formState.amount,
             selectedBankStatement : $formState.selectedBankStatement,
@@ -427,8 +428,15 @@ struct BatchEditFormView: View {
                 .foregroundStyle(uniquePointingDate == nil ? .secondary : .primary)
             
             FormField(label: String(localized: "Bank Statement")) {
-                TextField("", text: $formState.bankStatementString)
-                    .foregroundStyle(uniqueBankStatement == nil ? .secondary : .primary)
+                TextField("", text: Binding(
+                    get: { String(format: "%.2f", formState.bankStatement) },
+                    set: {
+                        if let value = Double($0) {
+                            formState.bankStatement = value
+                        }
+                    }
+                ))
+                .foregroundStyle(uniqueBankStatement == nil ? .secondary : .primary)
             }
         }
         .padding()
@@ -436,7 +444,7 @@ struct BatchEditFormView: View {
         .cornerRadius(8)
         .onAppear {
             if let value = uniqueBankStatement {
-                formState.bankStatementString = String(format: "%.2f", value)
+                formState.bankStatement = value
             }
         }
 

@@ -166,7 +166,6 @@ struct TransactionLigne: View {
     @EnvironmentObject private var dataManager  : ListDataManager
     @EnvironmentObject var transactionManager   : TransactionSelectionManager
     @EnvironmentObject private var colorManager : ColorManager
-    // Use TransactionSelectionManager for lastSelectedTransactionID
 
     let transaction: EntityTransactions
     @Binding var selectedTransactions: Set<UUID>
@@ -174,6 +173,8 @@ struct TransactionLigne: View {
     @State var showTransactionInfo: Bool = false
     @GestureState private var isShiftPressed = false
     @GestureState private var isCmdPressed = false
+    
+    @State private var backgroundColor = Color.clear
 
     var isSelected: Bool {
         selectedTransactions.contains(transaction.id)
@@ -218,7 +219,7 @@ struct TransactionLigne: View {
         .padding(.vertical, 6)
         .background(
             RoundedRectangle(cornerRadius: 8)
-                .fill(isSelected ? Color.accentColor.opacity(0.2) : Color(NSColor.controlBackgroundColor))
+                .fill(backgroundColor)
         )
         .shadow(color: Color.black.opacity(0.05), radius: 1, x: 0, y: 1)
         .padding(.horizontal, 4)
@@ -277,6 +278,7 @@ struct TransactionLigne: View {
         }
         // Keyboard shortcut: Cmd+A to select all transactions, Escape to deselect all
         .onAppear {
+            backgroundColor = isSelected ? Color.accentColor.opacity(0.2) : Color(NSColor.controlBackgroundColor)
             NSEvent.addLocalMonitorForEvents(matching: [.keyDown]) { event in
                 if event.modifierFlags.contains(.command), event.charactersIgnoringModifiers == "a" {
                     // Tout sélectionner
@@ -286,7 +288,7 @@ struct TransactionLigne: View {
                     transactionManager.selectedTransactions = dataManager.listTransactions
                     return nil
                 }
-
+                
                 if event.keyCode == 53 { // Escape key
                     // Tout désélectionner
                     selectedTransactions.removeAll()
@@ -294,7 +296,7 @@ struct TransactionLigne: View {
                     transactionManager.selectedTransactions = []
                     return nil
                 }
-
+                
                 return event
             }
         }
@@ -307,7 +309,7 @@ struct TransactionLigne: View {
             .frame(width: 2, height: 20)
             .padding(.horizontal, 2)
     }
-
+    
     private func transaction(for id: UUID) -> EntityTransactions? {
         _ = selectedTransactions.compactMap { id in
             transaction(for: id)
@@ -318,15 +320,15 @@ struct TransactionLigne: View {
     private func toggleSelection() {
         let isCommand = NSEvent.modifierFlags.contains(.command)
         let isShift = NSEvent.modifierFlags.contains(.shift)
-
+        
         if isShift, let lastID = transactionManager.lastSelectedTransactionID,
            let lastIndex = dataManager.listTransactions.firstIndex(where: { $0.id == lastID }),
            let currentIndex = dataManager.listTransactions.firstIndex(where: { $0.id == transaction.id }) {
-
+            
             let range = lastIndex < currentIndex ? lastIndex...currentIndex : currentIndex...lastIndex
             let idsInRange = dataManager.listTransactions[range].map { $0.id }
             selectedTransactions.formUnion(idsInRange)
-
+            
         } else if isCommand {
             if selectedTransactions.contains(transaction.id) {
                 selectedTransactions.remove(transaction.id)
@@ -334,13 +336,13 @@ struct TransactionLigne: View {
                 selectedTransactions.insert(transaction.id)
             }
             transactionManager.lastSelectedTransactionID = transaction.id
-
+            
         } else {
             selectedTransactions.removeAll()
             selectedTransactions.insert(transaction.id)
             transactionManager.lastSelectedTransactionID = transaction.id
         }
-
+        
         if let firstSelectedId = selectedTransactions.first {
             transactionManager.selectedTransaction = dataManager.listTransactions.first { $0.id == firstSelectedId }
         }
@@ -368,9 +370,9 @@ struct TransactionLigne: View {
     private func mettreAJourStatusPourSelection(nouveauStatus: String) {
         withAnimation {
             let selected = dataManager.listTransactions.filter { selectedTransactions.contains($0.id) }
-//            let status = EntityStatus
+            let status = StatusManager.shared.find(name: nouveauStatus)!
             for transaction in selected {
-//                transaction.status = nouveauStatus
+                transaction.status = status
             }
         }
     }

@@ -224,7 +224,7 @@ final class PaymentModeManager : PaymentModeManaging {
             ( names[4], .red),
             ( names[5], .gray),
             ( names[6], .brown),
-            ( names[6], .black)
+            ( names[7], .black)
         ]
         
         // Création des entités de mode de paiement

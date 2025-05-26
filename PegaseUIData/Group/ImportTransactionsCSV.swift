@@ -73,9 +73,14 @@ struct ImportTransactionFileView: View {
             
             if !csvData.isEmpty {
                 Text("CSV Preview").font(.headline)
-                ScrollView(.horizontal) {
-                    TableView(data: csvData)
+                ScrollView([.horizontal, .vertical]) {
+                    HStack(alignment: .top, spacing: 0) {
+                        TableView(data: csvData)
+                    }
+                    .frame(minWidth: CGFloat((csvData.first?.count ?? 1) * 200), alignment: .leading)
+                    .background(Color.clear)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
                 
                 Text("Match the columns :").font(.headline)
                 ForEach(transactionAttributes, id: \.self) { attribute in
@@ -86,22 +91,33 @@ struct ImportTransactionFileView: View {
                         let csvData1 = csvData.dropFirst()
                         Text("Ignore").tag(-1)
                         ForEach(0..<(csvData1.first?.count ?? 0), id: \.self) { index in
-                            Text("Colunn \(index)").tag(index)
+                            Text("Column \(index)").tag(index)
                         }
                     }
                     .frame(width: 300) // Réduit la largeur du picker
                     .pickerStyle(MenuPickerStyle()) // Utilisation d'un menu déroulant compact
-
                 }
                 
-                Button("Import") {
-                    importCSVTransactions(context: modelContext)
-                    dismiss()
+                HStack(spacing: 20) {
+                    Button("Import") {
+                        importCSVTransactions(context: modelContext)
+                        dismiss()
+                    }
+                    .background( Color.green)
+                    .foregroundColor(.white)
+                    .disabled(columnMapping.isEmpty)
+                    
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                    .background( Color.red)
+                    .foregroundColor(.white)
                 }
-                .disabled(columnMapping.isEmpty)
+                .padding(.top, 10)
             }
         }
         .padding()
+        .frame(minWidth: 1400, minHeight: 700)
     }
     
     // Fonction d'importation
@@ -124,16 +140,17 @@ struct ImportTransactionFileView: View {
             let dateOperation = getDate(from: row, index: columnMapping[String(localized:"Operation Date")])
             let datePointage =  getDate(from: row, index: columnMapping[String(localized:"Pointage Date")])
             let libelle = getString(from: row, index: columnMapping[String(localized:"Comment")])
-
-           let bankStatement = 0.0
             
-            let rubric = getString(from: row, index: columnMapping[String(localized:"Rubric")])
+            let bankStatement = 0.0
+            
+            //            let rubric = getString(from: row, index: columnMapping[String(localized:"Rubric")])
             let category = getString(from: row, index: columnMapping[String(localized:"Category")])
+            
             let entityCategory = CategoriesManager.shared.find(account: account, name: category) ?? entityPreference?.category
-
+            
             let paymentMode = getString(from: row, index: columnMapping[String(localized:"Payment method")])
             let entityModePaiement = PaymentModeManager.shared.find(account: account, name: paymentMode) ?? entityPreference?.paymentMode
-
+            
             let status = getString(from: row, index: columnMapping[String(localized:"Status")])
             let entityStatus = StatusManager.shared.find(name: status) ?? entityPreference?.status
             
@@ -143,7 +160,7 @@ struct ImportTransactionFileView: View {
             
             transaction.createAt  = Date().noon
             transaction.updatedAt = Date().noon
-
+            
             transaction.dateOperation = dateOperation!.noon
             transaction.datePointage  = datePointage!.noon
             transaction.paymentMode   = entityModePaiement
@@ -199,10 +216,17 @@ struct TableView: View {
         VStack(alignment: .leading) {
             ForEach(0..<min(5, data.count), id: \.self) { rowIndex in
                 HStack {
-                    ForEach(data[rowIndex], id: \.self) { cell in
-                        Text(cell)
-                            .frame(width: 150, height: 30)
-                            .border(Color.gray)
+                    ForEach(data[rowIndex].indices, id: \.self) { colIndex in
+                        VStack {
+                            if rowIndex == 0 {
+                                Text("Column \(colIndex)")
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                            }
+                            Text(data[rowIndex][colIndex])
+                        }
+                        .frame(width: 120, height: rowIndex == 0 ? 60 : 30)
+                        .border(Color.gray)
                     }
                 }
             }

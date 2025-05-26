@@ -3019,54 +3019,12 @@
         }
       }
     },
-    "Colunn %lld" : {
+    "Column %lld" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Colunn %lld"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Colonne %lld"
-          }
-        },
-        "he" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
           }
         }
       }
