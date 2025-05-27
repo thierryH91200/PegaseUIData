@@ -130,7 +130,10 @@ struct CheckView: View {
                     isModeCreate = true
                 }) {
                     Label("Add", systemImage: "plus")
-                        .buttonStyle(.borderedProminent)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
                 }
                 
                 Button(action: {
@@ -138,14 +141,21 @@ struct CheckView: View {
                     isModeCreate = false
                 }) {
                     Label("Edit", systemImage: "pencil")
-                        .buttonStyle(.bordered)
+                        .padding()
+                        .background(Color.green)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
                 }
                 .disabled(selectedItem == nil)
                 
-                Button(action: delete) {
+                Button(
+                    action: delete)
+                {
                     Label("Delete", systemImage: "trash")
-                        .buttonStyle(.bordered)
-                        .tint(.red)
+                        .padding()
+                        .background(Color.red)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
                 }
                 .disabled(selectedItem == nil)
             }
@@ -162,8 +172,6 @@ struct CheckView: View {
         }
     }
     
-//    private func removeAnimals(at indexSet: IndexSet) {
-//    }
     // Configure le gestionnaire de données
     private func setupDataManager() {
         ChequeBookManager.shared.configure(with: modelContext)

@@ -135,8 +135,9 @@ struct OperationRow: View {
             for (month, monthTransactions) in groupedByMonth.sorted(by: { $0.key > $1.key }) {
                 let monthName = DateFormatter().monthSymbols[month - 1]
                 let monthGroup = MonthGroup(month: monthName,
-                                            transactions: monthTransactions.sorted(by: { $0.dateOperation > $1.dateOperation }))
-                
+//                                            transactions: monthTransactions.sorted(by: { $0.dateOperation > $1.dateOperation }))
+                transactions: monthTransactions.sorted(by: { $0.datePointage > $1.datePointage }))
+
                 yearGroup.monthGroups.append(monthGroup)
             }
             
@@ -188,9 +189,9 @@ struct TransactionLigne: View {
         ScrollView(.horizontal) {
             HStack(spacing: 0) {
                 Group {
-                    Text(transaction.dateOperationString).frame(width: ColumnWidths.dateOperation, alignment: .leading)
-                    verticalDivider()
                     Text(transaction.datePointageString).frame(width: ColumnWidths.datePointage, alignment: .leading)
+                    verticalDivider()
+                    Text(transaction.dateOperationString).frame(width: ColumnWidths.dateOperation, alignment: .leading)
                     verticalDivider()
                     Text(transaction.sousOperations.first?.libelle ?? "—").frame(width: ColumnWidths.libelle, alignment: .leading)
                     verticalDivider()
@@ -202,7 +203,7 @@ struct TransactionLigne: View {
                     verticalDivider()
                     Text(transaction.bankStatementString).frame(width: ColumnWidths.releve, alignment: .leading)
                     verticalDivider()
-                    Text(transaction.checkNumber).frame(width: ColumnWidths.cheque, alignment: .leading)
+                    Text(transaction.checkNumber != "0" ? transaction.checkNumber : "—").frame(width: ColumnWidths.cheque, alignment: .leading)
                     verticalDivider()
                 }
                 Group {

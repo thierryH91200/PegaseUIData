@@ -97,21 +97,33 @@ struct ImportTransactionFileView: View {
                     .frame(width: 300) // Réduit la largeur du picker
                     .pickerStyle(MenuPickerStyle()) // Utilisation d'un menu déroulant compact
                 }
+
                 
                 HStack(spacing: 20) {
-                    Button("Import") {
+                    Button(action: {
                         importCSVTransactions(context: modelContext)
                         dismiss()
+                    }) {
+                        Label("Import", systemImage: "tray.and.arrow.down")
+                            .padding()
+                            .background( Color.green)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                            .disabled(columnMapping.isEmpty)
+                            .fixedSize() // Ajuste automatiquement la taille au contenu
                     }
-                    .background( Color.green)
-                    .foregroundColor(.white)
-                    .disabled(columnMapping.isEmpty)
                     
-                    Button("Cancel") {
+                    Button(action: {
                         dismiss()
+                    }) {
+                        Label("Cancel", systemImage: "stop")
+                            .padding()
+                            .background( Color.red)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                            .disabled(columnMapping.isEmpty)
+                            .fixedSize() // Ajuste automatiquement la taille au contenu
                     }
-                    .background( Color.red)
-                    .foregroundColor(.white)
                 }
                 .padding(.top, 10)
             }
@@ -137,8 +149,8 @@ struct ImportTransactionFileView: View {
 
         for row in csvData.dropFirst() { // Ignorer l'en-tête
             
-            let dateOperation = getDate(from: row, index: columnMapping[String(localized:"Operation Date")])
-            let datePointage =  getDate(from: row, index: columnMapping[String(localized:"Pointage Date")])
+            let datePointage =  getDate(from: row, index: columnMapping[String(localized:"Pointage Date")])  ?? Date().noon
+            let dateOperation = getDate(from: row, index: columnMapping[String(localized:"Operation Date")]) ?? datePointage
             let libelle = getString(from: row, index: columnMapping[String(localized:"Comment")])
             
             let bankStatement = 0.0
@@ -161,8 +173,8 @@ struct ImportTransactionFileView: View {
             transaction.createAt  = Date().noon
             transaction.updatedAt = Date().noon
             
-            transaction.dateOperation = dateOperation!.noon
-            transaction.datePointage  = datePointage!.noon
+            transaction.dateOperation = dateOperation.noon
+            transaction.datePointage  = datePointage.noon
             transaction.paymentMode   = entityModePaiement
             transaction.status        = entityStatus
             transaction.bankStatement = bankStatement

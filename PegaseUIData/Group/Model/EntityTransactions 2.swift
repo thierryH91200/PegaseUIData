@@ -132,8 +132,8 @@ final class ListTransactionsManager: ListManaging {
         let currentAccountID = currentAccount.uuid
         let predicate = #Predicate<EntityTransactions> { $0.account.uuid == currentAccountID }
         let sort = [
-            SortDescriptor(\EntityTransactions.datePointage, order: ascending ? .forward : .reverse),
-            SortDescriptor(\EntityTransactions.dateOperation, order: ascending ? .forward : .reverse) ]
+//            SortDescriptor(\EntityTransactions.dateOperation,  order: ascending ? .forward : .reverse),
+            SortDescriptor(\EntityTransactions.datePointage, order: ascending ? .forward : .reverse) ]
 
         // Création du FetchDescriptor avec les tri par datePointage et dateOperation
         let fetchDescriptor = FetchDescriptor<EntityTransactions>(

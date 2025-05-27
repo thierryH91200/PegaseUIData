@@ -225,44 +225,87 @@ struct BankStatementTable: View {
     }
 }
 
+class StatementFormViewModel: ObservableObject {
+    @Published var num: String = ""
+    @Published var startDate = Date()
+    @Published var startSolde: String = ""
+    @Published var interDate = Date()
+    @Published var interSolde: String = ""
+    @Published var endDate = Date()
+    @Published var endSolde: String = ""
+    @Published var cbDate = Date()
+    @Published var cbSolde: String = ""
+    @Published var pdfData: Data?
+
+    func load(from statement: EntityBankStatement) {
+        num = String(statement.num)
+        startDate = statement.startDate
+        startSolde = formatPrice( statement.startSolde)
+        interDate = statement.interDate
+        interSolde = formatPrice( statement.interSolde)
+        endDate = statement.endDate
+        endSolde = formatPrice( statement.endSolde)
+        cbDate = statement.cbDate
+        cbSolde = formatPrice(statement.cbSolde)
+        pdfData = statement.pdfDoc
+    }
+
+    func apply(to statement: EntityBankStatement) {
+        statement.num = Int(num) ?? 0
+        statement.startDate = startDate
+        statement.startSolde = cleanDouble(from: startSolde)
+        statement.interDate = interDate
+        statement.interSolde = cleanDouble(from: interSolde)
+        statement.endDate = endDate
+        statement.endSolde = cleanDouble(from: endSolde)
+        statement.cbDate = cbDate
+        statement.cbSolde = cleanDouble(from: cbSolde)
+        statement.pdfDoc = pdfData
+    }
+
+    func reset() {
+        num = ""
+        startDate = Date()
+        startSolde = ""
+        interDate = Date()
+        interSolde = ""
+        endDate = Date()
+        endSolde = ""
+        cbDate = Date()
+        cbSolde = ""
+        pdfData = nil
+    }
+}
+
 struct StatementFormView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     
+    @StateObject private var viewModel = StatementFormViewModel()
+    
     let statement: EntityBankStatement?
-    @State private var num: String = ""
-    @State private var startDate = Date()
-    @State private var startSolde: String = ""
-    @State private var interDate = Date()
-    @State private var interSolde: String = ""
-    @State private var endDate = Date()
-    @State private var endSolde: String = ""
-    @State private var cbDate = Date()
-    @State private var cbSolde: String = ""
-    @State private var pdfData: Data?
     @State private var dragOver = false
     
     var body: some View {
         NavigationStack {
             Form {
                 Section("General information") {
-                    TextField("Number", text: $num)
+                    TextField("Number", text: $viewModel.num)
                         .textFieldStyle(.roundedBorder)
                     
-                    DatePicker("Start Date", selection: $startDate, displayedComponents: .date)
-                    TextField("Initial balance", text: $startSolde)
+                    DatePicker("Start Date", selection: $viewModel.startDate, displayedComponents: .date)
+                    TextField("Initial balance", text: $viewModel.startSolde)                        .textFieldStyle(.roundedBorder)
+                    
+                    DatePicker("Inter Date", selection: $viewModel.interDate, displayedComponents: .date)
+                    TextField("Inter balance", text: $viewModel.interSolde)
                         .textFieldStyle(.roundedBorder)
                     
-                    DatePicker("Inter Date", selection: $interDate, displayedComponents: .date)
-                    TextField("Inter balance", text: $interSolde)
+                    DatePicker("End Date", selection: $viewModel.endDate, displayedComponents: .date)
+                    TextField("Final balance", text: $viewModel.endSolde)
                         .textFieldStyle(.roundedBorder)
                     
-                    DatePicker("End Date", selection: $endDate, displayedComponents: .date)
-                    TextField("Final balance", text: $endSolde)
-                        .textFieldStyle(.roundedBorder)
-                    
-                    DatePicker("CB Date", selection: $cbDate, displayedComponents: .date)
-                    TextField("CB Balance", text: $cbSolde)
+                    DatePicker("CB Date", selection: $viewModel.cbDate, displayedComponents: .date)
+                    TextField("CB Balance", text: $viewModel.cbSolde)
                         .textFieldStyle(.roundedBorder)
                 }
                 
@@ -272,9 +315,9 @@ struct StatementFormView: View {
                             .fill(dragOver ? Color.red.opacity(0.3) : Color.gray.opacity(0.2))
                             .frame(height: 100)
                         
-                        Text(pdfData != nil ? "Selected PDF" : "Drop your PDF here")
+                        Text($viewModel.pdfData != nil ? "Selected PDF" : "Drop your PDF here")
                     }
-                    .onDrop(of: [UTType.pdf], delegate: PDFDropDelegate(pdfData: $pdfData, isDragOver: $dragOver))
+                    .onDrop(of: [UTType.pdf], delegate: PDFDropDelegate(pdfData: $viewModel.pdfData, isDragOver: $dragOver))
                 }
             }
             .padding()
@@ -293,43 +336,30 @@ struct StatementFormView: View {
                 }
             }
         }
+        .onChange(of: statement) { _, newValue in
+            if let statement = newValue {
+                viewModel.load(from: statement)
+            }
+        }
         .onAppear {
             if let statement = statement {
-                num = String(statement.num)
-                startDate = statement.startDate
-                startSolde = String(format: "%.2f", statement.startSolde)
-                interDate = statement.interDate
-                interSolde = String(format: "%.2f", statement.interSolde)
-                endDate = statement.endDate
-                endSolde = String(format: "%.2f", statement.endSolde)
-                cbDate = statement.cbDate
-                cbSolde = String(format: "%.2f", statement.cbSolde)
-                pdfData = statement.pdfDoc
+                viewModel.load(from: statement)
             }
         }
     }
     
     private func save() {
-        let newItem: EntityBankStatement
+        let entityBankStatement: EntityBankStatement
         
         if let existingStatement = statement {
-            newItem = existingStatement
+            entityBankStatement = existingStatement
         } else {
-            newItem = EntityBankStatement()
-            modelContext.insert(newItem)
+            entityBankStatement = EntityBankStatement()
+            modelContext.insert(entityBankStatement)
         }
         
-        newItem.num = Int(num) ?? 0
-        newItem.startDate = startDate
-        newItem.startSolde = Double(startSolde) ?? 0.0
-        newItem.interDate = interDate
-        newItem.interSolde = Double(interSolde) ?? 0.0
-        newItem.endDate = endDate
-        newItem.endSolde = Double(endSolde) ?? 0.0
-        newItem.cbDate = cbDate
-        newItem.cbSolde = Double(cbSolde) ?? 0.0
-        newItem.pdfDoc = pdfData
-        newItem.account = CurrentAccountManager.shared.getAccount()!
+        viewModel.apply(to: entityBankStatement)
+        entityBankStatement.account = CurrentAccountManager.shared.getAccount()!
         
         try? modelContext.save()
     }

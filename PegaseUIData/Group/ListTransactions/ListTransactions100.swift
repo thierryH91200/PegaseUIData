@@ -122,9 +122,9 @@ struct ListTransactions200: View {
                             // Titres des colonnes
                             HStack(spacing: 0) {
                                 Group {
-                                    Text("Date operation").bold().frame(width: ColumnWidths.dateOperation, alignment: .leading)
-                                    verticalDivider()
                                     Text("Date of pointing").bold().frame(width: ColumnWidths.datePointage, alignment: .leading)
+                                    verticalDivider()
+                                    Text("Date operation").bold().frame(width: ColumnWidths.dateOperation, alignment: .leading)
                                     verticalDivider()
                                     Text("Comment").bold().frame(width: ColumnWidths.libelle, alignment: .leading)
                                     verticalDivider()
@@ -358,4 +358,14 @@ func formatPrice(_ amount: Double) -> String {
     formatter.locale = Locale.current // devise de l'utilisateur
     let format = formatter.string(from: NSNumber(value: amount)) ?? "\(amount)"
     return format
+}
+
+func cleanDouble(from string: String) -> Double {
+    // Supprime les caractères non numériques sauf , et .
+    let cleanedString = string.filter { "0123456789,.".contains($0) }
+    
+    // Convertir la virgule en point si nécessaire
+    let normalized = cleanedString.replacingOccurrences(of: ",", with: ".")
+    
+    return Double(normalized) ?? 0.0
 }

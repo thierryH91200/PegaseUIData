@@ -208,7 +208,6 @@ struct OperationDialogView: View {
                 transaction.dateOperation = formState.transactionDate.noon
                 transaction.paymentMode = formState.selectedMode
                 transaction.status = formState.selectedStatus
-//                transaction.bankStatement = Double(formState.bankStatementString) ?? 0.0
                 transaction.bankStatement = formState.bankStatement
                 transaction.checkNumber = String(formState.checkNumber)
                 transaction.account = formState.selectedAccount!
@@ -217,7 +216,8 @@ struct OperationDialogView: View {
 
         do {
             try save()
-            print("✅ Transactions sauvegardées")
+            let count = transactionManager.selectedTransactions.count
+            print("✅ \(count) Transactions sauvegardées")
         } catch {
             print("❌ Erreur lors de l'enregistrement : \(error)")
         }

@@ -14,8 +14,8 @@ import SwiftData
     var createAt:  Date = Date().noon
     var updatedAt: Date = Date().noon
 
-    var dateOperation: Date = Date().noon
     var datePointage:  Date = Date().noon
+    var dateOperation: Date = Date().noon
 
     var bankStatement: Double = 0.0
     var checkNumber: String = ""
@@ -98,19 +98,19 @@ extension EntityTransactions {
     }
     
     var datePointageString: String {
-        datePointage.formatted()
+        return datePointage.formatted()
     }
     
     var bankStatementString: String {
-        String(format: "%.2f", bankStatement)
+        return String(format: "%.0f", bankStatement)
     }
     
     var statusString: String {
-        status.map { "\($0.name)" } ?? "N/A"
+        return status.map { "\($0.name)" } ?? "N/A"
     }
     
     var paymentModeString: String {
-        paymentMode.map { "\($0.name)" } ?? "N/A"
+        return paymentMode.map { "\($0.name)" } ?? "N/A"
     }
     
     var amountString: String {
@@ -119,7 +119,7 @@ extension EntityTransactions {
     }
 
     var amount: Double {
-            sousOperations.reduce(0.0) { $0 + $1.amount }
+        sousOperations.reduce(0.0) { $0 + $1.amount }
     }
 }
 
