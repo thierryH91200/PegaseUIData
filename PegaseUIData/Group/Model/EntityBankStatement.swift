@@ -111,7 +111,7 @@ final class BankStatementManager {
             return nil
         }
         
-        let newMode = EntityBankStatement(num: num)
+        let newMode = EntityBankStatement(num: num, startDate: startDate, startSolde: startSolde)
         newMode.account = currentAccount
         
         validContext.insert(newMode)

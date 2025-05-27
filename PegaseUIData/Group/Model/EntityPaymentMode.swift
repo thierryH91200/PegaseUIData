@@ -214,7 +214,7 @@ final class PaymentModeManager : PaymentModeManaging {
                       String(localized :"Bank withdrawal"),
                       String(localized :"Discount"),
                       String(localized :"Cash withdrawal"),
-                      String(localized :"Transfers"),
+                      String(localized :"Bank transfer"),
                       String(localized :"Direct debit")]
         let paymentModes: [(name: String, color: NSColor)] = [
             ( names[0], .red),

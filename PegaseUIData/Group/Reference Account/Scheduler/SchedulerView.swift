@@ -90,7 +90,7 @@ struct Scheduler: View {
     }()
     
     var body: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 5) {
             if let account = CurrentAccountManager.shared.currentAccount {
                 Text("Account: \(account.name)")
                     .font(.headline)
@@ -98,6 +98,7 @@ struct Scheduler: View {
             
             SchedulerTable(schedulers: dataManager.schedulers, selection: $selectedItem)
                 .frame(height: 300)
+                .padding(.horizontal)
                 .onAppear {
                     setupDataManager()
                 }
@@ -226,9 +227,9 @@ struct Scheduler: View {
 
 struct SchedulerTable: View {
     
-    
     var schedulers: [EntitySchedule]
     @Binding var selection: UUID?
+    @State private var hoveredItemID: UUID? // Track hovered row
     
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -238,60 +239,121 @@ struct SchedulerTable: View {
     }()
     
     var body: some View {
-        
-        
-        //        ScrollViewReader { proxy in
-        Table(schedulers, selection: $selection) {
-
-            TableColumn("Value Date") { (item: EntitySchedule) in
-                let valueDate = dateFormatter.string(from: item.dateValeur)
-                Text(valueDate)
+        ScrollView([.horizontal, .vertical]) {
+            LazyVStack(alignment: .leading, spacing: 4) {
+                headerView()
+                Divider()
+                rowsView()
             }
-            TableColumn("Start Date") { (item: EntitySchedule) in
-                let startDate = dateFormatter.string(from: item.dateValeur)
-                Text(startDate)
-            }
-            TableColumn("End Date") { (item: EntitySchedule) in
-                let endDate = dateFormatter.string(from: item.dateFin)
-                Text(endDate)
-            }
-            TableColumn("Amount") { (item: EntitySchedule) in
-                Text(String(item.amount))
-            }
-            TableColumn("Frequency") { (item: EntitySchedule) in
-                Text(String(item.frequence))
-            }
-            TableColumn("Comment") { (item: EntitySchedule) in
-                Text(item.libelle)
-            }
-            TableColumn("Next") { (item: EntitySchedule) in
-                Text(String(item.nextOccurrence))
-            }
-            TableColumn("Occurrence") { (item: EntitySchedule) in
-                Text(String(item.occurrence))
-            }
-            TableColumn("Mode") { (item: EntitySchedule) in
-                Text(String(item.paymentMode?.name ?? "N/A"  ))
-            }
-            TableColumn("Rubric") { (item: EntitySchedule) in
-                Text(String(item.category?.rubric?.name ?? "N/A"))
-            }
-//            TableColumn("Category") { (item: EntitySchedule) in
-//                Text(String(item.category?.name  ?? "N/A"))
-//            }
-//            TableColumn("Name") { (item: EntitySchedule) in
-//                Text(item.account.identity?.name ?? "")
-//            }
-//            TableColumn("Number") {  (item: EntitySchedule) in
-//                Text(item.account.initAccount?.codeAccount ?? "")
-//            }
+            .padding(.horizontal, 8) // ou .padding(.horizontal, 0)
         }
-        //        .onChange(of: selection) { old, newID in
-        //            if let newID = newID {
-        //                withAnimation {
-        //                    proxy.scrollTo(newID, anchor: .center)
-        //                }
-        //            }
-        //        }
+        .background(Color.white)
+        .frame(minHeight: 300)
+    }
+    
+    @ViewBuilder
+    private func rowsView() -> some View {
+        ForEach(Array(schedulers.enumerated()), id: \.element.id) { index, item in
+            let isSelected = item.id == selection
+            let isHovered = item.id == hoveredItemID
+            let baseColor = index.isMultiple(of: 2) ? Color.white : Color(nsColor: .controlBackgroundColor)
+            let rowColor = isSelected ? Color.accentColor.opacity(0.2)
+                : isHovered ? Color.gray.opacity(0.1)
+                : baseColor
+
+            rowView(item: item)
+                .background(rowColor)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    if selection == item.id {
+                        selection = nil
+                    } else {
+                        selection = item.id
+                    }
+                }
+                .onHover { hovering in
+                    hoveredItemID = hovering ? item.id : nil
+                }
+        }
+    }
+    
+    @ViewBuilder
+    private func headerView() -> some View {
+        HStack {
+            headerGroup1()
+            headerGroup2()
+            headerGroup3()
+        }
+    }
+    
+    @ViewBuilder
+    private func headerGroup1() -> some View {
+        Group {
+            Text("Value Date").bold().frame(width: 100)
+            Text("Start Date").bold().frame(width: 100)
+            Text("End Date").bold().frame(width: 100)
+            Text("Amount").bold().frame(width: 100)
+        }
+    }
+    
+    @ViewBuilder
+    private func headerGroup2() -> some View {
+        Group {
+            Text("Frequency").bold().frame(width: 100)
+            Text("Comment").bold().frame(width: 120)
+            Text("Next").bold().frame(width: 100)
+            Text("Occurrence").bold().frame(width: 100)
+        }
+    }
+    
+    @ViewBuilder
+    private func headerGroup3() -> some View {
+        Group {
+            Text("Mode").bold().frame(width: 100)
+            Text("Rubric").bold().frame(width: 100)
+            Text("Category").bold().frame(width: 100)
+            Text("Name").bold().frame(width: 120)
+            Text("Number").bold().frame(width: 100)
+        }
+    }
+    
+    @ViewBuilder
+    private func rowView(item: EntitySchedule) -> some View {
+        HStack {
+            rowGroup1(item)
+            rowGroup2(item)
+            rowGroup3(item)
+        }
+    }
+    
+    @ViewBuilder
+    private func rowGroup1(_ item: EntitySchedule) -> some View {
+        Group {
+            Text(dateFormatter.string(from: item.dateValeur)).frame(width: 100)
+            Text(dateFormatter.string(from: item.dateValeur)).frame(width: 100)
+            Text(dateFormatter.string(from: item.dateFin)).frame(width: 100)
+            Text(String(format: "%.2f", item.amount)).frame(width: 100)
+        }
+    }
+    
+    @ViewBuilder
+    private func rowGroup2(_ item: EntitySchedule) -> some View {
+        Group {
+            Text(String(item.frequence)).frame(width: 100)
+            Text(item.libelle).frame(width: 120)
+            Text(String(item.nextOccurrence)).frame(width: 100)
+            Text(String(item.occurrence)).frame(width: 100)
+        }
+    }
+    
+    @ViewBuilder
+    private func rowGroup3(_ item: EntitySchedule) -> some View {
+        Group {
+            Text(item.paymentMode?.name ?? "N/A").frame(width: 100)
+            Text(item.category?.rubric?.name ?? "N/A").frame(width: 100)
+            Text(item.category?.name ?? "").frame(width: 100)
+            Text(item.account.identity?.name ?? "").frame(width: 120)
+            Text(item.account.initAccount?.codeAccount ?? "").frame(width: 100)
+        }
     }
 }

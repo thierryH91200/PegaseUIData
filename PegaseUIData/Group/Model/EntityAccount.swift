@@ -93,7 +93,6 @@ extension EntityFolderAccount {
     
     @Relationship(deleteRule: .nullify) var account: EntityTransactions?
 
-
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
 
@@ -145,27 +144,8 @@ final class AccountManager {
     
     init() { }
     
-    @discardableResult
-    public func configure(with modelContext: ModelContext) -> Bool {
+    public func configure(with modelContext: ModelContext) {
         self.modelContext = modelContext
-        return true
-    }
-    
-    /**
-      An example of using the attention field
-     
-      - Attention: What I if told you
-      you read this line wrong?
-     */
-    func getAllData() -> [EntityAccount] {
-        do {
-            // Exécution d'une requête manuelle si besoin de filtrer ou trier
-            let request = FetchDescriptor<EntityAccount>()
-            entities = try validContext.fetch(request)
-        } catch {
-            print("Erreur lors de la récupération des données avec SwiftData")
-        }
-        return entities
     }
     
     // MARK: create account
@@ -200,6 +180,17 @@ final class AccountManager {
         // Ajoute le nouveau compte à la liste des entités
         validContext.insert(account)
         return account
+    }
+
+    func getAllData() -> [EntityAccount] {
+        do {
+            // Exécution d'une requête manuelle si besoin de filtrer ou trier
+            let request = FetchDescriptor<EntityAccount>()
+            entities = try validContext.fetch(request)
+        } catch {
+            print("Erreur lors de la récupération des données avec SwiftData")
+        }
+        return entities
     }
     
     func getRoot(modelContext: ModelContext) -> [EntityFolderAccount] {

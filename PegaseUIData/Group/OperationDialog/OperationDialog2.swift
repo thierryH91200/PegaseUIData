@@ -217,7 +217,7 @@ struct OperationDialogView: View {
         do {
             try save()
             let count = transactionManager.selectedTransactions.count
-            print("✅ \(count) Transactions sauvegardées")
+            print("✅ \(count) Transaction(s) sauvegardées")
         } catch {
             print("❌ Erreur lors de l'enregistrement : \(error)")
         }

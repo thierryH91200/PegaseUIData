@@ -61,7 +61,7 @@ struct CSVDocument: FileDocument {
 func exportTransactions(to url: URL) {
     let transactions = ListTransactionsManager.shared.getAllData()
     
-    let header = "datePointage,dateOperation,libelle,category,rubric,paymentMode,status,amount"
+    let header = "datePointage,dateOperation,libelle,category,rubric,paymentMode,status,bankStatement,amount"
     var csvContent = "\(header)\n"
     
     for transaction in transactions {
@@ -73,6 +73,7 @@ func exportTransactions(to url: URL) {
             transaction.sousOperations.first?.category?.rubric?.name ?? "",
             transaction.paymentMode?.name ?? "",
             transaction.status?.name ?? "",
+            transaction.bankStatementString,
             String(format: "%.2f", transaction.sousOperations.first?.amount ?? 0.0)
         ].joined(separator: ",")
         

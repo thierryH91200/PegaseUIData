@@ -23,19 +23,19 @@ public class EntitySchedule : Identifiable{
     var nextOccurrence           : Int16  = 0
     var occurrence               : Int16  = 0
     var typeFrequence            : Int16  = 0
-
+    
     @Attribute(.unique) var uuid : UUID   = UUID()
     public var id                : UUID { uuid }
-
+    
     var account                  : EntityAccount
     var category                 : EntityCategory?
     var paymentMode              : EntityPaymentMode?
     @Relationship(inverse        : \EntityAccount.compteLie) var linkedAccount : EntityAccount?
-
+    
     public init() {
         self.account = CurrentAccountManager.shared.getAccount()!
     }
-
+    
     public init(
         amount        : Double,
         dateValeur    : Date,
@@ -60,15 +60,23 @@ public class EntitySchedule : Identifiable{
             self.typeFrequence = typeFrequence
             self.account = account
         }
+    
 }
 
-final class SchedulerManager {
+extension EntitySchedule {
+    var categoryName: String {
+        category?.name ?? "N/A"
+    }
+}
 
+
+final class SchedulerManager {
+    
     @Published var entities = [EntitySchedule]()
     
     var currentAccount: EntityAccount?
     static let shared = SchedulerManager()
-
+    
     // Contexte pour les modifications
     var modelContext : ModelContext?
     var validContext: ModelContext {
@@ -78,31 +86,31 @@ final class SchedulerManager {
         }
         return context
     }
-
+    
     init() { }
-
+    
     func configure(with modelContext: ModelContext) {
         self.modelContext = modelContext
     }
-
+    
     func create(account: EntityAccount?, name : String) throws -> EntitySchedule {
         let entity = EntitySchedule()
         validContext.insert(entity)
         try save()
         entities.append(entity)
-
+        
         return entity
     }
     
     func update(entity: EntitySchedule, name: String) {
         entity.libelle = name
     }
-
+    
     // Suppression d'une entité
     func remove(entity: EntitySchedule) {
         validContext.delete(entity)
     }
-
+    
     func fetchEntitySchedules() -> [EntitySchedule] {
         guard let lhs = currentAccount?.uuid else {
             print("Erreur : Aucun compte actif défini.")
@@ -126,12 +134,12 @@ final class SchedulerManager {
     
     // Récupérer toutes les données filtrées par compte
     func getAllData() -> [EntitySchedule]? {
-
+        
         guard let currentAccount = CurrentAccountManager.shared.getAccount() else {
             print("Erreur : aucun compte courant trouvé.")
             return nil
         }
-
+        
         let lhs = currentAccount.uuid
         let predicate = #Predicate<EntitySchedule>{ entity in entity.account.uuid == lhs }
         let sort =  [SortDescriptor(\EntitySchedule.libelle, order: .forward)]
@@ -151,7 +159,7 @@ final class SchedulerManager {
     }
     
     func createTransaction (entitySchedule: EntitySchedule) {
-
+        
         entitySchedule.nextOccurrence += 1
         let account = CurrentAccountManager.shared.getAccount()!
         let entityStatus = StatusManager.shared.getAllData(for: account) ?? []
@@ -164,15 +172,15 @@ final class SchedulerManager {
         entityTransaction.updatedAt    = Date().noon
         entityTransaction.dateOperation  = dateValeur
         entityTransaction.datePointage   = dateValeur
-
+        
         entityTransaction.account        = entitySchedule.account
-                
+        
         entityTransaction.paymentMode    = entitySchedule.paymentMode
         entityTransaction.status         = Date() >= dateValeur ? entityStatus[2] : entityStatus[1]
         
         entityTransaction.bankStatement = 0
         entityTransaction.uuid           = UUID()
-
+        
         // create sous transaction
         let entitySousOperation = createSousOperation(for: entitySchedule)
         
@@ -180,7 +188,7 @@ final class SchedulerManager {
         entityTransaction.addSubOperation(  entitySousOperation)
         
         if entitySchedule.linkedAccount != nil {
-//            createComptelie()
+            //            createComptelie()
         }
         do {
             try save()
@@ -229,21 +237,21 @@ final class SchedulerManager {
         //            entityTransactionsTransfert.addToSousOperations(entitySousOperation)
         //
         //            entityTransactionsTransfert.uuid          = UUID()
-
+        
     }
-
+    
     // Créer une sous-opération
     func createSousOperation(for schedule: EntitySchedule) -> EntitySousOperations {
         let sousOperation = EntitySousOperations()
         
         let rubricName = schedule.category?.rubric?.name ?? ""
         let color = schedule.category?.rubric?.color ?? .black
-//        let rubricUUID = schedule.category?.rubric?.uuid ?? UUID()
+        //        let rubricUUID = schedule.category?.rubric?.uuid ?? UUID()
         let rubric = RubricManager.shared.findOrCreate(account: schedule.account, name: rubricName, color: color)
         
         let categoryName = schedule.category?.name ?? ""
         let objectif = schedule.category?.objectif ?? 0.0
-//        let categoryUUID = schedule.category?.uuid ?? UUID()
+        //        let categoryUUID = schedule.category?.uuid ?? UUID()
         let category = CategoriesManager.shared.findOrCreate(
             account: schedule.account,
             name: categoryName,
@@ -260,7 +268,7 @@ final class SchedulerManager {
     
     func createTransaction(for schedule: EntitySchedule, on dateValeur: Date) {
         schedule.nextOccurrence += 1
-
+        
         let transaction = EntityTransactions()
         
         transaction.createAt = Date()
@@ -269,13 +277,13 @@ final class SchedulerManager {
         transaction.datePointage = dateValeur
         transaction.account = schedule.account
         transaction.paymentMode = schedule.paymentMode
-//        transaction.status = Date() >= dateValeur ? 2 : 1
+        //        transaction.status = Date() >= dateValeur ? 2 : 1
         transaction.bankStatement = 0
         transaction.uuid = UUID()
         
         let sousOperation = createSousOperation(for: schedule)
         transaction.sousOperations.append( sousOperation )
-
+        
         if let linkedAccount = schedule.linkedAccount {
             let transferTransaction = EntityTransactions()
             transferTransaction.createAt = transaction.createAt
@@ -285,14 +293,14 @@ final class SchedulerManager {
             transferTransaction.account = linkedAccount
             transferTransaction.status = transaction.status
             transferTransaction.bankStatement = transaction.bankStatement
-
+            
             let paymentModeName = transferTransaction.paymentMode?.name ?? ""
             let color = transferTransaction.paymentMode?.color ?? .black
             let paymentModeUUID = transferTransaction.paymentMode?.uuid ?? UUID()
             let paymentMode = PaymentModeManager.shared.findOrCreate(account: linkedAccount, name: paymentModeName, color: Color(color), uuid: paymentModeUUID)
             
             transferTransaction.paymentMode = paymentMode
-
+            
             let rubric = RubricManager.shared.findOrCreate(account: linkedAccount, name: paymentModeName, color: .black)
             let categoryName = schedule.category?.name ?? "nil"
             let objectif = schedule.category?.objectif ?? 0.0
@@ -310,7 +318,7 @@ final class SchedulerManager {
             transferTransaction.sousOperations.append(transferSousOperation)
             transferTransaction.uuid = UUID()
             validContext.insert(transferTransaction) // Ajout explicite dans le contexte
-
+            
         }
         // Sauvegarde explicite
         if validContext.hasChanges {
@@ -329,5 +337,5 @@ final class SchedulerManager {
             throw EnumError.saveFailed
         }
     }
-
+    
 }

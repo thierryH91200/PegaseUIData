@@ -56,6 +56,26 @@
     "—" : {
       "shouldTranslate" : false
     },
+    ", Incomes: %@" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ", Recettes: %@"
+          }
+        }
+      }
+    },
+    ", Total: %@" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ", Total: %@"
+          }
+        }
+      }
+    },
     "(no transfer)" : {
       "localizations" : {
         "de" : {
@@ -1760,6 +1780,16 @@
           "stringUnit" : {
             "state" : "error",
             "value" : ""
+          }
+        }
+      }
+    },
+    "Bank transfer" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Virement"
           }
         }
       }
@@ -4576,7 +4606,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Supprimer la catégotie"
+            "value" : "Supprimer la rubrique"
           }
         },
         "he" : {
@@ -10519,6 +10549,28 @@
         }
       }
     },
+    "Selected %lld transactions. " : {
+      "localizations" : {
+        "fr" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Sélection %lld transaction."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Sélection %lld transactions. "
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "Selected PDF" : {
       "localizations" : {
         "de" : {
@@ -11376,6 +11428,7 @@
       }
     },
     "Transfers" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {

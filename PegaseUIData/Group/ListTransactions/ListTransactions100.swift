@@ -79,7 +79,7 @@ struct ListTransactions200: View {
 
     @Binding var isVisible: Bool
     @Binding var selectedTransactions: Set<UUID>
-    @State private var info: String = ""
+    @State private var information: AttributedString = ""
 
     @State private var refresh = false
     @State private var currentSectionIndex: Int = 0
@@ -102,9 +102,8 @@ struct ListTransactions200: View {
                 Text("\(compteCurrent?.name ?? String(localized:"No checking account"))")
                 Image(systemName: "info.circle")
                     .foregroundColor(.accentColor)
-                Text(info)
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
+                Text(information)
+                    .font(.system(size: 16, weight: .bold))
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
             }
@@ -244,13 +243,20 @@ struct ListTransactions200: View {
             let strIncome = formatter.string(from: income as NSNumber)!
             let count = selectedEntities.count
 
-            self.info = "Selected \(count) transaction(s). Expenses: \(strExpense), Incomes: \(strIncome), Total: \(amountStr)"
-//            let attributedText = NSAttributedString(string: info, attributes: attribute)
-//            self.labelInfo.attributedStringValue = attributedText
+            let info = AttributedString(String(localized:"Selected \(count) transactions. "))
+
+            var expenseAttr = AttributedString("Expenses: \(strExpense)")
+            expenseAttr.foregroundColor = expense < 0 ? .red : .blue
+
+            var incomeAttr = AttributedString(String(localized:", Incomes: \(strIncome)"))
+            incomeAttr.foregroundColor = income < 0 ? .red : .blue
+
+            let totalAttr = AttributedString(String(localized:", Total: \(amountStr)"))
+
+            information = info + expenseAttr + incomeAttr + totalAttr
         }
     }
 
-    
     private func balanceCalculation() {
         // Récupère les données de l'init
         InitAccountManager.shared.configure(with: modelContext)
@@ -329,6 +335,29 @@ struct ListTransactions200: View {
         
         return groupedItems
     }
+//    @MainActor
+//    func copySelectedTransactions(to targetAccount: EntityAccount) {
+//        let selectedEntities = transactions.filter { selectedTransactions.contains($0.id) }
+//
+//        for transaction in selectedEntities {
+//            let newTransaction = EntityTransactions(
+//                dateOperation: transaction.dateOperation,
+//                datePointage: transaction.datePointage,
+//                amount: transaction.amount,
+//                status: transaction.status,
+//                paymentMode: transaction.paymentMode,
+//                bankStatement: transaction.bankStatement,
+//                checkNumber: transaction.checkNumber,
+//                account: targetAccount
+//            )
+//
+//            newTransaction.sousOperations = transaction.sousOperations.map { $0.copy(for: newTransaction) }
+//
+//            modelContext.insert(newTransaction)
+//        }
+//
+//        try? modelContext.save()
+//    }
 }
 
 struct YearGroup {

@@ -34,6 +34,15 @@ public class EntitySousOperations: Identifiable {
         let price = formatPrice(amount)
         return price
     }
+    
+    func copy(for transaction: EntityTransactions) -> EntitySousOperations {
+        let newSous = EntitySousOperations()
+        newSous.libelle = self.libelle
+        newSous.amount = self.amount
+        newSous.category = self.category
+        newSous.transaction = transaction
+        return newSous
+    }
 }
 
 final class SubTransactionsManager {

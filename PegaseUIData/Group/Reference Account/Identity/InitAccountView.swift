@@ -107,7 +107,6 @@ struct InitAccountView: View {
     private func initializeData() {
         createAccountIfNeeded()
     }
-    
 
     private func createAccountIfNeeded() {
         if dataManager.initAccount == nil {

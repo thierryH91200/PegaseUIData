@@ -49,7 +49,7 @@ struct SchedulerFormView: View {
     
     var body: some View {
         
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 8) {
             schedulerDateFields
             schedulerTextFields
             schedulerPickers
@@ -271,7 +271,7 @@ struct SchedulerFormView: View {
             newItem = EntitySchedule()
             modelContext.insert(newItem)
         }
-        if let frequence = Int16(frequence),
+        if let frequence = Int16(frequency),
            let nextOccurrence = Int16(nextOccurrence),
            let occurrence = Int16(occurrence),
            let frequencyType = Int16(exactly: selectedTypeIndex),
