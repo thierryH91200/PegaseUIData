@@ -71,7 +71,6 @@ struct PegaseUIDataApp: App {
                         resetTrigger = false
                     }
                 }
-
         }
         .commands {
             DemoDataCommand(
@@ -82,8 +81,12 @@ struct PegaseUIDataApp: App {
         
         .commands {
             CommandGroup(after: .newItem) {
+                Divider() // Cela n’aura pas d’effet visible ici, mais utile à noter
+            }
+
+            CommandGroup(after: .newItem) {
                 Menu("Import") { // Création d'un menu "Import"
-                    Button("Transaction") {
+                    Button("Transaction CSV") {
                         NotificationCenter.default.post(name: .importTransaction, object: nil)
                     }
                     .keyboardShortcut("T", modifiers: [.command, .shift]) // Cmd+Shift+T
@@ -99,11 +102,16 @@ struct PegaseUIDataApp: App {
                     .keyboardShortcut("R", modifiers: [.command, .shift]) // Cmd+Shift+R
                 }
                 Menu("Export") {    // Création d'un menu "Export"
-                    Button("Transaction") {
-                        NotificationCenter.default.post(name: .exportTransaction, object: nil)
+                    Button("Transaction CSV") {
+                        NotificationCenter.default.post(name: .exportTransactionCSV, object: nil)
                     }
                     .keyboardShortcut("E", modifiers: [.command, .shift]) // Cmd+Shift+E
                     
+                    Button("Transaction OFX") {
+                        NotificationCenter.default.post(name: .exportTransactionOFX, object: nil)
+                    }
+                    .keyboardShortcut("E", modifiers: [.command, .shift]) // Cmd+Shift+E
+
                     Button("Statement") {
                         NotificationCenter.default.post(name: .exportReleve, object: nil)
                     }

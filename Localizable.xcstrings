@@ -1362,6 +1362,9 @@
         }
       }
     },
+    "Annuler" : {
+
+    },
     "Appearance" : {
       "localizations" : {
         "de" : {
@@ -6489,6 +6492,9 @@
         }
       }
     },
+    "Exporter" : {
+
+    },
     "Eyes" : {
       "localizations" : {
         "de" : {
@@ -7412,6 +7418,7 @@
       }
     },
     "Import an OFX file" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -7420,6 +7427,21 @@
           }
         }
       }
+    },
+    "Import CSV" : {
+
+    },
+    "Import CVS" : {
+
+    },
+    "Import OFX" : {
+
+    },
+    "Importation du fichier OFX…" : {
+
+    },
+    "Importer CSV" : {
+
     },
     "Income/Expense" : {
       "localizations" : {
@@ -8102,7 +8124,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Associer les colonnes"
+            "value" : "Associer les colonnes :"
           }
         },
         "he" : {
@@ -11261,6 +11283,9 @@
         }
       }
     },
+    "Transaction CSV" : {
+
+    },
     "Transaction Date" : {
       "localizations" : {
         "de" : {
@@ -11423,17 +11448,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Transaction OFX"
-          }
-        }
-      }
-    },
-    "Transfers" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Transfert"
           }
         }
       }

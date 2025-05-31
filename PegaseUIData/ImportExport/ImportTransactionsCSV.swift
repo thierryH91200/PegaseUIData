@@ -14,12 +14,12 @@ import SwiftData
 struct ImportTransactionFileView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-
+    
     @State private var showFileImporter = false
     @State private var showOFXImporter = false
     @State private var csvData: [[String]] = []
     @State private var columnMapping: [String: Int] = [:] // Associe les attributs aux colonnes
-
+    
     // Attributs disponibles
     let transactionAttributes = [String(localized:"Pointage Date"),
                                  String(localized:"Operation Date"),
@@ -50,26 +50,39 @@ struct ImportTransactionFileView: View {
                     print("Erreur de sélection de fichier : \(error.localizedDescription)")
                 }
             }
+            Spacer()
+            Button(action: {
+                dismiss()
+            }) {
+                Text("Cancel")
+                    .font(.title2)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 16) // réduit la hauteur
+                    .padding(.vertical, 4)    // réduit la hauteur
+                    .background(Color.red)
+                    .cornerRadius(8)
+            }
+           
             
-            Button("Import an OFX file") {
-                showOFXImporter = true
-            }
-            .frame(width: 200, height: 30, alignment: .center)
-            .fileImporter(
-                isPresented: $showOFXImporter,
-                allowedContentTypes: [.data],
-                allowsMultipleSelection: false
-            ) { result in
-                switch result {
-                case .success(let urls):
-                    if let url = urls.first {
-                        importOFXTransactions(from: url, context: modelContext)
-                        dismiss()
-                    }
-                case .failure(let error):
-                    print("Erreur de sélection de fichier OFX : \(error.localizedDescription)")
-                }
-            }
+//            Button("Import an OFX file") {
+//                showOFXImporter = true
+//            }
+//            .frame(width: 200, height: 30, alignment: .center)
+//            .fileImporter(
+//                isPresented: $showOFXImporter,
+//                allowedContentTypes: [.data],
+//                allowsMultipleSelection: false
+//            ) { result in
+//                switch result {
+//                case .success(let urls):
+//                    if let url = urls.first {
+//                        importOFXTransactions(from: url, context: modelContext)
+//                        dismiss()
+//                    }
+//                case .failure(let error):
+//                    print("Erreur de sélection de fichier OFX : \(error.localizedDescription)")
+//                }
+//            }
             
             if !csvData.isEmpty {
                 Text("CSV Preview").font(.headline)
@@ -97,7 +110,6 @@ struct ImportTransactionFileView: View {
                     .frame(width: 300) // Réduit la largeur du picker
                     .pickerStyle(MenuPickerStyle()) // Utilisation d'un menu déroulant compact
                 }
-
                 
                 HStack(spacing: 20) {
                     Button(action: {
@@ -146,7 +158,7 @@ struct ImportTransactionFileView: View {
         CategoriesManager.shared.configure(with: context)
         
         let entityPreference = PreferenceManager.shared.getAllData(for: account)
-
+        
         for row in csvData.dropFirst() { // Ignorer l'en-tête
             
             let datePointage =  getDate(from: row, index: columnMapping[String(localized:"Pointage Date")])  ?? Date().noon
@@ -189,7 +201,7 @@ struct ImportTransactionFileView: View {
             
             context.insert(sousTransaction)
             transaction.addSubOperation(sousTransaction)
-
+            
             context.insert(transaction)
         }
         
@@ -201,18 +213,43 @@ struct ImportTransactionFileView: View {
         }
     }
     
+    func readCSV(from url: URL) -> [[String]]? {
+        
+        guard url.startAccessingSecurityScopedResource() else {
+            print("⚠️ Impossible d'accéder au fichier (Security Scoped)")
+            return nil
+        }
+        
+        defer { url.stopAccessingSecurityScopedResource() } // Libérer l'accès à la fin
+        
+        do {
+            let content = try String(contentsOf: url, encoding: .utf8)
+            let rows = content.components(separatedBy: "\n").filter { !$0.isEmpty }
+            
+            // Détecter le séparateur
+            let separator: Character = content.contains(";") ? ";" : ","
+            
+            let parsedData = rows.map { $0.components(separatedBy: String(separator)) }
+            return parsedData
+        } catch {
+            print("Erreur lors de la lecture du fichier CSV : \(error.localizedDescription)")
+            return nil
+        }
+    }
+
+    
     // Fonctions utilitaires
     func getString(from row: [String], index: Int?) -> String {
         guard let index = index, index >= 0, index < row.count else { return "" }
         return row[index]
     }
-
+    
     func getDouble(from row: [String], index: Int?) -> Double {
         guard let index = index, index >= 0, index < row.count else { return 0.0 }
         let value = row[index].replacingOccurrences(of: String(","), with: ".")
         return Double(value) ?? 0.0
     }
-
+    
     func getDate(from row: [String], index: Int?) -> Date? {
         guard let index = index, index >= 0, index < row.count else { return Date().noon }
         let formatter = DateFormatter()
@@ -244,98 +281,75 @@ struct TableView: View {
             }
         }
     }
-}
 
-func readCSV(from url: URL) -> [[String]]? {
     
-    guard url.startAccessingSecurityScopedResource() else {
-        print("⚠️ Impossible d'accéder au fichier (Security Scoped)")
-        return nil
-    }
-    
-    defer { url.stopAccessingSecurityScopedResource() } // Libérer l'accès à la fin
-
-    do {
-        let content = try String(contentsOf: url, encoding: .utf8)
-        let rows = content.components(separatedBy: "\n").filter { !$0.isEmpty }
-        
-        // Détecter le séparateur
-        let separator: Character = content.contains(";") ? ";" : ","
-        
-        let parsedData = rows.map { $0.components(separatedBy: String(separator)) }
-        return parsedData
-    } catch {
-        print("Erreur lors de la lecture du fichier CSV : \(error.localizedDescription)")
-        return nil
-    }
-}
-
-func importOFXTransactions(from url: URL, context: ModelContext) {
-    guard url.startAccessingSecurityScopedResource() else {
-        print("⚠️ Impossible d'accéder au fichier OFX (Security Scoped)")
-        return
-    }
-    defer { url.stopAccessingSecurityScopedResource() }
-
-    let encodings: [String.Encoding] = [.utf8, .windowsCP1252, .isoLatin1, .macOSRoman]
-
-    var content: String? = nil
-    for encoding in encodings {
-        if let result = try? String(contentsOf: url, encoding: encoding), !result.isEmpty {
-            content = result
-            break
+    @MainActor func importOFXTransactions(from url: URL, context: ModelContext) {
+        guard url.startAccessingSecurityScopedResource() else {
+            print("⚠️ Impossible d'accéder au fichier OFX (Security Scoped)")
+            return
         }
-    }
-    guard let content = content else {
-        print("⚠️ Impossible de lire le contenu du fichier OFX avec les encodages connus.")
-        return
-    }
-
-    let blocks = content.components(separatedBy: "<STMTTRN>").dropFirst()
-    for block in blocks {
-        guard let end = block.range(of: "</STMTTRN>") else { continue }
-        let transaction = String(block[..<end.lowerBound])
-
-        func extract(_ tag: String) -> String {
-            guard let range = transaction.range(of: "<\(tag)>") else { return "" }
-            let after = transaction[range.upperBound...]
-            return after.prefix(while: { $0 != "\n" && $0 != "\r" }).trimmingCharacters(in: .whitespaces)
-        }
-
-//        let type = extract("TRNTYPE")
-        let name = extract("NAME")
-//        let memo = extract("MEMO")
+        defer { url.stopAccessingSecurityScopedResource() }
         
-        let amountString = extract("TRNAMT").replacingOccurrences(of: "+", with: "")
-        let amount = Double(amountString) ?? 0.0
-        let dateString = extract("DTPOSTED").prefix(8)
-        let date = DateFormatter.ofxDate.date(from: String(dateString)) ?? Date()
-
-        let account = CurrentAccountManager.shared.getAccount()!
-
-        let entityTransaction = EntityTransactions()
-        entityTransaction.dateOperation = date.noon
-        entityTransaction.datePointage = date.noon
-        entityTransaction.account = account
-        entityTransaction.checkNumber = "0"
-        entityTransaction.bankStatement = 0.0
-
-        let preference = PreferenceManager.shared.getAllData(for: account)
-        entityTransaction.status = preference?.status
-        entityTransaction.paymentMode = preference?.paymentMode
-
-        let sousOperation = EntitySousOperations()
-        sousOperation.amount = amount
-        sousOperation.libelle = name
-        sousOperation.category = preference?.category
-        sousOperation.transaction = entityTransaction
-
-        context.insert(sousOperation)
-        entityTransaction.addSubOperation(sousOperation)
-        context.insert(entityTransaction)
+        let encodings: [String.Encoding] = [.utf8, .windowsCP1252, .isoLatin1, .macOSRoman]
+        
+        var content: String? = nil
+        for encoding in encodings {
+            if let result = try? String(contentsOf: url, encoding: encoding), !result.isEmpty {
+                content = result
+                break
+            }
+        }
+        guard let content = content else {
+            print("⚠️ Impossible de lire le contenu du fichier OFX avec les encodages connus.")
+            return
+        }
+        
+        let blocks = content.components(separatedBy: "<STMTTRN>").dropFirst()
+        for block in blocks {
+            guard let end = block.range(of: "</STMTTRN>") else { continue }
+            let transaction = String(block[..<end.lowerBound])
+            
+            func extract(_ tag: String) -> String {
+                guard let range = transaction.range(of: "<\(tag)>") else { return "" }
+                let after = transaction[range.upperBound...]
+                return after.prefix(while: { $0 != "\n" && $0 != "\r" }).trimmingCharacters(in: .whitespaces)
+            }
+            
+            //        let type = extract("TRNTYPE")
+            let name = extract("NAME")
+            //        let memo = extract("MEMO")
+            
+            let amountString = extract("TRNAMT").replacingOccurrences(of: "+", with: "")
+            let amount = Double(amountString) ?? 0.0
+            let dateString = extract("DTPOSTED").prefix(8)
+            let date = DateFormatter.ofxDate.date(from: String(dateString)) ?? Date()
+            
+            let account = CurrentAccountManager.shared.getAccount()!
+            
+            let entityTransaction = EntityTransactions()
+            entityTransaction.dateOperation = date.noon
+            entityTransaction.datePointage = date.noon
+            entityTransaction.account = account
+            entityTransaction.checkNumber = "0"
+            entityTransaction.bankStatement = 0.0
+            
+            let preference = PreferenceManager.shared.getAllData(for: account)
+            entityTransaction.status = preference?.status
+            entityTransaction.paymentMode = preference?.paymentMode
+            
+            let sousOperation = EntitySousOperations()
+            sousOperation.amount = amount
+            sousOperation.libelle = name
+            sousOperation.category = preference?.category
+            sousOperation.transaction = entityTransaction
+            
+            context.insert(sousOperation)
+            entityTransaction.addSubOperation(sousOperation)
+            context.insert(entityTransaction)
+        }
+        
+        try? context.save()
     }
-
-    try? context.save()
 }
 
 extension DateFormatter {

@@ -105,7 +105,7 @@ struct RubricView: View {
                             .background(Color.blue)
                             .foregroundColor(.white)
                             .cornerRadius(8)
-                            .fixedSize() // Ajuste automatiquement la taille au contenu
+                            .fixedSize() // Ajuste la taille au contenu
                     }
                     
                     Button(action: {

@@ -23,6 +23,8 @@ public class EntitySchedule : Identifiable{
     var nextOccurrence           : Int16  = 0
     var occurrence               : Int16  = 0
     var typeFrequence            : Int16  = 0
+
+    @Attribute var isProcessed: Bool = false
     
     @Attribute(.unique) var uuid : UUID   = UUID()
     public var id                : UUID { uuid }
@@ -158,7 +160,7 @@ final class SchedulerManager {
         return entities
     }
     
-    func createTransaction (entitySchedule: EntitySchedule) {
+    @MainActor func createTransaction (entitySchedule: EntitySchedule) {
         
         entitySchedule.nextOccurrence += 1
         let account = CurrentAccountManager.shared.getAccount()!

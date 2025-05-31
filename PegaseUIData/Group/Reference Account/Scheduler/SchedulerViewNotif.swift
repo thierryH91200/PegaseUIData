@@ -49,7 +49,7 @@ class NotificationManager {
 struct UpcomingRemindersView: View {
     
     @Environment(\.modelContext) private var modelContext
-
+    
     let upcoming: [EntitySchedule]
     
     let dateFormatter: DateFormatter = {
@@ -64,7 +64,9 @@ struct UpcomingRemindersView: View {
             Text("🔔 Upcoming Reminders")
                 .font(.headline)
             
-            let filteredUpcoming = upcoming.filter { $0.dateValeur >= Calendar.current.startOfDay(for: Date()) }
+            let filteredUpcoming = upcoming
+                .filter { !$0.isProcessed && $0.dateValeur >= Calendar.current.startOfDay(for: Date()) }
+                .sorted { $0.dateValeur < $1.dateValeur }
             
             if filteredUpcoming.isEmpty {
                 Text("No scheduled operations.")
@@ -82,29 +84,53 @@ struct UpcomingRemindersView: View {
                             
                             VStack(alignment: .leading) {
                                 Text(item.libelle)
-                                    .fontWeight(.medium)
-                                Text("Date : \(dateFormatter.string(from: item.dateValeur))")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
+                                    .fontWeight(daysRemaining <= 1 ? .bold : .regular)
+                                    .foregroundColor(daysRemaining <= 1 ? .red : .primary)
+                                
+                                let daysRemaining = Calendar.current.dateComponents([.day], from: Date(), to: item.dateValeur).day ?? 0
+                                
+                                let relativeLabel: String = {
+                                    switch daysRemaining {
+                                    case 0:
+                                        return "Aujourd’hui"
+                                    case 1:
+                                        return "Demain"
+                                    case 2...6:
+                                        return "Dans \(daysRemaining) jours"
+                                    default:
+                                        return ""
+                                    }
+                                }()
+                                if !relativeLabel.isEmpty {
+                                    Text(relativeLabel)
+                                        .font(.caption2)
+                                        .foregroundColor(.secondary)
+                                    
+                                    Text("Date : \(dateFormatter.string(from: item.dateValeur))")
+                                        .font(.caption)
+                                    .foregroundColor(daysRemaining <= 1 ? .red : (daysRemaining <= 3 ? .orange : .secondary))                            }
+                                Spacer()
+                                
+                                Text(String(format: "%.2f", item.amount))
+                                    .foregroundColor(.primary)
                             }
-                            
-                            Spacer()
-                            
-                            Text(String(format: "%.2f", item.amount))
-                                .foregroundColor(.primary)
+                            .padding(.vertical, 4)
                         }
-                        .padding(.vertical, 4)
                     }
-                }
-                .onAppear {
-                    RubricManager.shared.configure(with: modelContext)
-                    CategoriesManager.shared.configure(with: modelContext)
-                    for entitySchedule in upcoming {
-                        SchedulerManager.shared.createTransaction(entitySchedule: entitySchedule)
+                    .onAppear {
+                        RubricManager.shared.configure(with: modelContext)
+                        CategoriesManager.shared.configure(with: modelContext)
+                        for entitySchedule in upcoming {
+                            SchedulerManager.shared.createTransaction(entitySchedule: entitySchedule)
+                            NotificationManager.shared.cancelReminder(for: entitySchedule)
+                            entitySchedule.isProcessed = true
+                        }
                     }
+                    .padding()
                 }
             }
         }
-        .padding()
     }
 }
+        
+        

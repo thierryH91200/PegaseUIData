@@ -90,15 +90,15 @@ struct Scheduler: View {
     }()
     
     var body: some View {
-        VStack(spacing: 5) {
+        VStack(spacing: 2) {
             if let account = CurrentAccountManager.shared.currentAccount {
                 Text("Account: \(account.name)")
                     .font(.headline)
+                    .padding(.bottom, 0)
             }
-            
             SchedulerTable(schedulers: dataManager.schedulers, selection: $selectedItem)
                 .frame(height: 300)
-                .padding(.horizontal)
+                .padding(.top, 0)
                 .onAppear {
                     setupDataManager()
                 }
@@ -239,13 +239,13 @@ struct SchedulerTable: View {
     }()
     
     var body: some View {
-        ScrollView([.horizontal, .vertical]) {
+        ScrollView([.vertical]) {
             LazyVStack(alignment: .leading, spacing: 4) {
                 headerView()
                 Divider()
                 rowsView()
             }
-            .padding(.horizontal, 8) // ou .padding(.horizontal, 0)
+            .padding(.horizontal)
         }
         .background(Color.white)
         .frame(minHeight: 300)
@@ -289,31 +289,31 @@ struct SchedulerTable: View {
     @ViewBuilder
     private func headerGroup1() -> some View {
         Group {
-            Text("Value Date").bold().frame(width: 100)
-            Text("Start Date").bold().frame(width: 100)
-            Text("End Date").bold().frame(width: 100)
-            Text("Amount").bold().frame(width: 100)
+            Text("Value Date").bold().frame(minWidth: 100, alignment: .leading)
+            Text("Start Date").bold().frame(minWidth: 100, alignment: .leading)
+            Text("End Date").bold().frame(minWidth: 100, alignment: .leading)
+            Text("Amount").bold().frame(minWidth: 100, alignment: .leading)
         }
     }
     
     @ViewBuilder
     private func headerGroup2() -> some View {
         Group {
-            Text("Frequency").bold().frame(width: 100)
-            Text("Comment").bold().frame(width: 120)
-            Text("Next").bold().frame(width: 100)
-            Text("Occurrence").bold().frame(width: 100)
+            Text("Frequency").bold().frame(minWidth: 100, alignment: .leading)
+            Text("Comment").bold().frame(minWidth: 120, alignment: .leading)
+            Text("Next").bold().frame(minWidth: 100, alignment: .leading)
+            Text("Occurrence").bold().frame(minWidth: 100, alignment: .leading)
         }
     }
     
     @ViewBuilder
     private func headerGroup3() -> some View {
         Group {
-            Text("Mode").bold().frame(width: 100)
-            Text("Rubric").bold().frame(width: 100)
-            Text("Category").bold().frame(width: 100)
-            Text("Name").bold().frame(width: 120)
-            Text("Number").bold().frame(width: 100)
+            Text("Mode").bold().frame(minWidth: 100, alignment: .leading)
+            Text("Rubric").bold().frame(minWidth: 100, alignment: .leading)
+            Text("Category").bold().frame(minWidth: 100, alignment: .leading)
+            Text("Name").bold().frame(minWidth: 120, alignment: .leading)
+            Text("Number").bold().frame(minWidth: 100, alignment: .leading)
         }
     }
     
@@ -329,31 +329,31 @@ struct SchedulerTable: View {
     @ViewBuilder
     private func rowGroup1(_ item: EntitySchedule) -> some View {
         Group {
-            Text(dateFormatter.string(from: item.dateValeur)).frame(width: 100)
-            Text(dateFormatter.string(from: item.dateValeur)).frame(width: 100)
-            Text(dateFormatter.string(from: item.dateFin)).frame(width: 100)
-            Text(String(format: "%.2f", item.amount)).frame(width: 100)
+            Text(dateFormatter.string(from: item.dateValeur)).frame(minWidth: 100, alignment: .leading)
+            Text(dateFormatter.string(from: item.dateValeur)).frame(minWidth: 100, alignment: .leading)
+            Text(dateFormatter.string(from: item.dateFin)).frame(minWidth: 100, alignment: .leading)
+            Text(String(format: "%.2f", item.amount)).frame(minWidth: 100, alignment: .leading)
         }
     }
     
     @ViewBuilder
     private func rowGroup2(_ item: EntitySchedule) -> some View {
         Group {
-            Text(String(item.frequence)).frame(width: 100)
-            Text(item.libelle).frame(width: 120)
-            Text(String(item.nextOccurrence)).frame(width: 100)
-            Text(String(item.occurrence)).frame(width: 100)
+            Text(String(item.frequence)).frame(minWidth: 100, alignment: .leading)
+            Text(item.libelle).frame(minWidth: 120, alignment: .leading)
+            Text(String(item.nextOccurrence)).frame(minWidth: 100, alignment: .leading)
+            Text(String(item.occurrence)).frame(minWidth: 100, alignment: .leading)
         }
     }
     
     @ViewBuilder
     private func rowGroup3(_ item: EntitySchedule) -> some View {
         Group {
-            Text(item.paymentMode?.name ?? "N/A").frame(width: 100)
-            Text(item.category?.rubric?.name ?? "N/A").frame(width: 100)
-            Text(item.category?.name ?? "").frame(width: 100)
-            Text(item.account.identity?.name ?? "").frame(width: 120)
-            Text(item.account.initAccount?.codeAccount ?? "").frame(width: 100)
+            Text(item.paymentMode?.name ?? "N/A").frame(minWidth: 100, alignment: .leading)
+            Text(item.category?.rubric?.name ?? "N/A").frame(minWidth: 100, alignment: .leading)
+            Text(item.category?.name ?? "").frame(minWidth: 100, alignment: .leading)
+            Text(item.account.identity?.name ?? "").frame(minWidth: 120, alignment: .leading)
+            Text(item.account.initAccount?.codeAccount ?? "").frame(minWidth: 100, alignment: .leading)
         }
     }
 }

@@ -103,6 +103,10 @@ struct ContentView100: View {
     @State private var entityAccount: [EntityAccount] = []    
     @State private var inspectorIsShown: Bool = false
     
+    @State private var showImportOFX = false
+    @State var viewModel = CSVViewModel()
+
+    
     @State private var selectedColor: String? = "United"
       
     var body: some View {
@@ -145,11 +149,11 @@ struct ContentView100: View {
         .onReceive(NotificationCenter.default.publisher(for: .importTransactionOFX)) { _ in
             showOFXTransactionImporter = true
         }
-        .sheet(isPresented: $showCSVTransactionImporter) {
-//            OFXImportTransactionView() // Affiche la fenêtre d'importation CSV
+        .sheet(isPresented: $showOFXTransactionImporter) {
+            ImportTransactionOFXFileView(isPresented: $showOFXTransactionImporter)
         }
         
-        .onReceive(NotificationCenter.default.publisher(for: .exportTransaction)) { _ in
+        .onReceive(NotificationCenter.default.publisher(for: .exportTransactionCSV)) { _ in
             showCSVTransactionExporter = true
         }
         .sheet(isPresented: $showCSVTransactionExporter) {
@@ -189,6 +193,14 @@ struct ContentView100: View {
                     print("Paramètres ouverts")
                 }) {
                     Label("Settings", systemImage: "gear")
+                }
+            }
+            
+            ToolbarItemGroup(placement: .navigation) {
+                Button(action: {
+                    viewModel.triggerImport()
+                }) {
+                    Label("Import", systemImage: "arrow.down.doc")
                 }
             }
             

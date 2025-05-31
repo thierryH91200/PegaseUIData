@@ -70,7 +70,7 @@ final class SubTransactionsManager {
         self.modelContext = modelContext
     }
     
-    func createSubTransactions(comment: String,
+    @MainActor func createSubTransactions(comment: String,
                                category: EntityCategory,
                                amount: String,
                                formState: TransactionFormState ) {
