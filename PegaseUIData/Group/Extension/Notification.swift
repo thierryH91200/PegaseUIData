@@ -20,6 +20,8 @@ extension Notification.Name {
     static let loadDemoRequested = Notification.Name("loadDemoRequested")
     static let resetDatabaseRequested = Notification.Name("resetDatabaseRequested")
 
+    static let transactionsImported = Notification.Name("transactionsImported")
+
 }
 
 

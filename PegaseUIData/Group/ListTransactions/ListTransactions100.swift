@@ -161,8 +161,18 @@ struct ListTransactions200: View {
         }
         .onChange(of: colorManager.colorChoix) { old, new in
         }
+        
+        .onReceive(NotificationCenter.default.publisher(for: .transactionsImported)) { _ in
+            print("[PegaseUIData] transactionsImported notification received")
+
+            loadTransactions()
+            withAnimation {
+                refresh.toggle()
+            }
+        }
+
         .onChange(of: currentAccountManager.currentAccount) { old, new in
-            print("Changement de compte détecté: \(String(describing: new))")
+            print("[PegaseUIData] Changement de compte détecté: \(String(describing: new))")
             loadTransactions()
             
             withAnimation {
@@ -171,6 +181,7 @@ struct ListTransactions200: View {
         }
         
         .onChange(of: selectedTransactions) { _, _ in
+            print("[PegaseUIData] selectionDidChange called")
             selectionDidChange()
         }
 
@@ -316,7 +327,7 @@ struct ListTransactions200: View {
         }
         
         for (year, yearTransactions) in groupedByYear {
-            var yearGroup = YearGroup(year: "\(year)", monthGroups: [])
+            var yearGroup = YearGroup(year: year, monthGroups: [])
             
             let groupedByMonth = Dictionary(grouping: yearTransactions) { (transaction) -> Int in
                 let components = calendar.dateComponents([.month], from: transaction.datePointage)
@@ -361,7 +372,7 @@ struct ListTransactions200: View {
 }
 
 struct YearGroup {
-    var year: String
+    var year: Int
     var monthGroups: [MonthGroup]
 }
 

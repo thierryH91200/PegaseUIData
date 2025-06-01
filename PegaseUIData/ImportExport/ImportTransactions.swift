@@ -22,7 +22,7 @@ struct ImportTransactions: View {
         Button(action: {
             viewModel.triggerImport()
         }) {
-            Label("Import CVS", systemImage: "arrow.down.doc")
+            Label("Import CSV", systemImage: "arrow.down.doc")
         }
         .frame(width: 200, height: 30, alignment: .center)
         

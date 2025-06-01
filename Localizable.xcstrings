@@ -1362,7 +1362,7 @@
         }
       }
     },
-    "Annuler" : {
+    "Année : %lld" : {
 
     },
     "Appearance" : {
@@ -7417,30 +7417,30 @@
         }
       }
     },
-    "Import an OFX file" : {
-      "extractionState" : "stale",
+    "Import CSV" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Importer un ficher OFX"
+            "value" : "Importer un fichier CSV"
           }
         }
       }
     },
-    "Import CSV" : {
-
-    },
-    "Import CVS" : {
-
-    },
     "Import OFX" : {
-
-    },
-    "Importation du fichier OFX…" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importer un fichier OFX"
+          }
+        }
+      }
     },
     "Importer CSV" : {
+
+    },
+    "Importing the OFX file…" : {
 
     },
     "Income/Expense" : {
@@ -8273,7 +8273,11 @@
         }
       }
     },
+    "Mois : %@" : {
+
+    },
     "Month: %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -9002,6 +9006,9 @@
           }
         }
       }
+    },
+    "No current account" : {
+
     },
     "No label" : {
       "localizations" : {
@@ -11745,6 +11752,7 @@
       }
     },
     "Year: %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

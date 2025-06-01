@@ -208,6 +208,8 @@ struct ImportTransactionFileView: View {
         do {
             try context.save()
             print("Importation réussie 🎉")
+            NotificationCenter.default.post(name: .transactionsImported, object: nil)
+
         } catch {
             print("Erreur lors de l'enregistrement : \(error)")
         }

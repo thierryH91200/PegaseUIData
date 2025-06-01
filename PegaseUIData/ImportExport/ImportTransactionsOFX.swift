@@ -28,12 +28,12 @@ struct ImportTransactionOFXFileView: View {
                 VStack {
                     Spacer()
                     
-                    ProgressView("Importation du fichier OFX…")
+                    ProgressView("Importing the OFX file…")
                         .padding()
                         .background(RoundedRectangle(cornerRadius: 10).fill(Color.white))
                         .shadow(radius: 5)
                     
-                    Button("Annuler") {
+                    Button("Cancel") {
                         dismiss()
                     }
                     .padding(.top, 12)

@@ -11,7 +11,6 @@ import UniformTypeIdentifiers
 struct CSVImportButtonCSV: View {
     
     @ObservedObject var viewModel: CSVViewModel
-    
     @State private var isPresented: Bool = false
     
     var body: some View {
@@ -30,7 +29,6 @@ struct CSVImportButtonCSV: View {
 struct CSVImportButtonOFX: View {
     
     @ObservedObject var viewModel: CSVViewModel
-    
     @State private var isPresented: Bool = false
     
     var body: some View {

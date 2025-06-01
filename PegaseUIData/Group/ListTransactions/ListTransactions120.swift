@@ -36,43 +36,41 @@ struct TransactionLigne: View {
         var backgroundColor = isSelected ? Color.blue.opacity(0.5) : Color.clear
         let textColor = isSelected ? Color.white : colorManager.colorForTransaction(transaction)
         
-        ScrollView {
-            HStack(spacing: 0) {
-                Group {
-                    Text(transaction.datePointageString)
-                        .frame(width: ColumnWidths.datePointage, alignment: .leading)
-                    verticalDivider()
-                    Text(transaction.dateOperationString)
-                        .frame(width: ColumnWidths.dateOperation, alignment: .leading)
-                    verticalDivider()
-                    Text(transaction.sousOperations.first?.libelle ?? "—")
-                        .frame(width: ColumnWidths.libelle, alignment: .leading)
-                    verticalDivider()
-                    Text(transaction.sousOperations.first?.category?.rubric?.name ?? "—")
-                        .frame(width: ColumnWidths.rubrique, alignment: .leading)
-                    verticalDivider()
-                    Text(transaction.sousOperations.first?.category?.name ?? "—")
-                        .frame(width: ColumnWidths.categorie, alignment: .leading)
-                    verticalDivider()
-                    Text(transaction.sousOperations.first?.amountString ?? "—")
-                        .frame(width: ColumnWidths.sousMontant, alignment: .leading)
-                    verticalDivider()
-                    Text(transaction.bankStatementString)
-                        .frame(width: ColumnWidths.releve, alignment: .leading)
-                    verticalDivider()
-                    Text(transaction.checkNumber != "0" ? transaction.checkNumber : "—").frame(width: ColumnWidths.cheque, alignment: .leading)
-                    verticalDivider()
-                }
-                Group {
-                    Text(transaction.statusString)
-                        .frame(width: ColumnWidths.statut, alignment: .leading)
-                    verticalDivider()
-                    Text(transaction.paymentModeString)
-                        .frame(width: ColumnWidths.modePaiement, alignment: .leading)
-                    verticalDivider()
-                    Text(transaction.amountString)
-                        .frame(width: ColumnWidths.montant, alignment: .trailing)
-                }
+        HStack(spacing: 0) {
+            Group {
+                Text(transaction.datePointageString)
+                    .frame(width: ColumnWidths.datePointage, alignment: .leading)
+                verticalDivider()
+                Text(transaction.dateOperationString)
+                    .frame(width: ColumnWidths.dateOperation, alignment: .leading)
+                verticalDivider()
+                Text(transaction.sousOperations.first?.libelle ?? "—")
+                    .frame(width: ColumnWidths.libelle, alignment: .leading)
+                verticalDivider()
+                Text(transaction.sousOperations.first?.category?.rubric?.name ?? "—")
+                    .frame(width: ColumnWidths.rubrique, alignment: .leading)
+                verticalDivider()
+                Text(transaction.sousOperations.first?.category?.name ?? "—")
+                    .frame(width: ColumnWidths.categorie, alignment: .leading)
+                verticalDivider()
+                Text(transaction.sousOperations.first?.amountString ?? "—")
+                    .frame(width: ColumnWidths.sousMontant, alignment: .leading)
+                verticalDivider()
+                Text(transaction.bankStatementString)
+                    .frame(width: ColumnWidths.releve, alignment: .leading)
+                verticalDivider()
+                Text(transaction.checkNumber != "0" ? transaction.checkNumber : "—").frame(width: ColumnWidths.cheque, alignment: .leading)
+                verticalDivider()
+            }
+            Group {
+                Text(transaction.statusString)
+                    .frame(width: ColumnWidths.statut, alignment: .leading)
+                verticalDivider()
+                Text(transaction.paymentModeString)
+                    .frame(width: ColumnWidths.modePaiement, alignment: .leading)
+                verticalDivider()
+                Text(transaction.amountString)
+                    .frame(width: ColumnWidths.montant, alignment: .trailing)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
