@@ -33,9 +33,9 @@ import SwiftUI
     }
 }
 
-final class CategoriesManager: ObservableObject {
+final class CategoryManager: ObservableObject {
     
-    static let shared = CategoriesManager()
+    static let shared = CategoryManager()
     
     @Query private var entities: [EntityCategory] // Liste des entités chargées de manière réactive
    
@@ -54,11 +54,14 @@ final class CategoriesManager: ObservableObject {
         self.modelContext = modelContext
     }
     
-    func findOrCreate(account: EntityAccount,
+   func findOrCreate(account: EntityAccount,
                       name: String,
                       objectif: Double,
                       rubric: EntityRubric ) -> EntityCategory {
-        if let existingCategory = find(account: account, name: name) {
+        
+//        let account = CurrentAccountManager.shared.getAccount()!
+
+       if let existingCategory = find(name: name) {
             return existingCategory
         } else {
             let newCategory = EntityCategory(name: name, objectif: objectif, rubric: rubric)
@@ -66,11 +69,45 @@ final class CategoriesManager: ObservableObject {
             return newCategory
         }
     }
+    
+//    Explication :
+//
+//    On filtre d’abord sur category.name == name (simple, accepté par SwiftData).
+//    Ensuite, on refiltre en Swift pour rubric?.account.uuid == lhs.
+//    func find(name: String) -> EntityCategory? {
+//        guard let modelContext = modelContext else { return nil }
+//
+//        let account = CurrentAccountManager.shared.getAccount()!
+//        let lhs = account.uuid
+//
+//        let predicate: Predicate<EntityCategory> = #Predicate { category in
+//            category.name == name
+//        }
+//        let sort = [SortDescriptor(\EntityCategory.name, order: .forward)]
+//        let descriptor = FetchDescriptor<EntityCategory>(
+//            predicate: predicate,
+//            sortBy: sort
+//        )
+//
+//        do {
+//            let results = try modelContext.fetch(descriptor)
+//            return results.firstMatchingAccount(account)
+//        } catch {
+//            print("Erreur durant la récupération SwiftData: \(error)")
+//            return nil
+//        }
+//    }
+    
+    func find(name: String) -> EntityCategory? {
+        guard let modelContext = modelContext else { return nil }
 
-    func find(account: EntityAccount, name: String) -> EntityCategory? {
-        entities.first { $0.rubric!.account == account && $0.name == name }
+        let account = CurrentAccountManager.shared.getAccount()!
+        let descriptor = FetchDescriptor.byName(name)
+
+        let results = SwiftDataHelper.fetchAll(from: modelContext, descriptor: descriptor)
+        return results.firstMatchingAccount(account)
     }
-
+    
     func findWithRubric(account: EntityAccount, rubric: EntityRubric, name: String) -> EntityCategory? {
         // Supposons que 'category' soit un tableau d'EntityCategory
         let categories = rubric.categorie       // Accès direct, sans conversion
@@ -79,5 +116,62 @@ final class CategoriesManager: ObservableObject {
     
     func remove(entity: EntityCategory) {
         validContext.delete(entity) // Supprime l'entité via le contexte
+    }
+}
+
+
+extension Sequence where Element == EntityCategory {
+    func filtered(byAccount account: EntityAccount) -> [EntityCategory] {
+        let accountUUID = account.uuid
+        return self.filter { $0.rubric?.account.uuid == accountUUID }
+    }
+
+    func firstMatchingAccount(_ account: EntityAccount) -> EntityCategory? {
+        return self.filtered(byAccount: account).first
+    }
+}
+
+extension FetchDescriptor<EntityCategory> {
+    static func byName(_ name: String, limit: Int? = nil) -> FetchDescriptor<EntityCategory> {
+        let predicate: Predicate<EntityCategory> = #Predicate { category in
+            category.name == name
+        }
+
+        var descriptor = FetchDescriptor<EntityCategory>(
+            predicate: predicate,
+            sortBy: [SortDescriptor(\EntityCategory.name, order: .forward)]
+        )
+
+        if let limit {
+            descriptor.fetchLimit = limit
+        }
+
+        return descriptor
+    }
+}
+
+struct SwiftDataHelper {
+    static func fetchFirst<T: PersistentModel>(
+        from modelContext: ModelContext,
+        descriptor: FetchDescriptor<T>
+    ) -> T? {
+        do {
+            return try modelContext.fetch(descriptor).first
+        } catch {
+            print("Erreur lors du fetch SwiftData : \(error)")
+            return nil
+        }
+    }
+
+    static func fetchAll<T: PersistentModel>(
+        from modelContext: ModelContext,
+        descriptor: FetchDescriptor<T>
+    ) -> [T] {
+        do {
+            return try modelContext.fetch(descriptor)
+        } catch {
+            print("Erreur lors du fetch SwiftData : \(error)")
+            return []
+        }
     }
 }

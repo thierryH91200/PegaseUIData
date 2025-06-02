@@ -155,7 +155,7 @@ struct ImportTransactionFileView: View {
         PreferenceManager.shared.configure(with: context)
         PaymentModeManager.shared.configure(with: context)
         StatusManager.shared.configure(with: context)
-        CategoriesManager.shared.configure(with: context)
+        CategoryManager.shared.configure(with: context)
         
         let entityPreference = PreferenceManager.shared.getAllData(for: account)
         
@@ -170,7 +170,7 @@ struct ImportTransactionFileView: View {
             //            let rubric = getString(from: row, index: columnMapping[String(localized:"Rubric")])
             let category = getString(from: row, index: columnMapping[String(localized:"Category")])
             
-            let entityCategory = CategoriesManager.shared.find(account: account, name: category) ?? entityPreference?.category
+            let entityCategory = CategoryManager.shared.find( name: category) ?? entityPreference?.category
             
             let paymentMode = getString(from: row, index: columnMapping[String(localized:"Payment method")])
             let entityModePaiement = PaymentModeManager.shared.find(account: account, name: paymentMode) ?? entityPreference?.paymentMode

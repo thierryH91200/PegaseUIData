@@ -142,6 +142,7 @@ struct Scheduler: View {
                 Button(action: {
                     isAddDialogPresented = true
                     modeCreate = true
+                    selected = nil
                 }) {
                     Label("Add", systemImage: "plus")
                         .padding()

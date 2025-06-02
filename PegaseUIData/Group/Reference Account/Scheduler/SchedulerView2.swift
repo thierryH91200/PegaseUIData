@@ -58,7 +58,7 @@ struct SchedulerFormView: View {
         .padding()
         .navigationTitle(scheduler == nil ? "New scheduler" : "Edit scheduler")
         .onChange(of: scheduler) { oldValue, newValue in
-            print("scheduler a changé : \(oldValue?.libelle ?? "nil") -> \(newValue?.libelle ?? "nil")")
+            print("[PegseUIData] scheduler a changé : \(oldValue?.libelle ?? "nil") -> \(newValue?.libelle ?? "nil")")
         }
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
@@ -74,9 +74,8 @@ struct SchedulerFormView: View {
             }
         }
         .onAppear {
-            
             guard let account = CurrentAccountManager.shared.getAccount() else {
-                print("Erreur : aucun compte courant trouvé.")
+                print("[PegaseUIData] Erreur : aucun compte courant trouvé.")
                 return
             }
             frequenceType = [
@@ -263,13 +262,13 @@ struct SchedulerFormView: View {
     
     private func save() {
         
-        let newItem: EntitySchedule
+        var newItem: EntitySchedule?
         
         if let existingStatement = scheduler {
             newItem = existingStatement
         } else {
             newItem = EntitySchedule()
-            modelContext.insert(newItem)
+            modelContext.insert(newItem!)
         }
         if let frequence = Int16(frequency),
            let nextOccurrence = Int16(nextOccurrence),
@@ -277,20 +276,20 @@ struct SchedulerFormView: View {
            let frequencyType = Int16(exactly: selectedTypeIndex),
            let amount = Double(amount) {
             
-            newItem.amount = amount
-            newItem.dateValeur = dateValeur.noon
-            newItem.dateDebut = dateDebut.noon
-            newItem.dateFin = dateFin.noon
-            newItem.frequence = frequence
-            newItem.libelle = libelle
-            newItem.nextOccurrence = nextOccurrence
-            newItem.occurrence = occurrence
-            newItem.typeFrequence = Int16(frequencyType)
+            newItem?.amount = amount
+            newItem?.dateValeur = dateValeur.noon
+            newItem?.dateDebut = dateDebut.noon
+            newItem?.dateFin = dateFin.noon
+            newItem?.frequence = frequence
+            newItem?.libelle = libelle
+            newItem?.nextOccurrence = nextOccurrence
+            newItem?.occurrence = occurrence
+            newItem?.typeFrequence = Int16(frequencyType)
             
-            newItem.paymentMode = selectedMode
-            newItem.category = selectedCategory
+            newItem?.paymentMode = selectedMode
+            newItem?.category = selectedCategory
             
-            newItem.account = CurrentAccountManager.shared.getAccount()!
+            newItem?.account = CurrentAccountManager.shared.getAccount()!
             
             try? modelContext.save()
             let allSchedulers = SchedulerManager.shared.getAllData()!
@@ -300,7 +299,10 @@ struct SchedulerFormView: View {
                     schedulerDataManager.selectScheduler(last)
                 }
             }
-            NotificationManager.shared.scheduleReminder(for: newItem)
+            NotificationManager.shared.scheduleReminder(for: newItem!)
+            scheduler = nil
+            newItem = nil
+
         }
     }
 }

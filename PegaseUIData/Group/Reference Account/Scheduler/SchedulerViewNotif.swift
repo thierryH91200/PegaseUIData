@@ -119,7 +119,7 @@ struct UpcomingRemindersView: View {
                     }
                     .onAppear {
                         RubricManager.shared.configure(with: modelContext)
-                        CategoriesManager.shared.configure(with: modelContext)
+                        CategoryManager.shared.configure(with: modelContext)
                         for entitySchedule in upcoming {
                             SchedulerManager.shared.createTransaction(entitySchedule: entitySchedule)
                             NotificationManager.shared.cancelReminder(for: entitySchedule)

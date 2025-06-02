@@ -1,3 +1,4 @@
+
 //
 //  Untitled 2.swift
 //  PegaseUIData
@@ -35,6 +36,26 @@ struct ListTransactionsView100: View {
                 }
                 .onReceive(NotificationCenter.default.publisher(for: .resetDatabaseRequested)) { _ in
                     resetDatabase()
+                }        .onAppear {
+                    NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+                        guard event.modifierFlags.contains(.command), let characters = event.charactersIgnoringModifiers else {
+                            return event
+                        }
+
+                        switch characters {
+                        case "c":
+                            NotificationCenter.default.post(name: .copySelectedTransactions, object: nil)
+                            return nil
+                        case "x":
+                            NotificationCenter.default.post(name: .cutSelectedTransactions, object: nil)
+                            return nil
+                        case "v":
+                            NotificationCenter.default.post(name: .pasteSelectedTransactions, object: nil)
+                            return nil
+                        default:
+                            return event
+                        }
+                    }
                 }
         }
     }
@@ -76,11 +97,11 @@ struct ListTransactions200: View {
     @EnvironmentObject private var colorManager          : ColorManager
     
     private var transactions: [EntityTransactions] { dataManager.listTransactions }
-
+    
     @Binding var isVisible: Bool
     @Binding var selectedTransactions: Set<UUID>
     @State private var information: AttributedString = ""
-
+    
     @State private var refresh = false
     @State private var currentSectionIndex: Int = 0
     
@@ -88,89 +109,31 @@ struct ListTransactions200: View {
     @State var soldeReel = 0.0
     @State var soldeFinal = 0.0
     
+    
+    // Clipboard state for copy/cut/paste
+    @State private var clipboardTransactions: [EntityTransactions] = []
+    @State private var isCutOperation = false
+    
     // Récupère le compte courant de manière sécurisée.
     var compteCurrent: EntityAccount? {
         CurrentAccountManager.shared.getAccount()
     }
-
+    
     var body: some View {
-        VStack(spacing: 0) {
-            SummaryView(executed: soldeBanque, planned: soldeReel, engaged: soldeFinal)
-                .frame(maxWidth: .infinity, maxHeight: 100)
-            
-            VStack {
-                Text("\(compteCurrent?.name ?? String(localized:"No checking account"))")
-                Image(systemName: "info.circle")
-                    .foregroundColor(.accentColor)
-                Text(information)
-                    .font(.system(size: 16, weight: .bold))
-                    .lineLimit(2)
-                    .multilineTextAlignment(.leading)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color(NSColor.windowBackgroundColor))
-            
-            NavigationView {
-                
-                GeometryReader { geometry in
-//                    let width = max(800, geometry.size.width > 0 ? geometry.size.width : 800) // Sécurisation
-
-                    List {
-                        Section(header: EmptyView()) {
-                            
-                            // Titres des colonnes
-                            HStack(spacing: 0) {
-                                Group {
-                                    Text("Date of pointing").bold().frame(width: ColumnWidths.datePointage, alignment: .leading)
-                                    verticalDivider()
-                                    Text("Date operation").bold().frame(width: ColumnWidths.dateOperation, alignment: .leading)
-                                    verticalDivider()
-                                    Text("Comment").bold().frame(width: ColumnWidths.libelle, alignment: .leading)
-                                    verticalDivider()
-                                    Text("Rubric").bold().frame(width: ColumnWidths.rubrique, alignment: .leading)
-                                    verticalDivider()
-                                    Text("Category").bold().frame(width: ColumnWidths.categorie, alignment: .leading)
-                                    verticalDivider()
-                                    Text("Amount").bold().frame(width: ColumnWidths.sousMontant, alignment: .leading)
-                                    verticalDivider()
-                                    Text("Bank Statement").bold().frame(width: ColumnWidths.releve, alignment: .leading)
-                                    verticalDivider()
-                                    Text("Check Number").bold().frame(width: ColumnWidths.cheque, alignment: .leading)
-                                    verticalDivider()
-                                }
-                                Group {
-                                    Text("Status").bold().frame(width: ColumnWidths.statut, alignment: .leading)
-                                    verticalDivider()
-                                    Text("Payment method").bold().frame(width: ColumnWidths.modePaiement, alignment: .leading)
-                                    verticalDivider()
-                                    Text("Amount").bold().frame(width: ColumnWidths.montant, alignment: .trailing)
-                                }
-                            }
-                        }
-                        .listRowInsets(EdgeInsets()) // ⬅️ Supprime les marges par défaut
-                        .padding(.vertical, 6)
-                        .background(Color.gray.opacity(0.1))
-                        OperationRow(selectedTransactions: $selectedTransactions)
-                    }
-                    .listStyle(.plain) // ⬅️ Important pour éviter le style inset
-                    .frame(minWidth: 800, maxWidth: 1200) // Prévenir les valeurs invalides
-                    .id(refresh)
-                }
-                .background(Color.white) // Ajoute un fond blanc derrière GeometryReader
-            }
-        }
+        mainContent
+    
         .onChange(of: colorManager.colorChoix) { old, new in
         }
         
         .onReceive(NotificationCenter.default.publisher(for: .transactionsImported)) { _ in
             print("[PegaseUIData] transactionsImported notification received")
-
+            
             loadTransactions()
             withAnimation {
                 refresh.toggle()
             }
         }
-
+        
         .onChange(of: currentAccountManager.currentAccount) { old, new in
             print("[PegaseUIData] Changement de compte détecté: \(String(describing: new))")
             loadTransactions()
@@ -184,14 +147,126 @@ struct ListTransactions200: View {
             print("[PegaseUIData] selectionDidChange called")
             selectionDidChange()
         }
-
+        
         .onAppear() {
             balanceCalculation()
             selectionDidChange()
+        }
+        
+        // Clipboard/copy/cut/paste handlers
+        .onReceive(NotificationCenter.default.publisher(for: .copySelectedTransactions)) { _ in
+            clipboardTransactions = transactions.filter { selectedTransactions.contains($0.id) }
+            isCutOperation = false
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .cutSelectedTransactions)) { _ in
+            clipboardTransactions = transactions.filter { selectedTransactions.contains($0.id) }
+            isCutOperation = true
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .pasteSelectedTransactions)) { _ in
+            if let targetAccount = CurrentAccountManager.shared.getAccount() {
+                
+                CategoryManager.shared.configure(with: modelContext)
+                PaymentModeManager.shared.configure(with: modelContext)
+                StatusManager.shared.configure(with: modelContext)
+                for transaction in clipboardTransactions {
+                    
+                    let status = StatusManager.shared.find(name : transaction.status!.name)
+                    let paymentMode = PaymentModeManager.shared.find(name: transaction.paymentMode!.name)
+                    
+                    let newTransaction = EntityTransactions()
+                    newTransaction.dateOperation = transaction.dateOperation
+                    newTransaction.datePointage  =  transaction.datePointage
+                    newTransaction.status        = status
+                    newTransaction.paymentMode   = paymentMode
+                    newTransaction.checkNumber   = transaction.checkNumber
+                    newTransaction.bankStatement = transaction.bankStatement
 
+                    newTransaction.account = targetAccount
+
+                    for item in transaction.sousOperations {
+                        let sousOperations = EntitySousOperations()
+                        
+                        print(item.category!.name)
+                        print(item.libelle!)
+                        
+                        let category = CategoryManager.shared.find(name: item.category!.name)
+                        print(category?.name ?? "No name")
+                        print(category?.rubric?.name ?? "No rubric name")
+                        
+                        sousOperations.libelle     = item.libelle
+                        sousOperations.amount      = item.amount
+                        sousOperations.category    = category
+                        sousOperations.transaction = newTransaction
+                        
+                        modelContext.insert(sousOperations)
+                        newTransaction.addSubOperation(sousOperations)
+                    }
+
+                    modelContext.insert(newTransaction)
+                }
+                if isCutOperation {
+                    for transaction in clipboardTransactions {
+                        modelContext.delete(transaction)
+                    }
+                }
+                try? modelContext.save()
+                
+                loadTransactions()
+                clipboardTransactions = []
+                isCutOperation = false
+            }
         }
     }
     
+    private var mainContent: some View {
+        VStack(spacing: 0) {
+            summaryViewSection
+            headerViewSection
+            transactionListSection
+        }
+    }
+    
+    private var summaryViewSection: some View {
+        SummaryView(executed: soldeBanque, planned: soldeReel, engaged: soldeFinal)
+            .frame(maxWidth: .infinity, maxHeight: 100)
+    }
+
+    private var headerViewSection: some View {
+        VStack {
+            Text("\(compteCurrent?.name ?? String(localized: "No checking account"))")
+            Image(systemName: "info.circle")
+                .foregroundColor(.accentColor)
+            Text(information)
+                .font(.system(size: 16, weight: .bold))
+                .lineLimit(2)
+                .multilineTextAlignment(.leading)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(NSColor.windowBackgroundColor))
+    }
+
+    private var transactionListSection: some View {
+        NavigationView {
+            GeometryReader { _ in
+                List {
+                    Section(header: EmptyView()) {
+                        HStack(spacing: 0) {
+                            columnGroup1()
+                            columnGroup2()
+                        }
+                    }
+                    .listRowInsets(EdgeInsets())
+                    .padding(.vertical, 6)
+                    .background(Color.gray.opacity(0.1))
+                    OperationRow(selectedTransactions: $selectedTransactions)
+                }
+                .listStyle(.plain)
+                .frame(minWidth: 800, maxWidth: 1200)
+                .id(refresh)
+            }
+            .background(Color.white)
+        }
+    }
     @ViewBuilder
     func verticalDivider() -> some View {
         Rectangle()
@@ -212,19 +287,50 @@ struct ListTransactions200: View {
         for transaction in transactions {
             context.delete(transaction)
         }
-
+        
         try? context.save()
         loadTransactions()
         balanceCalculation()
     }
     
-    func selectionDidChange() {
+    private func columnGroup1() -> some View {
+        HStack(spacing: 0) {
+            Text("Date of pointing").bold().frame(width: ColumnWidths.datePointage, alignment: .leading)
+            verticalDivider()
+            Text("Date operation").bold().frame(width: ColumnWidths.dateOperation, alignment: .leading)
+            verticalDivider()
+            Text("Comment").bold().frame(width: ColumnWidths.libelle, alignment: .leading)
+            verticalDivider()
+            Text("Rubric").bold().frame(width: ColumnWidths.rubrique, alignment: .leading)
+            verticalDivider()
+            Text("Category").bold().frame(width: ColumnWidths.categorie, alignment: .leading)
+            verticalDivider()
+            Text("Amount").bold().frame(width: ColumnWidths.sousMontant, alignment: .leading)
+            verticalDivider()
+            Text("Bank Statement").bold().frame(width: ColumnWidths.releve, alignment: .leading)
+            verticalDivider()
+            Text("Check Number").bold().frame(width: ColumnWidths.cheque, alignment: .leading)
+            verticalDivider()
+        }
+    }
 
+    private func columnGroup2() -> some View {
+        HStack(spacing: 0) {
+            Text("Status").bold().frame(width: ColumnWidths.statut, alignment: .leading)
+            verticalDivider()
+            Text("Payment method").bold().frame(width: ColumnWidths.modePaiement, alignment: .leading)
+            verticalDivider()
+            Text("Amount").bold().frame(width: ColumnWidths.montant, alignment: .trailing)
+        }
+    }
+    
+    func selectionDidChange() {
+        
         let selectedRow = selectedTransactions
         if selectedRow.isEmpty == false {
-
+            
             var transactionsSelected = [EntityTransactions]()
-
+            
             var solde = 0.0
             var expense = 0.0
             var income = 0.0
@@ -232,14 +338,14 @@ struct ListTransactions200: View {
             let formatter = NumberFormatter()
             formatter.locale = Locale.current
             formatter.numberStyle = .currency
-
+            
             // Filtrer les transactions correspondantes
             let selectedEntities = transactions.filter { selectedRow.contains($0.id) }
-
+            
             for transaction in selectedEntities {
                 transactionsSelected.append(transaction)
                 let amount = transaction.amount
-
+                
                 solde += amount
                 if amount < 0 {
                     expense += amount
@@ -247,27 +353,27 @@ struct ListTransactions200: View {
                     income += amount
                 }
             }
-
+            
             // Info
             let amountStr = formatter.string(from: solde as NSNumber)!
             let strExpense = formatter.string(from: expense as NSNumber)!
             let strIncome = formatter.string(from: income as NSNumber)!
             let count = selectedEntities.count
-
+            
             let info = AttributedString(String(localized:"Selected \(count) transactions. "))
-
+            
             var expenseAttr = AttributedString("Expenses: \(strExpense)")
             expenseAttr.foregroundColor = expense < 0 ? .red : .blue
-
+            
             var incomeAttr = AttributedString(String(localized:", Incomes: \(strIncome)"))
             incomeAttr.foregroundColor = income < 0 ? .red : .blue
-
+            
             let totalAttr = AttributedString(String(localized:", Total: \(amountStr)"))
-
+            
             information = info + expenseAttr + incomeAttr + totalAttr
         }
     }
-
+    
     private func balanceCalculation() {
         // Récupère les données de l'init
         InitAccountManager.shared.configure(with: modelContext)
@@ -315,7 +421,9 @@ struct ListTransactions200: View {
         
         //    NotificationCenter.send(.updateBalance) // Décommente si nécessaire
     }
-
+    
+    
+    
     private func groupTransactionsByYear(transactions: [EntityTransactions]) -> [YearGroup] {
         var groupedItems: [YearGroup] = []
         let calendar = Calendar.current
@@ -346,6 +454,7 @@ struct ListTransactions200: View {
         
         return groupedItems
     }
+    
 //    @MainActor
 //    func copySelectedTransactions(to targetAccount: EntityAccount) {
 //        let selectedEntities = transactions.filter { selectedTransactions.contains($0.id) }
@@ -408,4 +517,12 @@ func cleanDouble(from string: String) -> Double {
     let normalized = cleanedString.replacingOccurrences(of: ",", with: ".")
     
     return Double(normalized) ?? 0.0
+}
+
+
+// Keyboard shortcut notifications
+extension Notification.Name {
+    static let copySelectedTransactions = Notification.Name("copySelectedTransactions")
+    static let cutSelectedTransactions = Notification.Name("cutSelectedTransactions")
+    static let pasteSelectedTransactions = Notification.Name("pasteSelectedTransactions")
 }

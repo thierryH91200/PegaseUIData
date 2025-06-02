@@ -178,15 +178,6 @@ struct OperationRow: View {
         }
     }
     
-    //    private func afficherDetails(_ transaction: EntityTransactions) {
-    //        print("Afficher les détails de la transaction : \(transaction)")
-    //
-    //        if let index = dataManager.listTransactions.firstIndex(where: { $0.id == transaction.id }) {
-    //            TransactionDetailView(currentSectionIndex: index, selectedTransaction: $selectedTransactions)
-    //        } else {
-    //            print("Erreur : transaction non trouvée dans la liste.")
-    //        }
-    //    }
     // Fonctions utilitaires
     func getString(from row: [String], index: Int?) -> String {
         guard let index = index, index >= 0, index < row.count else { return "" }
@@ -229,8 +220,6 @@ struct OperationRow: View {
         }
     }
 
-
-
     func importCSVTransactions(context: ModelContext) {
         guard !csvData.isEmpty else { return }
         
@@ -241,7 +230,7 @@ struct OperationRow: View {
         PreferenceManager.shared.configure(with: context)
         PaymentModeManager.shared.configure(with: context)
         StatusManager.shared.configure(with: context)
-        CategoriesManager.shared.configure(with: context)
+        CategoryManager.shared.configure(with: context)
         
         let entityPreference = PreferenceManager.shared.getAllData(for: account)
 
@@ -256,10 +245,10 @@ struct OperationRow: View {
             //            let rubric = getString(from: row, index: columnMapping[String(localized:"Rubric")])
             let category = getString(from: row, index: columnMapping[String(localized:"Category")])
             
-            let entityCategory = CategoriesManager.shared.find(account: account, name: category) ?? entityPreference?.category
+            let entityCategory = CategoryManager.shared.find(name: category) ?? entityPreference?.category
             
             let paymentMode = getString(from: row, index: columnMapping[String(localized:"Payment method")])
-            let entityModePaiement = PaymentModeManager.shared.find(account: account, name: paymentMode) ?? entityPreference?.paymentMode
+            let entityModePaiement = PaymentModeManager.shared.find(name: paymentMode) ?? entityPreference?.paymentMode
             
             let status = getString(from: row, index: columnMapping[String(localized:"Status")])
             let entityStatus = StatusManager.shared.find(name: status) ?? entityPreference?.status

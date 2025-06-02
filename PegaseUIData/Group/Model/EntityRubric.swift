@@ -158,3 +158,16 @@ final class RubricManager {
         }
     }
 }
+
+extension FetchDescriptor<EntityRubric> {
+    static func byName(_ name: String, account: EntityAccount) -> FetchDescriptor<EntityRubric> {
+        let predicate: Predicate<EntityRubric> = #Predicate { rubric in
+            rubric.name == name && rubric.account == account
+        }
+
+        return FetchDescriptor(
+            predicate: predicate,
+            sortBy: [SortDescriptor(\EntityRubric.name)]
+        )
+    }
+}

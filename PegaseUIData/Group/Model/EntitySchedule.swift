@@ -254,7 +254,7 @@ final class SchedulerManager {
         let categoryName = schedule.category?.name ?? ""
         let objectif = schedule.category?.objectif ?? 0.0
         //        let categoryUUID = schedule.category?.uuid ?? UUID()
-        let category = CategoriesManager.shared.findOrCreate(
+        let category = CategoryManager.shared.findOrCreate(
             account: schedule.account,
             name: categoryName,
             objectif: objectif,
@@ -303,10 +303,14 @@ final class SchedulerManager {
             
             transferTransaction.paymentMode = paymentMode
             
-            let rubric = RubricManager.shared.findOrCreate(account: linkedAccount, name: paymentModeName, color: .black)
+            let rubric = RubricManager.shared.findOrCreate(
+                account: linkedAccount,
+                name: paymentModeName,
+                color: .black)
+            
             let categoryName = schedule.category?.name ?? "nil"
             let objectif = schedule.category?.objectif ?? 0.0
-            let category = CategoriesManager.shared.findOrCreate(
+            let category = CategoryManager.shared.findOrCreate(
                 account: linkedAccount,
                 name: categoryName,
                 objectif: objectif,
