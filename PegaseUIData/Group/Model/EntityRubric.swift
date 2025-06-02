@@ -43,21 +43,11 @@ final class RubricManager {
 
     var entitiesRubric: [EntityRubric] = []
     
-    // Contexte pour les modifications
-    var modelContext : ModelContext?
-    var validContext: ModelContext {
-        guard let context = modelContext else {
-            print("File: \(#file), Function: \(#function), line: \(#line)")
-            fatalError("ModelContext non configuré. Veuillez appeler configure.")
-        }
-        return context
+    var modelContext: ModelContext? {
+        DataContext.shared.context
     }
     
     private init() { }
-    
-    func configure(with modelContext: ModelContext) {
-        self.modelContext = modelContext
-    }
     
     func findOrCreate(account: EntityAccount, name: String, color: NSColor) -> EntityRubric {
         if let existingRubric = find(account: account, name: name) {
@@ -65,7 +55,7 @@ final class RubricManager {
         }
         
         let newRubric = EntityRubric(name: name, color: color, account: account)
-        validContext.insert(newRubric)
+        modelContext?.insert(newRubric)
         
         entitiesRubric.append(newRubric)
         return newRubric
@@ -77,7 +67,7 @@ final class RubricManager {
     }
     
     func remove(entity: EntityRubric) {
-        validContext.delete(entity)
+        modelContext?.delete(entity)
         entitiesRubric.removeAll { $0.id == entity.id }
     }
     
@@ -93,7 +83,7 @@ final class RubricManager {
             sortBy: sort )
         
         do {
-            entitiesRubric = try validContext.fetch(fetchDescriptor)
+            entitiesRubric = try modelContext?.fetch(fetchDescriptor) ?? []
 
         } catch {
             print("Erreur lors de la récupération des données : \(error.localizedDescription)")
@@ -136,7 +126,7 @@ final class RubricManager {
         }
 
         do {
-            try validContext.save()
+            try modelContext?.save()
         } catch {
             print("Erreur lors de la sauvegarde : \(error)")
         }
@@ -152,22 +142,10 @@ final class RubricManager {
     
     func save () throws {
         do {
-            try validContext.save()
+            try modelContext?.save()
         } catch {
             throw EnumError.saveFailed
         }
     }
 }
 
-extension FetchDescriptor<EntityRubric> {
-    static func byName(_ name: String, account: EntityAccount) -> FetchDescriptor<EntityRubric> {
-        let predicate: Predicate<EntityRubric> = #Predicate { rubric in
-            rubric.name == name && rubric.account == account
-        }
-
-        return FetchDescriptor(
-            predicate: predicate,
-            sortBy: [SortDescriptor(\EntityRubric.name)]
-        )
-    }
-}

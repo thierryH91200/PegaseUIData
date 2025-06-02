@@ -43,8 +43,8 @@ struct Sidebar1A: View {
             if let account = newAccount {
                 
                 CurrentAccountManager.shared.setAccount(account)
-                PaymentModeManager.shared.configure(with: modelContext)
-                
+                DataContext.shared.context = modelContext
+
                 // Exécute le code asynchrone dans une Task
                 Task {
                     let modes = PaymentModeManager.shared.getAllData()
@@ -78,8 +78,9 @@ struct Sidebar1A: View {
     
     @ViewBuilder
     private func tableView(account: EntityAccount) async -> some View {
-        let _ = PaymentModeManager.shared.configure(with: modelContext)
+//        DataContext.shared.context = modelContext
         let _ =  PaymentModeViewModel(account: account)
+        Text("Contenu du tableau ici")
     }
     
     func preloadDataIfNeeded(modelContext: ModelContext) {

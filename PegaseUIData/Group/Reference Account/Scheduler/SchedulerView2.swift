@@ -84,10 +84,8 @@ struct SchedulerFormView: View {
                 String(localized :"Month",table : "Account"),
                 String(localized :"Year",table : "Account")]
             
-            PreferenceManager.shared.configure(with: modelContext)
+            DataContext.shared.context = modelContext
             let entityPreference = PreferenceManager.shared.getAllData(for: account)
-            PaymentModeManager.shared.configure(with: modelContext)
-            RubricManager.shared.configure(with: modelContext)
             entityPaymentMode = PaymentModeManager.shared.getAllData()!
             entityRubric = RubricManager.shared.getAllData()
             

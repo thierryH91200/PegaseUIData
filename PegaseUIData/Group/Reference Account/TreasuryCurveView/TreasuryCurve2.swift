@@ -91,7 +91,7 @@ struct TreasuryCurve: View {
                 }
                 .onAppear {
                     
-                    ListTransactionsManager.shared.configure(with: modelContext)
+                    DataContext.shared.context = modelContext
                     let allTransactions = ListTransactionsManager.shared.getAllData()
                     guard let first = allTransactions.first?.dateOperation,
                           let last = allTransactions.last?.dateOperation else { return }
@@ -122,8 +122,8 @@ struct TreasuryCurve: View {
         
         guard let chartView = chartView else { return }
         
-        ListTransactionsManager.shared.configure(with: modelContext)
-        InitAccountManager.shared.configure(with: modelContext)
+        DataContext.shared.context = modelContext
+
         viewModel.configure(with: chartView)
         viewModel.updateAccount(minDate: minDate) // ← cette ligne est manquante
     }

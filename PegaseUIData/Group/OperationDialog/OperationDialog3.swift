@@ -24,7 +24,7 @@ class RubriqueManager: ObservableObject {
 struct TransactionFormViewModel: View {
     
     @Environment(\.modelContext) private var modelContext: ModelContext
-
+    
     @Binding var linkedAccount: [EntityAccount]
     
     @Binding var transactionDate: Date
@@ -55,75 +55,28 @@ struct TransactionFormViewModel: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            
-            FormField(label: String(localized: "Linked Account")) {
-                Picker("", selection: $selectedAccount) {
-                    ForEach(linkedAccount, id: \.uuid) { account in
-                        if let currentAccount = compteCurrent, account == currentAccount {
-                            Text(String(localized: "(no transfer)")).tag(account )
-                        } else {
-                            Text(account.initAccount?.codeAccount ?? "").tag(account)
-                        }
-                    }
-                }
+        Form {
+            Section(header: Text(String(localized: "Linked Account"))) {
+                accountSection
             }
             
-            FormField(label: String(localized: "Comment")) {
-                Text( selectedAccount?.name ?? "")
+            Section(header: Text(String(localized: "Transaction"))) {
+                transactionSection
             }
             
-            FormField(label: String(localized: "Name")) {
-                Text( selectedAccount?.identity?.name ?? "")
+            Section(header: Text(String(localized: "Status & Amounts"))) {
+                statusAndAmountSection
             }
             
-            FormField(label: String(localized: "Surname")) {
-                Text( selectedAccount?.identity?.surName ?? "")
-            }
-            
-            Divider()
-            
-            FormField(label: String(localized: "Transaction Date")) {
-                DatePicker("", selection: $transactionDate, displayedComponents: .date)
-            }
-            
-            FormField(label: String(localized: "Payment method")) {
-                Picker("", selection: $selectedMode) {
-                    ForEach(modes, id: \.uuid) { mode in
-                        Text(mode.name).tag(mode)
-                    }
-                }
-            }
-            
-            FormField(label: String(localized:"Check")) {
-                TextField("", value: $checkNumber, formatter: integerFormatter)
-            }
-
-            FormField(label: String(localized: "Date of pointing")) {
-                DatePicker("", selection: $pointingDate, displayedComponents: .date)
-            }
-            
-            FormField(label: String(localized: "Status")) {
-                Picker("", selection: $selectedStatus) {
-                    ForEach(status, id: \.self) { index in
-                        Text(index.name).tag(index)
-                    }
-                }
-            }
-            
-            FormField(label: String(localized:"Bank Statement")) {
-                TextField("", value: $bankStatement, formatter: integerFormatter)
-            }
-
-            FormField(label: String(localized:"Amount")) {
-                TextField("", value: $amount, formatter: NumberFormatter())
+            Section {
+                actionsSection
             }
         }
         .onAppear {
-            PreferenceManager.shared.configure(with: modelContext)
+            DataContext.shared.context = modelContext
             let account = CurrentAccountManager.shared.getAccount()
             self.entityPreference = PreferenceManager.shared.getAllData(for: account)
-
+            
             if selectedAccount == nil, let firstAccount = linkedAccount.first {
                 selectedAccount = firstAccount // Initialisation avec un compte valide
             }
@@ -146,7 +99,7 @@ struct TransactionFormViewModel: View {
         .onChange(of: compteCurrent) {old, new in
             selectedAccount = compteCurrent
         }
-
+        
         .onChange(of: linkedAccount) { old, newValue in
             if !newValue.contains( selectedAccount! ) {
                 selectedAccount = newValue.first
@@ -154,6 +107,96 @@ struct TransactionFormViewModel: View {
         }
         .onChange(of: selectedAccount) { oldValue, newValue in
             print("Compte sélectionné mis à jour : \(newValue?.name ?? "nil")")
+        }
+    }
+    
+    private var accountSection: some View {
+        Group {
+            FormField(label: String(localized: "Linked Account")) {
+                Picker("", selection: $selectedAccount) {
+                    ForEach(linkedAccount, id: \.uuid) { account in
+                        if let currentAccount = compteCurrent, account == currentAccount {
+                            Text(String(localized: "(no transfer)")).tag(account)
+                        } else {
+                            Text(account.initAccount?.codeAccount ?? "").tag(account)
+                        }
+                    }
+                }
+            }
+            
+            FormField(label: String(localized: "Comment")) {
+                Text(selectedAccount?.name ?? "")
+            }
+            
+            FormField(label: String(localized: "Name")) {
+                Text(selectedAccount?.identity?.name ?? "")
+            }
+            
+            FormField(label: String(localized: "Surname")) {
+                Text(selectedAccount?.identity?.surName ?? "")
+            }
+        }
+    }
+    
+    private var actionsSection: some View {
+        HStack {
+            Spacer()
+            
+            Button(String(localized: "Cancel")) {
+                // Action d'annulation
+                print("Annulation")
+            }
+            .buttonStyle(.bordered)
+            
+            Button(String(localized: "Validate")) {
+                // Action de validation
+                print("Validation")
+            }
+            .buttonStyle(.borderedProminent)
+            
+            Spacer()
+        }
+    }
+    private var statusAndAmountSection: some View {
+        Group {
+            FormField(label: String(localized: "Status")) {
+                Picker("", selection: $selectedStatus) {
+                    ForEach(status, id: \.self) { index in
+                        Text(index.name).tag(index)
+                    }
+                }
+            }
+            
+            FormField(label: String(localized: "Bank Statement")) {
+                TextField("", value: $bankStatement, formatter: integerFormatter)
+            }
+            
+            FormField(label: String(localized: "Amount")) {
+                TextField("", value: $amount, formatter: NumberFormatter())
+            }
+        }
+    }
+    private var transactionSection: some View {
+        Group {
+            FormField(label: String(localized: "Transaction Date")) {
+                DatePicker("", selection: $transactionDate, displayedComponents: .date)
+            }
+            
+            FormField(label: String(localized: "Payment method")) {
+                Picker("", selection: $selectedMode) {
+                    ForEach(modes, id: \.uuid) { mode in
+                        Text(mode.name).tag(mode)
+                    }
+                }
+            }
+            
+            FormField(label: String(localized: "Check")) {
+                TextField("", value: $checkNumber, formatter: integerFormatter)
+            }
+            
+            FormField(label: String(localized: "Date of pointing")) {
+                DatePicker("", selection: $pointingDate, displayedComponents: .date)
+            }
         }
     }
 }

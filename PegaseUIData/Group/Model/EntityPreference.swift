@@ -38,7 +38,7 @@ import SwiftUI
 }
 
 protocol PreferenceManaging {
-    func configure(with modelContext: ModelContext)
+//    func configure(with modelContext: ModelContext)
     func defaultPref(account: EntityAccount) -> EntityPreference?
     func getAllData(for account: EntityAccount?) -> EntityPreference?
     func saveContext()
@@ -51,21 +51,11 @@ final class PreferenceManager: PreferenceManaging {
     
     var entityPreferences : [EntityPreference]?
     
-    // Contexte pour les modifications
-    var modelContext : ModelContext?
-    var validContext: ModelContext {
-        guard let context = modelContext else {
-            print("File: \(#file), Function: \(#function), line: \(#line)")
-            fatalError("ModelContext non configuré. Veuillez appeler configure.")
-        }
-        return context
+    var modelContext: ModelContext? {
+        DataContext.shared.context
     }
-    
+
     private init() { }
-    
-    func configure(with modelContext: ModelContext) {
-        self.modelContext = modelContext
-    }
     
     // MARK: - default
     func defaultPref(account: EntityAccount) -> EntityPreference? {
@@ -92,13 +82,13 @@ final class PreferenceManager: PreferenceManaging {
         }
         
         // Configuration de status
-        StatusManager.shared.configure(with: validContext)
+        DataContext.shared.context = modelContext
         newPreference.status = StatusManager.shared.getAllData(for: account)?.first
 
         newPreference.signe = true
         newPreference.account = account
         
-        validContext.insert(newPreference)
+        modelContext?.insert(newPreference)
         entityPreferences?.append(newPreference) // Mise à jour du cache local
         
         saveContext()
@@ -115,7 +105,7 @@ final class PreferenceManager: PreferenceManaging {
         let fetchDescriptor = FetchDescriptor<EntityPreference>(predicate: predicate)
         
         do {
-            entityPreferences = try validContext.fetch(fetchDescriptor)
+            entityPreferences = try modelContext?.fetch(fetchDescriptor) ?? []
         } catch {
             print("Erreur lors de la récupération des données : \(error.localizedDescription)")
         }
@@ -139,7 +129,7 @@ final class PreferenceManager: PreferenceManaging {
     
     func saveContext() {
         do {
-            try validContext.save()
+            try modelContext?.save()
             print("Sauvegarde réussie.")
         } catch {
             if let path = getSQLiteFilePath() {

@@ -88,21 +88,11 @@ final class BankStatementManager {
     
     private var entities = [EntityBankStatement]()
     
-    // Contexte pour les modifications
-    var modelContext : ModelContext?
-    var validContext: ModelContext {
-        guard let context = modelContext else {
-            print("File: \(#file), Function: \(#function), line: \(#line)")
-            fatalError("ModelContext non configuré. Veuillez appeler configure.")
-        }
-        return context
+    var modelContext: ModelContext? {
+        DataContext.shared.context
     }
-    
+
     private init() { }
-    
-    func configure(with modelContext: ModelContext) {
-        self.modelContext = modelContext
-    }
     
     func create(num: Int, startDate: Date, startSolde: Double) throws -> EntityBankStatement? {
         
@@ -114,7 +104,7 @@ final class BankStatementManager {
         let newMode = EntityBankStatement(num: num, startDate: startDate, startSolde: startSolde)
         newMode.account = currentAccount
         
-        validContext.insert(newMode)
+        modelContext?.insert(newMode)
         try save()
         return newMode
     }
@@ -123,10 +113,10 @@ final class BankStatementManager {
     // Supprimer une transaction
     func remove(entity: EntityBankStatement) {
         
-        validContext.undoManager?.beginUndoGrouping()
-        validContext.undoManager?.setActionName("DeleteBankStatement")
-        validContext.delete(entity)
-        validContext.undoManager?.endUndoGrouping()
+        modelContext?.undoManager?.beginUndoGrouping()
+        modelContext?.undoManager?.setActionName("DeleteBankStatement")
+        modelContext?.delete(entity)
+        modelContext?.undoManager?.endUndoGrouping()
     }
     
     // MARK: - Public Methods
@@ -147,7 +137,7 @@ final class BankStatementManager {
                 predicate: predicate,
                 sortBy: sort )
             
-            entities = try validContext.fetch(descriptor)
+            entities = try modelContext?.fetch(descriptor) ?? []
         } catch {
             print("Erreur lors de la récupération des données : \(error.localizedDescription)")
             return nil
@@ -158,7 +148,7 @@ final class BankStatementManager {
     func save () throws {
         
         do {
-            try validContext.save()
+            try modelContext?.save()
         } catch {
             throw EnumError.saveFailed
         }

@@ -165,9 +165,8 @@ struct ListTransactions200: View {
         .onReceive(NotificationCenter.default.publisher(for: .pasteSelectedTransactions)) { _ in
             if let targetAccount = CurrentAccountManager.shared.getAccount() {
                 
-                CategoryManager.shared.configure(with: modelContext)
-                PaymentModeManager.shared.configure(with: modelContext)
-                StatusManager.shared.configure(with: modelContext)
+                DataContext.shared.context = modelContext
+
                 for transaction in clipboardTransactions {
                     
                     let status = StatusManager.shared.find(name : transaction.status!.name)
@@ -185,13 +184,8 @@ struct ListTransactions200: View {
 
                     for item in transaction.sousOperations {
                         let sousOperations = EntitySousOperations()
-                        
-                        print(item.category!.name)
-                        print(item.libelle!)
-                        
+                                               
                         let category = CategoryManager.shared.find(name: item.category!.name)
-                        print(category?.name ?? "No name")
-                        print(category?.rubric?.name ?? "No rubric name")
                         
                         sousOperations.libelle     = item.libelle
                         sousOperations.amount      = item.amount
@@ -376,7 +370,8 @@ struct ListTransactions200: View {
     
     private func balanceCalculation() {
         // Récupère les données de l'init
-        InitAccountManager.shared.configure(with: modelContext)
+        DataContext.shared.context = modelContext
+
         guard let initCompte = InitAccountManager.shared.getAllData() else { return }
         
         // Initialisation des soldes

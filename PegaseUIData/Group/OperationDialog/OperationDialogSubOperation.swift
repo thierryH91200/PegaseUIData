@@ -203,11 +203,7 @@ struct SubOperationDialog: View {
     }
     
     func configureManagers() async throws {
-        RubricManager.shared.configure(with: modelContext)
-        PreferenceManager.shared.configure(with: modelContext)
-        PaymentModeManager.shared.configure(with: modelContext)
-        SubTransactionsManager.shared.configure(with: modelContext)
-        ListTransactionsManager.shared.configure(with: modelContext)
+        DataContext.shared.context = modelContext
     }
     
     func configureForm() {

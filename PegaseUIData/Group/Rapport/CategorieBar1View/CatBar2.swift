@@ -95,7 +95,7 @@ struct CategorieBar1View1: View {
         }
         .onAppear {
             
-            ListTransactionsManager.shared.configure(with: modelContext)
+            DataContext.shared.context = modelContext
             let listTransactions = ListTransactionsManager.shared.getAllData()
             minDate = listTransactions.first!.dateOperation
             maxDate = listTransactions.last!.dateOperation
@@ -123,8 +123,7 @@ struct CategorieBar1View1: View {
 //        let start = Calendar.current.date(byAdding: .day, value: Int(selectedStart), to: minDate)!
 //        let end = Calendar.current.date(byAdding: .day, value: Int(selectedEnd), to: minDate)!
 
-        ListTransactionsManager.shared.configure(with: modelContext)
-        InitAccountManager.shared.configure(with: modelContext)
+        DataContext.shared.context = modelContext
 
 //        let currentAccount = CurrentAccountManager.shared.getAccount()!
 //        viewModel.updateChartData(modelContext: modelContext, currentAccount: currentAccount, startDate: start, endDate: end)

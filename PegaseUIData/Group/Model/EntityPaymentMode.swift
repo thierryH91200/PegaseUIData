@@ -60,8 +60,7 @@ final class CacheEntry<T> {
 
 protocol PaymentModeManaging {
     
-    func configure(with modelContext: ModelContext)
-    func create(account: EntityAccount?, name: String, color: NSColor) throws -> EntityPaymentMode? 
+    func create(account: EntityAccount?, name: String, color: NSColor) throws -> EntityPaymentMode?
     func update(entity: EntityPaymentMode, name: String, color: NSColor) 
     func getAllData() -> [EntityPaymentMode]?
     func getAllNames(for account: EntityAccount) -> [String]
@@ -84,27 +83,16 @@ final class PaymentModeManager : PaymentModeManaging {
     static let shared = PaymentModeManager()
     
     var entities = [EntityPaymentMode]()
-    
-    // Contexte pour les modifications
-    var modelContext : ModelContext?
-    var validContext: ModelContext {
-        guard let context = modelContext else {
-            print("File: \(#file), Function: \(#function), line: \(#line)")
-            fatalError("ModelContext non configuré. Veuillez appeler configure.")
-        }
-        return context
+    var modelContext: ModelContext? {
+        DataContext.shared.context
     }
-    
+
     init() { }
-    
-    func configure(with modelContext: ModelContext) {
-        self.modelContext = modelContext
-    }
     
     func create(account: EntityAccount?, name: String, color: NSColor) throws -> EntityPaymentMode? {
                 
         let mode = EntityPaymentMode(name: name, color: color)
-        validContext.insert(mode)
+        modelContext?.insert(mode)
         try save()
         return mode
     }
@@ -135,7 +123,7 @@ final class PaymentModeManager : PaymentModeManaging {
             sortBy: sort )
         
         do {
-            let fetchedData = try validContext.fetch(fetchDescriptor)
+            let fetchedData = try modelContext?.fetch(fetchDescriptor) ?? []
             return fetchedData
         } catch {
             print("Error fetching data with SwiftData: \(error)")
@@ -179,7 +167,7 @@ final class PaymentModeManager : PaymentModeManaging {
             sortBy: sort )
 
         do {
-            let searchResults = try validContext.fetch(fetchDescriptor)
+            let searchResults = try modelContext?.fetch(fetchDescriptor) ?? []
             let result = searchResults.isEmpty == false ? searchResults.first : nil
             return result
         } catch {
@@ -191,13 +179,13 @@ final class PaymentModeManager : PaymentModeManaging {
     // MARK: delete ModePaiement
     func delete(entity: EntityPaymentMode)
     {
-        validContext.undoManager?.beginUndoGrouping()
-        validContext.undoManager?.setActionName("Supprimer le mode de paiement")
-        validContext.delete(entity)
-        validContext.undoManager?.endUndoGrouping()
+        modelContext?.undoManager?.beginUndoGrouping()
+        modelContext?.undoManager?.setActionName("Supprimer le mode de paiement")
+        modelContext?.delete(entity)
+        modelContext?.undoManager?.endUndoGrouping()
 
         do {
-            try validContext.save()
+            try modelContext?.save()
         } catch {
             print("Erreur lors de la sauvegarde après suppression : \(error)")
         }
@@ -242,7 +230,7 @@ final class PaymentModeManager : PaymentModeManaging {
         
         // Récupération des entités EntityPaymentMode liées au compte actuel
         do {
-            entities = try validContext.fetch(fetchDescriptor)
+            entities = try modelContext?.fetch(fetchDescriptor) ?? []
         } catch {
             print("Erreur lors de la récupération des modes de paiement : \(error.localizedDescription)")
         }
@@ -252,7 +240,7 @@ final class PaymentModeManager : PaymentModeManaging {
     func save () throws {
         
         do {
-            try validContext.save()
+            try modelContext?.save()
         } catch {
             throw EnumError.saveFailed
         }

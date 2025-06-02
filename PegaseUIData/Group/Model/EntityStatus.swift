@@ -43,7 +43,6 @@ import SwiftUI
 }
 
 protocol StatusManaging {
-    func configure(with modelContext: ModelContext)
     func create(account: EntityAccount?, name: String, type: Int, color: NSColor) throws -> EntityStatus?
     func find( account: EntityAccount?, name: String) -> EntityStatus?
 
@@ -58,22 +57,12 @@ final class StatusManager: StatusManaging {
     static let shared = StatusManager()
     
     var entityStatus = [EntityStatus]()
+    
+    var modelContext: ModelContext? {
+        DataContext.shared.context
+    }
 
-    // Contexte pour les modifications
-    var modelContext : ModelContext?
-    var validContext: ModelContext {
-        guard let context = modelContext else {
-            print("File: \(#file), Function: \(#function), line: \(#line)")
-            fatalError("ModelContext non configuré. Veuillez appeler configure.")
-        }
-        return context
-    }
-    
     private init() { }
-    
-    func configure(with modelContext: ModelContext) {
-        self.modelContext = modelContext
-    }
     
     func create(account: EntityAccount?, name: String, type: Int, color: NSColor) throws -> EntityStatus? {
 //        guard let account = account else {
@@ -81,7 +70,7 @@ final class StatusManager: StatusManaging {
 //        }
                 
         let newMode = EntityStatus(name: name, type: type, color: color)
-        validContext.insert(newMode)
+        modelContext?.insert(newMode)
         try save()
         return newMode
     }
@@ -99,7 +88,7 @@ final class StatusManager: StatusManaging {
             sortBy: sort )
 
         do {
-            let searchResults = try validContext.fetch(fetchDescriptor)
+            let searchResults = try modelContext?.fetch(fetchDescriptor) ?? []
             let result = searchResults.isEmpty == false ? searchResults.first : nil
             return result
         } catch {
@@ -123,7 +112,7 @@ final class StatusManager: StatusManaging {
             sortBy: sort )
         
         do {
-            entityStatus = try validContext.fetch(fetchDescriptor)
+            entityStatus = try modelContext?.fetch(fetchDescriptor) ?? []
         } catch {
             print("Erreur lors de la récupération des données : \(error.localizedDescription)")
         }
@@ -133,7 +122,7 @@ final class StatusManager: StatusManaging {
     func save () throws {
         
         do {
-            try validContext.save()
+            try modelContext?.save()
         } catch {
             throw EnumError.saveFailed
         }
@@ -147,7 +136,7 @@ final class StatusManager: StatusManaging {
         }
         
         do {
-            try validContext.save()
+            try modelContext?.save()
             print("Sauvegarde réussie.")
         } catch {
             print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
@@ -184,7 +173,7 @@ final class StatusManager: StatusManaging {
         
         // Récupération des entités EntityStatus liées au compte actuel
         do {
-            entityStatus = try validContext.fetch(fetchDescriptor)
+            entityStatus = try modelContext?.fetch(fetchDescriptor) ?? []
         } catch {
             print("Erreur lors de la récupération des status : \(error.localizedDescription)")
         }

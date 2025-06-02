@@ -174,7 +174,7 @@ struct CheckView: View {
     
     // Configure le gestionnaire de données
     private func setupDataManager() {
-        ChequeBookManager.shared.configure(with: modelContext)
+        DataContext.shared.context = modelContext
         dataManager.configure(with: modelContext)
         dataManager.checkBooks = ChequeBookManager.shared.getAllData()
     }

@@ -35,20 +35,18 @@ struct AccountFactory {
         initAccount.account = account
         account.initAccount = initAccount
         
-        PaymentModeManager.shared.configure(with: modelContext)
+        DataContext.shared.context = modelContext
+
         PaymentModeManager.shared.defaultModePaiement(for: account)
         account.paymentMode = PaymentModeManager.shared.entities
         
-        StatusManager.shared.configure(with: modelContext)
         StatusManager.shared.defaultStatus(account: account)
         account.status = StatusManager.shared.entityStatus
         
-        RubricManager.shared.configure(with: modelContext)  
         RubricManager.shared.defaultRubric(for: account)
         let rubric = RubricManager.shared.getAllData(account: account)
         account.rubric = rubric
 
-        PreferenceManager.shared.configure(with: modelContext)
         let entityPreference = PreferenceManager.shared.defaultPref(account: account)
         account.preference = entityPreference
         
@@ -95,7 +93,7 @@ final class InitManager {
     }
     
     func initialize() {
-        AccountManager.shared.configure(with: validContext)
+        DataContext.shared.context = modelContext
         let entities = AccountManager.shared.getRoot(modelContext: validContext)
         guard entities.isEmpty == true else { return }
         setupDefaultLibrary()

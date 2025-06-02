@@ -3452,6 +3452,9 @@
         }
       }
     },
+    "Contenu du tableau ici" : {
+
+    },
     "Country" : {
       "localizations" : {
         "de" : {
@@ -11106,6 +11109,9 @@
         }
       }
     },
+    "Status & Amounts" : {
+
+    },
     "Surname" : {
       "localizations" : {
         "de" : {
@@ -11630,6 +11636,9 @@
           }
         }
       }
+    },
+    "Validate" : {
+
     },
     "Value Date" : {
       "localizations" : {

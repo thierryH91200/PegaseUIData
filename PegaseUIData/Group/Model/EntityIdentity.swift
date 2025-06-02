@@ -74,29 +74,20 @@ final class IdentityManager  {
     
     private var entities = [EntityIdentity]()
     
-    var modelContext : ModelContext?
-    var validContext : ModelContext {
-        guard let context = modelContext else {
-            print("File: \(#file), Function: \(#function), line: \(#line)")
-            fatalError("ModelContext non configuré. Veuillez appeler configure.")
-        }
-        return context
+    var modelContext: ModelContext? {
+        DataContext.shared.context
     }
 
     init() {
     }
     
-    func configure(with modelContext: ModelContext) {
-        self.modelContext = modelContext
-    }
-
     func create(name: String = "", surName: String = "") -> EntityIdentity {
 
         let currentAccount = CurrentAccountManager.shared.getAccount()!
         let entity = EntityIdentity(name: name, surName: surName, account: currentAccount)
         
         // Ajout de l'entité au contexte
-        validContext.insert(entity)
+        modelContext?.insert(entity)
         return entity
     }
     
@@ -119,7 +110,7 @@ final class IdentityManager  {
                 predicate: predicate,
                 sortBy: sort )
             
-            entities = try validContext.fetch(fetchDescriptor)
+            entities = try modelContext?.fetch(fetchDescriptor) ?? []
             
         } catch {
             print("Erreur lors de la récupération des données : \(error.localizedDescription)")

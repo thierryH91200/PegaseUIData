@@ -38,22 +38,13 @@ final class CategoryManager: ObservableObject {
     static let shared = CategoryManager()
     
     @Query private var entities: [EntityCategory] // Liste des entités chargées de manière réactive
-   
-    var modelContext : ModelContext?
-    var validContext: ModelContext {
-        guard let context = modelContext else {
-            print("File: \(#file), Function: \(#function), line: \(#line)")
-            fatalError("ModelContext non configuré. Veuillez appeler configure.")
-        }
-        return context
+    
+    var modelContext: ModelContext? {
+        DataContext.shared.context
     }
 
     init() {}
-    
-    func configure(with modelContext: ModelContext) {
-        self.modelContext = modelContext
-    }
-    
+   
    func findOrCreate(account: EntityAccount,
                       name: String,
                       objectif: Double,
@@ -65,7 +56,7 @@ final class CategoryManager: ObservableObject {
             return existingCategory
         } else {
             let newCategory = EntityCategory(name: name, objectif: objectif, rubric: rubric)
-            validContext.insert(newCategory) // Ajoute l'entité au contexte
+            modelContext?.insert(newCategory) // Ajoute l'entité au contexte
             return newCategory
         }
     }
@@ -115,7 +106,7 @@ final class CategoryManager: ObservableObject {
     }
     
     func remove(entity: EntityCategory) {
-        validContext.delete(entity) // Supprime l'entité via le contexte
+        modelContext?.delete(entity) // Supprime l'entité via le contexte
     }
 }
 
@@ -175,3 +166,4 @@ struct SwiftDataHelper {
         }
     }
 }
+

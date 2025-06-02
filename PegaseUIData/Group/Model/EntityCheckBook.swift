@@ -67,23 +67,13 @@ final class ChequeBookManager : ObservableObject {
     @Published var entities = [EntityCheckBook]()
     
     var account: EntityAccount?
-
-    // Contexte pour les modifications
-    var modelContext : ModelContext?
-    var validContext: ModelContext {
-        guard let context = modelContext else {
-            print("File: \(#file), Function: \(#function), line: \(#line)")
-            fatalError("ModelContext non configuré. Veuillez appeler configure.")
-        }
-        return context
+    
+    var modelContext: ModelContext? {
+        DataContext.shared.context
     }
 
     init() {}
     
-    func configure(with modelContext: ModelContext) {
-        self.modelContext = modelContext
-    }
-
     @discardableResult
     func create(name: String,
                 nbCheques: Int = 25,
@@ -98,7 +88,7 @@ final class ChequeBookManager : ObservableObject {
             numSuivant: numSuivant,
             prefix: prefix,
             account: CurrentAccountManager.shared.getAccount()!) // Associe le compte actuel
-        validContext.insert(entity)
+        modelContext?.insert(entity)
         
         // Sauvegardez le contexte
         save()
@@ -122,7 +112,7 @@ final class ChequeBookManager : ObservableObject {
             sortBy: sort )
         
         do {
-            entities = try validContext.fetch(descriptor)
+            entities = try modelContext?.fetch(descriptor) ??   []
         } catch {
             print("Error fetching data from SwiftData: \(error)")
             return nil
@@ -137,10 +127,10 @@ final class ChequeBookManager : ObservableObject {
 
     func delete(entity: EntityCheckBook)
     {
-        validContext.undoManager?.beginUndoGrouping()
-        validContext.undoManager?.setActionName("DeletePaymentMode")
-        validContext.delete(entity)
-        validContext.undoManager?.endUndoGrouping()
+        modelContext?.undoManager?.beginUndoGrouping()
+        modelContext?.undoManager?.setActionName("DeletePaymentMode")
+        modelContext?.delete(entity)
+        modelContext?.undoManager?.endUndoGrouping()
         
         save()
     }
@@ -157,10 +147,10 @@ final class ChequeBookManager : ObservableObject {
         entityCarnetCheques.nbCheques = 25
         entityCarnetCheques.account = account
         entityCarnetCheques.uuid = UUID()
-        validContext.insert(entityCarnetCheques)
+        modelContext?.insert(entityCarnetCheques)
         
         do {
-            try validContext.save()
+            try modelContext?.save()
             entities.append(entityCarnetCheques)
         } catch {
             print("Error saving default Carnet Cheques: \(error)")
@@ -169,7 +159,7 @@ final class ChequeBookManager : ObservableObject {
     
     func save () {
         do {
-            try validContext.save()
+            try modelContext?.save()
         } catch {
             print(" lors de la sauvegarde de l'entité : \(error)")
         }

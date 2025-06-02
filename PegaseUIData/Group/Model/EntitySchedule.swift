@@ -71,7 +71,6 @@ extension EntitySchedule {
     }
 }
 
-
 final class SchedulerManager {
     
     @Published var entities = [EntitySchedule]()
@@ -79,25 +78,16 @@ final class SchedulerManager {
     var currentAccount: EntityAccount?
     static let shared = SchedulerManager()
     
-    // Contexte pour les modifications
-    var modelContext : ModelContext?
-    var validContext: ModelContext {
-        guard let context = modelContext else {
-            print("File: \(#file), Function: \(#function), line: \(#line)")
-            fatalError("ModelContext non configuré. Veuillez appeler configure.")
-        }
-        return context
+    var modelContext: ModelContext? {
+        DataContext.shared.context
     }
+
     
     init() { }
     
-    func configure(with modelContext: ModelContext) {
-        self.modelContext = modelContext
-    }
-    
     func create(account: EntityAccount?, name : String) throws -> EntitySchedule {
         let entity = EntitySchedule()
-        validContext.insert(entity)
+        modelContext?.insert(entity)
         try save()
         entities.append(entity)
         
@@ -110,7 +100,7 @@ final class SchedulerManager {
     
     // Suppression d'une entité
     func remove(entity: EntitySchedule) {
-        validContext.delete(entity)
+        modelContext?.delete(entity)
     }
     
     func fetchEntitySchedules() -> [EntitySchedule] {
@@ -127,7 +117,7 @@ final class SchedulerManager {
             sortBy: sort )
         
         do {
-            return try validContext.fetch(descriptor)
+            return try modelContext?.fetch(descriptor) ?? []
         } catch {
             print("Erreur lors de la récupération des données : \(error.localizedDescription)")
             return []
@@ -152,7 +142,7 @@ final class SchedulerManager {
         
         do {
             // Récupérez les entités en utilisant le FetchDescriptor
-            entities = try validContext.fetch( descriptor )
+            entities = try modelContext?.fetch( descriptor ) ?? []
         } catch {
             print("Erreur lors de la récupération des données: \(error)")
             return nil // Retourne nil en cas d'erreur
@@ -323,13 +313,13 @@ final class SchedulerManager {
             
             transferTransaction.sousOperations.append(transferSousOperation)
             transferTransaction.uuid = UUID()
-            validContext.insert(transferTransaction) // Ajout explicite dans le contexte
+            modelContext?.insert(transferTransaction) // Ajout explicite dans le contexte
             
         }
         // Sauvegarde explicite
-        if validContext.hasChanges {
+        if modelContext?.hasChanges ?? false{
             do {
-                try validContext.save()
+                try modelContext?.save()
             } catch {
                 print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
             }
@@ -338,7 +328,7 @@ final class SchedulerManager {
     func save () throws {
         
         do {
-            try validContext.save()
+            try modelContext?.save()
         } catch {
             throw EnumError.saveFailed
         }

@@ -89,7 +89,7 @@ struct BankStatementListView: View {
                     // Créer un nouvel enregistrement si la base de données est vide
                     if dataManager.statements == nil {
 
-                        BankStatementManager.shared.configure(with: modelContext)
+                        DataContext.shared.context = modelContext
                         let statements = BankStatementManager.shared.getAllData()
                         dataManager.statements = statements
                     }

@@ -35,7 +35,7 @@ struct CSVEXportTransactionView: View {
             dismiss()
         }
         .onAppear {
-            ListTransactionsManager.shared.configure(with: modelContext)
+            DataContext.shared.context = modelContext
         }
     }
 }

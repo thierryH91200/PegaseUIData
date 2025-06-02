@@ -135,23 +135,25 @@ struct OperationDialogView: View {
     // Méthodes extraites et simplifiées
     private func configureDataManagers() {
         dataManager.configure(with: modelContext)
-        AccountManager.shared.configure(with: modelContext)
+        DataContext.shared.context = modelContext
         formState.accounts = AccountManager.shared.getAllData()
     }
     
     private func refreshData() {
-        ListTransactionsManager.shared.configure(with: modelContext)
+        DataContext.shared.context = modelContext
+
         dataManager.listTransactions = ListTransactionsManager.shared.getAllData()
     }
     
     func configureFormState() async throws {
+        
+        DataContext.shared.context = modelContext
+
         // Configuration des comptes
-        AccountManager.shared.configure(with: modelContext)
         formState.accounts = AccountManager.shared.getAllData()
         formState.selectedAccount = CurrentAccountManager.shared.getAccount()
         
         // Configuration des modes de paiement
-        PaymentModeManager.shared.configure(with: modelContext)
         if let modes = PaymentModeManager.shared.getAllData() {
             formState.paymentModes = modes
             // Sélection sécurisée du premier mode de paiement
@@ -159,7 +161,6 @@ struct OperationDialogView: View {
         }
 
         // Configuration des différents status
-        StatusManager.shared.configure(with: modelContext)
         if let account = CurrentAccountManager.shared.getAccount() {
             if let status = StatusManager.shared.getAllData(for: account) {
                 formState.status = status
@@ -279,7 +280,7 @@ struct OperationDialogView: View {
     
     func resetListTransactions() {
         
-        PreferenceManager.shared.configure(with: modelContext)
+        DataContext.shared.context = modelContext
         let account = CurrentAccountManager.shared.getAccount()
         let entityPreference = PreferenceManager.shared.getAllData(for: account)
 

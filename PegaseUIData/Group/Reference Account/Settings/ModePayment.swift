@@ -154,7 +154,7 @@ struct ModePaymentView: View {
     }
     
     private func setupDataManager() {
-        PaymentModeManager.shared.configure(with: modelContext)
+        DataContext.shared.context = modelContext
         dataManager.configure(with: modelContext)
 //        if let account = currentAccountManager.currentAccount {
             dataManager.modePayments = PaymentModeManager.shared.getAllData()

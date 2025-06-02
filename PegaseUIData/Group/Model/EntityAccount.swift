@@ -132,22 +132,12 @@ final class AccountManager {
     static let shared = AccountManager()
     var entities = [EntityAccount]()
     
-    // Contexte pour les modifications
-    var modelContext : ModelContext?
-    var validContext: ModelContext {
-        guard let context = modelContext else {
-            print("File: \(#file), Function: \(#function), line: \(#line)")
-            fatalError("ModelContext non configuré. Veuillez appeler configure.")
-        }
-        return context
+    var modelContext: ModelContext? {
+        DataContext.shared.context
     }
     
     init() { }
-    
-    public func configure(with modelContext: ModelContext) {
-        self.modelContext = modelContext
-    }
-    
+        
     // MARK: create account
     func create(nameAccount: String,
                 nameImage: String,
@@ -178,7 +168,7 @@ final class AccountManager {
         }
         
         // Ajoute le nouveau compte à la liste des entités
-        validContext.insert(account)
+        modelContext?.insert(account)
         return account
     }
 
@@ -186,7 +176,7 @@ final class AccountManager {
         do {
             // Exécution d'une requête manuelle si besoin de filtrer ou trier
             let request = FetchDescriptor<EntityAccount>()
-            entities = try validContext.fetch(request)
+            entities = try modelContext?.fetch(request) ?? []
         } catch {
             print("Erreur lors de la récupération des données avec SwiftData")
         }
@@ -195,7 +185,7 @@ final class AccountManager {
     
     func getRoot(modelContext: ModelContext) -> [EntityFolderAccount] {
         let request = FetchDescriptor<EntityFolderAccount>(predicate: #Predicate { $0.isRoot == false })
-        let entities = try? validContext.fetch(request)
+        let entities = try? modelContext.fetch(request)
         return entities!
     }
     
@@ -267,5 +257,12 @@ final class CurrentAccountManager : ObservableObject {
 
        currentAccount = nil
     }
+}
+
+final class DataContext {
+    static let shared = DataContext()
+    var context: ModelContext?
+
+    private init() {}
 }
 

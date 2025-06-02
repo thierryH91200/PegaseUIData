@@ -45,22 +45,12 @@ final class InitAccountManager {
     var currentAccount: EntityAccount {
         CurrentAccountManager.shared.getAccount()!
     }
-
-    // Contexte pour les modifications
-    var modelContext : ModelContext?
-    var validContext: ModelContext {
-        guard let context = modelContext else {
-            print("File: \(#file), Function: \(#function), line: \(#line)")
-            fatalError("ModelContext non configuré. Veuillez appeler configure.")
-        }
-        return context
+    
+    var modelContext: ModelContext? {
+        DataContext.shared.context
     }
 
     init() {
-    }
-
-    func configure(with modelContext: ModelContext) {
-        self.modelContext = modelContext
     }
 
     // Utiliser un seul contexte pour la gestion des données
@@ -80,7 +70,7 @@ final class InitAccountManager {
             sortBy: sort )
 
         do {
-            initAccounts = try validContext.fetch(descriptor)
+            initAccounts = try modelContext?.fetch(descriptor) ?? []
         } catch {
             print("Erreur lors de la récupération des données")
         }
@@ -112,7 +102,7 @@ final class InitAccountManager {
         entity.realise = 0
         entity.account = account // Associe le compte à l'entité
         
-        validContext.insert(entity)
+        modelContext?.insert(entity)
         initAccounts.append(entity) // Mise à jour de la liste locale
         
         return entity
@@ -120,15 +110,16 @@ final class InitAccountManager {
     
     func delete(entityInitAccount: EntityInitAccount) {
         
-        validContext.delete( entityInitAccount) // Appelle la méthode sans try
+        modelContext?.delete( entityInitAccount)
         initAccount = nil
  
         initAccount = getAllData()      // Recharger depuis la base de données
     }
+    
     func save () throws {
         
         do {
-            try validContext.save()
+            try modelContext?.save()
         } catch {
             throw EnumError.saveFailed
         }

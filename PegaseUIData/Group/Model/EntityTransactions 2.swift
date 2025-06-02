@@ -11,10 +11,8 @@ import SwiftData
 import AppKit
 
 protocol ListManaging {
-    func configure(with modelContext: ModelContext)
     func find(uuid: UUID) -> EntityTransactions?
 }
-
 
 final class ListTransactionsManager: ListManaging {
     
@@ -29,22 +27,12 @@ final class ListTransactionsManager: ListManaging {
 
     var ascending = false
     
-    // Contexte pour les modifications
-    var modelContext : ModelContext?
-    var validContext: ModelContext {
-        guard let context = modelContext else {
-            print("File: \(#file), Function: \(#function), line: \(#line)")
-            fatalError("ModelContext non configuré. Veuillez appeler configure.")
-        }
-        return context
+    var modelContext: ModelContext? {
+        DataContext.shared.context
     }
 
     init() { }
     
-    func configure(with modelContext: ModelContext) {
-        self.modelContext = modelContext
-    }
-
     @discardableResult
     func createTransactions(formState: TransactionFormState) -> EntityTransactions {
         // Create entityTransaction
@@ -71,7 +59,7 @@ final class ListTransactionsManager: ListManaging {
 
         do {
             // Récupération des entités correspondant au prédicat
-            let results = try validContext.fetch(fetchDescriptor)
+            let results = try modelContext?.fetch(fetchDescriptor) ?? []
             
             // Retourner le premier résultat, s'il existe
             return results.first
@@ -95,7 +83,7 @@ final class ListTransactionsManager: ListManaging {
         // Fetch les transactions liées à l'account
         do {
             // Fetch transactions with error handling
-            let entityTransactions = try validContext.fetch(descriptor)
+            let entityTransactions = try modelContext?.fetch(descriptor) ?? []
             
             // Process transactions and their split operations
             for entityTransaction in entityTransactions {
@@ -142,7 +130,7 @@ final class ListTransactionsManager: ListManaging {
 
         do {
             // Récupération des entités depuis le contexte
-            entities = try validContext.fetch(fetchDescriptor)
+            entities = try modelContext?.fetch(fetchDescriptor) ?? []
         } catch {
             print("Erreur lors de la récupération des données avec SwiftData : \(error)")
             return []
@@ -242,6 +230,5 @@ class ListTransactionsViewModel: ObservableObject {
         listTransactions = manager.getAllData()
     }
 
-    
 }
 

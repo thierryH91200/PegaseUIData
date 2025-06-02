@@ -39,7 +39,6 @@ public class EntityBanqueInfo : Identifiable{
 }
 
 protocol BankManaging {
-    func configure(with modelContext: ModelContext)
     func create(account: EntityAccount?) throws -> EntityBanqueInfo
     func update()
     func delete(entity: EntityBanqueInfo)
@@ -55,21 +54,11 @@ final class BankManager : BankManaging {
     var banks = [EntityBanqueInfo]()
     var bank : EntityBanqueInfo?
     
-    // Contexte pour les modifications
-    var modelContext : ModelContext?
-    var validContext: ModelContext {
-        guard let context = modelContext else {
-            print("File: \(#file), Function: \(#function), line: \(#line)")
-            fatalError("ModelContext non configuré. Veuillez appeler configure.")
-        }
-        return context
+    var modelContext: ModelContext? {
+        DataContext.shared.context
     }
-    
+
     init () {
-    }
-    
-    func configure(with modelContext: ModelContext) {
-        self.modelContext = modelContext
     }
     
     func create(account: EntityAccount?) throws -> EntityBanqueInfo {
@@ -98,7 +87,7 @@ final class BankManager : BankManaging {
     
     
     func delete(entity: EntityBanqueInfo) {
-        validContext.delete(entity  )
+        modelContext?.delete(entity  )
     }
     
     @discardableResult
@@ -118,7 +107,7 @@ final class BankManager : BankManaging {
             sortBy: sort )
         
         do {
-            entitiesBank = try validContext.fetch(fetchDescriptor)
+            entitiesBank = try modelContext?.fetch(fetchDescriptor) ?? []
 
         } catch {
             print("Erreur lors de la récupération des données : \(error.localizedDescription)")

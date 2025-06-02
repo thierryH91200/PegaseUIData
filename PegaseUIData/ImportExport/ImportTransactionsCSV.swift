@@ -152,11 +152,8 @@ struct ImportTransactionFileView: View {
         print("Importation de \(count) transactions CSV.")
         
         let account = CurrentAccountManager.shared.getAccount()!
-        PreferenceManager.shared.configure(with: context)
-        PaymentModeManager.shared.configure(with: context)
-        StatusManager.shared.configure(with: context)
-        CategoryManager.shared.configure(with: context)
-        
+        DataContext.shared.context = modelContext
+
         let entityPreference = PreferenceManager.shared.getAllData(for: account)
         
         for row in csvData.dropFirst() { // Ignorer l'en-tête

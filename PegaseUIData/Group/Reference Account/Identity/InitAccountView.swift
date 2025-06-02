@@ -111,7 +111,7 @@ struct InitAccountView: View {
     private func createAccountIfNeeded() {
         if dataManager.initAccount == nil {
 
-            InitAccountManager.shared.configure(with: modelContext)
+            DataContext.shared.context = modelContext
             let accountInitInfo = InitAccountManager.shared.getAllData()
             dataManager.initAccount = accountInitInfo ?? {
                 let newInitAccount = EntityInitAccount(account: CurrentAccountManager.shared.getAccount()!)
@@ -129,7 +129,7 @@ struct InitAccountView: View {
     
     private func loadOrCreateIdentity(for account: EntityAccount) {
         
-        IdentityManager.shared.configure(with: modelContext)
+        DataContext.shared.context = modelContext
         if let existingInitAccount = InitAccountManager.shared.getAllData() {
             dataManager.initAccount = existingInitAccount
         } else {

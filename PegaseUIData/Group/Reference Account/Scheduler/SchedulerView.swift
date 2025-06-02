@@ -198,7 +198,7 @@ struct Scheduler: View {
     }
     
     private func setupDataManager() {
-        SchedulerManager.shared.configure(with: modelContext)
+        DataContext.shared.context = modelContext
         dataManager.configure(with: modelContext)
         
         if currentAccountManager.currentAccount != nil {

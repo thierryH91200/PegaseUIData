@@ -53,21 +53,12 @@ final class SubTransactionsManager {
     
     var entities : [EntitySousOperations] = []
     var subOperation : EntitySousOperations?
-
-    var modelContext : ModelContext?
-    var validContext: ModelContext {
-        guard let context = modelContext else {
-            print("File: \(#file), Function: \(#function), line: \(#line)")
-            fatalError("ModelContext non configuré. Veuillez appeler configure.")
-        }
-        return context
+    
+    var modelContext: ModelContext? {
+        DataContext.shared.context
     }
 
     init() {
-    }
-    
-    func configure(with modelContext: ModelContext) {
-        self.modelContext = modelContext
     }
     
     @MainActor func createSubTransactions(comment: String,
@@ -105,7 +96,7 @@ final class SubTransactionsManager {
     // Suppression d'une entité
     func remove(entity: EntitySousOperations) {
         entity.transaction = nil
-        validContext.delete(entity)
+        modelContext?.delete(entity)
     }
 
 }
