@@ -1363,7 +1363,14 @@
       }
     },
     "Année : %lld" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Année : %lld"
+          }
+        }
+      }
     },
     "Appearance" : {
       "localizations" : {
@@ -3453,7 +3460,14 @@
       }
     },
     "Contenu du tableau ici" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contenu du tableau ici"
+          }
+        }
+      }
     },
     "Country" : {
       "localizations" : {
@@ -3638,6 +3652,9 @@
           }
         }
       }
+    },
+    "Création" : {
+
     },
     "Creation Mode" : {
       "localizations" : {
@@ -5833,6 +5850,12 @@
         }
       }
     },
+    "Édition d'une transaction" : {
+
+    },
+    "Édition de %lld transactions" : {
+
+    },
     "Email" : {
       "localizations" : {
         "de" : {
@@ -6496,7 +6519,15 @@
       }
     },
     "Exporter" : {
-
+      "extractionState" : "stale",
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exporter"
+          }
+        }
+      }
     },
     "Eyes" : {
       "localizations" : {
@@ -7440,9 +7471,6 @@
         }
       }
     },
-    "Importer CSV" : {
-
-    },
     "Importing the OFX file…" : {
 
     },
@@ -8276,58 +8304,12 @@
         }
       }
     },
-    "Mois : %@" : {
-
-    },
-    "Month: %@" : {
-      "extractionState" : "stale",
+    "Month : %@" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Month: %@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mois : %@"
-          }
-        },
-        "he" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "value" : "Month : %@"
           }
         }
       }
@@ -11109,9 +11091,6 @@
         }
       }
     },
-    "Status & Amounts" : {
-
-    },
     "Surname" : {
       "localizations" : {
         "de" : {
@@ -11636,9 +11615,6 @@
           }
         }
       }
-    },
-    "Validate" : {
-
     },
     "Value Date" : {
       "localizations" : {

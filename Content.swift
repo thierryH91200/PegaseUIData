@@ -41,7 +41,7 @@ class ColorManager: ObservableObject {
         self.colorChoix = UserDefaults.standard.string(forKey: key) ?? "United"
     }
 
-    func colorForTransaction(_ transaction: EntityTransactions) -> Color {
+    func colorForTransaction(_ transaction: EntityTransaction) -> Color {
         switch colorChoix {
         case "United":
             return .primary
@@ -64,10 +64,27 @@ class ColorManager: ObservableObject {
 }
 
 class TransactionSelectionManager: ObservableObject , Identifiable {
-    @Published var selectedTransaction: EntityTransactions?
-    @Published var selectedTransactions: [EntityTransactions] = []
+    @Published var selectedTransaction: EntityTransaction?
+    @Published var selectedTransactions: [EntityTransaction] = []
     @Published var isCreationMode: Bool = true
     @Published var lastSelectedTransactionID: UUID?
+    
+    enum FormMode {
+        case create
+        case editSingle(EntityTransaction)
+        case editMultiple([EntityTransaction])
+    }
+
+    var formMode: FormMode {
+        switch selectedTransactions.count {
+        case 0:
+            return .create
+        case 1:
+            return .editSingle(selectedTransactions.first!)
+        default:
+            return .editMultiple(selectedTransactions)
+        }
+    }
     
     var isMultiSelection: Bool {
         selectedTransactions.count > 1
@@ -86,14 +103,14 @@ struct ContentView100: View {
     @StateObject private var listDataManager = ListDataManager()
     @StateObject private var currentAccountManager = CurrentAccountManager.shared
 
-    @State private var selectedTransaction: EntityTransactions?
+    @State private var selectedTransaction: EntityTransaction?
     @State private var isCreationMode : Bool = true
     
     @State private var showCSVTransactionImporter = false
     @State private var showOFXTransactionImporter = false
     @State private var showCSVTransactionExporter = false
 
-    var transactions: [EntityTransactions] = [] // Liste des transactions
+    var transactions: [EntityTransaction] = [] // Liste des transactions
 
     @State private var selection1: UUID?
     @State private var selection2: String? = "Notes"
@@ -296,7 +313,7 @@ struct SidebarContainer: View {
 struct DetailContainer: View {
     @Binding var selection2: String?
     @Binding var isVisible: Bool
-    @Binding var selectedTransaction: EntityTransactions?
+    @Binding var selectedTransaction: EntityTransaction?
     @Binding var isCreationMode: Bool
 
     var detailViews: [String: (Binding<Bool>) -> AnyView] {

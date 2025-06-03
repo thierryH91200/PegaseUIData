@@ -10,7 +10,7 @@ import SwiftData
 
 // Gestionnaire de données pour les listTransactions
 final class ListDataManager: ObservableObject {
-    @Published var listTransactions: [EntityTransactions] = []
+    @Published var listTransactions: [EntityTransaction] = []
      
     private var modelContext: ModelContext?
     
@@ -33,7 +33,7 @@ final class ListDataManager: ObservableObject {
         }
     }
     
-    @MainActor func deleteTransaction(_ transaction: EntityTransactions) {
+    @MainActor func deleteTransaction(_ transaction: EntityTransaction) {
         guard let modelContext = modelContext else { return }
                
         modelContext.delete(transaction)

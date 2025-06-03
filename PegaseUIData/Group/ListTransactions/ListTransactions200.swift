@@ -77,7 +77,7 @@ struct TransactionsByMonth100: Identifiable {
     let id = UUID()
     let year: String
     let month: Int
-    let transactions: [EntityTransactions]
+    let transactions: [EntityTransaction]
     
     /// Formatage mois (ex: "Février")
     var monthName: String {
@@ -102,12 +102,12 @@ struct YearMonth: Hashable {
     let month: Int
 }
 
-func groupTransactionsByYear(transactions: [EntityTransactions]) -> [TransactionsByYear100] {
+func groupTransactionsByYear(transactions: [EntityTransaction]) -> [TransactionsByYear100] {
     // Dictionnaire [year: [TransactionsByMonth]]
     var dictionaryByYear: [String: [TransactionsByMonth100]] = [:]
 
     // Dictionnaire [YearMonth : [EntityTransactions]]
-    var yearMonthDict: [YearMonth: [EntityTransactions]] = [:]
+    var yearMonthDict: [YearMonth: [EntityTransaction]] = [:]
 
     for transaction in transactions {
         guard let yearString = transaction.sectionYear else { continue }

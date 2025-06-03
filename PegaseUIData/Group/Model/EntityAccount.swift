@@ -88,10 +88,10 @@ extension EntityFolderAccount {
 
     var compteLie: EntitySchedule?
     
-    @Relationship(deleteRule: .cascade, inverse: \EntityTransactions.account)
-    var transactions: [EntityTransactions]?
+    @Relationship(deleteRule: .cascade, inverse: \EntityTransaction.account)
+    var transactions: [EntityTransaction]?
     
-    @Relationship(deleteRule: .nullify) var account: EntityTransactions?
+    @Relationship(deleteRule: .nullify) var account: EntityTransaction?
 
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }

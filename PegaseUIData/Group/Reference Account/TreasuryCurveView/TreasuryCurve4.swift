@@ -43,7 +43,7 @@ struct DGLineChartRepresentable: NSViewRepresentable {
 
     @State private var selectedType: String = "Tous"
     
-    @State var listTransactions : [EntityTransactions] = []
+    @State var listTransactions : [EntityTransaction] = []
     @State var firstDate: TimeInterval = 0.0
     @State var lastDate: TimeInterval = 0.0
     

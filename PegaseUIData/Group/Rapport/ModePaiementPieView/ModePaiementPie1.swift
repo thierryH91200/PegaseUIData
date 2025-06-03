@@ -18,7 +18,7 @@ class ModePaymentPieViewModel: ObservableObject {
     
     @Published var currencyCode: String = Locale.current.currency?.identifier ?? "EUR"
     
-    var listTransactions: [EntityTransactions] = []
+    var listTransactions: [EntityTransaction] = []
 
     var labelsExpense: [String] {
         depenseArray.map { $0.name }
@@ -39,10 +39,10 @@ class ModePaymentPieViewModel: ObservableObject {
         guard let currentAccount else { return }
         self.currencyCode = currentAccount.currencyCode
 
-        let sort = [SortDescriptor(\EntityTransactions.dateOperation, order: .reverse)]
+        let sort = [SortDescriptor(\EntityTransaction.dateOperation, order: .reverse)]
         let lhs = currentAccount.uuid
 
-        let descriptor = FetchDescriptor<EntityTransactions>(
+        let descriptor = FetchDescriptor<EntityTransaction>(
             predicate: #Predicate { transaction in
                 transaction.account.uuid == lhs &&
                 transaction.dateOperation >= startDate &&

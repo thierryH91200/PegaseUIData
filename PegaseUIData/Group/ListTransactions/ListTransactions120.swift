@@ -18,7 +18,7 @@ struct TransactionLigne: View {
     @EnvironmentObject var transactionManager   : TransactionSelectionManager
     @EnvironmentObject private var colorManager : ColorManager
     
-    let transaction: EntityTransactions
+    let transaction: EntityTransaction
     @Binding var selectedTransactions: Set<UUID>
     
     @State var showTransactionInfo: Bool = false
@@ -174,7 +174,7 @@ struct TransactionLigne: View {
             .padding(.horizontal, 2)
     }
     
-    private func transaction(for id: UUID) -> EntityTransactions? {
+    private func transaction(for id: UUID) -> EntityTransaction? {
         _ = selectedTransactions.compactMap { id in
             transaction(for: id)
         }

@@ -36,7 +36,7 @@ struct OperationRow: View {
                                  String(localized:"Status"),
                                  String(localized:"Amount")]
 
-    private var transactions: [EntityTransactions] { dataManager.listTransactions }
+    private var transactions: [EntityTransaction] { dataManager.listTransactions }
     // Récupère le compte courant de manière sécurisée.
     var compteCurrent: EntityAccount? {
         CurrentAccountManager.shared.getAccount()
@@ -75,7 +75,7 @@ struct OperationRow: View {
                                     .background(Color.clear)
                             }
                         } label: {
-                            Label("Mois : \(monthGroup.month)", systemImage: "calendar")
+                            Label("Month : \(monthGroup.month)", systemImage: "calendar")
                                 .font(.subheadline.bold())
                                 .foregroundColor(.primary)
                                 .contentShape(Rectangle()) // 👈 rend toute la zone réactive
@@ -90,12 +90,12 @@ struct OperationRow: View {
             Button {
                 showFileImporter = true
             } label: {
-                Label("Importer CSV", systemImage: "tray.and.arrow.down")
+                Label("Import CSV", systemImage: "tray.and.arrow.down")
             }
             Button {
                 print("[PegaseUIData] Exporter les transactions")
             } label: {
-                Label("Exporter", systemImage: "tray.and.arrow.up")
+                Label("Export", systemImage: "tray.and.arrow.up")
             }
         }
         .onAppear(perform: loadDisclosureState)
@@ -252,7 +252,7 @@ struct OperationRow: View {
             
             let amount = getDouble(from: row, index: columnMapping[String(localized:"Amount")])
             
-            let transaction = EntityTransactions()
+            let transaction = EntityTransaction()
             
             transaction.createAt  = Date().noon
             transaction.updatedAt = Date().noon
@@ -310,7 +310,7 @@ struct OperationRow: View {
         }
     }
     
-    private func groupTransactionsByYear(transactions: [EntityTransactions]) -> [YearGroup] {
+    private func groupTransactionsByYear(transactions: [EntityTransaction]) -> [YearGroup] {
         var groupedItems: [YearGroup] = []
         let calendar = Calendar.current
         

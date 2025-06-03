@@ -11,7 +11,7 @@ import DGCharts
 
 class CategorieBar1ViewModel: ObservableObject {
     
-    @Published var listTransactions : [EntityTransactions] = []
+    @Published var listTransactions : [EntityTransaction] = []
     
     @Published var resultArray: [DataGraph] = []
     @Published var dataEntries: [BarChartDataEntry] = []

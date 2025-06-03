@@ -9,7 +9,7 @@
 import Foundation
 import SwiftData
 
-@Model public class EntityTransactions {
+@Model public class EntityTransaction {
 
     var createAt:  Date = Date().noon
     var updatedAt: Date = Date().noon
@@ -78,7 +78,7 @@ import SwiftData
     
 }
 
-extension EntityTransactions {
+extension EntityTransaction {
     @MainActor
     func addSubOperation(_ subOperation: EntitySousOperations) {
         guard !sousOperations.contains(where: { $0.id == subOperation.id }) else {
@@ -110,7 +110,7 @@ extension EntityTransactions {
 
 }
 
-extension EntityTransactions {
+extension EntityTransaction {
     var dateOperationString: String {
         return dateOperation.formatted()
     }

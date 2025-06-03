@@ -56,9 +56,9 @@ class Transaction : NSObject {
     let isCb             : Bool
     let year             : String
     let id               : String
-    let entityTransaction : EntityTransactions
+    let entityTransaction : EntityTransaction
     
-    init( year: String, id: String, entityTransaction: EntityTransactions) {
+    init( year: String, id: String, entityTransaction: EntityTransaction) {
         self.year = year
         self.id = id
         self.entityTransaction = entityTransaction

@@ -35,7 +35,7 @@ struct PegaseUIDataApp: App {
         EntityRubric.self,
         EntitySchedule.self,
         EntitySousOperations.self,
-        EntityTransactions.self
+        EntityTransaction.self
     ])
 
     init() {

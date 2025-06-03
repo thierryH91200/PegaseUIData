@@ -12,7 +12,7 @@ import DGCharts
 
 class TresuryLineViewModel: ObservableObject {
     
-    @Published var listTransactions: [EntityTransactions] = []
+    @Published var listTransactions: [EntityTransaction] = []
     @Published var dataGraph: [DataTresorerie] = []
     @Published var dataEntries: [ChartDataEntry] = []
 

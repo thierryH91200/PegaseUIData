@@ -22,10 +22,6 @@ class TransactionFormState: ObservableObject {
     @Published var pointingDate: Date = Date()
     @Published var status: [EntityStatus] = []
     
-//    @Published var bankStatementString: String = ""
-//    var bankStatement: Double? {
-//        Double(bankStatementString)
-//    }
     @Published var bankStatement: Double = 0.0
     @Published var checkNumber: Int = 0
     
@@ -36,8 +32,8 @@ class TransactionFormState: ObservableObject {
     @Published var currentSousTransaction: EntitySousOperations?
     @Published var subOperations: [EntitySousOperations] = []
 
-    @Published var currentTransaction: EntityTransactions?
-    @Published var entityTransactions: [EntityTransactions] = []
+    @Published var currentTransaction: EntityTransaction?
+    @Published var entityTransactions: [EntityTransaction] = []
     
     @Published var selectedBankStatement: String = ""
     @Published var selectedStatus: EntityStatus?

@@ -17,12 +17,12 @@ public class EntitySousOperations: Identifiable {
     var libelle: String? // Rend optionnel si nécessaire
     
     @Relationship(deleteRule: .nullify) var category: EntityCategory?
-    @Relationship(deleteRule: .nullify) var transaction: EntityTransactions?
+    @Relationship(deleteRule: .nullify) var transaction: EntityTransaction?
    
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
 
-    public init(libelle: String? = "Empty", amount: Double = 0.0, category: EntityCategory? = nil, transaction: EntityTransactions? = nil) {
+    public init(libelle: String? = "Empty", amount: Double = 0.0, category: EntityCategory? = nil, transaction: EntityTransaction? = nil) {
         self.libelle = libelle
         self.amount = amount
         self.category = category
@@ -35,7 +35,7 @@ public class EntitySousOperations: Identifiable {
         return price
     }
     
-    func copy(for transaction: EntityTransactions) -> EntitySousOperations {
+    func copy(for transaction: EntityTransaction) -> EntitySousOperations {
         let newSous = EntitySousOperations()
         newSous.libelle = self.libelle
         newSous.amount = self.amount

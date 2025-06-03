@@ -96,7 +96,7 @@ struct ListTransactions200: View {
     @EnvironmentObject private var dataManager           : ListDataManager
     @EnvironmentObject private var colorManager          : ColorManager
     
-    private var transactions: [EntityTransactions] { dataManager.listTransactions }
+    private var transactions: [EntityTransaction] { dataManager.listTransactions }
     
     @Binding var isVisible: Bool
     @Binding var selectedTransactions: Set<UUID>
@@ -111,7 +111,7 @@ struct ListTransactions200: View {
     
     
     // Clipboard state for copy/cut/paste
-    @State private var clipboardTransactions: [EntityTransactions] = []
+    @State private var clipboardTransactions: [EntityTransaction] = []
     @State private var isCutOperation = false
     
     // Récupère le compte courant de manière sécurisée.
@@ -172,7 +172,7 @@ struct ListTransactions200: View {
                     let status = StatusManager.shared.find(name : transaction.status!.name)
                     let paymentMode = PaymentModeManager.shared.find(name: transaction.paymentMode!.name)
                     
-                    let newTransaction = EntityTransactions()
+                    let newTransaction = EntityTransaction()
                     newTransaction.dateOperation = transaction.dateOperation
                     newTransaction.datePointage  =  transaction.datePointage
                     newTransaction.status        = status
@@ -323,7 +323,7 @@ struct ListTransactions200: View {
         let selectedRow = selectedTransactions
         if selectedRow.isEmpty == false {
             
-            var transactionsSelected = [EntityTransactions]()
+            var transactionsSelected = [EntityTransaction]()
             
             var solde = 0.0
             var expense = 0.0
@@ -419,7 +419,7 @@ struct ListTransactions200: View {
     
     
     
-    private func groupTransactionsByYear(transactions: [EntityTransactions]) -> [YearGroup] {
+    private func groupTransactionsByYear(transactions: [EntityTransaction]) -> [YearGroup] {
         var groupedItems: [YearGroup] = []
         let calendar = Calendar.current
         
@@ -482,7 +482,7 @@ struct YearGroup {
 
 struct MonthGroup {
     var month: String
-    var transactions: [EntityTransactions]
+    var transactions: [EntityTransaction]
 }
 
 

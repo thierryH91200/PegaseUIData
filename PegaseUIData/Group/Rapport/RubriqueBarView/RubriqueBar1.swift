@@ -43,10 +43,10 @@ class RubriqueBarViewModel: ObservableObject {
         guard let currentAccount else { return }
         self.currencyCode = currentAccount.currencyCode
 
-        let sort = [SortDescriptor(\EntityTransactions.dateOperation, order: .reverse)]
+        let sort = [SortDescriptor(\EntityTransaction.dateOperation, order: .reverse)]
         let lhs = currentAccount.uuid
 
-        let descriptor = FetchDescriptor<EntityTransactions>(
+        let descriptor = FetchDescriptor<EntityTransaction>(
             predicate: #Predicate { transaction in
                 transaction.account.uuid == lhs &&
                 transaction.dateOperation >= startDate &&
@@ -54,7 +54,7 @@ class RubriqueBarViewModel: ObservableObject {
             },
             sortBy: sort
         )
-        var listTransactions: [EntityTransactions] = []
+        var listTransactions: [EntityTransaction] = []
 
         do {
             listTransactions = try modelContext.fetch(descriptor)

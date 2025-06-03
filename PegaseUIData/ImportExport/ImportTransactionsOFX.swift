@@ -118,7 +118,7 @@ struct ImportTransactionOFXFileView: View {
             
             let account = CurrentAccountManager.shared.getAccount()!
             
-            let entityTransaction = EntityTransactions()
+            let entityTransaction = EntityTransaction()
             entityTransaction.dateOperation = date.noon
             entityTransaction.datePointage = date.noon
             entityTransaction.account = account

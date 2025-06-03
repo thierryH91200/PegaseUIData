@@ -177,7 +177,7 @@ struct ImportTransactionFileView: View {
             
             let amount = getDouble(from: row, index: columnMapping[String(localized:"Amount")])
             
-            let transaction = EntityTransactions()
+            let transaction = EntityTransaction()
             
             transaction.createAt  = Date().noon
             transaction.updatedAt = Date().noon
@@ -325,7 +325,7 @@ struct TableView: View {
             
             let account = CurrentAccountManager.shared.getAccount()!
             
-            let entityTransaction = EntityTransactions()
+            let entityTransaction = EntityTransaction()
             entityTransaction.dateOperation = date.noon
             entityTransaction.datePointage = date.noon
             entityTransaction.account = account

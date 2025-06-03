@@ -17,7 +17,7 @@ struct TransactionDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var dataManager : ListDataManager
     
-    private var transaction: EntityTransactions {
+    private var transaction: EntityTransaction {
         dataManager.listTransactions[currentSectionIndex]
     }
     

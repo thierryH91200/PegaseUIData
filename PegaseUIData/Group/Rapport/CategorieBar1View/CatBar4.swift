@@ -17,7 +17,7 @@ struct DGBarChart1Representable: NSViewRepresentable {
 //    let labels: [String]
 //    @Binding var chartViewRef: BarChartView?
     
-    @State var listTransactions : [EntityTransactions] = []
+    @State var listTransactions : [EntityTransaction] = []
     @State var firstDate: TimeInterval = 0.0
     @State var lastDate: TimeInterval = 0.0
     

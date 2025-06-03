@@ -158,7 +158,7 @@ final class SchedulerManager {
         
         let dateValeur = entitySchedule.dateValeur.noon
         
-        let entityTransaction = EntityTransactions()
+        let entityTransaction = EntityTransaction()
         
         entityTransaction.createAt       = Date().noon
         entityTransaction.updatedAt    = Date().noon
@@ -261,7 +261,7 @@ final class SchedulerManager {
     func createTransaction(for schedule: EntitySchedule, on dateValeur: Date) {
         schedule.nextOccurrence += 1
         
-        let transaction = EntityTransactions()
+        let transaction = EntityTransaction()
         
         transaction.createAt = Date()
         transaction.updatedAt = Date()
@@ -277,7 +277,7 @@ final class SchedulerManager {
         transaction.sousOperations.append( sousOperation )
         
         if let linkedAccount = schedule.linkedAccount {
-            let transferTransaction = EntityTransactions()
+            let transferTransaction = EntityTransaction()
             transferTransaction.createAt = transaction.createAt
             transferTransaction.updatedAt = transaction.updatedAt
             transferTransaction.dateOperation = transaction.dateOperation
