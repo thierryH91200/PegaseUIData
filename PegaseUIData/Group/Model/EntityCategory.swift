@@ -84,7 +84,7 @@ final class CategoryManager: ObservableObject {
 //            let results = try modelContext.fetch(descriptor)
 //            return results.firstMatchingAccount(account)
 //        } catch {
-//            print("Erreur durant la récupération SwiftData: \(error)")
+//            printTag("Erreur durant la récupération SwiftData: \(error)")
 //            return nil
 //        }
 //    }
@@ -149,7 +149,7 @@ struct SwiftDataHelper {
         do {
             return try modelContext.fetch(descriptor).first
         } catch {
-            print("Erreur lors du fetch SwiftData : \(error)")
+            printTag("Erreur lors du fetch SwiftData : \(error)")
             return nil
         }
     }
@@ -161,7 +161,7 @@ struct SwiftDataHelper {
         do {
             return try modelContext.fetch(descriptor)
         } catch {
-            print("Erreur lors du fetch SwiftData : \(error)")
+            printTag("Erreur lors du fetch SwiftData : \(error)")
             return []
         }
     }

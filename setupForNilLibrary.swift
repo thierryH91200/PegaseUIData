@@ -80,7 +80,7 @@ final class InitManager {
     var modelContext : ModelContext?
     var validContext : ModelContext {
         guard let context = modelContext else {
-            print("File: \(#file), Function: \(#function), line: \(#line)")
+            printTag("File: \(#file), Function: \(#function), line: \(#line)")
             fatalError("ModelContext non configuré. Veuillez appeler configure.")
         }
         return context
@@ -162,15 +162,15 @@ final class InitManager {
     
     func saveContext() {
         if let path = getSQLiteFilePath() {
-            print(path)
+            printTag(path)
         } else {
-            print("Erreur : chemin SQLite introuvable.")
+            printTag("Erreur : chemin SQLite introuvable.")
         }
         do {
             try validContext.save()
-            print("Sauvegarde réussie.")
+            printTag("Sauvegarde réussie.")
         } catch {
-            print("Erreur : \(error.localizedDescription)")
+            printTag("Erreur : \(error.localizedDescription)")
         }
     }
 }

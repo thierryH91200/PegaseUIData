@@ -39,6 +39,7 @@ struct OperationDialogView: View {
                 accountName: currentAccountManager.currentAccount?.name,
                 transactionCount: transactionManager.selectedTransactions.count
             )
+            Divider()
             
             // Formulaire principal
             if transactionManager.selectedTransactions.count > 1 {
@@ -93,7 +94,7 @@ struct OperationDialogView: View {
                     }
 
                 } catch {
-                    print("Failed to configure: \(error)")
+                    printTag("Failed to configure: \(error)")
                 }
             }
             setStatut = Set(transactionManager.selectedTransactions.map { $0.status! })
@@ -217,9 +218,9 @@ struct OperationDialogView: View {
         do {
             try save()
             let count = transactionManager.selectedTransactions.count
-            print("✅ \(count) Transaction(s) sauvegardées")
+            printTag("✅ \(count) Transaction(s) sauvegardées")
         } catch {
-            print("❌ Erreur lors de l'enregistrement : \(error)")
+            printTag("❌ Erreur lors de l'enregistrement : \(error)")
         }
 
         dataManager.loadTransactions()
@@ -228,7 +229,7 @@ struct OperationDialogView: View {
     
     func contextSaveEdition() {
         guard let account = CurrentAccountManager.shared.getAccount() else {
-            print("Erreur : Impossible de récupérer le compte")
+            printTag("Erreur : Impossible de récupérer le compte")
             return
         }
         
@@ -295,7 +296,7 @@ struct OperationDialogView: View {
         let startTime = CFAbsoluteTimeGetCurrent()
         operation()
         let timeElapsed = CFAbsoluteTimeGetCurrent() - startTime
-        print("Time elapsed for \(title): \(timeElapsed) s.")
+        printTag("Time elapsed for \(title): \(timeElapsed) s.")
     }
 }
 

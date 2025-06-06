@@ -57,11 +57,14 @@ class ColorManager: ObservableObject {
             return .black
         }
     }
-
-    func printColors() {
-        print("ColorManager : ", colorChoix)
-    }
 }
+
+enum FormMode {
+    case create
+    case editSingle(EntityTransaction)
+    case editMultiple([EntityTransaction])
+}
+
 
 class TransactionSelectionManager: ObservableObject , Identifiable {
     @Published var selectedTransaction: EntityTransaction?
@@ -69,11 +72,6 @@ class TransactionSelectionManager: ObservableObject , Identifiable {
     @Published var isCreationMode: Bool = true
     @Published var lastSelectedTransactionID: UUID?
     
-    enum FormMode {
-        case create
-        case editSingle(EntityTransaction)
-        case editMultiple([EntityTransaction])
-    }
 
     var formMode: FormMode {
         switch selectedTransactions.count {
@@ -180,7 +178,7 @@ struct ContentView100: View {
         .toolbar {
             ToolbarItemGroup(placement: .navigation) {
                 Button(action: {
-                    print("Nouvel élément ajouté")
+                    printTag("Nouvel élément ajouté")
                 }) {
                     Label("Add", systemImage: "plus")
                 }
@@ -207,7 +205,7 @@ struct ContentView100: View {
                 }
                 
                 Button(action: {
-                    print("Paramètres ouverts")
+                    printTag("Paramètres ouverts")
                 }) {
                     Label("Settings", systemImage: "gear")
                 }
@@ -284,7 +282,7 @@ struct ContentView100: View {
 
 private func changeSearchFieldItem(_ itemType: String) {
     // Ajoutez ici la logique pour gérer la sélection du champ de recherche
-    print("Champ de recherche sélectionné : \(itemType)")
+    printTag("Champ de recherche sélectionné : \(itemType)")
 }
 
 private func setAppearance(_ appearance: NSAppearance.Name) {

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Bank statement</key>
+	<string>Bank statement</string>
+	<key>Bank website</key>
+	<string>Bank website</string>
+	<key>Cash flow curve</key>
+	<string>Cash flow curve</string>
+	<key>Category Bar1</key>
+	<string>Category Bar1</string>
+	<key>Category Bar2</key>
+	<string>Category Bar2</string>
+	<key>Identity</key>
+	<string>Identity</string>
+	<key>Internet rapprochement</key>
+	<string>Internet rapprochement</string>
+	<key>List of Transactions</key>
+	<string>List of Transactions</string>
+	<key>List of transactions</key>
+	<string>List of transactions</string>
+	<key>Notes</key>
+	<string>Notes</string>
+	<key>Payment method</key>
+	<string>Payment method</string>
+	<key>Recipe / Expense Bar</key>
+	<string>Recipe / Expense Bar</string>
+	<key>Recipe / Expense Pie</key>
+	<string>Recipe / Expense Pie</string>
+	<key>Rubric Bar</key>
+	<string>Rubric Bar</string>
+	<key>Rubric Pie</key>
+	<string>Rubric Pie</string>
+	<key>Scheduler</key>
+	<string>Scheduler</string>
+	<key>Settings</key>
+	<string>Settings</string>
+</dict>
+</plist>

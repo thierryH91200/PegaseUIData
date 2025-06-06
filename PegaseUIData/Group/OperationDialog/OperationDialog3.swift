@@ -4,6 +4,12 @@
 //  Created by Thierry hentic on 22/02/2025.
 //
 
+//✅ Résultat
+//    •    🔶 Mode Création → titre orange
+//    •    🔵 Édition d’une transaction → bleu
+//    •    🟣 Édition multiple → violet
+
+
 
 import SwiftUI
 import AppKit
@@ -51,12 +57,6 @@ struct TransactionFormViewModel: View {
         CurrentAccountManager.shared.getAccount()
     }
     
-    enum FormMode {
-        case create
-        case editSingle(EntityTransaction)
-        case editMultiple([EntityTransaction])
-    }
-
     private var integerFormatter: NumberFormatter {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
@@ -67,116 +67,153 @@ struct TransactionFormViewModel: View {
         selectedOperations.count > 0
     }
     
-    var body: some View {
-        Form {
-            switch transactionManager.formMode {
-            case .create:
-                Text("Création")
-            case .editSingle:
-                Text("Édition d'une transaction")
-            case .editMultiple(let ops):
-                Text("Édition de \(ops.count) transactions")
-            }
-
-            FormField(label: String(localized: "Linked Account")) {
-                Picker("", selection: $selectedAccount) {
-                    ForEach(linkedAccount, id: \.uuid) { account in
-                        if let currentAccount = compteCurrent, account == currentAccount {
-                            Text(String(localized: "(no transfer)")).tag(account )
-                        } else {
-                            Text(account.initAccount?.codeAccount ?? "").tag(account)
+    private var modeBanner: some View {
+        switch transactionManager.formMode {
+        case .create:
+            return Text("Creation")
+        case .editSingle:
+            return Text("Edit a transaction")
+        case .editMultiple(let ops):
+            return Text("Edit to \(ops.count) transactions")
+        }
+    }
+    private var identitySection: some View {
+        Grid(alignment: .leading, horizontalSpacing: 20, verticalSpacing: 12) {
+            GridRow {
+                FormField(label: "Linked Account") {
+                    Picker("", selection: $selectedAccount) {
+                        ForEach(linkedAccount, id: \.uuid) { account in
+                            let isCurrent = compteCurrent == account
+                            Text(isCurrent ? String(localized: "(no transfer)") :
+                                             (account.initAccount?.codeAccount ?? ""))
+                                .tag(account)
                         }
                     }
                 }
             }
-            
-            FormField(label: String(localized: "Comment")) {
-                Text( selectedAccount?.name ?? "")
+            GridRow {
+                FormField(label: "Account") {
+                    Text(selectedAccount?.name ?? "")
+                }
             }
-            
-            FormField(label: String(localized: "Name")) {
-                Text( selectedAccount?.identity?.name ?? "")
+            GridRow {
+                FormField(label: "Name") {
+                    Text(selectedAccount?.identity?.name ?? "")
+                }
             }
-            
-            FormField(label: String(localized: "Surname")) {
-                Text( selectedAccount?.identity?.surName ?? "")
+            GridRow {
+                FormField(label: "Surname") {
+                    Text(selectedAccount?.identity?.surName ?? "")
+                }
             }
-            
-            Divider()
-            
-            FormField(label: String(localized: "Transaction Date")) {
+        }
+    }
+    private var detailSection: some View {
+        Group {
+            FormField(label: "Transaction Date") {
                 DatePicker("", selection: $transactionDate, displayedComponents: .date)
             }
-            
-            FormField(label: String(localized: "Payment method")) {
+
+            FormField(label: "Payment method") {
                 Picker("", selection: $selectedMode) {
                     ForEach(modes, id: \.uuid) { mode in
                         Text(mode.name).tag(mode)
                     }
                 }
             }
-            
-            FormField(label: String(localized:"Check")) {
+
+            FormField(label: "Check") {
                 TextField("", value: $checkNumber, formatter: integerFormatter)
             }
-            
-            FormField(label: String(localized: "Date of pointing")) {
+
+            FormField(label: "Date of pointing") {
                 DatePicker("", selection: $pointingDate, displayedComponents: .date)
             }
-            
-            FormField(label: String(localized: "Status")) {
+
+            FormField(label: "Status") {
                 Picker("", selection: $selectedStatus) {
                     ForEach(status, id: \.self) { index in
                         Text(index.name).tag(index)
                     }
                 }
             }
-            
-            FormField(label: String(localized:"Bank Statement")) {
+
+            FormField(label: "Bank Statement") {
                 TextField("", value: $bankStatement, formatter: integerFormatter)
             }
-            
-            FormField(label: String(localized:"Amount")) {
+
+            FormField(label: "Amount") {
                 TextField("", value: $amount, formatter: NumberFormatter())
             }
         }
-        .onAppear {
-            DataContext.shared.context = modelContext
-            let account = CurrentAccountManager.shared.getAccount()
-            entityPreference = PreferenceManager.shared.getAllData(for: account)
+    }
+    
+    var body: some View {
+        FormTitleView(formMode: transactionManager.formMode)
+
+        Form {
+            modeBanner
+            Section {
+                Section(header:
+                    Text("Informations")
+                        .font(.headline)
+                        .foregroundColor(.accentColor)
+                ) {
+                    identitySection
+                }
+
+                Section(header:
+                    Text("Details of the operation")
+                        .font(.headline)
+                        .foregroundColor(.accentColor)
+                ) {
+                    detailSection
+                }
+            }
+            .onAppear {
+                DataContext.shared.context = modelContext
+                let account = CurrentAccountManager.shared.getAccount()
+                entityPreference = PreferenceManager.shared.getAllData(for: account)
+                
+                //            if selectedAccount == nil, let firstAccount = linkedAccount.first {
+                //                selectedAccount = firstAccount // Initialisation avec un compte valide
+                //            }
+                
+                if selectedAccount == nil {
+                    selectedAccount = linkedAccount.first ?? compteCurrent
+                }
+                
+                DispatchQueue.main.async {
+                    selectedMode = modes.first
+                    selectedMode = entityPreference?.paymentMode
+                    selectedStatus = entityPreference?.status
+                    selectedBankStatement = ""
+                }
+            }
+            .onChange(of: selectedAccount) { old, newValue in
+                printTag("Selected Account: \(newValue?.name ?? "nil")")
+            }
+            .onChange(of: selectedMode) { old, newValue in
+                printTag("Selected Mode: \(newValue?.name ?? "nil")")
+            }
+            .onChange(of: selectedStatus) { old, newValue in
+                printTag("Selected Status: \(newValue?.name ?? "nil")")
+            }
+            .onChange(of: compteCurrent) {old, new in
+                selectedAccount = compteCurrent
+            }
             
-            if selectedAccount == nil, let firstAccount = linkedAccount.first {
-                selectedAccount = firstAccount // Initialisation avec un compte valide
+            .onChange(of: linkedAccount) { old, newValue in
+                if !newValue.contains( selectedAccount! ) {
+                    selectedAccount = newValue.first
+                }
             }
-            DispatchQueue.main.async {
-                selectedMode = modes.first
-                selectedMode = entityPreference?.paymentMode
-                selectedStatus = entityPreference?.status
-                selectedBankStatement = ""
+            .onChange(of: selectedAccount) { oldValue, newValue in
+                printTag("Compte sélectionné mis à jour : \(newValue?.name ?? "nil")")
             }
-        }
-        .onChange(of: selectedAccount) { old, newValue in
-            print("Selected Account: \(newValue?.name ?? "nil")")
-        }
-        .onChange(of: selectedMode) { old, newValue in
-            print("Selected Mode: \(newValue?.name ?? "nil")")
-        }
-        .onChange(of: selectedStatus) { old, newValue in
-            print("Selected Status: \(newValue?.name ?? "nil")")
-        }
-        .onChange(of: compteCurrent) {old, new in
-            selectedAccount = compteCurrent
-        }
-        
-        .onChange(of: linkedAccount) { old, newValue in
-            if !newValue.contains( selectedAccount! ) {
-                selectedAccount = newValue.first
-            }
-        }
-        .onChange(of: selectedAccount) { oldValue, newValue in
-            print("Compte sélectionné mis à jour : \(newValue?.name ?? "nil")")
         }
     }
+    
     
     func load(from operation: EntityTransaction) {
         transactionDate = operation.dateOperation
@@ -190,6 +227,7 @@ struct TransactionFormViewModel: View {
     }
 }
 
+
 struct FormField<Content: View>: View {
     let label: String
     let content: Content
@@ -200,14 +238,50 @@ struct FormField<Content: View>: View {
     }
     
     var body: some View {
-        HStack {
+        HStack(alignment: .firstTextBaseline) {
             Text(label)
-            Spacer()
+                .frame(width: 120, alignment: .leading)
             content
-                .frame(width: 200, alignment: .leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }
 
+struct FormTitleView: View {
+    let formMode: FormMode
 
+    var body: some View {
+        HStack {
+            Text(title)
+                .font(.headline)
+                .foregroundColor(.white)
+            Spacer()
+        }
+        .padding(8)
+        .background(backgroundColor)
+        .cornerRadius(8)
+    }
+
+    private var title: String {
+        switch formMode {
+        case .create:
+            return String(localized:"Mode Creation")
+        case .editSingle:
+            return String(localized:"Mode Edit")
+        case .editMultiple(let ops):
+            return String(localized:"Edition multiple (\(ops.count)) transactions")
+        }
+    }
+
+    private var backgroundColor: Color {
+        switch formMode {
+        case .create:
+            return .orange
+        case .editSingle:
+            return .blue
+        case .editMultiple:
+            return .purple
+        }
+    }
+}
 

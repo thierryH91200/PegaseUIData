@@ -103,7 +103,7 @@ final class PaymentModeManager : PaymentModeManaging {
         do {
             try save()
         } catch {
-            print("Failed to save updates: \(error.localizedDescription)")
+            printTag("Failed to save updates: \(error.localizedDescription)")
         }
     }
 
@@ -126,7 +126,7 @@ final class PaymentModeManager : PaymentModeManaging {
             let fetchedData = try modelContext?.fetch(fetchDescriptor) ?? []
             return fetchedData
         } catch {
-            print("Error fetching data with SwiftData: \(error)")
+            printTag("Error fetching data with SwiftData: \(error)")
             return []
         }
     }
@@ -171,7 +171,7 @@ final class PaymentModeManager : PaymentModeManaging {
             let result = searchResults.isEmpty == false ? searchResults.first : nil
             return result
         } catch {
-            print("Error with request: \(error)")
+            printTag("Error with request: \(error)")
             return nil
         }
     }
@@ -187,7 +187,7 @@ final class PaymentModeManager : PaymentModeManaging {
         do {
             try modelContext?.save()
         } catch {
-            print("Erreur lors de la sauvegarde après suppression : \(error)")
+            printTag("Erreur lors de la sauvegarde après suppression : \(error)")
         }
     }
 
@@ -232,7 +232,7 @@ final class PaymentModeManager : PaymentModeManaging {
         do {
             entities = try modelContext?.fetch(fetchDescriptor) ?? []
         } catch {
-            print("Erreur lors de la récupération des modes de paiement : \(error.localizedDescription)")
+            printTag("Erreur lors de la récupération des modes de paiement : \(error.localizedDescription)")
         }
     }
     
@@ -276,13 +276,13 @@ class PaymentModeViewModel: ObservableObject {
             reloadData()
         } catch EnumError.accountNotFound {
             // Gérer l'erreur account non trouvé
-            print("Erreur : compte non trouvé")
+            printTag("Erreur : compte non trouvé")
         } catch EnumError.saveFailed {
             // Gérer l'erreur de sauvegarde
-            print("Erreur : échec de la sauvegarde")
+            printTag("Erreur : échec de la sauvegarde")
         } catch {
             // Gérer les autres erreurs
-            print("Erreur inattendue : \(error)")
+            printTag("Erreur inattendue : \(error)")
         }
     }
 

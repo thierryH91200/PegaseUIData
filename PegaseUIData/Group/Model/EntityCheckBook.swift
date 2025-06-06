@@ -99,7 +99,7 @@ final class ChequeBookManager : ObservableObject {
     func getAllData() -> [EntityCheckBook]? {
         
         guard let account = CurrentAccountManager.shared.getAccount() else {
-            print("Erreur : aucun compte courant trouvé.")
+            printTag("Erreur : aucun compte courant trouvé.")
             return nil
         }
 
@@ -114,7 +114,7 @@ final class ChequeBookManager : ObservableObject {
         do {
             entities = try modelContext?.fetch(descriptor) ??   []
         } catch {
-            print("Error fetching data from SwiftData: \(error)")
+            printTag("Error fetching data from SwiftData: \(error)")
             return nil
         }
         return entities
@@ -153,7 +153,7 @@ final class ChequeBookManager : ObservableObject {
             try modelContext?.save()
             entities.append(entityCarnetCheques)
         } catch {
-            print("Error saving default Carnet Cheques: \(error)")
+            printTag("Error saving default Carnet Cheques: \(error)")
         }
     }
     
@@ -161,7 +161,7 @@ final class ChequeBookManager : ObservableObject {
         do {
             try modelContext?.save()
         } catch {
-            print(" lors de la sauvegarde de l'entité : \(error)")
+            printTag(" lors de la sauvegarde de l'entité : \(error)")
         }
     }
 }

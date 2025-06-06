@@ -67,7 +67,6 @@ struct ListTransactionsView100: View {
         for transaction in transactions {
             modelContext.delete(transaction)
         }
-
         try? modelContext.save()
     }
     
@@ -76,6 +75,7 @@ struct ListTransactionsView100: View {
         try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 seconde de délai
         isVisible = true
     }
+    
     @MainActor
     func loadDemoData() {
         let demoTransactions: [(String, Double, Int)] = [
@@ -126,7 +126,7 @@ struct ListTransactions200: View {
         }
         
         .onReceive(NotificationCenter.default.publisher(for: .transactionsImported)) { _ in
-            print("[PegaseUIData] transactionsImported notification received")
+            printTag("transactionsImported notification received")
             
             loadTransactions()
             withAnimation {
@@ -135,7 +135,7 @@ struct ListTransactions200: View {
         }
         
         .onChange(of: currentAccountManager.currentAccount) { old, new in
-            print("[PegaseUIData] Changement de compte détecté: \(String(describing: new))")
+            printTag("Changement de compte détecté: \(String(describing: new))")
             loadTransactions()
             
             withAnimation {
@@ -144,7 +144,7 @@ struct ListTransactions200: View {
         }
         
         .onChange(of: selectedTransactions) { _, _ in
-            print("[PegaseUIData] selectionDidChange called")
+            printTag("selectionDidChange called")
             selectionDidChange()
         }
         

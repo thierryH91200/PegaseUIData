@@ -16,7 +16,7 @@ class ColorTransformer: ValueTransformer {
             let data = try NSKeyedArchiver.archivedData(withRootObject: color, requiringSecureCoding: true)
             return data
         } catch {
-            print(error.localizedDescription)
+            printTag(error.localizedDescription)
             return nil
         }
     }
@@ -27,7 +27,7 @@ class ColorTransformer: ValueTransformer {
             let color = try NSKeyedUnarchiver.unarchivedObject(ofClass: NSColor.self, from: data)
             return color
         } catch {
-            print(error.localizedDescription)
+            printTag(error.localizedDescription)
             return nil
         }
     }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Credit card1</key>
+	<string>Carta di Credito1</string>
+	<key>Credit card2</key>
+	<string>Carta di Credito2</string>
+	<key>Current account1</key>
+	<string>Conto Corrente1</string>
+	<key>Current account2</key>
+	<string>Conto Corrente2</string>
+	<key>Current account3</key>
+	<string>Conto Corrente3</string>
+	<key>Save</key>
+	<string>Risparmio</string>
+</dict>
+</plist>

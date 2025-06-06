@@ -30,7 +30,7 @@ struct CSVEXportTransactionView: View {
             case .success(let url):
                 exportTransactions(to: url)
             case .failure(let error):
-                print("Erreur d'exportation : \(error.localizedDescription)")
+                printTag("Erreur d'exportation : \(error.localizedDescription)")
             }
             dismiss()
         }
@@ -82,9 +82,9 @@ func exportTransactions(to url: URL) {
     
     do {
         try csvContent.write(to: url, atomically: true, encoding: .utf8)
-        print("✅ Export réussi vers \(url.path)")
+        printTag("✅ Export réussi vers \(url.path)")
     } catch {
-        print("❌ Erreur lors de l'export : \(error.localizedDescription)")
+        printTag("❌ Erreur lors de l'export : \(error.localizedDescription)")
     }
 }
 

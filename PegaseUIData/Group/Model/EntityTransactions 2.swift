@@ -64,7 +64,7 @@ final class ListTransactionsManager: ListManaging {
             // Retourner le premier résultat, s'il existe
             return results.first
         } catch {
-            print("Erreur lors de la récupération des données avec SwiftData : \(error)")
+            printTag("Erreur lors de la récupération des données avec SwiftData : \(error)")
             return nil
         }
     }
@@ -132,7 +132,7 @@ final class ListTransactionsManager: ListManaging {
             // Récupération des entités depuis le contexte
             entities = try modelContext?.fetch(fetchDescriptor) ?? []
         } catch {
-            print("Erreur lors de la récupération des données avec SwiftData : \(error)")
+            printTag("Erreur lors de la récupération des données avec SwiftData : \(error)")
             return []
         }
 
@@ -147,7 +147,7 @@ final class ListTransactionsManager: ListManaging {
     @MainActor
     func remove(entity: EntityTransaction) {
         guard let container = modelContext?.container else {
-            print("Container invalide.")
+            printTag("Container invalide.")
             return
         }
         
@@ -169,10 +169,10 @@ final class ListTransactionsManager: ListManaging {
                     
                 }
 
-                print("✅ L'entité a été supprimée avec succès.")
+                printTag("✅ L'entité a été supprimée avec succès.")
             }
         } catch {
-            print("❗ Erreur lors de la suppression: \(error)")
+            printTag("❗ Erreur lors de la suppression: \(error)")
         }
     }
     

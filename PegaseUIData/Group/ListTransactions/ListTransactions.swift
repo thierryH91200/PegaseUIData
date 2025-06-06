@@ -22,14 +22,14 @@ final class ListDataManager: ObservableObject {
     // Sauvegarde les modifications dans SwiftData
     func saveChanges() {
         guard let modelContext = modelContext else {
-            print("Le contexte de modèle n'est pas initialisé.")
+            printTag("Le contexte de modèle n'est pas initialisé.")
             return
         }
         
         do {
             try modelContext.save()
         } catch {
-            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+            printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
     }
     

@@ -59,7 +59,7 @@ class RubriqueBarViewModel: ObservableObject {
         do {
             listTransactions = try modelContext.fetch(descriptor)
         } catch {
-            print("Error fetching data from CoreData")
+            printTag("Error fetching data from CoreData")
         }
         
 //        delegate?.updateListeTransactions( listTransactions)

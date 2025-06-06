@@ -90,10 +90,10 @@ struct OperationRow: View {
             Button {
                 showFileImporter = true
             } label: {
-                Label("Import CSV", systemImage: "tray.and.arrow.down")
+                Label("Import a CSV file", systemImage: "tray.and.arrow.down")
             }
             Button {
-                print("[PegaseUIData] Exporter les transactions")
+                printTag("Exporter les transactions")
             } label: {
                 Label("Export", systemImage: "tray.and.arrow.up")
             }
@@ -118,7 +118,7 @@ struct OperationRow: View {
                     csvData = data
                 }
             case .failure(let error):
-                print("Erreur de sélection de fichier : \(error.localizedDescription)")
+                printTag("Erreur de sélection de fichier : \(error.localizedDescription)")
             }
         }
         if !csvData.isEmpty {
@@ -199,7 +199,7 @@ struct OperationRow: View {
     func readCSV(from url: URL) -> [[String]]? {
         
         guard url.startAccessingSecurityScopedResource() else {
-            print("⚠️ Impossible d'accéder au fichier (Security Scoped)")
+            printTag("⚠️ Impossible d'accéder au fichier (Security Scoped)")
             return nil
         }
         
@@ -215,7 +215,7 @@ struct OperationRow: View {
             let parsedData = rows.map { $0.components(separatedBy: String(separator)) }
             return parsedData
         } catch {
-            print("Erreur lors de la lecture du fichier CSV : \(error.localizedDescription)")
+            printTag("Erreur lors de la lecture du fichier CSV : \(error.localizedDescription)")
             return nil
         }
     }
@@ -224,7 +224,7 @@ struct OperationRow: View {
         guard !csvData.isEmpty else { return }
         
         let count = csvData.count
-        print("Importation de \(count) transactions CSV.")
+        printTag("Importation de \(count) transactions CSV.")
         
         let account = CurrentAccountManager.shared.getAccount()!
         DataContext.shared.context = modelContext
@@ -279,9 +279,9 @@ struct OperationRow: View {
         
         do {
             try context.save()
-            print("Importation réussie 🎉")
+            printTag("Importation réussie 🎉")
         } catch {
-            print("Erreur lors de l'enregistrement : \(error)")
+            printTag("Erreur lors de l'enregistrement : \(error)")
         }
     }
 

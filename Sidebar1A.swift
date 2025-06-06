@@ -201,7 +201,7 @@ struct Bouton: View {
     var body: some View {
         HStack {
             Button(action: {
-                print("Button minus pressed")
+                printTag("Button minus pressed")
             }) {
                 Image(systemName: "minus.circle")
                     .font(.system(size: 16))
@@ -216,7 +216,7 @@ struct Bouton: View {
             }
             Spacer()
             Button(action: {
-                print("UUID")
+                printTag("UUID")
             }) {
                 Image(systemName: "lock")
                     .font(.system(size: 16))

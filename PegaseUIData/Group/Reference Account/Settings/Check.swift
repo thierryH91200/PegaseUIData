@@ -29,20 +29,20 @@ final class CheckDataManager: ObservableObject {
     // Sauvegarde les modifications dans SwiftData
     func saveChanges() {
         guard let modelContext = modelContext else {
-            print("Le contexte de modèle n'est pas initialisé.")
+            printTag("Le contexte de modèle n'est pas initialisé.")
             return
         }
         
         do {
             try modelContext.save()
         } catch {
-            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+            printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
     }
     // Ajoute un nouveau carnet de chèques
     func addCheckBook(name: String, nbCheques: Int, numPremier: Int, numSuivant: Int, prefix: String, account: EntityAccount?) {
         guard let modelContext = modelContext else {
-            print("Le contexte de modèle n'est pas initialisé.")
+            printTag("Le contexte de modèle n'est pas initialisé.")
             return
         }
         
@@ -68,7 +68,7 @@ final class CheckDataManager: ObservableObject {
     // Supprime un carnet de chèques
     func deleteCheckBook(_ checkBook: EntityCheckBook) {
         guard let modelContext = modelContext else {
-            print("Le contexte de modèle n'est pas initialisé.")
+            printTag("Le contexte de modèle n'est pas initialisé.")
             return
         }
         

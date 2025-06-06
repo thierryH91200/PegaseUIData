@@ -29,7 +29,7 @@ final class SchedulerDataManager: ObservableObject {
         do {
             try modelContext?.save()
         } catch {
-            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+            printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
     }
     

@@ -92,14 +92,14 @@ final class StatusManager: StatusManaging {
             let result = searchResults.isEmpty == false ? searchResults.first : nil
             return result
         } catch {
-            print("Error with request: \(error)")
+            printTag("Error with request: \(error)")
             return nil
         }
     }
 
     func getAllData(for account: EntityAccount?) -> [EntityStatus]? {
         guard let account = account else {
-            print("Erreur : Account est nil")
+            printTag("Erreur : Account est nil")
             return nil
         }
 
@@ -114,7 +114,7 @@ final class StatusManager: StatusManaging {
         do {
             entityStatus = try modelContext?.fetch(fetchDescriptor) ?? []
         } catch {
-            print("Erreur lors de la récupération des données : \(error.localizedDescription)")
+            printTag("Erreur lors de la récupération des données : \(error.localizedDescription)")
         }
         return entityStatus
     }
@@ -130,16 +130,16 @@ final class StatusManager: StatusManaging {
 
     func saveContext() {
         if let path = getSQLiteFilePath() {
-            print("Base de données SQLite : \(path)")
+            printTag("Base de données SQLite : \(path)")
         } else {
-            print("Erreur : Impossible de récupérer le chemin SQLite")
+            printTag("Erreur : Impossible de récupérer le chemin SQLite")
         }
         
         do {
             try modelContext?.save()
-            print("Sauvegarde réussie.")
+            printTag("Sauvegarde réussie.")
         } catch {
-            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+            printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
     }
     
@@ -175,7 +175,7 @@ final class StatusManager: StatusManaging {
         do {
             entityStatus = try modelContext?.fetch(fetchDescriptor) ?? []
         } catch {
-            print("Erreur lors de la récupération des status : \(error.localizedDescription)")
+            printTag("Erreur lors de la récupération des status : \(error.localizedDescription)")
         }
     }
 }

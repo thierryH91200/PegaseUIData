@@ -8,6 +8,8 @@
 import SwiftUI
 import SwiftData
 import UniformTypeIdentifiers
+import PDFKit
+
 
 
 final class StatementDataManager: ObservableObject {
@@ -29,7 +31,7 @@ final class StatementDataManager: ObservableObject {
         do {
             try modelContext?.save()
         } catch {
-            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+            printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
     }
 }
@@ -104,7 +106,7 @@ struct BankStatementListView: View {
                         selectedStatement = nil // Désactive l’édition automatique
                         selectedItem = nil
                         
-                        print("Aucun élément sélectionné dans CheckView/onChange")
+                        printTag("Aucun élément sélectionné dans CheckView/onChange")
                     }
                 }
             
@@ -315,7 +317,7 @@ struct StatementFormView: View {
                             .fill(dragOver ? Color.red.opacity(0.3) : Color.gray.opacity(0.2))
                             .frame(height: 100)
                         
-                        Text($viewModel.pdfData != nil ? "Selected PDF" : "Drop your PDF here")
+                        Text(viewModel.pdfData != nil ? "Selected PDF" : "Drop your PDF here")
                     }
                     .onDrop(of: [UTType.pdf], delegate: PDFDropDelegate(pdfData: $viewModel.pdfData, isDragOver: $dragOver))
                 }
@@ -394,13 +396,18 @@ struct PDFDropDelegate: DropDelegate {
                         self.pdfData = data
                     }
                 } catch {
-                    print("Erreur lors du chargement du PDF: \(error)")
+                    printTag("Erreur lors du chargement du PDF: \(error)")
                 }
             }
         }
         
         return true
     }
+}
+
+func printTag( _ message: String) {
+    let tag = "[PegaseUIData]"
+    print("\(tag) \(message)")
 }
 
 struct StatementDetailView: View {
@@ -419,7 +426,6 @@ struct StatementDetailView: View {
 }
 
 // PDFKit wrapper for SwiftUI
-import PDFKit
 
 struct PDFKitView: NSViewRepresentable {
     let data: Data

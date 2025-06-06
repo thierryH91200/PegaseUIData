@@ -24,7 +24,7 @@ struct CSVExportButton: View {
         .fileExporter(isPresented: $isPresented,
                       document: viewModel,
                       contentType: UTType.commaSeparatedText) { result in
-            print("result \(result)")
+            printTag("result \(result)")
         }
     }
 }

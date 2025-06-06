@@ -57,7 +57,7 @@ final class InitAccountManager {
     func getAllData() -> EntityInitAccount? {
         
         guard let account = CurrentAccountManager.shared.getAccount() else {
-            print("Erreur : aucun compte courant trouvé.")
+            printTag("Erreur : aucun compte courant trouvé.")
             return nil
         }
 
@@ -72,7 +72,7 @@ final class InitAccountManager {
         do {
             initAccounts = try modelContext?.fetch(descriptor) ?? []
         } catch {
-            print("Erreur lors de la récupération des données")
+            printTag("Erreur lors de la récupération des données")
         }
         
         if let firstEntity = initAccounts.first {
@@ -81,7 +81,7 @@ final class InitAccountManager {
             do {
                 return try create(numAccount: "", for: account)
             } catch {
-                print("Erreur lors de la création d'une entité : \(error)")
+                printTag("Erreur lors de la création d'une entité : \(error)")
                 fatalError("Impossible de créer une entité, vérifiez la logique de gestion des erreurs.")
             }
         }
@@ -149,13 +149,13 @@ class InitAccountViewModel: ObservableObject {
             reloadData()
         } catch EnumError.accountNotFound {
             // Gérer l'erreur account non trouvé
-            print("Erreur : compte non trouvé")
+            printTag("Erreur : compte non trouvé")
         } catch EnumError.saveFailed {
             // Gérer l'erreur de sauvegarde
-            print("Erreur : échec de la sauvegarde")
+            printTag("Erreur : échec de la sauvegarde")
         } catch {
             // Gérer les autres erreurs
-            print("Erreur inattendue : \(error)")
+            printTag("Erreur inattendue : \(error)")
         }
     }
 

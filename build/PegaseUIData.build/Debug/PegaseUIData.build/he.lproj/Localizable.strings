@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key></key>
+	<string></string>
+	<key>%.2f €</key>
+	<string></string>
+	<key>%@</key>
+	<string></string>
+	<key>%@ €</key>
+	<string></string>
+	<key>%lld</key>
+	<string></string>
+	<key>%lld Account</key>
+	<string></string>
+	<key>(no transfer)</key>
+	<string></string>
+	<key>Account</key>
+	<string></string>
+	<key>Account: %@</key>
+	<string></string>
+	<key>Add</key>
+	<string></string>
+	<key>Add Account</key>
+	<string></string>
+	<key>Add CheckBook</key>
+	<string></string>
+	<key>Add Group Account</key>
+	<string></string>
+	<key>Add Payment Mode</key>
+	<string></string>
+	<key>Add Sub-operation</key>
+	<string></string>
+	<key>Add the category</key>
+	<string></string>
+	<key>Add the rubric</key>
+	<string></string>
+	<key>Address</key>
+	<string></string>
+	<key>All</key>
+	<string></string>
+	<key>Alpha value:</key>
+	<string></string>
+	<key>Amount</key>
+	<string></string>
+	<key>Amount :</key>
+	<string></string>
+	<key>Amount field</key>
+	<string></string>
+	<key>Appearance</key>
+	<string></string>
+	<key>BIC</key>
+	<string></string>
+	<key>Background color:</key>
+	<string></string>
+	<key>Bank</key>
+	<string></string>
+	<key>Bank Account</key>
+	<string></string>
+	<key>Bank Card</key>
+	<string></string>
+	<key>Bank Statement</key>
+	<string></string>
+	<key>Bank Statement :</key>
+	<string></string>
+	<key>Bank references</key>
+	<string></string>
+	<key>Bank withdrawal</key>
+	<string></string>
+	<key>BankWebsiteView</key>
+	<string></string>
+	<key>Bank_Card</key>
+	<string></string>
+	<key>CB Balance</key>
+	<string></string>
+	<key>CB Date</key>
+	<string></string>
+	<key>CP</key>
+	<string></string>
+	<key>CSV Preview</key>
+	<string></string>
+	<key>Cancel</key>
+	<string></string>
+	<key>Cancel operation</key>
+	<string></string>
+	<key>Cancel sub-operation</key>
+	<string></string>
+	<key>Cash</key>
+	<string></string>
+	<key>Cash withdrawal</key>
+	<string></string>
+	<key>CategorieBar1View1</key>
+	<string></string>
+	<key>CategorieBar2View2</key>
+	<string></string>
+	<key>Category</key>
+	<string></string>
+	<key>Category :</key>
+	<string></string>
+	<key>Category selection</key>
+	<string></string>
+	<key>Check</key>
+	<string></string>
+	<key>Check Number</key>
+	<string></string>
+	<key>Choose a category within the selected rubric</key>
+	<string></string>
+	<key>Choose a rubric for categorizing this sub-operation</key>
+	<string></string>
+	<key>Choose the color</key>
+	<string></string>
+	<key>Close</key>
+	<string></string>
+	<key>Color</key>
+	<string></string>
+	<key>Comment</key>
+	<string></string>
+	<key>Comment :</key>
+	<string></string>
+	<key>Comment field</key>
+	<string></string>
+	<key>Complement</key>
+	<string></string>
+	<key>Compte</key>
+	<string></string>
+	<key>Content</key>
+	<string></string>
+	<key>Content pour Sidebar 2 %@</key>
+	<string></string>
+	<key>Country</key>
+	<string></string>
+	<key>Create new operation screen</key>
+	<string></string>
+	<key>Creation Mode</key>
+	<string></string>
+	<key>Current Account: %@</key>
+	<string></string>
+	<key>Current account1</key>
+	<string></string>
+	<key>Current account2</key>
+	<string></string>
+	<key>Current account3</key>
+	<string></string>
+	<key>Dark</key>
+	<string></string>
+	<key>Date CB</key>
+	<string></string>
+	<key>Date of pointing</key>
+	<string></string>
+	<key>Date of pointing :</key>
+	<string></string>
+	<key>Date operation</key>
+	<string></string>
+	<key>Date operation :</key>
+	<string></string>
+	<key>Decrease</key>
+	<string></string>
+	<key>Default sign</key>
+	<string></string>
+	<key>Default values ​​for transactions for this account.</key>
+	<string></string>
+	<key>Delete</key>
+	<string></string>
+	<key>Delete sub-operation</key>
+	<string></string>
+	<key>Delete the rubric</key>
+	<string></string>
+	<key>Discount</key>
+	<string></string>
+	<key>Display</key>
+	<string></string>
+	<key>Displayed sub-operations: %lld</key>
+	<string></string>
+	<key>Document PDF</key>
+	<string></string>
+	<key>Double tap to delete %@</key>
+	<string></string>
+	<key>Double tap to discard changes</key>
+	<string></string>
+	<key>Double tap to discard changes and close</key>
+	<string></string>
+	<key>Double tap to edit %@</key>
+	<string></string>
+	<key>Double tap to save all changes</key>
+	<string></string>
+	<key>Drop your PDF here</key>
+	<string></string>
+	<key>Edit</key>
+	<string></string>
+	<key>Edit CheckBook</key>
+	<string></string>
+	<key>Edit Mode</key>
+	<string></string>
+	<key>Edit Payment Mode</key>
+	<string></string>
+	<key>Edit Rubric</key>
+	<string></string>
+	<key>Edit operation screen</key>
+	<string></string>
+	<key>Edit scheduler</key>
+	<string></string>
+	<key>Edit statement</key>
+	<string></string>
+	<key>Edit sub-operation</key>
+	<string></string>
+	<key>Edit the category</key>
+	<string></string>
+	<key>Edit the rubric</key>
+	<string></string>
+	<key>Email</key>
+	<string></string>
+	<key>End Date</key>
+	<string></string>
+	<key>End balance</key>
+	<string></string>
+	<key>Engaged</key>
+	<string></string>
+	<key>Enter Engaged value</key>
+	<string></string>
+	<key>Enter Executed value</key>
+	<string></string>
+	<key>Enter a description for this sub-operation</key>
+	<string></string>
+	<key>Enter planned value</key>
+	<string></string>
+	<key>Enter the amount for this sub-operation</key>
+	<string></string>
+	<key>Executed</key>
+	<string></string>
+	<key>Export</key>
+	<string></string>
+	<key>Export CSV</key>
+	<string></string>
+	<key>Eyes</key>
+	<string></string>
+	<key>Final balance</key>
+	<string></string>
+	<key>Find</key>
+	<string></string>
+	<key>First Number</key>
+	<string></string>
+	<key>First name</key>
+	<string></string>
+	<key>Foreground color:</key>
+	<string></string>
+	<key>Frequency</key>
+	<string></string>
+	<key>Function</key>
+	<string></string>
+	<key>General</key>
+	<string></string>
+	<key>General information</key>
+	<string></string>
+	<key>IBAN</key>
+	<string></string>
+	<key>Identities</key>
+	<string></string>
+	<key>Identity</key>
+	<string></string>
+	<key>Identity title</key>
+	<string></string>
+	<key>Ignore</key>
+	<string></string>
+	<key>Import</key>
+	<string></string>
+	<key>Import a CSV file</key>
+	<string></string>
+	<key>Income/Expense</key>
+	<string></string>
+	<key>Increase</key>
+	<string></string>
+	<key>Indicative</key>
+	<string></string>
+	<key>Initial balance</key>
+	<string></string>
+	<key>Initial report</key>
+	<string></string>
+	<key>Inter Date</key>
+	<string></string>
+	<key>Inter balance</key>
+	<string></string>
+	<key>InternetReconciliationView</key>
+	<string></string>
+	<key>Key</key>
+	<string></string>
+	<key>Launch at login</key>
+	<string></string>
+	<key>Light</key>
+	<string></string>
+	<key>Match the columns :</key>
+	<string></string>
+	<key>Mobile</key>
+	<string></string>
+	<key>Mode</key>
+	<string></string>
+	<key>N/A</key>
+	<string></string>
+	<key>Name</key>
+	<string></string>
+	<key>New checkBook</key>
+	<string></string>
+	<key>New scheduler</key>
+	<string></string>
+	<key>New statement</key>
+	<string></string>
+	<key>Next</key>
+	<string></string>
+	<key>Next Number</key>
+	<string></string>
+	<key>No PDF available</key>
+	<string></string>
+	<key>No account selected.</key>
+	<string></string>
+	<key>No amount entered</key>
+	<string></string>
+	<key>No bank information available</key>
+	<string></string>
+	<key>No chart data available.</key>
+	<string></string>
+	<key>No label</key>
+	<string></string>
+	<key>No sub-operations available</key>
+	<string></string>
+	<key>No transaction selected</key>
+	<string></string>
+	<key>NotesView</key>
+	<string></string>
+	<key>Number</key>
+	<string></string>
+	<key>Number of Checks</key>
+	<string></string>
+	<key>N°</key>
+	<string></string>
+	<key>OK</key>
+	<string></string>
+	<key>Objectif</key>
+	<string></string>
+	<key>Outline View in SwiftUI</key>
+	<string></string>
+	<key>Payment method</key>
+	<string></string>
+	<key>Payment method :</key>
+	<string></string>
+	<key>Pegase</key>
+	<string></string>
+	<key>PegaseUIData</key>
+	<string></string>
+	<key>Phone</key>
+	<string></string>
+	<key>Planned</key>
+	<string></string>
+	<key>Postal Code</key>
+	<string></string>
+	<key>Preferences…</key>
+	<string></string>
+	<key>Prefix</key>
+	<string></string>
+	<key>Remove</key>
+	<string></string>
+	<key>Remove the category</key>
+	<string></string>
+	<key>Rubric</key>
+	<string></string>
+	<key>Rubric :</key>
+	<string></string>
+	<key>Rubric selection</key>
+	<string></string>
+	<key>Save</key>
+	<string></string>
+	<key>Save operation</key>
+	<string></string>
+	<key>Select a statement</key>
+	<string></string>
+	<key>Selected PDF</key>
+	<string></string>
+	<key>Settings</key>
+	<string></string>
+	<key>Show details</key>
+	<string></string>
+	<key>Show in menu bar (hide from Dock)</key>
+	<string></string>
+	<key>Show inspector</key>
+	<string></string>
+	<key>Split Transactions</key>
+	<string></string>
+	<key>Start Date</key>
+	<string></string>
+	<key>Statement</key>
+	<string>הצהרה</string>
+	<key>Status</key>
+	<string></string>
+	<key>Surname</key>
+	<string></string>
+	<key>Town</key>
+	<string></string>
+	<key>Transaction</key>
+	<string></string>
+	<key>Transaction Details</key>
+	<string></string>
+	<key>Transaction form section</key>
+	<string></string>
+	<key>United</key>
+	<string></string>
+	<key>Update</key>
+	<string></string>
+	<key>Update at :</key>
+	<string></string>
+	<key>Value Date</key>
+	<string></string>
+	<key>Version %@ (Build %@)</key>
+	<string></string>
+	<key>🎯 %@</key>
+	<string></string>
+</dict>
+</plist>

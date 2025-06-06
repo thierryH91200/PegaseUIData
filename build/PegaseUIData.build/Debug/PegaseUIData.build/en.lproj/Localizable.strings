@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Account</key>
+	<string>Account</string>
+	<key>Add</key>
+	<string>Add</string>
+	<key>Address</key>
+	<string>Address</string>
+	<key>BIC</key>
+	<string>BIC</string>
+	<key>Bank references</key>
+	<string>Bank references</string>
+	<key>Bank_Card</key>
+	<string>Bank_Card</string>
+	<key>CP</key>
+	<string>CP</string>
+	<key>Cancel</key>
+	<string>Cancel</string>
+	<key>Check</key>
+	<string>Check</string>
+	<key>Comment</key>
+	<string>Comment</string>
+	<key>Compte</key>
+	<string>Account</string>
+	<key>Content</key>
+	<string>Content</string>
+	<key>Content pour Sidebar 2 %@</key>
+	<string>Content pour Sidebar 2 %@</string>
+	<key>Country</key>
+	<string>Country</string>
+	<key>Dark</key>
+	<string>Dark</string>
+	<key>Date of pointing</key>
+	<string>Date of pointing</string>
+	<key>Decrease</key>
+	<string>Decrease</string>
+	<key>Delete</key>
+	<string>Delete</string>
+	<key>Delete sub-operation</key>
+	<string>Delete sub-operation</string>
+	<key>Delete the rubric</key>
+	<string>Delete the rubric</string>
+	<key>Display</key>
+	<string>Display</string>
+	<key>End Date</key>
+	<string>End Date</string>
+	<key>Increase</key>
+	<string>Increase</string>
+	<key>Inter Date</key>
+	<string>Inter Date</string>
+	<key>Key</key>
+	<string>Key</string>
+	<key>Name</key>
+	<string>Name</string>
+	<key>No bank information available</key>
+	<string>No bank information available</string>
+	<key>Number</key>
+	<string>Number</string>
+	<key>Start Date</key>
+	<string>Start Date</string>
+	<key>Surname</key>
+	<string>Surname</string>
+	<key>Town</key>
+	<string>Town</string>
+</dict>
+</plist>

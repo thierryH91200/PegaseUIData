@@ -17,7 +17,7 @@ struct CSVImportButtonCSV: View {
         Button {
             isPresented.toggle()
         } label: {
-            Label("Import CSV", systemImage: "square.and.arrow.down")
+            Label("Importing the CSV file…", systemImage: "square.and.arrow.down")
         }
         .fileImporter(isPresented: $isPresented,
                       allowedContentTypes: [UTType.commaSeparatedText]) { result in
@@ -35,7 +35,7 @@ struct CSVImportButtonOFX: View {
         Button {
             isPresented.toggle()
         } label: {
-            Label("Import OFX", systemImage: "square.and.arrow.down")
+            Label("Importing the OFX file…", systemImage: "square.and.arrow.down")
         }
         .fileImporter(isPresented: $isPresented,
                       allowedContentTypes: [.ofx]) { result in

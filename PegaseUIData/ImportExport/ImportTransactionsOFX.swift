@@ -77,7 +77,7 @@ struct ImportTransactionOFXFileView: View {
     private func importOFXTransactions(from url: URL, into context: ModelContext,
                                        isPresented: Binding<Bool>) {
         guard url.startAccessingSecurityScopedResource() else {
-            print("⚠️ Impossible d'accéder au fichier OFX (Security Scoped)")
+            printTag("⚠️ Impossible d'accéder au fichier OFX (Security Scoped)")
             return
         }
         defer { url.stopAccessingSecurityScopedResource() }
@@ -92,7 +92,7 @@ struct ImportTransactionOFXFileView: View {
             }
         }
         guard let content = content else {
-            print("⚠️ Impossible de lire le contenu du fichier OFX avec les encodages connus.")
+            printTag("⚠️ Impossible de lire le contenu du fichier OFX avec les encodages connus.")
             return
         }
         

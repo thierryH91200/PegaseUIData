@@ -114,36 +114,6 @@
             endingLineNumber = "81"
             landmarkName = "body"
             landmarkType = "24">
-            <Locations>
-               <Location
-                  uuid = "3F472236-A2D7-4771-9552-63A9FFD60B57 - fd03e8715dc20c7"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #5 (Swift.Optional&lt;PegaseUIData.EntityTransaction&gt;, Swift.Optional&lt;PegaseUIData.EntityTransaction&gt;) -&gt; () in PegaseUIData.OperationDialogView.body.getter : some"
-                  moduleName = "PegaseUIData.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/thierryhentic/Documents/DevPegase/Pegase/PegaseUIData/PegaseUIData/Group/OperationDialog/OperationDialog2.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "81"
-                  endingLineNumber = "81">
-               </Location>
-               <Location
-                  uuid = "3F472236-A2D7-4771-9552-63A9FFD60B57 - fd03e8715dc20c7"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #5 (Swift.Optional&lt;PegaseUIData.EntityTransaction&gt;, Swift.Optional&lt;PegaseUIData.EntityTransaction&gt;) -&gt; () in PegaseUIData.OperationDialogView.body.getter : some"
-                  moduleName = "PegaseUIData.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/thierryhentic/Documents/DevPegase/Pegase/PegaseUIData/PegaseUIData/Group/OperationDialog/OperationDialog2.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "81"
-                  endingLineNumber = "81">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

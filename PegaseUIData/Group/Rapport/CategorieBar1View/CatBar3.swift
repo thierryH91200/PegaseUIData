@@ -94,7 +94,7 @@ class CategorieBar1ViewModel: ObservableObject {
 ////        do {
 ////            listTransactions = try modelContext.fetch(descriptor)
 ////        } catch {
-////            print("Erreur lors de la récupération des transactions :", error)
+////            printTag("Erreur lors de la récupération des transactions :", error)
 ////            return
 ////        }
 //

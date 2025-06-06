@@ -96,7 +96,7 @@ final class IdentityManager  {
         // Filtre pour l'entité liée à `currentAccount`
         
         guard let currentAccount = CurrentAccountManager.shared.getAccount() else {
-            print("Erreur : aucun compte courant trouvé.")
+            printTag("Erreur : aucun compte courant trouvé.")
             return nil
         }
         
@@ -113,7 +113,7 @@ final class IdentityManager  {
             entities = try modelContext?.fetch(fetchDescriptor) ?? []
             
         } catch {
-            print("Erreur lors de la récupération des données : \(error.localizedDescription)")
+            printTag("Erreur lors de la récupération des données : \(error.localizedDescription)")
             return nil
         }
         return entities.first

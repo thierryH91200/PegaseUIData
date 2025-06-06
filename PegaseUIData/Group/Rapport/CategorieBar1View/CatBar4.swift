@@ -167,7 +167,7 @@ struct DGBarChart1Representable: NSViewRepresentable {
 //            do {
 //                listTransactions = try context!.fetch(fetchRequest)
 //            } catch {
-//                print("Error fetching data from CoreData")
+//                printTag("Error fetching data from CoreData")
 //            }
 //            
 //            // grouped and sum

@@ -88,7 +88,7 @@ final class SubTransactionsManager {
             if let value = Double(amount) {
                 subOperation.amount = value
             } else {
-                print("Erreur : Le montant saisi n'est pas valide")
+                printTag("Erreur : Le montant saisi n'est pas valide")
             }
             //        subOperation.transaction = formState.currentTransaction
         }

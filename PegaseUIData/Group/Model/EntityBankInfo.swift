@@ -94,7 +94,7 @@ final class BankManager : BankManaging {
     func getAllData() -> EntityBanqueInfo? {
         
         guard let account = CurrentAccountManager.shared.getAccount() else {
-            print("Erreur : aucun compte courant trouvé.")
+            printTag("Erreur : aucun compte courant trouvé.")
             return nil
         }
 
@@ -110,7 +110,7 @@ final class BankManager : BankManaging {
             entitiesBank = try modelContext?.fetch(fetchDescriptor) ?? []
 
         } catch {
-            print("Erreur lors de la récupération des données : \(error.localizedDescription)")
+            printTag("Erreur lors de la récupération des données : \(error.localizedDescription)")
             return nil
         }
         return entitiesBank.first
@@ -145,11 +145,11 @@ class BankViewModel: ObservableObject {
             let _ = try manager.create(account: account)
             reloadData()
         } catch EnumError.accountNotFound {
-            print("Erreur : compte non trouvé")
+            printTag("Erreur : compte non trouvé")
         } catch EnumError.saveFailed {
-            print("Erreur : échec de la sauvegarde")
+            printTag("Erreur : échec de la sauvegarde")
         } catch {
-            print("Erreur inattendue : \(error)")
+            printTag("Erreur inattendue : \(error)")
         }
     }
     

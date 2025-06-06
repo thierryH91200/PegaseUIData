@@ -97,7 +97,7 @@ final class PreferenceManager: PreferenceManaging {
     
     func getAllData(for account: EntityAccount?) -> EntityPreference? {
         guard let account = account else {
-            print("Erreur : Account est nil")
+            printTag("Erreur : Account est nil")
             return nil
         }
         let accountID = account.uuid
@@ -107,7 +107,7 @@ final class PreferenceManager: PreferenceManaging {
         do {
             entityPreferences = try modelContext?.fetch(fetchDescriptor) ?? []
         } catch {
-            print("Erreur lors de la récupération des données : \(error.localizedDescription)")
+            printTag("Erreur lors de la récupération des données : \(error.localizedDescription)")
         }
         return entityPreferences?.first
     }
@@ -130,12 +130,12 @@ final class PreferenceManager: PreferenceManaging {
     func saveContext() {
         do {
             try modelContext?.save()
-            print("Sauvegarde réussie.")
+            printTag("Sauvegarde réussie.")
         } catch {
             if let path = getSQLiteFilePath() {
-                print("Erreur de sauvegarde. Base de données SQLite : \(path)")
+                printTag("Erreur de sauvegarde. Base de données SQLite : \(path)")
             }
-            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+            printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
     }
 }

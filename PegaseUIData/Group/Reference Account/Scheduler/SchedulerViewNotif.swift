@@ -20,9 +20,9 @@ class NotificationManager {
     func requestPermission() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
             if let error = error {
-                print("Notification permission error: \(error.localizedDescription)")
+                printTag("Notification permission error: \(error.localizedDescription)")
             } else {
-                print("Notification permission granted: \(granted)")
+                printTag("Notification permission granted: \(granted)")
             }
         }
     }

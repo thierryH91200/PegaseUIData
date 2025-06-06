@@ -27,7 +27,7 @@ final class BankDataManager: ObservableObject {
         do {
             try modelContext?.save()
         } catch {
-            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+            printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
     }
 }
@@ -94,7 +94,7 @@ struct BankView: View {
             do {
                 try modelContext.save()
             } catch {
-                print("Erreur lors de la sauvegarde : \(error)")
+                printTag("Erreur lors de la sauvegarde : \(error)")
             }
         }
     }
@@ -115,7 +115,7 @@ struct BankView: View {
         do {
             try modelContext.save()
         } catch {
-            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+            printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
     }
 }
@@ -171,7 +171,7 @@ struct FieldView: View {
         do {
             try modelContext.save()
         } catch {
-            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+            printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
     }
 

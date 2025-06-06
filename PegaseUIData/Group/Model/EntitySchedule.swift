@@ -105,7 +105,7 @@ final class SchedulerManager {
     
     func fetchEntitySchedules() -> [EntitySchedule] {
         guard let lhs = currentAccount?.uuid else {
-            print("Erreur : Aucun compte actif défini.")
+            printTag("Erreur : Aucun compte actif défini.")
             return []
         }
         
@@ -119,7 +119,7 @@ final class SchedulerManager {
         do {
             return try modelContext?.fetch(descriptor) ?? []
         } catch {
-            print("Erreur lors de la récupération des données : \(error.localizedDescription)")
+            printTag("Erreur lors de la récupération des données : \(error.localizedDescription)")
             return []
         }
     }
@@ -128,7 +128,7 @@ final class SchedulerManager {
     func getAllData() -> [EntitySchedule]? {
         
         guard let currentAccount = CurrentAccountManager.shared.getAccount() else {
-            print("Erreur : aucun compte courant trouvé.")
+            printTag("Erreur : aucun compte courant trouvé.")
             return nil
         }
         
@@ -144,7 +144,7 @@ final class SchedulerManager {
             // Récupérez les entités en utilisant le FetchDescriptor
             entities = try modelContext?.fetch( descriptor ) ?? []
         } catch {
-            print("Erreur lors de la récupération des données: \(error)")
+            printTag("Erreur lors de la récupération des données: \(error)")
             return nil // Retourne nil en cas d'erreur
         }
         return entities
@@ -321,7 +321,7 @@ final class SchedulerManager {
             do {
                 try modelContext?.save()
             } catch {
-                print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+                printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
             }
         }
     }

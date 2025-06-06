@@ -58,7 +58,7 @@ struct SchedulerFormView: View {
         .padding()
         .navigationTitle(scheduler == nil ? "New scheduler" : "Edit scheduler")
         .onChange(of: scheduler) { oldValue, newValue in
-            print("[PegseUIData] scheduler a changé : \(oldValue?.libelle ?? "nil") -> \(newValue?.libelle ?? "nil")")
+            printTag("[PegseUIData] scheduler a changé : \(oldValue?.libelle ?? "nil") -> \(newValue?.libelle ?? "nil")")
         }
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
@@ -75,7 +75,7 @@ struct SchedulerFormView: View {
         }
         .onAppear {
             guard let account = CurrentAccountManager.shared.getAccount() else {
-                print("[PegaseUIData] Erreur : aucun compte courant trouvé.")
+                printTag("Erreur : aucun compte courant trouvé.")
                 return
             }
             frequenceType = [

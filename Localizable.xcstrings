@@ -3653,8 +3653,15 @@
         }
       }
     },
-    "Création" : {
-
+    "Creation" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Creation"
+          }
+        }
+      }
     },
     "Creation Mode" : {
       "localizations" : {
@@ -4674,6 +4681,16 @@
         }
       }
     },
+    "Details of the operation" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Détails de l’opération"
+          }
+        }
+      }
+    },
     "Direct debit" : {
       "localizations" : {
         "fr" : {
@@ -5262,6 +5279,16 @@
         }
       }
     },
+    "Edit a transaction" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editer une transaction"
+          }
+        }
+      }
+    },
     "Edit Category" : {
       "localizations" : {
         "fr" : {
@@ -5792,6 +5819,16 @@
         }
       }
     },
+    "Edit to %lld transactions" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edition de %lld transactions"
+          }
+        }
+      }
+    },
     "Editing %lld transactions" : {
       "localizations" : {
         "en" : {
@@ -5850,11 +5887,15 @@
         }
       }
     },
-    "Édition d'une transaction" : {
-
-    },
-    "Édition de %lld transactions" : {
-
+    "Edition multiple (%lld) transactions" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Édition de plusieurs (\\(ops.count)) transactions "
+          }
+        }
+      }
     },
     "Email" : {
       "localizations" : {
@@ -6514,17 +6555,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Exporter au format PNG"
-          }
-        }
-      }
-    },
-    "Exporter" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Exporter"
           }
         }
       }
@@ -7451,16 +7481,6 @@
         }
       }
     },
-    "Import CSV" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Importer un fichier CSV"
-          }
-        }
-      }
-    },
     "Import OFX" : {
       "localizations" : {
         "fr" : {
@@ -7471,8 +7491,25 @@
         }
       }
     },
+    "Importing the CSV file…" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importer un ficher CSV"
+          }
+        }
+      }
+    },
     "Importing the OFX file…" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importer un fichier OFX"
+          }
+        }
+      }
     },
     "Income/Expense" : {
       "localizations" : {
@@ -7632,6 +7669,16 @@
           "stringUnit" : {
             "state" : "error",
             "value" : ""
+          }
+        }
+      }
+    },
+    "Informations" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informations"
           }
         }
       }
@@ -8064,58 +8111,6 @@
         }
       }
     },
-    "Linked Account" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Linked Account"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compte lié"
-          }
-        },
-        "he" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        }
-      }
-    },
     "Load demo data" : {
       "localizations" : {
         "en-GB" : {
@@ -8284,6 +8279,26 @@
           "stringUnit" : {
             "state" : "error",
             "value" : ""
+          }
+        }
+      }
+    },
+    "Mode Creation" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mode Création"
+          }
+        }
+      }
+    },
+    "Mode Edit" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mode Edition"
           }
         }
       }
@@ -8993,7 +9008,14 @@
       }
     },
     "No current account" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas de compte courant"
+          }
+        }
+      }
     },
     "No label" : {
       "localizations" : {
@@ -11276,56 +11298,11 @@
       }
     },
     "Transaction CSV" : {
-
-    },
-    "Transaction Date" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Transaction Date"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Date de la Transaction"
-          }
-        },
-        "he" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
+            "value" : "Transaction CSV"
           }
         }
       }
@@ -11732,59 +11709,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Catégories visibles"
-          }
-        }
-      }
-    },
-    "Year: %@" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Year: %@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Année %@"
-          }
-        },
-        "he" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
           }
         }
       }

@@ -163,7 +163,7 @@ final class AccountManager {
             account.initAccount = initAccount
         } catch {
             // Gère les erreurs lors de la création du compte initial
-            print("Failed to create InitAccount: \(error.localizedDescription)")
+            printTag("Failed to create InitAccount: \(error.localizedDescription)")
             return nil
         }
         
@@ -178,7 +178,7 @@ final class AccountManager {
             let request = FetchDescriptor<EntityAccount>()
             entities = try modelContext?.fetch(request) ?? []
         } catch {
-            print("Erreur lors de la récupération des données avec SwiftData")
+            printTag("Erreur lors de la récupération des données avec SwiftData")
         }
         return entities
     }
@@ -197,7 +197,7 @@ final class AccountManager {
         let idPrenom = identity?.surName
         let idNumber = entityAccount.initAccount?.codeAccount
         
-        print("\(description)       : \(name) \(idName ?? "") \(idPrenom ?? "") \(idNumber ?? "")")
+        printTag("\(description)       : \(name) \(idName ?? "") \(idPrenom ?? "") \(idNumber ?? "")")
     }
 }
 
@@ -246,10 +246,10 @@ final class CurrentAccountManager : ObservableObject {
 
     func fetchDataForCurrentAccount() {
         guard let account = currentAccount else {
-            print("No account selected.")
+            printTag("No account selected.")
             return
         }
-        print("Traitement des données pour le compte \(account.name)")
+        printTag("Traitement des données pour le compte \(account.name)")
     }
     
     // Réinitialisation de la variable globale

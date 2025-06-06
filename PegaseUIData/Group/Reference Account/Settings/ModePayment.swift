@@ -25,14 +25,14 @@ final class ModePaiementDataManager: ObservableObject {
     /// Sauvegarde les changements dans le contexte SwiftData
     func saveChanges() {
         guard let modelContext = modelContext else {
-            print("Le contexte de modèle est indisponible.")
+            printTag("Le contexte de modèle est indisponible.")
             return
         }
 
         do {
             try modelContext.save()
         } catch {
-            print("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+            printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
     }
 }
@@ -72,13 +72,13 @@ struct ModePaymentView: View {
                 if let selected = newValue {
                     selectedItem = selected
                     selectedMode = dataManager.modePayments!.first(where: { $0.id == selected })
-                    print("Sélectionné : \(selectedMode?.name ?? "Aucun")") 
+                    printTag("Sélectionné : \(selectedMode?.name ?? "Aucun")") 
 
                 } else {
                     selectedMode = nil // Désactive l’édition automatique
                     selectedItem = nil
 
-                    print("Aucun élément sélectionné dans ModePaymentView / onCchange")
+                    printTag("Aucun élément sélectionné dans ModePaymentView / onCchange")
                 }
             }
             

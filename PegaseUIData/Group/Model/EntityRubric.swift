@@ -86,7 +86,7 @@ final class RubricManager {
             entitiesRubric = try modelContext?.fetch(fetchDescriptor) ?? []
 
         } catch {
-            print("Erreur lors de la récupération des données : \(error.localizedDescription)")
+            printTag("Erreur lors de la récupération des données : \(error.localizedDescription)")
         }
         if entitiesRubric.isEmpty {
             defaultRubric(for : currentAccount  )
@@ -96,7 +96,7 @@ final class RubricManager {
         
     func importCSV(from fileURL: URL) {
         guard let content = try? String(contentsOf: fileURL, encoding: .utf8) else {
-            print("Erreur de lecture du fichier")
+            printTag("Erreur de lecture du fichier")
             return
         }
 
@@ -128,13 +128,13 @@ final class RubricManager {
         do {
             try modelContext?.save()
         } catch {
-            print("Erreur lors de la sauvegarde : \(error)")
+            printTag("Erreur lors de la sauvegarde : \(error)")
         }
     }
     
     func defaultRubric(for account: EntityAccount) {
         guard let url = Bundle.main.url(forResource: "rubrique", withExtension: "csv") else {
-            print("Error: File not found. ressources : rubrique.csv")
+            printTag("Error: File not found. ressources : rubrique.csv")
             return
         }
         importCSV(from: url)

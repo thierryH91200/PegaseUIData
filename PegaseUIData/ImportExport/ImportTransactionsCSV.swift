@@ -27,6 +27,7 @@ struct ImportTransactionFileView: View {
                                  String(localized:"Rubric"),
                                  String(localized:"Category"),
                                  String(localized:"Payment method"),
+                                 
                                  String(localized:"Status"),
                                  String(localized:"Amount")]
     
@@ -47,7 +48,7 @@ struct ImportTransactionFileView: View {
                         csvData = data
                     }
                 case .failure(let error):
-                    print("Erreur de sélection de fichier : \(error.localizedDescription)")
+                    printTag("Erreur de sélection de fichier : \(error.localizedDescription)")
                 }
             }
             Spacer()
@@ -80,7 +81,7 @@ struct ImportTransactionFileView: View {
 //                        dismiss()
 //                    }
 //                case .failure(let error):
-//                    print("Erreur de sélection de fichier OFX : \(error.localizedDescription)")
+//                    printTag("Erreur de sélection de fichier OFX : \(error.localizedDescription)")
 //                }
 //            }
             
@@ -149,7 +150,7 @@ struct ImportTransactionFileView: View {
         guard !csvData.isEmpty else { return }
         
         let count = csvData.count
-        print("Importation de \(count) transactions CSV.")
+        printTag("Importation de \(count) transactions CSV.")
         
         let account = CurrentAccountManager.shared.getAccount()!
         DataContext.shared.context = modelContext
@@ -204,18 +205,18 @@ struct ImportTransactionFileView: View {
         
         do {
             try context.save()
-            print("Importation réussie 🎉")
+            printTag("Importation réussie 🎉")
             NotificationCenter.default.post(name: .transactionsImported, object: nil)
 
         } catch {
-            print("Erreur lors de l'enregistrement : \(error)")
+            printTag("Erreur lors de l'enregistrement : \(error)")
         }
     }
     
     func readCSV(from url: URL) -> [[String]]? {
         
         guard url.startAccessingSecurityScopedResource() else {
-            print("⚠️ Impossible d'accéder au fichier (Security Scoped)")
+            printTag("⚠️ Impossible d'accéder au fichier (Security Scoped)")
             return nil
         }
         
@@ -231,7 +232,7 @@ struct ImportTransactionFileView: View {
             let parsedData = rows.map { $0.components(separatedBy: String(separator)) }
             return parsedData
         } catch {
-            print("Erreur lors de la lecture du fichier CSV : \(error.localizedDescription)")
+            printTag("Erreur lors de la lecture du fichier CSV : \(error.localizedDescription)")
             return nil
         }
     }
@@ -284,7 +285,7 @@ struct TableView: View {
     
     @MainActor func importOFXTransactions(from url: URL, context: ModelContext) {
         guard url.startAccessingSecurityScopedResource() else {
-            print("⚠️ Impossible d'accéder au fichier OFX (Security Scoped)")
+            printTag("⚠️ Impossible d'accéder au fichier OFX (Security Scoped)")
             return
         }
         defer { url.stopAccessingSecurityScopedResource() }
@@ -299,7 +300,7 @@ struct TableView: View {
             }
         }
         guard let content = content else {
-            print("⚠️ Impossible de lire le contenu du fichier OFX avec les encodages connus.")
+            printTag("⚠️ Impossible de lire le contenu du fichier OFX avec les encodages connus.")
             return
         }
         

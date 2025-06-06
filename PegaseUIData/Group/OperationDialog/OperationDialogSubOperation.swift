@@ -141,7 +141,7 @@ struct SubOperationDialog: View {
                 do {
                     try await configureManagers()
                 } catch {
-                    print("Failed to configure form: \(error)")
+                    printTag("Failed to configure form: \(error)")
                 }
                 
                 self.entityRubric = RubricManager.shared.getAllData()
@@ -196,7 +196,7 @@ struct SubOperationDialog: View {
                 item.amount = signedValue
             }
         } else {
-            print("Erreur : Le montant saisi n'est pas valide")
+            printTag("Erreur : Le montant saisi n'est pas valide")
         }
 
         item.transaction = formState.currentTransaction
