@@ -29,16 +29,17 @@ struct OperationDialogView: View {
     @State var setTransfert     = Set<String>()
     @State var setCheck_In_Date = Set<Date>()
     @State var setDateOperation = Set<Date>()
-
+    
     // États du formulaire déplacés dans un State Object
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             // En-tête avec information de transaction
-            HeaderView(
-                title: transactionManager.selectedTransaction?.sousOperations.first?.libelle,
-                accountName: currentAccountManager.currentAccount?.name,
-                transactionCount: transactionManager.selectedTransactions.count
-            )
+//            HeaderView(
+//                title: transactionManager.selectedTransaction?.sousOperations.first?.libelle,
+//                accountName: currentAccountManager.currentAccount?.name,
+//                transactionCount: transactionManager.selectedTransactions.count
+//            )
+            FormTitleView(formMode: transactionManager.formMode)
             Divider()
             
             // Formulaire principal

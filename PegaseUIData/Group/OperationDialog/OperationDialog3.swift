@@ -67,16 +67,6 @@ struct TransactionFormViewModel: View {
         selectedOperations.count > 0
     }
     
-    private var modeBanner: some View {
-        switch transactionManager.formMode {
-        case .create:
-            return Text("Creation")
-        case .editSingle:
-            return Text("Edit a transaction")
-        case .editMultiple(let ops):
-            return Text("Edit to \(ops.count) transactions")
-        }
-    }
     private var identitySection: some View {
         Grid(alignment: .leading, horizontalSpacing: 20, verticalSpacing: 12) {
             GridRow {
@@ -149,10 +139,8 @@ struct TransactionFormViewModel: View {
     }
     
     var body: some View {
-        FormTitleView(formMode: transactionManager.formMode)
 
         Form {
-            modeBanner
             Section {
                 Section(header:
                     Text("Informations")
@@ -255,10 +243,15 @@ struct FormTitleView: View {
             Text(title)
                 .font(.headline)
                 .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+
             Spacer()
         }
         .padding(8)
+//        .foregroundColor(.white)
         .background(backgroundColor)
+        .frame(maxWidth: .infinity)
+        .padding()
         .cornerRadius(8)
     }
 
@@ -269,7 +262,7 @@ struct FormTitleView: View {
         case .editSingle:
             return String(localized:"Mode Edit")
         case .editMultiple(let ops):
-            return String(localized:"Edition multiple (\(ops.count)) transactions")
+            return String(localized:"Edition multiple \(ops.count) transactions")
         }
     }
 

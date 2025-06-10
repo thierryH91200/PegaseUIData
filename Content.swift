@@ -95,7 +95,6 @@ struct ContentView100: View {
     @AppStorage("windowHeight")  var windowHeight: Double = 600
     @AppStorage("choixCouleur") var choixCouleur: String = "Unie"
 
-//    @Environment(\.modelContext) private var modelContext
     @StateObject private var transactionManager = TransactionSelectionManager()
     @StateObject private var colorManager = ColorManager()
     @StateObject private var listDataManager = ListDataManager()
@@ -144,9 +143,9 @@ struct ContentView100: View {
                     OperationDialog()
                 }
             }
-            .environmentObject(transactionManager)// Injection de l’EnvironmentObject
-            .environmentObject(listDataManager)   // Injection de l’EnvironmentObject
-            .environmentObject(currentAccountManager)   // Injection de l’EnvironmentObject
+            .environmentObject(transactionManager)
+            .environmentObject(listDataManager)
+            .environmentObject(currentAccountManager)
             .navigationSplitViewStyle(.balanced)
 
             .onAppear {
