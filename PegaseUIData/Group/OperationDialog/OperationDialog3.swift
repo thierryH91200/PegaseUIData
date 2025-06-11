@@ -99,41 +99,49 @@ struct TransactionFormViewModel: View {
         }
     }
     private var detailSection: some View {
-        Group {
-            FormField(label: "Transaction Date") {
-                DatePicker("", selection: $transactionDate, displayedComponents: .date)
+        Grid(alignment: .leading, horizontalSpacing: 20, verticalSpacing: 12) {
+            GridRow {
+                FormField(label: "Transaction Date") {
+                    DatePicker("", selection: $transactionDate, displayedComponents: .date)
+                }
             }
-
-            FormField(label: "Payment method") {
-                Picker("", selection: $selectedMode) {
-                    ForEach(modes, id: \.uuid) { mode in
-                        Text(mode.name).tag(mode)
+            GridRow {
+                FormField(label: "Payment method") {
+                    Picker("", selection: $selectedMode) {
+                        ForEach(modes, id: \.uuid) { mode in
+                            Text(mode.name).tag(mode)
+                        }
                     }
                 }
             }
-
-            FormField(label: "Check") {
-                TextField("", value: $checkNumber, formatter: integerFormatter)
+            GridRow {
+                FormField(label: "Check") {
+                    TextField("", value: $checkNumber, formatter: integerFormatter)
+                }
             }
-
-            FormField(label: "Date of pointing") {
-                DatePicker("", selection: $pointingDate, displayedComponents: .date)
+            GridRow {
+                FormField(label: "Date of pointing") {
+                    DatePicker("", selection: $pointingDate, displayedComponents: .date)
+                }
             }
-
-            FormField(label: "Status") {
-                Picker("", selection: $selectedStatus) {
-                    ForEach(status, id: \.self) { index in
-                        Text(index.name).tag(index)
+            GridRow {
+                FormField(label: "Status") {
+                    Picker("", selection: $selectedStatus) {
+                        ForEach(status, id: \.self) { index in
+                            Text(index.name).tag(index)
+                        }
                     }
                 }
             }
-
-            FormField(label: "Bank Statement") {
-                TextField("", value: $bankStatement, formatter: integerFormatter)
+            GridRow {
+                FormField(label: "Bank Statement") {
+                    TextField("", value: $bankStatement, formatter: integerFormatter)
+                }
             }
-
-            FormField(label: "Amount") {
-                TextField("", value: $amount, formatter: NumberFormatter())
+            GridRow {
+                FormField(label: "Amount") {
+                    TextField("", value: $amount, formatter: NumberFormatter())
+                }
             }
         }
     }
@@ -142,20 +150,38 @@ struct TransactionFormViewModel: View {
 
         Form {
             Section {
-                Section(header:
-                    Text("Informations")
-                        .font(.headline)
-                        .foregroundColor(.accentColor)
-                ) {
-                    identitySection
+                Grid(alignment: .leading, horizontalSpacing: 20, verticalSpacing: 12) {
+                    GridRow {
+                        Text("Informations")
+                            .font(.headline)
+                            .foregroundColor(.accentColor)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    GridRow {
+                        identitySection
+                    }
                 }
+            }
 
-                Section(header:
-                    Text("Details of the operation")
-                        .font(.headline)
-                        .foregroundColor(.accentColor)
-                ) {
-                    detailSection
+            HStack {
+                Spacer()
+                Text("⋯")
+                    .font(.system(size: 32, weight: .bold))
+                    .foregroundColor(.secondary)
+                Spacer()
+            }
+
+            Section {
+                Grid(alignment: .leading, horizontalSpacing: 20, verticalSpacing: 12) {
+                    GridRow {
+                        Text("Details of the operation")
+                            .font(.headline)
+                            .foregroundColor(.accentColor)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    GridRow {
+                        detailSection
+                    }
                 }
             }
             .onAppear {
@@ -231,49 +257,6 @@ struct FormField<Content: View>: View {
                 .frame(width: 120, alignment: .leading)
             content
                 .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-}
-
-struct FormTitleView: View {
-    let formMode: FormMode
-
-    var body: some View {
-        HStack {
-            Text(title)
-                .font(.headline)
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-
-            Spacer()
-        }
-        .padding(8)
-//        .foregroundColor(.white)
-        .background(backgroundColor)
-        .frame(maxWidth: .infinity)
-        .padding()
-        .cornerRadius(8)
-    }
-
-    private var title: String {
-        switch formMode {
-        case .create:
-            return String(localized:"Mode Creation")
-        case .editSingle:
-            return String(localized:"Mode Edit")
-        case .editMultiple(let ops):
-            return String(localized:"Edition multiple \(ops.count) transactions")
-        }
-    }
-
-    private var backgroundColor: Color {
-        switch formMode {
-        case .create:
-            return .orange
-        case .editSingle:
-            return .blue
-        case .editMultiple:
-            return .purple
         }
     }
 }

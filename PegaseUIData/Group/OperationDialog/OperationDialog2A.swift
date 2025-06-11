@@ -18,39 +18,44 @@ import SwiftData
 import Observation
 
 // MARK: 3. Composant d'en-tête
-struct HeaderView: View {
-    
-    @EnvironmentObject var transactionManager: TransactionSelectionManager
-
-    let title: String?
-    let accountName: String?
-    let transactionCount: Int
+struct FormTitleView: View {
+    let formMode: FormMode
 
     var body: some View {
-        VStack(alignment: .leading) {
-            if transactionCount > 1 {
-                Text("Editing \(transactionCount) transactions")
-                    .font(.title2)
-            } else if let title = title {
-                Text(title)
-            } else {
-                Text("No transaction selected")
-            }
-
-            if let accountName = accountName {
-                Text("Account: \(accountName)")
-                    .font(.headline)
-            }
-
-            Text(transactionManager.isCreationMode ? "Creation Mode" : "Edit Mode")
+        HStack {
+            Text(title)
                 .font(.headline)
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
-                .padding()
-                .background(transactionManager.isCreationMode ? Color.orange : Color.green)
-                .accessibilityLabel(transactionManager.isCreationMode ?
-                    String(localized: "Create new operation screen") :
-                    String(localized: "Edit operation screen"))
+
+            Spacer()
+        }
+        .padding(8)
+        .background(backgroundColor)
+        .frame(maxWidth: .infinity)
+        .padding()
+        .cornerRadius(8)
+    }
+
+    private var title: String {
+        switch formMode {
+        case .create:
+            return String(localized:"Mode Creation")
+        case .editSingle:
+            return String(localized:"Mode Edit")
+        case .editMultiple(let ops):
+            return String(localized:"Edition multiple \(ops.count) transactions")
+        }
+    }
+
+    private var backgroundColor: Color {
+        switch formMode {
+        case .create:
+            return .orange
+        case .editSingle:
+            return .blue
+        case .editMultiple:
+            return .purple
         }
     }
 }

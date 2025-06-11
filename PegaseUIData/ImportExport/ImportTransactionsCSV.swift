@@ -179,7 +179,6 @@ struct ImportTransactionFileView: View {
             let amount = getDouble(from: row, index: columnMapping[String(localized:"Amount")])
             
             let transaction = EntityTransaction()
-            
             transaction.createAt  = Date().noon
             transaction.updatedAt = Date().noon
             
@@ -191,6 +190,8 @@ struct ImportTransactionFileView: View {
             transaction.checkNumber   = "0"
             transaction.account       = account
             
+            context.insert(transaction)
+
             let sousTransaction = EntitySousOperations()
             sousTransaction.libelle  = libelle
             sousTransaction.amount  = amount
@@ -199,8 +200,6 @@ struct ImportTransactionFileView: View {
             
             context.insert(sousTransaction)
             transaction.addSubOperation(sousTransaction)
-            
-            context.insert(transaction)
         }
         
         do {

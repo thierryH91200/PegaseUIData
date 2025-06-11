@@ -66,12 +66,24 @@ enum FormMode {
 }
 
 
-class TransactionSelectionManager: ObservableObject , Identifiable {
+import Combine
+
+class TransactionSelectionManager: ObservableObject, Identifiable {
     @Published var selectedTransaction: EntityTransaction?
     @Published var selectedTransactions: [EntityTransaction] = []
+    
     @Published var isCreationMode: Bool = true
     @Published var lastSelectedTransactionID: UUID?
     
+    private var cancellables = Set<AnyCancellable>()
+
+    init() {
+        $selectedTransactions
+            .sink { transactions in
+                print("Nombre de transactions sélectionnées : \(transactions.count)")
+            }
+            .store(in: &cancellables)
+    }
 
     var formMode: FormMode {
         switch selectedTransactions.count {
@@ -83,12 +95,11 @@ class TransactionSelectionManager: ObservableObject , Identifiable {
             return .editMultiple(selectedTransactions)
         }
     }
-    
+
     var isMultiSelection: Bool {
         selectedTransactions.count > 1
     }
 }
-
 struct ContentView100: View {
     
     @AppStorage("windowWidth")  var windowWidth: Double = 800

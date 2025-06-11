@@ -54,7 +54,6 @@ struct PegaseUIDataApp: App {
     @State private var resetTrigger = false
 
     var body: some Scene {
-//        DocumentGroup(editing: .flashCards, migrationPlan: PegaseUIDataMigrationPlan.self) {
         
         Window("Pegase", id: "main") {
 //        WindowGroup {

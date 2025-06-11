@@ -449,30 +449,6 @@ struct ListTransactions200: View {
         
         return groupedItems
     }
-    
-//    @MainActor
-//    func copySelectedTransactions(to targetAccount: EntityAccount) {
-//        let selectedEntities = transactions.filter { selectedTransactions.contains($0.id) }
-//
-//        for transaction in selectedEntities {
-//            let newTransaction = EntityTransactions(
-//                dateOperation: transaction.dateOperation,
-//                datePointage: transaction.datePointage,
-//                amount: transaction.amount,
-//                status: transaction.status,
-//                paymentMode: transaction.paymentMode,
-//                bankStatement: transaction.bankStatement,
-//                checkNumber: transaction.checkNumber,
-//                account: targetAccount
-//            )
-//
-//            newTransaction.sousOperations = transaction.sousOperations.map { $0.copy(for: newTransaction) }
-//
-//            modelContext.insert(newTransaction)
-//        }
-//
-//        try? modelContext.save()
-//    }
 }
 
 struct YearGroup {

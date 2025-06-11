@@ -34,11 +34,6 @@ struct OperationDialogView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             // En-tête avec information de transaction
-//            HeaderView(
-//                title: transactionManager.selectedTransaction?.sousOperations.first?.libelle,
-//                accountName: currentAccountManager.currentAccount?.name,
-//                transactionCount: transactionManager.selectedTransactions.count
-//            )
             FormTitleView(formMode: transactionManager.formMode)
             Divider()
             
@@ -51,9 +46,9 @@ struct OperationDialogView: View {
             
             // Section des sous-opérations
             SubOperationsSectionView(
-                subOperations: $formState.subOperations,
-                currentSubOperation: $formState.currentSousTransaction,
-                isShowingDialog: $formState.isShowingDialog
+                subOperations       : $formState.subOperations,
+                currentSubOperation : $formState.currentSousTransaction,
+                isShowingDialog     : $formState.isShowingDialog
             )
             .id(UUID()) // ✅ Force SwiftUI à redessiner la vue
             
@@ -181,12 +176,13 @@ struct OperationDialogView: View {
         formState.selectedAccount        = transaction.account
         
 //        DispatchQueue.main.async {
-            formState.subOperations = transaction.sousOperations
-//        }
-
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 //            formState.subOperations = transaction.sousOperations
 //        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            print("DispatchQueue : Nombre de transaction sous-opérations : \(transaction.sousOperations.count)")
+            formState.subOperations = transaction.sousOperations
+        }
         formState.currentTransaction     = transaction
     }
     
@@ -287,6 +283,7 @@ struct OperationDialogView: View {
 
         formState.currentTransaction = nil
         formState.currentSousTransaction = nil
+        formState.subOperations = []
         formState.selectedMode = entityPreference?.paymentMode
         formState.selectedStatus = entityPreference?.status
         formState.bankStatement = 0.0
