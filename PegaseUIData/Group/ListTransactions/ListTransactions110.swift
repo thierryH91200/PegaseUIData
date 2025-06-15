@@ -25,7 +25,6 @@ struct OperationRow: View {
     @State private var csvData: [[String]] = []
     @State private var columnMapping: [String: Int] = [:] // Associe les attributs aux colonnes
 
-    
     // Attributs disponibles
     let transactionAttributes = [String(localized:"Pointage Date"),
                                  String(localized:"Operation Date"),
@@ -58,7 +57,9 @@ struct OperationRow: View {
     
     var body: some View {
         List(selection: $selectedTransactions) {
-            ForEach(groupTransactionsByYear(transactions: transactions), id: \.year) { yearGroup in
+            let grouped = groupTransactionsByYear(transactions: transactions)
+            let visibleTransactions = grouped.flatMap { $0.monthGroups.flatMap { $0.transactions } }
+            ForEach(grouped, id: \.year) { yearGroup in
                 Section(header:
                     Label("Année : \(yearGroup.year)", systemImage: "calendar")
                         .font(.headline)
@@ -69,7 +70,9 @@ struct OperationRow: View {
                         let key = "month_\(yearGroup.year)_\(monthGroup.month)"
                         DisclosureGroup(isExpanded: isExpanded(for: key)) {
                             ForEach(monthGroup.transactions) { transaction in
-                                TransactionLigne(transaction: transaction, selectedTransactions: $selectedTransactions)
+                                TransactionLigne(transaction: transaction,
+                                                 selectedTransactions: $selectedTransactions,
+                                                 visibleTransactions: visibleTransactions)
                                     .foregroundColor(.black)
                                     .contentShape(Rectangle())
                                     .background(Color.clear)

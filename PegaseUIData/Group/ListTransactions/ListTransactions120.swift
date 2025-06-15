@@ -20,6 +20,7 @@ struct TransactionLigne: View {
     
     let transaction: EntityTransaction
     @Binding var selectedTransactions: Set<UUID>
+    let visibleTransactions: [EntityTransaction]
     
     @State var showTransactionInfo: Bool = false
     @GestureState private var isShiftPressed = false
@@ -185,13 +186,28 @@ struct TransactionLigne: View {
         let isCommand = NSEvent.modifierFlags.contains(.command)
         let isShift = NSEvent.modifierFlags.contains(.shift)
         
+//        print("isShift: \(isShift), isCommand: \(isCommand)")
+
         if isShift, let lastID = transactionManager.lastSelectedTransactionID,
-           let lastIndex = dataManager.listTransactions.firstIndex(where: { $0.id == lastID }),
-           let currentIndex = dataManager.listTransactions.firstIndex(where: { $0.id == transaction.id }) {
-            
-            let range = lastIndex < currentIndex ? lastIndex...currentIndex : currentIndex...lastIndex
-            let idsInRange = dataManager.listTransactions[range].map { $0.id }
+           let lastIndex = visibleTransactions.firstIndex(where: { $0.id == lastID }),
+           let currentIndex = visibleTransactions.firstIndex(where: { $0.id == transaction.id }) {
+
+//            let range = lastIndex < currentIndex ? lastIndex...currentIndex : currentIndex...lastIndex
+//            let idsInRange = dataManager.listTransactions[range].map { $0.id }
+
+            let range = lastIndex <= currentIndex
+                ? lastIndex...currentIndex
+                : currentIndex...lastIndex
+
+            // Sélectionne tous les IDs dans la plage visible
+            let idsInRange = visibleTransactions[range].map { $0.id }
+
+            // Nettoie l’ancienne sélection et ajoute la nouvelle
+            selectedTransactions.removeAll()
             selectedTransactions.formUnion(idsInRange)
+            
+            print("Last index: \(lastIndex), Current index: \(currentIndex)")
+            print("IDs in range: \(idsInRange)")
             
         } else if isCommand {
             if selectedTransactions.contains(transaction.id) {
@@ -199,14 +215,15 @@ struct TransactionLigne: View {
             } else {
                 selectedTransactions.insert(transaction.id)
             }
+            // MAJ du dernier élément sélectionné, très important pour la sélection shift !
             transactionManager.lastSelectedTransactionID = transaction.id
-            
         } else {
             selectedTransactions.removeAll()
             selectedTransactions.insert(transaction.id)
+            // MAJ du dernier élément sélectionné, très important pour la sélection shift !
             transactionManager.lastSelectedTransactionID = transaction.id
         }
-        
+
         if let firstSelectedId = selectedTransactions.first {
             transactionManager.selectedTransaction = dataManager.listTransactions.first { $0.id == firstSelectedId }
         }

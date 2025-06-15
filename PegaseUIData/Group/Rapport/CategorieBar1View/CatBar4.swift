@@ -41,8 +41,70 @@ struct DGBarChart1Representable: NSViewRepresentable {
         }
     }
     
-    func setData(on nsView: BarChartView, with data: [DataGraph]) {
-
+    func setData(on chartView: BarChartView, with data: [DataGraph]) {
+//        guard resultArray.isEmpty == false else {
+//            chartView.data = nil
+//            chartView.data?.notifyDataChanged()
+//            chartView.notifyDataSetChanged()
+//            return }
+//
+//        // MARK: BarChartDataEntry
+//        var entries = [BarChartDataEntry]()
+//        var colors = [NSColor]()
+//        label.removeAll()
+//        colors.removeAll()
+//
+//        for i in 0 ..< resultArray.count {
+//            entries.append(BarChartDataEntry(x: Double(i), y: resultArray[i].value))
+//            label.append(resultArray[i].name)
+//            colors.append(resultArray[i].color)
+//        }
+//
+//        chartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: label)
+//
+//        if chartView.data == nil {
+//            // MARK: BarChartDataSet
+//            let label = Localizations.Graph.Rubrique
+//            var dataSet = BarChartDataSet()
+//
+////            let block: (Int) -> BarChartDataEntry = { (i) -> BarChartDataEntry in
+////                return BarChartDataEntry(x: Double(i), y: Double(self.resultArray[i].value))
+////            }
+////
+////            let yVals1 = (0 ..< 1).map(block)
+////            let yVals2 = (0 ..< 1).map(block)
+////            let yVals3 = (0 ..< 1).map(block)
+////            let yVals4 = (0 ..< 1).map(block)
+//
+//                //            for i in 0..<entries.count {
+//            dataSet = BarChartDataSet(entries: entries, label: label)
+//
+//            dataSet.colors = colors
+//            dataSet.drawValuesEnabled = true
+//            dataSet.barBorderWidth = 0.1
+//            dataSet.valueFormatter = DefaultValueFormatter(formatter: formatterPrice)
+//                //            }
+//
+//            chartView.xAxis.labelCount  = entries.count
+//
+//            // MARK: BarChartData
+//            let data = BarChartData(dataSets: [dataSet])
+//
+//            data.setValueFormatter(DefaultValueFormatter(formatter: formatterPrice))
+//            data.setValueFont(NSFont(name: "HelveticaNeue-Light", size: CGFloat(11.0))!)
+//            data.setValueTextColor(NSColor.black)
+//            chartView.data = data
+//            
+//        } else {
+//            // MARK: BarChartDataSet
+//            let set1 = chartView.data!.dataSets[0] as! BarChartDataSet
+//            set1.colors = colors
+//            set1.replaceEntries( entries )
+//
+//            // MARK: BarChartData
+//            chartView.data?.notifyDataChanged()
+//            chartView.notifyDataSetChanged()
+//        }
     }
     
     func initChart(on chartView: BarChartView) {

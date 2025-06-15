@@ -180,7 +180,7 @@ final class PaymentModeManager : PaymentModeManaging {
     func delete(entity: EntityPaymentMode)
     {
         modelContext?.undoManager?.beginUndoGrouping()
-        modelContext?.undoManager?.setActionName("Supprimer le mode de paiement")
+        modelContext?.undoManager?.setActionName("Delete the modePayment")
         modelContext?.delete(entity)
         modelContext?.undoManager?.endUndoGrouping()
 

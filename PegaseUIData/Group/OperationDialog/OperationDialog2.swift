@@ -180,7 +180,7 @@ struct OperationDialogView: View {
 //        }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            print("DispatchQueue : Nombre de transaction sous-opérations : \(transaction.sousOperations.count)")
+            printTag("DispatchQueue : Nombre de transaction sous-opérations : \(transaction.sousOperations.count)")
             formState.subOperations = transaction.sousOperations
         }
         formState.currentTransaction     = transaction

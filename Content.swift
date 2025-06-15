@@ -80,7 +80,7 @@ class TransactionSelectionManager: ObservableObject, Identifiable {
     init() {
         $selectedTransactions
             .sink { transactions in
-                print("Nombre de transactions sélectionnées : \(transactions.count)")
+                printTag("Nombre de transactions sélectionnées : \(transactions.count)")
             }
             .store(in: &cancellables)
     }

@@ -109,7 +109,6 @@ struct ListTransactions200: View {
     @State var soldeReel = 0.0
     @State var soldeFinal = 0.0
     
-    
     // Clipboard state for copy/cut/paste
     @State private var clipboardTransactions: [EntityTransaction] = []
     @State private var isCutOperation = false
