@@ -23,10 +23,10 @@ struct GradientText: View {
 }
 
 struct SummaryView: View {
-    var executed: Double
     var planned: Double
     var engaged: Double
-
+    var executed: Double
+    
     var body: some View {
         HStack(spacing: 0) {
             
@@ -61,7 +61,7 @@ struct SummaryView: View {
             .border(Color.black, width: 1)
 
         }
-        .frame(maxWidth: .infinity, maxHeight: 150)
+        .frame(maxWidth: .infinity)
     }
 }
 

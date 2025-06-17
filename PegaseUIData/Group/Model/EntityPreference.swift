@@ -139,3 +139,14 @@ final class PreferenceManager: PreferenceManaging {
         }
     }
 }
+
+
+func getSQLiteFilePath() -> String? {
+    guard let _ = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).last else { return nil}
+    
+    if let url = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first {
+        let path = "Core Data SQLite file is located at: \(url.path)"
+        return path
+    }
+    return nil
+}

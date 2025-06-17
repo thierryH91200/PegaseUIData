@@ -50,7 +50,7 @@ class TresuryLineViewModel: ObservableObject {
 
         // Appliquer la plage sélectionnée
         let startDate = Calendar.current.date(byAdding: .day, value: Int(self.selectedStart), to: minDate)!
-        let endDate = Calendar.current.date(byAdding: .day, value: Int(self.selectedEnd), to: minDate)!
+        let endDate   = Calendar.current.date(byAdding: .day, value: Int(self.selectedEnd), to: minDate)!
 
         let filteredTransactions = allTransactions.filter {
             $0.dateOperation >= startDate && $0.dateOperation <= endDate

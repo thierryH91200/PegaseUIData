@@ -31,6 +31,12 @@ import SwiftUI
 }
 
 extension EntityFolderAccount {
+    var childrenSorted: [EntityAccount] {
+        children.sorted { $0.name < $1.name }
+    }
+}
+
+extension EntityFolderAccount {
     func addAccounts(_ accounts: [EntityAccount]) {
         for account in accounts {
             self.addChild(account)

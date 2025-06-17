@@ -405,9 +405,11 @@ struct PDFDropDelegate: DropDelegate {
     }
 }
 
-func printTag( _ message: String) {
-    let tag = "[PegaseUIData]"
-    print("\(tag) \(message)")
+func printTag( _ message: String, flag : Bool = true) {
+    if flag == true {
+        let tag = "[PegaseUIData]"
+        print("\(tag) \(message)")
+    }
 }
 
 struct StatementDetailView: View {

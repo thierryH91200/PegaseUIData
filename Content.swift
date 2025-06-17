@@ -131,8 +131,11 @@ struct ContentView100: View {
     @State private var showImportOFX = false
     @State var viewModel = CSVViewModel()
 
-    
     @State private var selectedColor: String? = "United"
+
+    @State private var executed: Double = 0.0
+    @State private var planned: Double = 0.0
+    @State private var engaged: Double = 0.0
       
     var body: some View {
         HStack
@@ -144,7 +147,7 @@ struct ContentView100: View {
             }
             content :
             {
-                DetailContainer(selection2: $selection2, isVisible: $isVisible, selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)
+                DetailContainer(selection2: $selection2, isVisible: $isVisible, selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode, executed: $executed, planned: $planned, engaged: $engaged)
                     .navigationSplitViewColumnWidth( min: 150, ideal: 800)
             }
             detail :
@@ -323,10 +326,13 @@ struct DetailContainer: View {
     @Binding var isVisible: Bool
     @Binding var selectedTransaction: EntityTransaction?
     @Binding var isCreationMode: Bool
+    @Binding var executed: Double
+    @Binding var planned: Double
+    @Binding var engaged: Double
 
     var detailViews: [String: (Binding<Bool>) -> AnyView] {
         [
-            String(localized: "List of transactions",table: "Menu")     : { isVisible in AnyView(ListTransactionsView100(isVisible    : isVisible)) },
+            String(localized: "List of transactions",table: "Menu")     : { isVisible in AnyView(ListTransactionsView100(isVisible    : isVisible, executed: $executed, planned: $planned, engaged: $engaged)) },
             //selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)) },
             String(localized: "Cash flow curve",table: "Menu")          : { isVisible in AnyView(TreasuryCurveView(isVisible          : isVisible)) },
             String(localized: "Bank website",table: "Menu")             : { isVisible in AnyView(BankWebsiteView(isVisible            : isVisible)) },
@@ -354,10 +360,20 @@ struct DetailContainer: View {
     
     var body: some View {
         VStack {
+            if selection2 == String(localized: "List of transactions", table: "Menu") {
+                SummaryView(
+                    planned: planned,
+                    engaged: engaged,
+                    executed: executed,
+                )
+//                .padding()
+//                .background(Color.white)
+            }
+
             if let detailView = localizedDetailView(for: selection2) {
                 detailView($isVisible)
             } else {
-                Text("Content pour Sidebar 2 \(selection2 ?? "")")
+                Text("Content forr Sidebar 2 \(selection2 ?? "")")
             }
         }
     }
@@ -391,5 +407,3 @@ struct Sidebar2A: View {
         .frame(maxHeight: .infinity) // Prend toute la place disponible
     }
 }
-
-

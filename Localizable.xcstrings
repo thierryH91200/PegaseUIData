@@ -53,9 +53,6 @@
         }
       }
     },
-    "—" : {
-      "shouldTranslate" : false
-    },
     ", Incomes: %@" : {
       "localizations" : {
         "fr" : {
@@ -357,9 +354,21 @@
           }
         },
         "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld comptes"
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld compte"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld comptes"
+                }
+              }
+            }
           }
         },
         "he" : {
@@ -389,7 +398,7 @@
       }
     },
     "⋯" : {
-
+      "shouldTranslate" : false
     },
     "▶️" : {
       "shouldTranslate" : false
@@ -3404,7 +3413,11 @@
         }
       }
     },
+    "Content forr Sidebar 2 %@" : {
+
+    },
     "Content pour Sidebar 2 %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4199,62 +4212,7 @@
       }
     },
     "Decrease" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Decrease"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Decrease"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Diminuer"
-          }
-        },
-        "he" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        }
-      }
+
     },
     "Default sign" : {
       "localizations" : {
@@ -4499,7 +4457,14 @@
       }
     },
     "Delete the modePayment" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer le mode de paiement"
+          }
+        }
+      }
     },
     "Delete the rubric" : {
       "localizations" : {
@@ -7296,62 +7261,7 @@
       }
     },
     "Increase" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Increase"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Increase"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Augmenter"
-          }
-        },
-        "he" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        }
-      }
+
     },
     "Indicative" : {
       "localizations" : {
@@ -7844,7 +7754,14 @@
       }
     },
     "Load demo data" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Charger les données de démos"
+          }
+        }
+      }
     },
     "Match the columns :" : {
       "localizations" : {
@@ -8060,6 +7977,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Multiple modifications"
+          }
+        }
+      }
+    },
+    "Multiple value" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valeur multiple"
           }
         }
       }

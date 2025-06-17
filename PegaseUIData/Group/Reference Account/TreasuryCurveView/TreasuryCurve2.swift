@@ -26,6 +26,10 @@ struct TreasuryCurve: View {
     @State private var chartView : LineChartView?
     @State private var rotationAngle: Double = 0
     
+    @State var soldeRealise = 0.0
+    @State var soldePrevu   = 0.0
+    @State var soldeEngage  = 0.0
+
     @AppStorage("enableSoundFeedback") private var enableSoundFeedback: Bool = true
 
     var body: some View {
@@ -73,7 +77,7 @@ struct TreasuryCurve: View {
                             }
                             rotationAngle += 360
                             if enableSoundFeedback {
-                                NSSound(named: NSSound.Name("Pop"))?.play()
+                                NSSound(named: NSSound.Name("Ping"))?.play()
                             }
                             updateChart()
                         } label: {
@@ -90,7 +94,11 @@ struct TreasuryCurve: View {
                     }
                 }
                 .onAppear {
-                    
+                    let initAccount = InitAccountManager.shared.getAllData()
+                    soldeRealise = initAccount?.realise ?? 0
+                    soldePrevu   = initAccount?.prevu ?? 0
+                    soldeEngage  = initAccount?.engage ?? 0
+
                     DataContext.shared.context = modelContext
                     let allTransactions = ListTransactionsManager.shared.getAllData()
                     guard let first = allTransactions.first?.dateOperation,

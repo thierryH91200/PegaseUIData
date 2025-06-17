@@ -9,8 +9,6 @@ import SwiftUI
 import SwiftData
 
 
-
-
 struct TransactionLigne: View {
     
     @Environment(\.modelContext) private var modelContext
@@ -186,14 +184,9 @@ struct TransactionLigne: View {
         let isCommand = NSEvent.modifierFlags.contains(.command)
         let isShift = NSEvent.modifierFlags.contains(.shift)
         
-//        print("isShift: \(isShift), isCommand: \(isCommand)")
-
         if isShift, let lastID = transactionManager.lastSelectedTransactionID,
            let lastIndex = visibleTransactions.firstIndex(where: { $0.id == lastID }),
            let currentIndex = visibleTransactions.firstIndex(where: { $0.id == transaction.id }) {
-
-//            let range = lastIndex < currentIndex ? lastIndex...currentIndex : currentIndex...lastIndex
-//            let idsInRange = dataManager.listTransactions[range].map { $0.id }
 
             let range = lastIndex <= currentIndex
                 ? lastIndex...currentIndex
@@ -206,8 +199,8 @@ struct TransactionLigne: View {
             selectedTransactions.removeAll()
             selectedTransactions.formUnion(idsInRange)
             
-            print("Last index: \(lastIndex), Current index: \(currentIndex)")
-            print("IDs in range: \(idsInRange)")
+            printTag("Last index: \(lastIndex), Current index: \(currentIndex)")
+            printTag("IDs in range: \(idsInRange)")
             
         } else if isCommand {
             if selectedTransactions.contains(transaction.id) {

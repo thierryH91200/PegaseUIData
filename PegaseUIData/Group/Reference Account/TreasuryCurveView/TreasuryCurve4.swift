@@ -163,8 +163,8 @@ struct DGLineChartRepresentable: NSViewRepresentable {
         marker.interval = hourSeconds
 
         // MARK: Datasets
-        let set1 = setDataSet(values: values0, label: "Realise", color: #colorLiteral(red: 0.2745098174, green: 0.4862745106, blue: 0.1411764771, alpha: 1))
-        let set2 = setDataSet(values: values1, label: "Engaged", color: #colorLiteral(red: 0.5058823824, green: 0.3372549117, blue: 0.06666667014, alpha: 1))
+        let set1 = setDataSet(values: values0, label: "Realise",  color: #colorLiteral(red: 0.2745098174, green: 0.4862745106, blue: 0.1411764771, alpha: 1))
+        let set2 = setDataSet(values: values1, label: "Engaged",  color: #colorLiteral(red: 0.5058823824, green: 0.3372549117, blue: 0.06666667014, alpha: 1))
         let set3 = setDataSet(values: values2, label: "Planifie", color: #colorLiteral(red: 0.9529411793, green: 0.6862745285, blue: 0.1333333403, alpha: 1))
 
         let dataSet = LineChartData(dataSets: [set1, set2, set3])
@@ -264,7 +264,6 @@ struct DGLineChartRepresentable: NSViewRepresentable {
         var localGraph: [DataTresorerie] = []
 
         let initAccount = InitAccountManager.shared.getAllData()
-
         var soldeRealise = initAccount?.realise ?? 0
         var soldePrevu   = initAccount?.prevu ?? 0
         var soldeEngage  = initAccount?.engage ?? 0

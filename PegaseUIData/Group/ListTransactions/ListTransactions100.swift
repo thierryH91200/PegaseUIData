@@ -9,23 +9,32 @@
 import SwiftUI
 import SwiftData
 
-
 struct ListTransactionsView100: View {
     
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var dataManager           : ListDataManager
     
     @State private var selectedTransactions: Set<UUID> = []
     @Binding var isVisible: Bool
-
+    @Binding var executed: Double
+    @Binding var planned: Double
+    @Binding var engaged: Double
+    
+    private var transactions: [EntityTransaction] { dataManager.listTransactions }
+    
     var body: some View {
-        VStack {
-#if DEBUG
-            Button("Load demo data") {
-                loadDemoData()
-            }
-            .textCase(.lowercase) // ← empêche SwiftUI de mettre en majuscules
-            .padding(.bottom)
-#endif
+        VStack(spacing: 0) {
+            
+            
+            //#if DEBUG
+            //            Button("Load demo data") {
+            //                loadDemoData()
+            //            }
+            //            .textCase(.lowercase) // empêche SwiftUI de mettre en majuscules
+            //            .padding(.bottom)
+            //#endif
+            
+            Divider()
             ListTransactions200(isVisible: $isVisible, selectedTransactions: $selectedTransactions)
                 .padding()
                 .task {
@@ -41,7 +50,7 @@ struct ListTransactionsView100: View {
                         guard event.modifierFlags.contains(.command), let characters = event.charactersIgnoringModifiers else {
                             return event
                         }
-
+                        
                         switch characters {
                         case "c":
                             NotificationCenter.default.post(name: .copySelectedTransactions, object: nil)
@@ -57,7 +66,15 @@ struct ListTransactionsView100: View {
                         }
                     }
                 }
+                .onAppear(perform: updateSummary)
+                .onChange(of: transactions) { _ in updateSummary() }
         }
+    }
+    
+    private func updateSummary() {
+        self.executed = calculateExecuted()
+        self.engaged  = self.executed + calculateEngaged()
+        self.planned  = self.engaged + self.calculatePlanned()
     }
     
     @MainActor
@@ -85,6 +102,27 @@ struct ListTransactionsView100: View {
             ("Virement reçu", 350.00, 2),
             ("Abonnement streaming", -12.99, 1)
         ]
+    }
+    
+    func calculatePlanned() -> Double {
+        transactions
+            .filter { $0.status?.type == 0 }
+            .map(\.amount)
+            .reduce(0, +)
+    }
+    
+    func calculateEngaged() -> Double {
+        transactions
+            .filter { $0.status?.type == 1 }
+            .map(\.amount)
+            .reduce(0, +)
+    }
+    
+    func calculateExecuted() -> Double {
+        transactions
+            .filter { $0.status?.type == 2  }
+            .map(\.amount)
+            .reduce(0, +)
     }
 }
 
@@ -120,110 +158,111 @@ struct ListTransactions200: View {
     
     var body: some View {
         mainContent
-    
-        .onChange(of: colorManager.colorChoix) { old, new in
-        }
         
-        .onReceive(NotificationCenter.default.publisher(for: .transactionsImported)) { _ in
-            printTag("transactionsImported notification received")
-            
-            loadTransactions()
-            withAnimation {
-                refresh.toggle()
+            .onChange(of: colorManager.colorChoix) { old, new in
             }
-        }
         
-        .onChange(of: currentAccountManager.currentAccount) { old, new in
-            printTag("Changement de compte détecté: \(String(describing: new))")
-            loadTransactions()
-            
-            withAnimation {
-                refresh.toggle()
-            }
-        }
-        
-        .onChange(of: selectedTransactions) { _, _ in
-            printTag("selectionDidChange called")
-            selectionDidChange()
-        }
-        
-        .onAppear() {
-            balanceCalculation()
-            selectionDidChange()
-        }
-        
-        // Clipboard/copy/cut/paste handlers
-        .onReceive(NotificationCenter.default.publisher(for: .copySelectedTransactions)) { _ in
-            clipboardTransactions = transactions.filter { selectedTransactions.contains($0.id) }
-            isCutOperation = false
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .cutSelectedTransactions)) { _ in
-            clipboardTransactions = transactions.filter { selectedTransactions.contains($0.id) }
-            isCutOperation = true
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .pasteSelectedTransactions)) { _ in
-            if let targetAccount = CurrentAccountManager.shared.getAccount() {
-                
-                DataContext.shared.context = modelContext
-
-                for transaction in clipboardTransactions {
-                    
-                    let status = StatusManager.shared.find(name : transaction.status!.name)
-                    let paymentMode = PaymentModeManager.shared.find(name: transaction.paymentMode!.name)
-                    
-                    let newTransaction = EntityTransaction()
-                    newTransaction.dateOperation = transaction.dateOperation
-                    newTransaction.datePointage  =  transaction.datePointage
-                    newTransaction.status        = status
-                    newTransaction.paymentMode   = paymentMode
-                    newTransaction.checkNumber   = transaction.checkNumber
-                    newTransaction.bankStatement = transaction.bankStatement
-
-                    newTransaction.account = targetAccount
-
-                    for item in transaction.sousOperations {
-                        let sousOperations = EntitySousOperations()
-                                               
-                        let category = CategoryManager.shared.find(name: item.category!.name)
-                        
-                        sousOperations.libelle     = item.libelle
-                        sousOperations.amount      = item.amount
-                        sousOperations.category    = category
-                        sousOperations.transaction = newTransaction
-                        
-                        modelContext.insert(sousOperations)
-                        newTransaction.addSubOperation(sousOperations)
-                    }
-
-                    modelContext.insert(newTransaction)
-                }
-                if isCutOperation {
-                    for transaction in clipboardTransactions {
-                        modelContext.delete(transaction)
-                    }
-                }
-                try? modelContext.save()
+            .onReceive(NotificationCenter.default.publisher(for: .transactionsImported)) { _ in
+                printTag("transactionsImported notification received")
                 
                 loadTransactions()
-                clipboardTransactions = []
+                withAnimation {
+                    refresh.toggle()
+                }
+            }
+        
+            .onChange(of: currentAccountManager.currentAccount) { old, new in
+                printTag("Changement de compte détecté: \(String(describing: new))")
+                loadTransactions()
+                
+                withAnimation {
+                    refresh.toggle()
+                }
+            }
+        
+            .onChange(of: selectedTransactions) { _, _ in
+                printTag("selectionDidChange called")
+                selectionDidChange()
+            }
+        
+            .onAppear() {
+                balanceCalculation()
+                selectionDidChange()
+            }
+        
+        // Clipboard/copy/cut/paste handlers
+            .onReceive(NotificationCenter.default.publisher(for: .copySelectedTransactions)) { _ in
+                clipboardTransactions = transactions.filter { selectedTransactions.contains($0.id) }
                 isCutOperation = false
             }
-        }
+            .onReceive(NotificationCenter.default.publisher(for: .cutSelectedTransactions)) { _ in
+                clipboardTransactions = transactions.filter { selectedTransactions.contains($0.id) }
+                isCutOperation = true
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .pasteSelectedTransactions)) { _ in
+                if let targetAccount = CurrentAccountManager.shared.getAccount() {
+                    
+                    DataContext.shared.context = modelContext
+                    
+                    for transaction in clipboardTransactions {
+                        
+                        let status = StatusManager.shared.find(name : transaction.status!.name)
+                        let paymentMode = PaymentModeManager.shared.find(name: transaction.paymentMode!.name)
+                        
+                        let newTransaction = EntityTransaction()
+                        newTransaction.dateOperation = transaction.dateOperation
+                        newTransaction.datePointage  =  transaction.datePointage
+                        newTransaction.status        = status
+                        newTransaction.paymentMode   = paymentMode
+                        newTransaction.checkNumber   = transaction.checkNumber
+                        newTransaction.bankStatement = transaction.bankStatement
+                        
+                        newTransaction.account = targetAccount
+                        
+                        for item in transaction.sousOperations {
+                            let sousOperations = EntitySousOperations()
+                            
+                            let category = CategoryManager.shared.find(name: item.category!.name)
+                            
+                            sousOperations.libelle     = item.libelle
+                            sousOperations.amount      = item.amount
+                            sousOperations.category    = category
+                            sousOperations.transaction = newTransaction
+                            
+                            modelContext.insert(sousOperations)
+                            newTransaction.addSubOperation(sousOperations)
+                        }
+                        
+                        modelContext.insert(newTransaction)
+                    }
+                    if isCutOperation {
+                        for transaction in clipboardTransactions {
+                            modelContext.delete(transaction)
+                        }
+                    }
+                    try? modelContext.save()
+                    
+                    loadTransactions()
+                    clipboardTransactions = []
+                    isCutOperation = false
+                }
+            }
     }
     
     private var mainContent: some View {
-        VStack(spacing: 0) {
-            summaryViewSection
+        VStack {
+            //            summaryViewSection
             headerViewSection
             transactionListSection
         }
+        //        .padding()
     }
     
     private var summaryViewSection: some View {
-        SummaryView(executed: soldeBanque, planned: soldeReel, engaged: soldeFinal)
+        SummaryView( planned: soldeReel, engaged: soldeFinal, executed: soldeBanque )
             .frame(maxWidth: .infinity, maxHeight: 100)
     }
-
+    
     private var headerViewSection: some View {
         VStack {
             Text("\(compteCurrent?.name ?? String(localized: "No checking account"))")
@@ -237,7 +276,7 @@ struct ListTransactions200: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color(NSColor.windowBackgroundColor))
     }
-
+    
     private var transactionListSection: some View {
         NavigationView {
             GeometryReader { _ in
@@ -306,7 +345,7 @@ struct ListTransactions200: View {
             verticalDivider()
         }
     }
-
+    
     private func columnGroup2() -> some View {
         HStack(spacing: 0) {
             Text("Status").bold().frame(width: ColumnWidths.statut, alignment: .leading)
@@ -370,7 +409,7 @@ struct ListTransactions200: View {
     private func balanceCalculation() {
         // Récupère les données de l'init
         DataContext.shared.context = modelContext
-
+        
         guard let initCompte = InitAccountManager.shared.getAllData() else { return }
         
         // Initialisation des soldes

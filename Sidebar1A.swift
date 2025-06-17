@@ -1,13 +1,7 @@
-//
-//  Sidebar1A.swift
-//  PegaseUIData
-//
-//  Created by Thierry hentic on 20/11/2024.
-//
-
 import SwiftUI
-import AppKit
 import SwiftData
+import AppKit
+
 
 struct Sidebar1A: View {
     
@@ -27,9 +21,9 @@ struct Sidebar1A: View {
             ForEach(folders) { folder in
                 Section(header: SectionHeader(section: folder)) {
                     
-                    // Utilisation d'une valeur par défaut pour les enfants
-                    ForEach(folder.children.sorted(by: { $0.name < $1.name }), id: \.id) { child in
-                        AccountRow(account: child)
+//                    let sortedChildren = folder.children.sorted { $0.name < $1.name }
+                    ForEach(folder.childrenSorted, id: \.id) { child in
+                        AccountRow(account: child, isSelected: selectedAccount?.id == child.id)
                             .tag(child)
                     }
                 }
@@ -115,7 +109,7 @@ struct Sidebar1A: View {
         modelContext.insert(folder2)
         
         try? modelContext.save()
-    }    
+    }
 }
 
 class BalanceManager: ObservableObject {
@@ -164,35 +158,48 @@ struct SectionHeader: View {
 }
 
 
-//// Vue pour chaque ligne de compte
+
 struct AccountRow: View {
     let account: EntityAccount
-    
+    var isSelected: Bool
+
+    @Environment(\.colorScheme) var colorScheme
+
     var body: some View {
         HStack {
             Image(systemName: account.nameIcon)
-                .foregroundColor(.blue)
-                .font(.system(size: 18)) // Ajustez la taille ici
-            
-            VStack(alignment: .leading) {
+                .foregroundColor(.white)
+                .padding(6)
+                .background(isSelected ? Color.accentColor : Color.gray.opacity(0.3))
+                .clipShape(Circle())
+
+            VStack(alignment: .leading, spacing: 2) {
                 Text(String(account.name))
                     .font(.body)
-                    .foregroundColor(.black)
+                    .foregroundColor(isSelected ? .white : .primary)
                 Text(account.identity!.name + " " + account.identity!.surName)
                     .font(.caption)
-                    .foregroundColor(.gray)
+                    .foregroundColor(.secondary)
                 Text(account.initAccount!.codeAccount)
                     .font(.caption2)
-                    .foregroundColor(.gray)
+                    .foregroundColor(.secondary)
             }
             Spacer()
             Text("\(account.solde, specifier: "%.2f") €")
                 .font(.caption)
-                .foregroundColor(.green)
-                .frame(width: 80, alignment: .trailing) // Aligne à droite avec la même largeur fixe
+                .foregroundColor(account.solde >= 0 ? .green : .red)
+                .frame(width: 80, alignment: .trailing)
         }
+        .padding(8)
+        .background(
+            isSelected
+                ? (colorScheme == .dark ? Color.accentColor.opacity(0.5) : Color.accentColor.opacity(0.6))
+                : (colorScheme == .dark ? Color.white.opacity(0.05) : Color.clear)
+        )
+        .cornerRadius(6)
     }
 }
+
 
 struct Bouton: View {
     
@@ -226,19 +233,4 @@ struct Bouton: View {
         .padding(.bottom, 10)
     }
 }
-
-
-func getSQLiteFilePath() -> String? {
-    guard let _ = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).last else { return nil}
-    
-    if let url = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first {
-        let path = "Core Data SQLite file is located at: \(url.path)"
-        return path
-    }
-    return nil
-}
-
-
-
-
 

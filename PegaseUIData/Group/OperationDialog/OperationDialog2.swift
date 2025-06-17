@@ -175,10 +175,6 @@ struct OperationDialogView: View {
         formState.selectedStatus         = transaction.status
         formState.selectedAccount        = transaction.account
         
-//        DispatchQueue.main.async {
-//            formState.subOperations = transaction.sousOperations
-//        }
-
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             printTag("DispatchQueue : Nombre de transaction sous-opérations : \(transaction.sousOperations.count)")
             formState.subOperations = transaction.sousOperations
@@ -384,24 +380,20 @@ struct BatchEditFormView: View {
                 formState.bankStatement = value
             }
         }
-
+        
     }
     
     // Picker du mode de paiement
     private var modePaiementPicker: some View {
-        let binding = Binding<EntityPaymentMode>(
-            get: {
-                uniqueMode ?? EntityPaymentMode() // ou formState.paymentModes.first ?? EntityPaymentMode()
-            },
+        let binding = Binding<EntityPaymentMode?>(
+            get: { uniqueMode },
             set: { newValue in
                 formState.selectedMode = newValue
             }
         )
         
         return Picker("Payment method", selection: binding) {
-            if uniqueMode == nil {
-                Text("—").tag(EntityPaymentMode())
-            }
+            Text("Multiple value").tag(nil as EntityPaymentMode?)
             ForEach(formState.paymentModes, id: \.self) { mode in
                 Text(mode.name).tag(mode)
             }
@@ -410,21 +402,17 @@ struct BatchEditFormView: View {
     
     // Picker du statut
     private var statutPicker: some View {
-        let binding = Binding<EntityStatus>(
-            get: {
-                uniqueStatus ?? EntityStatus() // ou une valeur par défaut valide
-            },
+        let binding = Binding<EntityStatus?>(
+            get: { uniqueStatus },
             set: { newValue in
                 formState.selectedStatus = newValue
             }
         )
         
         return Picker("Status", selection: binding) {
-            if uniqueStatus == nil {
-                Text("—").tag(EntityStatus())
-            }
+            Text("Multiple value").tag(nil as EntityStatus?)
             ForEach(formState.status, id: \.self) { status in
-                Text(status.name).tag(status)
+                Text(status.name).tag(Optional(status)) // important : Optional()
             }
         }
     }
