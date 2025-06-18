@@ -131,6 +131,18 @@ struct TransactionFormViewModel: View {
                             Text(index.name).tag(index)
                         }
                     }
+                    HelpButton {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("• **Prévu** : date de pointage estimée, montant modifiable")
+                            Text("• **Engagé** : date de pointage estimée, montant modifiable")
+                            Text("• **Pointé** : date exacte du relevé, montant non modifiable")
+                            Divider()
+                            Text("💡 **Raccourcis clavier** : P = Prévu, E = Engagé, T = Pointé")
+                        }
+                        .font(.system(size: 12))
+                        .padding(8)
+                    }
+
                 }
             }
             GridRow {
@@ -143,6 +155,27 @@ struct TransactionFormViewModel: View {
                     TextField("", value: $amount, formatter: NumberFormatter())
                 }
             }
+        }
+    }
+    
+    private func handleKey(_ event: NSEvent) {
+        guard let character = event.charactersIgnoringModifiers?.uppercased() else { return }
+
+        switch character {
+        case "P":
+            if let prévu = status.first(where: { $0.name.hasPrefix("Prévu") }) {
+                selectedStatus = prévu
+            }
+        case "E":
+            if let engagé = status.first(where: { $0.name.hasPrefix("Engagé") }) {
+                selectedStatus = engagé
+            }
+        case "T":
+            if let pointé = status.first(where: { $0.name.hasPrefix("Pointé") }) {
+                selectedStatus = pointé
+            }
+        default:
+            break
         }
     }
     

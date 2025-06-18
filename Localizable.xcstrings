@@ -397,6 +397,24 @@
         }
       }
     },
+    "• **Committed**: estimated clocking date, modifiable amount" : {
+
+    },
+    "• **Engagé** : date de pointage estimée, montant modifiable" : {
+
+    },
+    "• **Planned**: estimated check-in date, editable amount" : {
+
+    },
+    "• **Pointé** : date exacte du relevé, montant non modifiable" : {
+
+    },
+    "• **Pointed**: exact date of the statement, amount not modifiable" : {
+
+    },
+    "• **Prévu** : date de pointage estimée, montant modifiable" : {
+
+    },
     "⋯" : {
       "shouldTranslate" : false
     },
@@ -467,6 +485,9 @@
           }
         }
       }
+    },
+    "💡 **Raccourcis clavier** : P = Prévu, E = Engagé, T = Pointé" : {
+
     },
     "🔔 Upcoming Reminders" : {
       "localizations" : {
@@ -594,6 +615,16 @@
           "stringUnit" : {
             "state" : "error",
             "value" : ""
+          }
+        }
+      }
+    },
+    "Actual balance" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solde réel"
           }
         }
       }
@@ -1588,6 +1619,16 @@
           "stringUnit" : {
             "state" : "error",
             "value" : ""
+          }
+        }
+      }
+    },
+    "Bank balance" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solde en banque"
           }
         }
       }
@@ -3415,65 +3456,6 @@
     },
     "Content forr Sidebar 2 %@" : {
 
-    },
-    "Content pour Sidebar 2 %@" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Content pour Sidebar 2 %@"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Content pour Sidebar 2 %@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Contenu pour la barre latérale 2 %@"
-          }
-        },
-        "he" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "error",
-            "value" : ""
-          }
-        }
-      }
     },
     "Contenu du tableau ici" : {
       "localizations" : {

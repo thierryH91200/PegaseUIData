@@ -160,7 +160,7 @@ open class RectMarker: MarkerImage
         str = "\nDate : " + stringForValue( dataEntryX )
         let labelAttributes: [NSAttributedString.Key: Any]? = [
             .font: NSFont.boldSystemFont(ofSize: 12.0),
-            .foregroundColor: NSUIColor.black ]
+            .foregroundColor: NSColor.black ]
         
         let addedString = NSAttributedString(string: str, attributes: labelAttributes)
         mutableString.append(addedString)

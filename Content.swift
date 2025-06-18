@@ -360,16 +360,6 @@ struct DetailContainer: View {
     
     var body: some View {
         VStack {
-            if selection2 == String(localized: "List of transactions", table: "Menu") {
-                SummaryView(
-                    planned: planned,
-                    engaged: engaged,
-                    executed: executed,
-                )
-//                .padding()
-//                .background(Color.white)
-            }
-
             if let detailView = localizedDetailView(for: selection2) {
                 detailView($isVisible)
             } else {

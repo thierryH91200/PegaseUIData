@@ -15,13 +15,11 @@ import DGCharts
 
 open class DateValueFormatter: NSObject, AxisValueFormatter
 {
-    
     var dateFormatter: DateFormatter
     var miniTime: Double
     var interval: Double
     
-    public init(miniTime: Double, interval: Double) {
-        //super.init()
+    init(miniTime: Double, interval: Double) {
         self.miniTime = miniTime
         self.interval = interval
         self.dateFormatter = DateFormatter()

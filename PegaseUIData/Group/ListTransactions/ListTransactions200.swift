@@ -22,6 +22,10 @@ struct GradientText: View {
     }
 }
 
+//Statut de l'opération : Prévu, Engagé, Pointé. Vous pouvez utiliser le clavier pour choisir la valeur en tapant P pour Prévu, E pour Engagé et T pour Pointé.
+// Lorsque le statut est Prévu ou Engagé, la date de pointage est estimée et le montant est modifiable.
+// Lorsque le statut est Pointé, la date de pointage doit être celle indiquée sur le relevé et le montant n'est plus modifiable.
+
 struct SummaryView: View {
     var planned: Double
     var engaged: Double
@@ -31,7 +35,7 @@ struct SummaryView: View {
         HStack(spacing: 0) {
             
             VStack {
-                Text("Planned")
+                Text("Final balance")
                 Text(String(format: "%.2f €", planned))
                     .font(.title)
                     .foregroundColor(.green)
@@ -41,7 +45,7 @@ struct SummaryView: View {
             .border(Color.black, width: 1)
 
             VStack {
-                Text("Engaged")
+                Text("Actual balance")
                 Text(String(format: "%.2f €", engaged))
                     .font(.title)
                     .foregroundColor(.orange)
@@ -51,7 +55,7 @@ struct SummaryView: View {
             .border(Color.black, width: 1)
             
             VStack {
-                Text("Executed")
+                Text("Bank balance")
                 Text(String(format: "%.2f €", executed))
                     .font(.title)
                     .foregroundColor(.blue)

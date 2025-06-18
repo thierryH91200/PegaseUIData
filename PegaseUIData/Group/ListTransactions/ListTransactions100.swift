@@ -23,8 +23,14 @@ struct ListTransactionsView100: View {
     private var transactions: [EntityTransaction] { dataManager.listTransactions }
     
     var body: some View {
+        
         VStack(spacing: 0) {
             
+            SummaryView(
+                planned: planned,
+                engaged: engaged,
+                executed: executed,
+            )
             
             //#if DEBUG
             //            Button("Load demo data") {
@@ -67,7 +73,7 @@ struct ListTransactionsView100: View {
                     }
                 }
                 .onAppear(perform: updateSummary)
-                .onChange(of: transactions) { _ in updateSummary() }
+                .onChange(of: transactions) { _, _ in updateSummary() }
         }
     }
     

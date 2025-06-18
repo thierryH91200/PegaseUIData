@@ -295,6 +295,23 @@ struct OperationDialogView: View {
 }
 
 
+struct HelpButton<Content: View>: View {
+    @State private var showHelp = false
+    let content: () -> Content
+
+    var body: some View {
+        Button(action: { showHelp.toggle() }) {
+            Image(systemName: "questionmark.circle")
+                .imageScale(.large)
+        }
+        .popover(isPresented: $showHelp, arrowEdge: .bottom) {
+            content()
+                .padding()
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
 // MARK: 6. Composant des boutons d'action
 struct ActionButtonsView: View {
     
@@ -409,10 +426,23 @@ struct BatchEditFormView: View {
             }
         )
         
-        return Picker("Status", selection: binding) {
-            Text("Multiple value").tag(nil as EntityStatus?)
-            ForEach(formState.status, id: \.self) { status in
-                Text(status.name).tag(Optional(status)) // important : Optional()
+        return HStack(alignment: .top, spacing: 8) {
+            Picker("Status", selection: binding) {
+                Text("Multiple value").tag(nil as EntityStatus?)
+                ForEach(formState.status, id: \.self) { status in
+                    Text(status.name).tag(Optional(status)) // important : Optional()
+                }
+            }
+            HelpButton {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("• **Planned**: estimated check-in date, editable amount")
+                    Text("• **Committed**: estimated clocking date, modifiable amount")
+                    Text("• **Pointed**: exact date of the statement, amount not modifiable")
+                    Divider()
+                    Text("💡 **Raccourcis clavier** : P = Prévu, E = Engagé, T = Pointé")
+                }
+                .font(.system(size: 12))
+                .padding(8)
             }
         }
     }
