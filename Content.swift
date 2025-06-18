@@ -75,16 +75,6 @@ class TransactionSelectionManager: ObservableObject, Identifiable {
     @Published var isCreationMode: Bool = true
     @Published var lastSelectedTransactionID: UUID?
     
-    private var cancellables = Set<AnyCancellable>()
-
-    init() {
-        $selectedTransactions
-            .sink { transactions in
-                printTag("Nombre de transactions sélectionnées : \(transactions.count)")
-            }
-            .store(in: &cancellables)
-    }
-
     var formMode: FormMode {
         switch selectedTransactions.count {
         case 0:

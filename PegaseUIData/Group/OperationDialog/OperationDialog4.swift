@@ -12,14 +12,9 @@ import SwiftData
 import Observation
 import Combine
 
-
-
 // MARK: 2. État du formulaire
 class TransactionFormState: ObservableObject {
-    
-    private var cancellables = Set<AnyCancellable>()
-
-    
+        
     @Published var accounts: [EntityAccount] = []
     @Published var linkedAccount: String = ""
     @Published var transactionDate: Date = Date()
@@ -45,11 +40,4 @@ class TransactionFormState: ObservableObject {
     @Published var selectedMode: EntityPaymentMode?
     @Published var selectedAccount: EntityAccount?
     
-    init() {
-        $subOperations
-            .sink { subOps in
-                printTag("TransactionFormState : Nombre de sous-opérations : \(subOps.count)")
-            }
-            .store(in: &cancellables)
-    }
 }
