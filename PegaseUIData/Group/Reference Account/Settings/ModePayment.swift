@@ -15,13 +15,11 @@ final class ModePaiementDataManager: ObservableObject {
             saveChanges()
         }
     }
-    
-    private var modelContext: ModelContext?
-    
-    func configure(with context: ModelContext) {
-        self.modelContext = context
+        
+    var modelContext: ModelContext? {
+        DataContext.shared.context
     }
-    
+
     /// Sauvegarde les changements dans le contexte SwiftData
     func saveChanges() {
         guard let modelContext = modelContext else {
@@ -154,11 +152,9 @@ struct ModePaymentView: View {
     }
     
     private func setupDataManager() {
+        
         DataContext.shared.context = modelContext
-        dataManager.configure(with: modelContext)
-//        if let account = currentAccountManager.currentAccount {
-            dataManager.modePayments = PaymentModeManager.shared.getAllData()
-//        }
+        dataManager.modePayments = PaymentModeManager.shared.getAllData()
     }
 
     private func removeSelectedItem() {

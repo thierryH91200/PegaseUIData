@@ -12,12 +12,10 @@ import SwiftData
 final class RubricDataManager: ObservableObject {
     @Published var rubrics: [EntityRubric] = []
     
-    private var modelContext: ModelContext?
-    
-    func configure(with context: ModelContext) {
-        self.modelContext = context
+    var modelContext: ModelContext? {
+        DataContext.shared.context
     }
-    
+
     func saveChanges() {
         do {
             try modelContext?.save()
@@ -76,7 +74,6 @@ struct RubricView: View {
                 }
                 
                 .onAppear {
-                    dataManager.configure(with: modelContext)
                     DataContext.shared.context = modelContext
 
                     rubriques = RubricManager.shared.getAllData()

@@ -19,13 +19,10 @@ final class CheckDataManager: ObservableObject {
             }
         }
     
-    private var modelContext: ModelContext?
-    
-    // Configure le contexte de modèle pour la gestion des données
-    func configure(with context: ModelContext) {
-        self.modelContext = context
+    var modelContext: ModelContext? {
+        DataContext.shared.context
     }
-    
+
     // Sauvegarde les modifications dans SwiftData
     func saveChanges() {
         guard let modelContext = modelContext else {
@@ -175,7 +172,6 @@ struct CheckView: View {
     // Configure le gestionnaire de données
     private func setupDataManager() {
         DataContext.shared.context = modelContext
-        dataManager.configure(with: modelContext)
         dataManager.checkBooks = ChequeBookManager.shared.getAllData()
     }
     

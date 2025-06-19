@@ -11,14 +11,11 @@ import SwiftData
 // Gestionnaire de données pour les listTransactions
 final class ListDataManager: ObservableObject {
     @Published var listTransactions: [EntityTransaction] = []
-     
-    private var modelContext: ModelContext?
-    
-    // Configure le contexte de modèle pour la gestion des données
-    func configure(with context: ModelContext) {
-        self.modelContext = context
+         
+    var modelContext: ModelContext? {
+        DataContext.shared.context
     }
-    
+
     // Sauvegarde les modifications dans SwiftData
     func saveChanges() {
         guard let modelContext = modelContext else {

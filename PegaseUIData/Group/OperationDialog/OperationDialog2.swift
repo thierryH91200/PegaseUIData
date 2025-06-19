@@ -131,7 +131,6 @@ struct OperationDialogView: View {
     
     // Méthodes extraites et simplifiées
     private func configureDataManagers() {
-        dataManager.configure(with: modelContext)
         DataContext.shared.context = modelContext
         formState.accounts = AccountManager.shared.getAllData()
     }

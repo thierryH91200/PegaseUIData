@@ -20,12 +20,10 @@ final class StatementDataManager: ObservableObject {
         }
     }
     
-    private var modelContext: ModelContext?
-    
-    func configure(with context: ModelContext) {
-        self.modelContext = context
+    var modelContext: ModelContext? {
+        DataContext.shared.context
     }
-    
+
     func saveChanges() {
         
         do {

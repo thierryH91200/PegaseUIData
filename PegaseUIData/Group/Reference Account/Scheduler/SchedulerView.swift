@@ -19,11 +19,10 @@ final class SchedulerDataManager: ObservableObject {
         }
     }
     
-    private var modelContext: ModelContext?
-    func configure(with context: ModelContext) {
-        self.modelContext = context
+    var modelContext: ModelContext? {
+        DataContext.shared.context
     }
-    
+
     func saveChanges() {
         
         do {
@@ -199,7 +198,6 @@ struct Scheduler: View {
     
     private func setupDataManager() {
         DataContext.shared.context = modelContext
-        dataManager.configure(with: modelContext)
         
         if currentAccountManager.currentAccount != nil {
             dataManager.schedulers = SchedulerManager.shared.getAllData()!

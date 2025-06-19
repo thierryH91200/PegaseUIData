@@ -15,12 +15,10 @@ final class IdentityDataManager: ObservableObject {
         }
     }
     
-    private var modelContext: ModelContext?
-    
-    func configure(with context: ModelContext) {
-        self.modelContext = context
+    var modelContext: ModelContext? {
+        DataContext.shared.context
     }
-    
+
     func saveChanges() {
        
         do {
@@ -63,9 +61,7 @@ struct IdentityView: View {
         .frame(width: 600)
         .cornerRadius(10)
         .onAppear {
-            
-            dataManager.configure(with: modelContext)
-            
+                        
             // Créer un nouvel enregistrement si la base de données est vide
             if dataManager.identity == nil {
                 DataContext.shared.context = modelContext

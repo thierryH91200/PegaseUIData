@@ -179,10 +179,11 @@ struct AccountRow: View {
                     .foregroundColor(isSelected ? .white : .primary)
                 Text(account.identity!.name + " " + account.identity!.surName)
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(isSelected ? .white : .primary)
                 Text(account.initAccount!.codeAccount)
                     .font(.caption2)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(isSelected ? .white : .primary)
+
             }
             Spacer()
             Text("\(account.solde, specifier: "%.2f") €")

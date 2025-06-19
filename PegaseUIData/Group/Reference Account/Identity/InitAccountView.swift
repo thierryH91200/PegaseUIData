@@ -16,12 +16,10 @@ final class InitAccountDataManager: ObservableObject {
         }
     }
     
-    private var modelContext: ModelContext?
-    
-    func configure(with context: ModelContext) {
-        self.modelContext = context
+    var modelContext: ModelContext? {
+        DataContext.shared.context
     }
-    
+
     func saveChanges() {
        
         do {
@@ -78,8 +76,6 @@ struct InitAccountView: View {
         .frame(width: 800, height: 600)
         .onAppear {
             
-            dataManager.configure(with: modelContext)
-
             withAnimation {
                 initializeData()
             }

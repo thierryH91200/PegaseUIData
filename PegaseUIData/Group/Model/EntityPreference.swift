@@ -38,7 +38,7 @@ import SwiftUI
 }
 
 protocol PreferenceManaging {
-//    func configure(with modelContext: ModelContext)
+
     func defaultPref(account: EntityAccount) -> EntityPreference?
     func getAllData(for account: EntityAccount?) -> EntityPreference?
     func saveContext()

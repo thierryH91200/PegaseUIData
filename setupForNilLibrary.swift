@@ -77,24 +77,15 @@ final class InitManager {
     }
     
     // Contexte pour les modifications
-    var modelContext : ModelContext?
-    var validContext : ModelContext {
-        guard let context = modelContext else {
-            printTag("File: \(#file), Function: \(#function), line: \(#line)")
-            fatalError("ModelContext non configuré. Veuillez appeler configure.")
-        }
-        return context
+    var modelContext: ModelContext? {
+        DataContext.shared.context
     }
 
     private init() { }
 
-    func configure(with modelContext: ModelContext) {
-        self.modelContext = modelContext
-    }
-    
     func initialize() {
         DataContext.shared.context = modelContext
-        let entities = AccountManager.shared.getRoot(modelContext: validContext)
+        let entities = AccountManager.shared.getRoot(modelContext: modelContext!)
         guard entities.isEmpty == true else { return }
         setupDefaultLibrary()
     }
@@ -102,8 +93,8 @@ final class InitManager {
     func setupDefaultLibrary() {
         
         // Création des comptes
-        let folder1 = AccountFactory.createHeader(modelContext: validContext, name: "Bank Account")
-        let folder2 = AccountFactory.createHeader(modelContext: validContext, name: "Save")
+        let folder1 = AccountFactory.createHeader(modelContext: modelContext!, name: "Bank Account")
+        let folder2 = AccountFactory.createHeader(modelContext: modelContext!, name: "Save")
         
         let typeAccounts : [String] = [
             String(localized :"Current account1",table : "Account"),
@@ -124,12 +115,12 @@ final class InitManager {
         
         for config in accountsConfig[0...3] {
             var account = AccountFactory.createAccount(
-                modelContext: validContext,
+                modelContext: modelContext!,
                 name: config.0,
                 icon: config.1 )
             
             account = AccountFactory.createOptionAccount(
-                modelContext: validContext,
+                modelContext: modelContext!,
                 account : account,
                 idName: config.2,
                 idSurName: config.3,
@@ -139,12 +130,12 @@ final class InitManager {
 
         for config in accountsConfig[4...5] {
             var account = AccountFactory.createAccount(
-                modelContext: validContext,
+                modelContext: modelContext!,
                 name: config.0,
                 icon: config.1
             )
             account = AccountFactory.createOptionAccount(
-                modelContext: validContext,
+                modelContext: modelContext!,
                 account : account,
                 idName: config.2,
                 idSurName: config.3,
@@ -153,8 +144,8 @@ final class InitManager {
         }
         
         // Enregistrer les dossiers
-        validContext.insert(folder1)
-        validContext.insert(folder2)
+        modelContext?.insert(folder1)
+        modelContext?.insert(folder2)
         
         // Enregistrement des modifications
         saveContext()
@@ -167,7 +158,7 @@ final class InitManager {
             printTag("Erreur : chemin SQLite introuvable.")
         }
         do {
-            try validContext.save()
+            try modelContext?.save()
             printTag("Sauvegarde réussie.")
         } catch {
             printTag("Erreur : \(error.localizedDescription)")

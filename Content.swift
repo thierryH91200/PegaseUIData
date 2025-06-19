@@ -13,7 +13,7 @@ class ContentViewModel: ObservableObject {
     @Published var isInitialized = false
 
     init(modelContext: ModelContext) {
-        InitManager.shared.configure(with: modelContext)
+        DataContext.shared.context = modelContext
         InitManager.shared.initialize()
         isInitialized = true // Marqueur pour indiquer la fin de l'initialisation
     }

@@ -170,8 +170,6 @@ struct SubOperationDialog: View {
         
     func saveSubOperation() {
         if transactionManager.isCreationMode == true { // Création
-//            ListTransactionsManager.shared.configure(with: modelContext)
-//            ListTransactionsManager.shared.createTransactions(formState: formState)
             formState.currentSousTransaction = EntitySousOperations()
             subOperation = formState.currentSousTransaction
         }
