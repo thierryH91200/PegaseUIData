@@ -7736,6 +7736,7 @@
       }
     },
     "Load demo data" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -9786,6 +9787,7 @@
       }
     },
     "Reset the base" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {

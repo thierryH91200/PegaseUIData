@@ -367,7 +367,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.94;
+				MARKETING_VERSION = 0.95;
 				PRODUCT_BUNDLE_IDENTIFIER = perso.PegaseUIData;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -400,7 +400,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.94;
+				MARKETING_VERSION = 0.95;
 				PRODUCT_BUNDLE_IDENTIFIER = perso.PegaseUIData;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
