@@ -133,11 +133,11 @@ struct TransactionFormViewModel: View {
                     }
                     HelpButton {
                         VStack(alignment: .leading, spacing: 6) {
-                            Text("• **Prévu** : date de pointage estimée, montant modifiable")
-                            Text("• **Engagé** : date de pointage estimée, montant modifiable")
-                            Text("• **Pointé** : date exacte du relevé, montant non modifiable")
+                            Text("• **Planned**: estimated check-in date, amount subject to changee")
+                            Text("• **Committed**: estimated check-in date, modifiable amount")
+                            Text("• **Pointed**: exact date of the statement, amount not modifiable")
                             Divider()
-                            Text("💡 **Raccourcis clavier** : P = Prévu, E = Engagé, T = Pointé")
+                            Text("💡 **Keyboard shortcuts**: P = Planned, E = Committed, T = Pointed")
                         }
                         .font(.system(size: 12))
                         .padding(8)

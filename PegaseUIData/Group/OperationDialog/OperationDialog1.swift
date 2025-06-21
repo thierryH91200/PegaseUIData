@@ -27,6 +27,7 @@ struct OperationDialog: View {
         }
         .padding()
     }
+    
 }
 
 

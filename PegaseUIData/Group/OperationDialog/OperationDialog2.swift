@@ -438,7 +438,7 @@ struct BatchEditFormView: View {
                     Text("• **Committed**: estimated clocking date, modifiable amount")
                     Text("• **Pointed**: exact date of the statement, amount not modifiable")
                     Divider()
-                    Text("💡 **Raccourcis clavier** : P = Prévu, E = Engagé, T = Pointé")
+                    Text("💡 **Keyboard shortcuts**: P = Planned, E = Committed, T = Pointed")
                 }
                 .font(.system(size: 12))
                 .padding(8)

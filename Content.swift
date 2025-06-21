@@ -353,7 +353,7 @@ struct DetailContainer: View {
             if let detailView = localizedDetailView(for: selection2) {
                 detailView($isVisible)
             } else {
-                Text("Content forr Sidebar 2 \(selection2 ?? "")")
+                Text("Content for Sidebar 2 \(selection2 ?? "")")
             }
         }
     }
