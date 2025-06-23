@@ -112,21 +112,21 @@ struct ListTransactionsView100: View {
     
     func calculatePlanned() -> Double {
         transactions
-            .filter { $0.status?.type == 0 }
+            .filter { $0.status?.type == .planned }
             .map(\.amount)
             .reduce(0, +)
     }
     
     func calculateEngaged() -> Double {
         transactions
-            .filter { $0.status?.type == 1 }
+            .filter { $0.status?.type == .inProgress }
             .map(\.amount)
             .reduce(0, +)
     }
     
     func calculateExecuted() -> Double {
         transactions
-            .filter { $0.status?.type == 2  }
+            .filter { $0.status?.type == .executed  }
             .map(\.amount)
             .reduce(0, +)
     }
@@ -433,18 +433,16 @@ struct ListTransactions200: View {
         for index in stride(from: count - 1, to: -1, by: -1) {
             let transaction = transactions[index]
             
-            let status = Int(transaction.status?.type ?? 1)
+            let status = transaction.status?.type ?? .inProgress
             
             // Mise à jour des soldes en fonction du status
             switch status {
-            case 0:
+            case .planned:
                 balancePrevu += transaction.amount
-            case 1:
+            case .inProgress:
                 balanceEngage += transaction.amount
-            case 2:
+            case .executed:
                 balanceRealise += transaction.amount
-            default:
-                balancePrevu += transaction.amount
             }
             
             // Calcul du solde de la transaction

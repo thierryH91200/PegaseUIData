@@ -12,6 +12,7 @@ import SwiftUI
 enum EnumError: Error {
     case contextNotConfigured
     case accountNotFound
+    case invalidStatusType
     case saveFailed
     case fetchFailed
 }

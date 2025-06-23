@@ -88,13 +88,17 @@ struct OperationDialogView: View {
                     if transactionManager.isCreationMode == false, let transaction = transactionManager.selectedTransaction {
                         loadTransactionData(transaction)
                     }
-
+                    
                 } catch {
                     printTag("Failed to configure: \(error)")
                 }
             }
             setStatut = Set(transactionManager.selectedTransactions.map { $0.status! })
-            setModePaiement = Set(transactionManager.selectedTransactions.map { $0.paymentMode ?? EntityPaymentMode()})
+            
+            setModePaiement = Set(
+                transactionManager.selectedTransactions
+                    .compactMap { $0.paymentMode } // Ignore ceux qui sont nil
+            )
         }
     }
     

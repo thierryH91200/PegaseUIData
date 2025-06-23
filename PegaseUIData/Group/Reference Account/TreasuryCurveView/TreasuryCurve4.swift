@@ -290,11 +290,11 @@ struct DGLineChartRepresentable: NSViewRepresentable {
 
             for tx in dayTransactions {
                 switch tx.status?.type {
-                case 0:
+                case .planned:
                     prevu += tx.amount
-                case 1:
+                case .inProgress:
                     engage += tx.amount
-                case 2, .none, .some(_):
+                case .executed?, .none, .some(_):
                     soldeRealise += tx.amount
                 }
             }

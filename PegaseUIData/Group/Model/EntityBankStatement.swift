@@ -62,13 +62,13 @@ class EntityBankStatement: Identifiable {
 }
 
 extension EntityBankStatement {
+    
+    func formatEuro(_ value: Double) -> String {
+        String(format: "%.2f €", value)
+    }
 
-    var formattedStartSolde: String {
-        String(format: "%.2f €", startSolde)
-    }
-    var formattedInterSolde: String {
-        String(format: "%.2f €", interSolde)
-    }
+    var formattedStartSolde: String { formatEuro(startSolde) }
+    var formattedInterSolde: String { formatEuro(startSolde) }
     
     var accountName: String {
         account.identity?.name ?? ""

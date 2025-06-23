@@ -104,6 +104,7 @@ struct TransactionFormViewModel: View {
                 FormField(label: "Transaction Date") {
                     DatePicker("", selection: $transactionDate, displayedComponents: .date)
                 }
+                .disabled(transactionManager.selectedTransactions.count > 1)
             }
             GridRow {
                 FormField(label: "Payment method") {
@@ -123,6 +124,7 @@ struct TransactionFormViewModel: View {
                 FormField(label: "Date of pointing") {
                     DatePicker("", selection: $pointingDate, displayedComponents: .date)
                 }
+                .disabled(transactionManager.selectedTransactions.count > 1)
             }
             GridRow {
                 FormField(label: "Status") {

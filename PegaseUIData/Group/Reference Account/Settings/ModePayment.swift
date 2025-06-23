@@ -288,4 +288,3 @@ struct ModePaiementFormView: View {
     }
 }
 
-

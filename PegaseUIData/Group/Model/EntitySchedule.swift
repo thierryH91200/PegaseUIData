@@ -71,7 +71,19 @@ extension EntitySchedule {
     }
 }
 
-final class SchedulerManager {
+protocol ScheduleManaging {
+//    func create(account: EntityAccount?, name: String, type: Int, color: NSColor) throws -> EntityStatus?
+//    func find( account: EntityAccount?, name: String) -> EntityStatus?
+//
+    func getAllData() -> [EntitySchedule]?
+//    func save()
+//    func defaultStatus(account: EntityAccount)
+}
+
+
+final class SchedulerManager: ScheduleManaging {
+
+    
     
     @Published var entities = [EntitySchedule]()
     

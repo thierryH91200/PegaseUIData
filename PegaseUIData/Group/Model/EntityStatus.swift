@@ -11,41 +11,37 @@ import SwiftUI
 
 @Model public class EntityStatus {
     
-    var name: String = ""
-    var type: Int = 0
+    var name: String
+    var rawType: Int
+    
     @Attribute(.transformable(by: ColorTransformer.self)) var color: NSColor
-    
     var account: EntityAccount
-    
     @Attribute(.unique) var uuid: UUID = UUID()
+
     public var id: UUID { uuid }
 
-    public init(name: String, type: Int, color: NSColor ) {
-        guard let account = CurrentAccountManager.shared.getAccount() else {
-            self.name = name
-            self.type = type
-            self.color = color
-            self.account = EntityAccount()
-            return
-        }
-        self.name = name
-        self.type = type
-        self.color = color
+    var type: StatusType {
+        get { StatusType(rawValue: rawType) ?? .planned }
+        set { rawType = newValue.rawValue }
+    }
+
+    init(type: StatusType, account: EntityAccount) {
+        self.name = type.localizedName
+        self.rawType = type.rawValue
+        self.color = type.color
         self.account = account
     }
-    init() {
-        name = "test"
-        self.color = .black
+}
 
-        self.account = CurrentAccountManager.shared.getAccount()!
-
+extension EntityStatus: CustomStringConvertible {
+    public var description: String {
+        "Status: \(name), type: \(type), color: \(color)"
     }
 }
 
 protocol StatusManaging {
     func create(account: EntityAccount?, name: String, type: Int, color: NSColor) throws -> EntityStatus?
     func find( account: EntityAccount?, name: String) -> EntityStatus?
-
     func getAllData(for account: EntityAccount?) -> [EntityStatus]?
     func saveContext()
     func defaultStatus(account: EntityAccount)
@@ -53,7 +49,7 @@ protocol StatusManaging {
 
 //@Observable
 final class StatusManager: StatusManaging {
-
+    
     static let shared = StatusManager()
     
     var entityStatus = [EntityStatus]()
@@ -61,32 +57,39 @@ final class StatusManager: StatusManaging {
     var modelContext: ModelContext? {
         DataContext.shared.context
     }
-
-    private init() { }
+    
+    private init() {}
     
     func create(account: EntityAccount?, name: String, type: Int, color: NSColor) throws -> EntityStatus? {
-//        guard let account = account else {
-//            throw EnumError.accountNotFound
-//        }
-                
-        let newMode = EntityStatus(name: name, type: type, color: color)
-        modelContext?.insert(newMode)
-        try save()
-        return newMode
-    }
+        
+        guard let statusType = StatusType(rawValue: type) else {
+            throw EnumError.invalidStatusType
+        }
 
+        guard let context = modelContext else { return nil }
+        guard let account = account ?? CurrentAccountManager.shared.getAccount() else {
+            throw EnumError.accountNotFound
+        }
+        
+        let newStatus = EntityStatus( type: statusType, account: account)
+        context.insert(newStatus)
+        try context.save()
+        return newStatus
+    }
+    
     func find( account: EntityAccount? = nil, name: String) -> EntityStatus? {
         
-        let account = CurrentAccountManager.shared.getAccount()!
+        let account = account ?? CurrentAccountManager.shared.getAccount()
+        guard let account = account else { return nil }
         
         let lhs = account.uuid
         let predicate = #Predicate<EntityStatus> { $0.account.uuid == lhs && $0.name == name }
         let sort = [SortDescriptor(\EntityStatus.name, order: .forward)] // Trier par le nom
-
+        
         let fetchDescriptor = FetchDescriptor<EntityStatus>(
             predicate: predicate, // Filtrer par le compte
             sortBy: sort )
-
+        
         do {
             let searchResults = try modelContext?.fetch(fetchDescriptor) ?? []
             let result = searchResults.isEmpty == false ? searchResults.first : nil
@@ -96,16 +99,16 @@ final class StatusManager: StatusManaging {
             return nil
         }
     }
-
+    
     func getAllData(for account: EntityAccount?) -> [EntityStatus]? {
         guard let account = account else {
             printTag("Erreur : Account est nil")
             return nil
         }
-
+        
         let accountID = account.uuid
         let predicate = #Predicate<EntityStatus> { entity in entity.account.uuid == accountID }
-        let sort = [SortDescriptor(\EntityStatus.type, order: .forward)]
+        let sort = [SortDescriptor(\EntityStatus.rawType, order: .forward)]
         
         let fetchDescriptor = FetchDescriptor<EntityStatus>(
             predicate: predicate,
@@ -121,13 +124,10 @@ final class StatusManager: StatusManaging {
     
     func save () throws {
         
-        do {
-            try modelContext?.save()
-        } catch {
-            throw EnumError.saveFailed
-        }
+        guard let context = modelContext else { throw EnumError.saveFailed }
+        try context.save()
     }
-
+    
     func saveContext() {
         if let path = getSQLiteFilePath() {
             printTag("Base de données SQLite : \(path)")
@@ -144,38 +144,46 @@ final class StatusManager: StatusManaging {
     }
     
     func defaultStatus(account: EntityAccount) {
-        
         entityStatus.removeAll()
         
-        // Liste des noms et couleurs des status
-        let names = [ String(localized :"Planned"),
-                      String(localized :"Engaged"),
-                      String(localized :"Executed") ]
-        
-        let status: [(name: String, type : Int, color: NSColor)] = [
-            ( names[0], 0, .blue),
-            ( names[1], 1, .green),
-            ( names[2], 2, .red)
-        ]
-        
-        // Création des entités
-        status.forEach {
-            try!  _ = create(account: account, name: $0.name, type: $0.type, color: $0.color)
+        for type in StatusType.allCases {
+            let status = EntityStatus(type: type, account: account)
+            modelContext?.insert(status)
         }
-               
-        let lhs = account.uuid
-        let predicate = #Predicate<EntityStatus>{ entity in entity.account.uuid == lhs }
-        let sort = [SortDescriptor(\EntityStatus.type, order: .forward)]
         
-        let fetchDescriptor = FetchDescriptor<EntityStatus>(
-            predicate: predicate,
-            sortBy: sort )
-        
-        // Récupération des entités EntityStatus liées au compte actuel
         do {
-            entityStatus = try modelContext?.fetch(fetchDescriptor) ?? []
+            try modelContext?.save()
         } catch {
-            printTag("Erreur lors de la récupération des status : \(error.localizedDescription)")
+            printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+        }
+        
+        _ = getAllData(for: account)
+    }
+}
+
+enum StatusType: Int, CaseIterable, Identifiable {
+    case planned = 0
+    case inProgress = 1
+    case executed = 2
+
+    var id: Int { rawValue }
+
+    var localizedName: String {
+        switch self {
+        case .planned:
+            return String(localized: "Planned")
+        case .inProgress:
+            return String(localized: "In progress")
+        case .executed:
+            return String(localized: "Executed")
+        }
+    }
+
+    var color: NSColor {
+        switch self {
+        case .planned: return .blue
+        case .inProgress: return .green
+        case .executed: return .red
         }
     }
 }

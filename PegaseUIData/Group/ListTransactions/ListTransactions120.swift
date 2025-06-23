@@ -111,7 +111,7 @@ struct TransactionLigne: View {
             }
             // Liste des noms et couleurs des status
             let names = [ String(localized :"Planned"),
-                          String(localized :"Engaged"),
+                          String(localized :"In progres"),
                           String(localized :"Executed") ]
             Menu {
                 Button(names[0]) { mettreAJourStatusPourSelection(nouveauStatus: names[0]) }

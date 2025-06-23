@@ -61,13 +61,13 @@ final class CacheEntry<T> {
 protocol PaymentModeManaging {
     
     func create(account: EntityAccount?, name: String, color: NSColor) throws -> EntityPaymentMode?
-    func update(entity: EntityPaymentMode, name: String, color: NSColor) 
+    func update(entity: EntityPaymentMode, name: String, color: NSColor)
     func getAllData() -> [EntityPaymentMode]?
     func getAllNames(for account: EntityAccount) -> [String]
     func findOrCreate(account: EntityAccount, name: String, color: Color, uuid: UUID) -> EntityPaymentMode
     func find( account: EntityAccount?, name: String) -> EntityPaymentMode?
     func delete(entity: EntityPaymentMode)
-    func defaultModePaiement(for account: EntityAccount)
+    func createDefaultPaymentModes(for account: EntityAccount)
 
     func save () throws
 
@@ -133,13 +133,10 @@ final class PaymentModeManager : PaymentModeManaging {
     
     // MARK: getAllNames ModePaiement
     func getAllNames(for account: EntityAccount) -> [String] {
-        var names = [String]()
         
         let modePayments =  getAllData()
         
-        for modePayment in modePayments ?? [] {
-            names.append(modePayment.name)
-        }
+        let names = (modePayments ?? []).map { $0.name }
         return names
     }
 
@@ -156,7 +153,10 @@ final class PaymentModeManager : PaymentModeManaging {
     // MARK: find ModePaiement
     func find( account: EntityAccount? = nil, name: String) -> EntityPaymentMode? {
         
-        let account = CurrentAccountManager.shared.getAccount()!
+        guard let account = account ?? CurrentAccountManager.shared.getAccount() else {
+            printTag("Aucun compte disponible pour la recherche.")
+            return nil
+        }
         
         let lhs = account.uuid
         let predicate = #Predicate<EntityPaymentMode> { $0.account.uuid == lhs && $0.name == name }
@@ -192,7 +192,7 @@ final class PaymentModeManager : PaymentModeManaging {
     }
 
     // MARK: default ModePaiement
-    func defaultModePaiement(for account: EntityAccount) {
+    func createDefaultPaymentModes(for account: EntityAccount) {
         entities.removeAll()
         
         // Liste des noms et couleurs des méthodes de paiement
@@ -273,7 +273,7 @@ class PaymentModeViewModel: ObservableObject {
     func add(name: String, color: Color) {
         do {
             let _ = try manager.create(account: account, name: name, color: NSColor.fromSwiftUIColor(color))
-            reloadData()
+            loadInitialData()
         } catch EnumError.accountNotFound {
             // Gérer l'erreur account non trouvé
             printTag("Erreur : compte non trouvé")
@@ -293,19 +293,18 @@ class PaymentModeViewModel: ObservableObject {
         manager.delete(entity: mode) // Appelle la méthode sans try
 
         modePayments.remove(at: index)
-        reloadData()      // Recharger depuis la base de données
+        loadInitialData()      // Recharger depuis la base de données
     }
     
     
     // MARK: Communication avec les services ou les managers :
-    @discardableResult
-    func reloadData() -> [EntityPaymentMode] {
-        modePayments = manager.getAllData()!
-        return modePayments
-    }
+//    @discardableResult
+//    func reloadData() -> [EntityPaymentMode] {
+//        modePayments = manager.getAllData()!
+//        return modePayments
+//    }
     
     func saveChanges() throws {
         try manager.save()
     }
 }
-
