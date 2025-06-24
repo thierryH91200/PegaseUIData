@@ -23,7 +23,7 @@ final class ListTransactionsManager: ListManaging {
     var entities : [EntityTransaction] = []
     var entity : EntityTransaction = EntityTransaction()
     
-    private var cache: ListTransactionsCache = ListTransactionsCache()
+//    private var cache: ListTransactionsCache = ListTransactionsCache()
 
     var ascending = false
     
@@ -204,13 +204,13 @@ final class ListTransactionsManager: ListManaging {
         currentAccount.isDemo = false
     }
     
-    func clearCache(for account: EntityAccount) async {
-        await cache.invalidate(key: account.uuid)
-    }
-    
-    func clearAllCache() async {
-        await cache.invalidateAll()
-    }
+//    func clearCache(for account: EntityAccount) async {
+//        await cache.invalidate(key: account.uuid)
+//    }
+//    
+//    func clearAllCache() async {
+//        await cache.invalidateAll()
+//    }
 }
 
 class ListTransactionsViewModel: ObservableObject {

@@ -268,10 +268,10 @@ struct OperationRow: View {
             transaction.checkNumber   = "0"
             transaction.account       = account
             
-            let sousTransaction = EntitySousOperations()
-            sousTransaction.libelle  = libelle
-            sousTransaction.amount  = amount
-            sousTransaction.category = entityCategory
+            let sousTransaction         = EntitySousOperation()
+            sousTransaction.libelle     = libelle
+            sousTransaction.amount      = amount
+            sousTransaction.category    = entityCategory
             sousTransaction.transaction = transaction
             
             context.insert(sousTransaction)

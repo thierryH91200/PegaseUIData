@@ -18,7 +18,7 @@ struct SubOperationDialog: View {
     
     @EnvironmentObject var transactionManager: TransactionSelectionManager
     
-    @Binding var subOperation: EntitySousOperations?
+    @Binding var subOperation: EntitySousOperation?
     
     @State private var comment           : String = ""
     @State private var selectedRubric    : EntityRubric?
@@ -170,7 +170,7 @@ struct SubOperationDialog: View {
         
     func saveSubOperation() {
         if transactionManager.isCreationMode == true { // Création
-            formState.currentSousTransaction = EntitySousOperations()
+            formState.currentSousTransaction = EntitySousOperation()
             subOperation = formState.currentSousTransaction
         }
             
@@ -182,7 +182,7 @@ struct SubOperationDialog: View {
         dismiss() // Ferme la vue immédiatement après la sauvegarde
     }
     
-    private func updateSousOperation(_ item: EntitySousOperations) {
+    private func updateSousOperation(_ item: EntitySousOperation) {
         item.libelle = comment
         item.category = selectedCategorie
 
@@ -224,8 +224,8 @@ struct SubOperationsSectionView: View {
     
     @EnvironmentObject var formState: TransactionFormState
     
-    @Binding var subOperations: [EntitySousOperations]
-    @Binding var currentSubOperation: EntitySousOperations?
+    @Binding var subOperations: [EntitySousOperation]
+    @Binding var currentSubOperation: EntitySousOperation?
     @Binding var isShowingDialog: Bool
     
     var body: some View {
@@ -272,7 +272,7 @@ struct SubOperationRow: View {
     
     @State var foregroundColor : Color = .black
 
-    @Binding var subOperation: EntitySousOperations
+    @Binding var subOperation: EntitySousOperation
     let onEdit: () -> Void
     let onDelete: () -> Void
     

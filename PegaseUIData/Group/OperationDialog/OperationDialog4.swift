@@ -29,8 +29,8 @@ class TransactionFormState: ObservableObject {
     
     @Published var isShowingDialog: Bool = false
     
-    @Published var currentSousTransaction: EntitySousOperations?
-    @Published var subOperations: [EntitySousOperations] = []
+    @Published var currentSousTransaction: EntitySousOperation?
+    @Published var subOperations: [EntitySousOperation] = []
 
     @Published var currentTransaction: EntityTransaction?
     @Published var entityTransactions: [EntityTransaction] = []
@@ -39,5 +39,4 @@ class TransactionFormState: ObservableObject {
     @Published var selectedStatus: EntityStatus?
     @Published var selectedMode: EntityPaymentMode?
     @Published var selectedAccount: EntityAccount?
-    
 }

@@ -192,7 +192,7 @@ struct ImportTransactionFileView: View {
             
             context.insert(transaction)
 
-            let sousTransaction = EntitySousOperations()
+            let sousTransaction = EntitySousOperation()
             sousTransaction.libelle  = libelle
             sousTransaction.amount  = amount
             sousTransaction.category = entityCategory
@@ -336,7 +336,7 @@ struct TableView: View {
             entityTransaction.status = preference?.status
             entityTransaction.paymentMode = preference?.paymentMode
             
-            let sousOperation = EntitySousOperations()
+            let sousOperation = EntitySousOperation()
             sousOperation.amount = amount
             sousOperation.libelle = name
             sousOperation.category = preference?.category

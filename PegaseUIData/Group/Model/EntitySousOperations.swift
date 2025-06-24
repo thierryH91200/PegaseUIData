@@ -12,7 +12,7 @@ import AppKit
 
 
 @Model
-public class EntitySousOperations: Identifiable {
+public class EntitySousOperation: Identifiable {
     var amount: Double = 0.0
     var libelle: String? // Rend optionnel si nécessaire
     
@@ -35,8 +35,8 @@ public class EntitySousOperations: Identifiable {
         return price
     }
     
-    func copy(for transaction: EntityTransaction) -> EntitySousOperations {
-        let newSous = EntitySousOperations()
+    func copy(for transaction: EntityTransaction) -> EntitySousOperation {
+        let newSous = EntitySousOperation()
         newSous.libelle = self.libelle
         newSous.amount = self.amount
         newSous.category = self.category
@@ -51,8 +51,8 @@ final class SubTransactionsManager {
 
     static let shared =  SubTransactionsManager()
     
-    var entities : [EntitySousOperations] = []
-    var subOperation : EntitySousOperations?
+    var entities : [EntitySousOperation] = []
+    var subOperation : EntitySousOperation?
     
     var modelContext: ModelContext? {
         DataContext.shared.context
@@ -66,12 +66,17 @@ final class SubTransactionsManager {
                                amount: String,
                                formState: TransactionFormState ) {
                 
-        self.formState = formState
-        self.subOperation = formState.currentSousTransaction ?? EntitySousOperations()
+//        self.formState = formState
+        let newSub = formState.currentSousTransaction ?? EntitySousOperation()
+        modelContext?.insert(newSub)
+        self.subOperation = newSub
         update(comment: comment, category: category, amount: amount)
         
-        formState.currentTransaction?.addSubOperation(subOperation!)
-        formState.entityTransactions.append(formState.currentTransaction!)
+        if let transaction = formState.currentTransaction, let sub = subOperation {
+            transaction.addSubOperation(sub)
+            formState.entityTransactions.append(transaction)
+        }
+        
         if formState.currentTransaction?.sousOperations == nil {
             formState.currentTransaction?.sousOperations = []
         }
@@ -93,8 +98,9 @@ final class SubTransactionsManager {
             //        subOperation.transaction = formState.currentTransaction
         }
     }
+    
     // Suppression d'une entité
-    func remove(entity: EntitySousOperations) {
+    func remove(entity: EntitySousOperation) {
         entity.transaction = nil
         modelContext?.delete(entity)
     }

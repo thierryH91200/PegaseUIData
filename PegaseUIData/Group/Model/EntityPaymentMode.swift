@@ -21,11 +21,9 @@ import SwiftData
     
     init(name: String = "Test", color: NSColor = .black ) {
         guard let account = CurrentAccountManager.shared.getAccount() else {
-            self.name = name
-            self.color = color
-            self.account = EntityAccount()
-            return
+            fatalError("Aucun compte disponible pour créer un mode de paiement")
         }
+
         self.name = name
         self.color = color
         self.account = account
@@ -41,22 +39,21 @@ import SwiftData
     }
 }
 
-final class CacheEntry<T> {
-    let data: T
-    let timestamp: Date
-    let expirationInterval: TimeInterval
-    
-    var isExpired: Bool {
-        Date().timeIntervalSince(timestamp) > expirationInterval
-    }
-    
-    init(data: T, timestamp: Date, expirationInterval: TimeInterval) {
-        self.data = data
-        self.timestamp = timestamp
-        self.expirationInterval = expirationInterval
-    }
-}
-
+//final class CacheEntry<T> {
+//    let data: T
+//    let timestamp: Date
+//    let expirationInterval: TimeInterval
+//    
+//    var isExpired: Bool {
+//        Date().timeIntervalSince(timestamp) > expirationInterval
+//    }
+//    
+//    init(data: T, timestamp: Date, expirationInterval: TimeInterval) {
+//        self.data = data
+//        self.timestamp = timestamp
+//        self.expirationInterval = expirationInterval
+//    }
+//}
 
 protocol PaymentModeManaging {
     
@@ -134,10 +131,7 @@ final class PaymentModeManager : PaymentModeManaging {
     // MARK: getAllNames ModePaiement
     func getAllNames(for account: EntityAccount) -> [String] {
         
-        let modePayments =  getAllData()
-        
-        let names = (modePayments ?? []).map { $0.name }
-        return names
+         return getAllData()?.map { $0.name } ?? []
     }
 
     // MARK: findOrCreate ModePaiement
@@ -149,7 +143,6 @@ final class PaymentModeManager : PaymentModeManaging {
         }
     }
     
-
     // MARK: find ModePaiement
     func find( account: EntityAccount? = nil, name: String) -> EntityPaymentMode? {
         
@@ -217,7 +210,11 @@ final class PaymentModeManager : PaymentModeManaging {
         
         // Création des entités de mode de paiement
         paymentModes.forEach {
-           try!  _ = create(account: account, name: $0.name, color: $0.color)
+            do {
+                try _ = create(account: account, name: $0.name, color: $0.color)
+            } catch {
+                printTag("Erreur création par défaut : \(error)")
+            }
         }
                
         let lhs = account.uuid
@@ -286,16 +283,15 @@ class PaymentModeViewModel: ObservableObject {
         }
     }
 
-    func delete(at index: Int) {
-        guard modePayments.indices.contains(index) else { return }
-        let mode = modePayments[index]
-        
-        manager.delete(entity: mode) // Appelle la méthode sans try
-
-        modePayments.remove(at: index)
-        loadInitialData()      // Recharger depuis la base de données
-    }
-    
+//    func delete(at index: Int) {
+//        guard modePayments.indices.contains(index) else { return }
+//        let mode = modePayments[index]
+//        
+//        manager.delete(entity: mode) // Appelle la méthode sans try
+//
+//        modePayments.remove(at: index)
+//        loadInitialData()      // Recharger depuis la base de données
+//    }
     
     // MARK: Communication avec les services ou les managers :
 //    @discardableResult

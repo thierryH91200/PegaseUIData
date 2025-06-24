@@ -129,7 +129,7 @@ struct ImportTransactionOFXFileView: View {
             entityTransaction.status = preference?.status
             entityTransaction.paymentMode = preference?.paymentMode
             
-            let sousOperation = EntitySousOperations()
+            let sousOperation = EntitySousOperation()
             sousOperation.amount = amount
             sousOperation.libelle = name
             sousOperation.category = preference?.category

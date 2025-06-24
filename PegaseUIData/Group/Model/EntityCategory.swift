@@ -22,7 +22,7 @@ import SwiftUI
     @Relationship(inverse: \EntityPreference.category) var preference: EntityPreference?
     
     var rubric: EntityRubric?
-    @Relationship(inverse: \EntitySousOperations.category) var sousOperations: [EntitySousOperations]?
+    @Relationship(inverse: \EntitySousOperation.category) var sousOperations: [EntitySousOperation]?
     
     public init(name: String, objectif : Double, rubric: EntityRubric) {
         self.name = name

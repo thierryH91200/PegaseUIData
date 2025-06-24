@@ -226,17 +226,17 @@ struct ListTransactions200: View {
                         newTransaction.account = targetAccount
                         
                         for item in transaction.sousOperations {
-                            let sousOperations = EntitySousOperations()
+                            let sousOperation = EntitySousOperation()
                             
                             let category = CategoryManager.shared.find(name: item.category!.name)
                             
-                            sousOperations.libelle     = item.libelle
-                            sousOperations.amount      = item.amount
-                            sousOperations.category    = category
-                            sousOperations.transaction = newTransaction
+                            sousOperation.libelle     = item.libelle
+                            sousOperation.amount      = item.amount
+                            sousOperation.category    = category
+                            sousOperation.transaction = newTransaction
                             
-                            modelContext.insert(sousOperations)
-                            newTransaction.addSubOperation(sousOperations)
+                            modelContext.insert(sousOperation)
+                            newTransaction.addSubOperation(sousOperation)
                         }
                         
                         modelContext.insert(newTransaction)
@@ -520,6 +520,19 @@ func formatPrice(_ amount: Double) -> String {
     formatter.locale = Locale.current // devise de l'utilisateur
     let format = formatter.string(from: NSNumber(value: amount)) ?? "\(amount)"
     return format
+}
+
+
+struct PriceText: View {
+    let amount: Double
+
+    var body: some View {
+        Text(amount, format: .currency(code: currencyCode))
+    }
+
+    private var currencyCode: String {
+        Locale.current.currency?.identifier ?? "EUR"
+    }
 }
 
 func cleanDouble(from string: String) -> Double {

@@ -118,7 +118,6 @@ struct CategorieBar1View1: View {
         }
     }
 
-    
     private func updateChart() {
 //        let start = Calendar.current.date(byAdding: .day, value: Int(selectedStart), to: minDate)!
 //        let end = Calendar.current.date(byAdding: .day, value: Int(selectedEnd), to: minDate)!

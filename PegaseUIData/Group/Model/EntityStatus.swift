@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 import SwiftUI
 
-@Model public class EntityStatus {
+@Model public class EntityStatus :  Identifiable , Hashable {
     
     var name: String
     var rawType: Int
@@ -24,11 +24,21 @@ import SwiftUI
         get { StatusType(rawValue: rawType) ?? .planned }
         set { rawType = newValue.rawValue }
     }
+    
+    // Implémentez `Hashable`
+    public static func == (lhs: EntityStatus, rhs: EntityStatus) -> Bool {
+        lhs.uuid == rhs.uuid
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(uuid)
+    }
 
-    init(type: StatusType, account: EntityAccount) {
-        self.name = type.localizedName
+
+    init(type : StatusType, account : EntityAccount) {
+        self.name    = type.localizedName
         self.rawType = type.rawValue
-        self.color = type.color
+        self.color   = type.color
         self.account = account
     }
 }
@@ -179,11 +189,11 @@ enum StatusType: Int, CaseIterable, Identifiable {
         }
     }
 
-    var color: NSColor {
+    var color            : NSColor {
         switch self {
-        case .planned: return .blue
-        case .inProgress: return .green
-        case .executed: return .red
+        case .planned    : return .blue
+        case .inProgress : return .green
+        case .executed   : return .red
         }
     }
 }

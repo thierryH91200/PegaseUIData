@@ -27,8 +27,8 @@ import SwiftUI
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
 
-    var account: EntityAccount
- 
+    @Relationship var account: EntityAccount
+    
     public init(account : EntityAccount) {
         self.iban = "FR76"
         self.account = account
@@ -42,8 +42,8 @@ final class InitAccountManager {
     private var initAccount : EntityInitAccount?
 
     // Contexte pour les modifications
-    var currentAccount: EntityAccount {
-        CurrentAccountManager.shared.getAccount()!
+    var currentAccount: EntityAccount? {
+        CurrentAccountManager.shared.getAccount()
     }
     
     var modelContext: ModelContext? {
@@ -90,17 +90,8 @@ final class InitAccountManager {
     // Méthode de création d'entité
     func create(numAccount: String = "", for account: EntityAccount) throws -> EntityInitAccount {
         let entity = EntityInitAccount(account: account)
-        entity.bic = ""
-        entity.cleRib = ""
-        entity.codeBank = ""
+        
         entity.codeAccount = numAccount
-        entity.codeGuichet = ""
-        entity.engage = 0
-        entity.iban = ""
-
-        entity.prevu = 0
-        entity.realise = 0
-        entity.account = account // Associe le compte à l'entité
         
         modelContext?.insert(entity)
         initAccounts.append(entity) // Mise à jour de la liste locale
@@ -145,7 +136,7 @@ class InitAccountViewModel: ObservableObject {
 
     func add(name: String) {
         do {
-            let _ = try manager.create(for: account)
+            let _ = try manager.create(numAccount: name, for: account)
             reloadData()
         } catch EnumError.accountNotFound {
             // Gérer l'erreur account non trouvé
@@ -169,8 +160,11 @@ class InitAccountViewModel: ObservableObject {
     // MARK: Communication avec les services ou les managers :
     @discardableResult
     func reloadData() -> EntityInitAccount {
-        let initAccounts = manager.getAllData()
-        return initAccounts!
+        if let entity = manager.getAllData() {
+            return entity
+        } else {
+            fatalError("Aucune entité trouvée ou créée — problème logique.")
+        }
     }
     
     func saveChanges() throws {

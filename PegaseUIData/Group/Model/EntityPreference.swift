@@ -12,13 +12,13 @@ import SwiftUI
 
 
 @Model public class EntityPreference {
-    var signe: Bool = true
     
-    var status: EntityStatus?
-    var category: EntityCategory?
-    var paymentMode: EntityPaymentMode?
+    var signe       : Bool = true
+    var status      : EntityStatus?
+    var category    : EntityCategory?
+    var paymentMode : EntityPaymentMode?
     
-    var account: EntityAccount
+    @Relationship var account: EntityAccount
     
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
@@ -28,12 +28,12 @@ import SwiftUI
                 paymentMode: EntityPaymentMode? = nil,
                 status: EntityStatus? = nil) {
         
-        self.category = category
+        self.category    = category
         self.paymentMode = paymentMode
-        self.status = status
-        self.signe = true
+        self.status      = status
+        self.signe       = true
         
-        self.account = account
+        self.account     = account
     }
 }
 

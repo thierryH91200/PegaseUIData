@@ -83,8 +83,6 @@ protocol ScheduleManaging {
 
 final class SchedulerManager: ScheduleManaging {
 
-    
-    
     @Published var entities = [EntitySchedule]()
     
     var currentAccount: EntityAccount?
@@ -94,7 +92,6 @@ final class SchedulerManager: ScheduleManaging {
         DataContext.shared.context
     }
 
-    
     init() { }
     
     func create(account: EntityAccount?, name : String) throws -> EntitySchedule {
@@ -245,8 +242,8 @@ final class SchedulerManager: ScheduleManaging {
     }
     
     // Créer une sous-opération
-    func createSousOperation(for schedule: EntitySchedule) -> EntitySousOperations {
-        let sousOperation = EntitySousOperations()
+    func createSousOperation(for schedule: EntitySchedule) -> EntitySousOperation {
+        let sousOperation = EntitySousOperation()
         
         let rubricName = schedule.category?.rubric?.name ?? ""
         let color = schedule.category?.rubric?.color ?? .black
@@ -318,7 +315,7 @@ final class SchedulerManager: ScheduleManaging {
                 objectif: objectif,
                 rubric: rubric)
             
-            let transferSousOperation = EntitySousOperations()
+            let transferSousOperation = EntitySousOperation()
             transferSousOperation.category = category
             transferSousOperation.category?.rubric = rubric
             transferSousOperation.amount = -schedule.amount

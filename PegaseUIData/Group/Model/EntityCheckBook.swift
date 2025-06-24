@@ -10,7 +10,7 @@ import Foundation
 import SwiftData
 import SwiftUI
 
-@Model public class EntityCheckBook: Identifiable {
+@Model public class EntityCheckBook {
     var name: String = ""
     var nbCheques: Int = 25
     var numPremier: Int = 1
