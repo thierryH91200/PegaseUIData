@@ -1,5 +1,5 @@
 //
-//  EntityCarnetCheques.swift
+//  EntityCheckBook.swift
 //  Pegase
 //
 //  Created by Thierry hentic on 03/11/2024.
@@ -81,13 +81,19 @@ final class ChequeBookManager : ObservableObject {
                 numSuivant: Int = 1,
                 prefix: String = "CH") -> EntityCheckBook? {
         // Créez une instance de EntityCarnetCheques
+        guard let account = CurrentAccountManager.shared.getAccount() else {
+            printTag("Aucun compte actif pour créer un carnet de chèques")
+            return nil
+        }
+        
         let entity = EntityCheckBook(
             name: name,
             nbCheques: nbCheques,
             numPremier: numPremier,
             numSuivant: numSuivant,
             prefix: prefix,
-            account: CurrentAccountManager.shared.getAccount()!) // Associe le compte actuel
+            account: account)
+        
         modelContext?.insert(entity)
         
         // Sauvegardez le contexte
@@ -128,7 +134,7 @@ final class ChequeBookManager : ObservableObject {
     func delete(entity: EntityCheckBook)
     {
         modelContext?.undoManager?.beginUndoGrouping()
-        modelContext?.undoManager?.setActionName("DeletePaymentMode")
+        modelContext?.undoManager?.setActionName("DeleteCheckBook)")
         modelContext?.delete(entity)
         modelContext?.undoManager?.endUndoGrouping()
         

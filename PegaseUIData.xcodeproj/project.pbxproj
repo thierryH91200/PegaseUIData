@@ -12,6 +12,7 @@
 		037EBCE92DF0CFC900BD08D3 /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = 037EBCE82DF0CFC900BD08D3 /* SwiftDate */; };
 		03A862B52DE0CE0300D377CE /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03DF76F22D9D18D900D179E1 /* Localizable.xcstrings */; };
 		03A862B72DE0CE0300D377CE /* Menu.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03DF76F42D9D18D900D179E1 /* Menu.xcstrings */; };
+		03ACC44D2E0AEF6000A70022 /* Help.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03ACC44C2E0AEF6000A70022 /* Help.xcstrings */; };
 		03DF76E72D9D183E00D179E1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 03DF76E52D9D183E00D179E1 /* README.md */; };
 		03DF76E82D9D183E00D179E1 /* README_fr.md in Resources */ = {isa = PBXBuildFile; fileRef = 03DF76E62D9D183E00D179E1 /* README_fr.md */; };
 		03DF77002D9D194200D179E1 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 03DF76F92D9D194200D179E1 /* Info.plist */; };
@@ -28,6 +29,7 @@
 
 /* Begin PBXFileReference section */
 		031152C02DE0D6B700484FD5 /* Account.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Account.xcstrings; sourceTree = "<group>"; };
+		03ACC44C2E0AEF6000A70022 /* Help.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Help.xcstrings; sourceTree = "<group>"; };
 		03DF764F2D9D15F300D179E1 /* PegaseUIData.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PegaseUIData.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		03DF76E52D9D183E00D179E1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		03DF76E62D9D183E00D179E1 /* README_fr.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README_fr.md; sourceTree = "<group>"; };
@@ -87,6 +89,7 @@
 				03DF76512D9D15F300D179E1 /* PegaseUIData */,
 				03DF76502D9D15F300D179E1 /* Products */,
 				03DF76F22D9D18D900D179E1 /* Localizable.xcstrings */,
+				03ACC44C2E0AEF6000A70022 /* Help.xcstrings */,
 				031152C02DE0D6B700484FD5 /* Account.xcstrings */,
 				03DF76F42D9D18D900D179E1 /* Menu.xcstrings */,
 				03DF76F82D9D194200D179E1 /* Content.swift */,
@@ -191,6 +194,7 @@
 				03DF770A2D9D196200D179E1 /* LICENSE in Resources */,
 				03DF76E72D9D183E00D179E1 /* README.md in Resources */,
 				03DF76E82D9D183E00D179E1 /* README_fr.md in Resources */,
+				03ACC44D2E0AEF6000A70022 /* Help.xcstrings in Resources */,
 				03F4FCA62DDE4C20005C2F14 /* _config.yml in Resources */,
 				031152C12DE0D6B700484FD5 /* Account.xcstrings in Resources */,
 			);

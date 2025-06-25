@@ -231,8 +231,10 @@ struct SubOperationsSectionView: View {
     var body: some View {
 
         VStack(alignment: .leading) {
-            Text(String(localized: "Split Transactions"))
+            Text("Split Transactions")
                 .font(.headline)
+                .foregroundColor(.accentColor)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .accessibilityAddTraits(.isHeader)
             
             Text("Displayed sub-operations: \(subOperations.count)")

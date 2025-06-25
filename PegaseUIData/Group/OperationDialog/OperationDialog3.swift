@@ -82,17 +82,17 @@ struct TransactionFormViewModel: View {
                 }
             }
             GridRow {
-                FormField(label: "Account") {
+                FormField(label: String(localized:"Account")) {
                     Text(selectedAccount?.name ?? "")
                 }
             }
             GridRow {
-                FormField(label: "Name") {
+                FormField(label: String(localized:"Name")) {
                     Text(selectedAccount?.identity?.name ?? "")
                 }
             }
             GridRow {
-                FormField(label: "Surname") {
+                FormField(label: String(localized:"Surname")){
                     Text(selectedAccount?.identity?.surName ?? "")
                 }
             }
@@ -101,13 +101,13 @@ struct TransactionFormViewModel: View {
     private var detailSection: some View {
         Grid(alignment: .leading, horizontalSpacing: 20, verticalSpacing: 12) {
             GridRow {
-                FormField(label: "Transaction Date") {
+                FormField(label: String(localized:"Transaction Date")) {
                     DatePicker("", selection: $transactionDate, displayedComponents: .date)
                 }
                 .disabled(transactionManager.selectedTransactions.count > 1)
             }
             GridRow {
-                FormField(label: "Payment method") {
+                FormField(label: String(localized:"Payment method")) {
                     Picker("", selection: $selectedMode) {
                         ForEach(modes, id: \.uuid) { mode in
                             Text(mode.name).tag(mode)
@@ -116,18 +116,18 @@ struct TransactionFormViewModel: View {
                 }
             }
             GridRow {
-                FormField(label: "Check") {
+                FormField(label: String(localized:"Check")) {
                     TextField("", value: $checkNumber, formatter: integerFormatter)
                 }
             }
             GridRow {
-                FormField(label: "Date of pointing") {
+                FormField(label: String(localized:"Date of pointing")) {
                     DatePicker("", selection: $pointingDate, displayedComponents: .date)
                 }
                 .disabled(transactionManager.selectedTransactions.count > 1)
             }
             GridRow {
-                FormField(label: "Status") {
+                FormField(label: String(localized:"Status")) {
                     Picker("", selection: $selectedStatus) {
                         ForEach(status, id: \.self) { index in
                             Text(index.name).tag(index)
@@ -148,12 +148,12 @@ struct TransactionFormViewModel: View {
                 }
             }
             GridRow {
-                FormField(label: "Bank Statement") {
+                FormField(label: String(localized:"Bank Statement")) {
                     TextField("", value: $bankStatement, formatter: integerFormatter)
                 }
             }
             GridRow {
-                FormField(label: "Amount") {
+                FormField(label: String(localized:"Amount")) {
                     TextField("", value: $amount, formatter: NumberFormatter())
                 }
             }
@@ -275,7 +275,6 @@ struct TransactionFormViewModel: View {
         selectedAccount = operation.account
     }
 }
-
 
 struct FormField<Content: View>: View {
     let label: String

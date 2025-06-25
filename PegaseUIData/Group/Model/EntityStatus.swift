@@ -89,8 +89,7 @@ final class StatusManager: StatusManaging {
     
     func find( account: EntityAccount? = nil, name: String) -> EntityStatus? {
         
-        let account = account ?? CurrentAccountManager.shared.getAccount()
-        guard let account = account else { return nil }
+        guard let account = account ?? CurrentAccountManager.shared.getAccount() else { return nil }
         
         let lhs = account.uuid
         let predicate = #Predicate<EntityStatus> { $0.account.uuid == lhs && $0.name == name }

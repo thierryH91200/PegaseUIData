@@ -159,8 +159,9 @@ struct ImportTransactionFileView: View {
         
         for row in csvData.dropFirst() { // Ignorer l'en-tête
             
-            let datePointage =  getDate(from: row, index: columnMapping[String(localized:"Pointage Date")])  ?? Date().noon
-            let dateOperation = getDate(from: row, index: columnMapping[String(localized:"Operation Date")]) ?? datePointage
+            let dateOperation = getDate(from: row, index: columnMapping[String(localized:"Operation Date")]) ?? Date().noon
+            let datePointage =  getDate(from: row, index: columnMapping[String(localized:"Pointage Date")])  ?? dateOperation
+
             let libelle = getString(from: row, index: columnMapping[String(localized:"Comment")])
             
             let bankStatement = 0.0
@@ -250,7 +251,7 @@ struct ImportTransactionFileView: View {
     }
     
     func getDate(from row: [String], index: Int?) -> Date? {
-        guard let index = index, index >= 0, index < row.count else { return Date().noon }
+        guard let index = index, index >= 0, index < row.count else { return nil }
         let formatter = DateFormatter()
         formatter.dateFormat = "dd-MM-yyyy" // Ajuste selon le format de ton CSV
         return formatter.date(from: row[index])?.noon
