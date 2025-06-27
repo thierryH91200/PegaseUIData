@@ -15,6 +15,8 @@ struct PegaseUIDataApp: App {
     
     @StateObject private var windowSizeManager = WindowSizeManager()
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.undoManager) var undoManager
+
     
     @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
@@ -45,6 +47,8 @@ struct PegaseUIDataApp: App {
             let storeURL = URL.documentsDirectory.appending(path: "PegaseUIData.store")
             let config = ModelConfiguration(url: storeURL)
             container = try ModelContainer(for: schema, configurations: config)
+            container.mainContext.undoManager = UndoManager()
+
         } catch {
             fatalError("Failed to configure SwiftData container.")
         }

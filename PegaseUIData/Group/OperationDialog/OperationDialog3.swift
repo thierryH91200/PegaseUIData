@@ -9,8 +9,6 @@
 //    •    🔵 Édition d’une transaction → bleu
 //    •    🟣 Édition multiple → violet
 
-
-
 import SwiftUI
 import AppKit
 import SwiftData

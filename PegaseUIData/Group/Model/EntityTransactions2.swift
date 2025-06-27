@@ -10,7 +10,9 @@ import SwiftUI
 import SwiftData
 import AppKit
 
+
 protocol ListManaging {
+    func createTransactions(formState: TransactionFormState) -> EntityTransaction
     func find(uuid: UUID) -> EntityTransaction?
 }
 
@@ -23,8 +25,6 @@ final class ListTransactionsManager: ListManaging {
     var entities : [EntityTransaction] = []
     var entity : EntityTransaction = EntityTransaction()
     
-//    private var cache: ListTransactionsCache = ListTransactionsCache()
-
     var ascending = false
     
     var modelContext: ModelContext? {
@@ -146,31 +146,18 @@ final class ListTransactionsManager: ListManaging {
     // MARK: remove Transaction
     @MainActor
     func remove(entity: EntityTransaction) {
-        guard let container = modelContext?.container else {
+        guard let modelContext else {
             printTag("Container invalide.")
             return
         }
-        
-        let deleteContext = ModelContext(container)
-        let entityID = entity.uuid
+        modelContext.undoManager?.beginUndoGrouping()
+        modelContext.undoManager?.setActionName("Delete the transaction")
+        modelContext.delete(entity)
+        modelContext.undoManager?.endUndoGrouping()
         
         do {
-            let fetchDescriptor = FetchDescriptor<EntityTransaction>(
-                predicate: #Predicate<EntityTransaction> { $0.uuid == entityID }
-            )
-            
-            let results = try deleteContext.fetch(fetchDescriptor)
-            
-            if let entityToDelete = results.first {
-                withObservationTracking {
-                    deleteContext.delete(entityToDelete)
-                    try? deleteContext.save()
-                } onChange: {
-                    
-                }
-
-                printTag("✅ L'entité a été supprimée avec succès.")
-            }
+            try modelContext.save()
+            printTag("✅ L'entité a été supprimée avec succès.")
         } catch {
             printTag("❗ Erreur lors de la suppression: \(error)")
         }

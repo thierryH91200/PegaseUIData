@@ -39,22 +39,6 @@ import SwiftData
     }
 }
 
-//final class CacheEntry<T> {
-//    let data: T
-//    let timestamp: Date
-//    let expirationInterval: TimeInterval
-//    
-//    var isExpired: Bool {
-//        Date().timeIntervalSince(timestamp) > expirationInterval
-//    }
-//    
-//    init(data: T, timestamp: Date, expirationInterval: TimeInterval) {
-//        self.data = data
-//        self.timestamp = timestamp
-//        self.expirationInterval = expirationInterval
-//    }
-//}
-
 protocol PaymentModeManaging {
     
     func create(account: EntityAccount?, name: String, color: NSColor) throws -> EntityPaymentMode?

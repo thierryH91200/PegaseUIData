@@ -96,6 +96,7 @@ Non. PegaseUIData est développé avec SwiftUI pour macOS uniquement. Une versio
 Comment signaler un bug ?
 
 Vous pouvez créer un ticket sur la page Issues du dépôt GitHub :
-https://github.com/ton-utilisateur/PegaseUIData/issues
+
+https://github.com/thierryH91200/PegaseUIData/issues
 
 Merci d’inclure un maximum de détails (version de macOS, étapes pour reproduire, capture d'écran si possible).

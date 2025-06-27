@@ -44,6 +44,8 @@ struct SchedulerView: View {
     @Binding var isVisible: Bool
     
     var body: some View {
+        
+
         Scheduler( selectedType: "")
             .environmentObject(schedulerDataManager)
             .padding()
@@ -96,6 +98,7 @@ struct Scheduler: View {
                     .padding(.bottom, 0)
             }
             SchedulerTable(schedulers: dataManager.schedulers, selection: $selectedItem)
+                .background(Color.red)
                 .frame(height: 300)
                 .padding(.top, 0)
                 .onAppear {
@@ -178,6 +181,7 @@ struct Scheduler: View {
                 .disabled(selectedItem == nil) // Désactive si aucune ligne n'est sélectionnée
             }
             .padding()
+
             UpcomingRemindersView(upcoming: upcoming)
             Spacer()
         }
@@ -246,8 +250,9 @@ struct SchedulerTable: View {
             }
             .padding(.horizontal)
         }
-        .background(Color.white)
         .frame(minHeight: 300)
+        .background(Color.white)
+
     }
     
     @ViewBuilder

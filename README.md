@@ -111,6 +111,18 @@ Yes! Translation contributions are welcome. Localization files are available in 
 
 ### Is there a Windows / Linux version?
 
-No. PegaseUIData is built with SwiftUI for macOS only. A cross-platform version is
+No. PegaseUIData is built with SwiftUI for macOS only. A cross-platform version of PegaseUIData is not planned at this time.
+
+If you encounter a bug, you can report it by creating an issue on the project’s GitHub page:
+
+👉 https://github.com/thierryH91200/PegaseUIData/issues
+
+When submitting a bug report, please provide as much detail as possible, including:
+    •    Your version of macOS
+    •    The steps to reproduce the issue
+    •    A screenshot (if applicable)
+
+This information helps us identify and resolve the problem more efficiently.
+
 
 

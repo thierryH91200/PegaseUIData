@@ -38,6 +38,23 @@ struct OperationDialogView: View {
             Divider()
             
             // Formulaire principal
+//            if transactionManager.selectedTransactions.count > 1 {
+//                UnifiedTransactionFormView(
+//                  uniqueStatus: transactionManager.selectedTransactions.compactMap { $0.status }.uniqueElement,
+//                  uniqueMode: transactionManager.selectedTransactions.compactMap { $0.paymentMode }.uniqueElement,
+//                  uniqueDate: transactionManager.selectedTransactions.map { $0.dateOperation }.uniqueElement,
+//                  uniquePointingDate: transactionManager.selectedTransactions.map { $0.datePointage }.uniqueElement,
+//                  uniqueBankStatement: transactionManager.selectedTransactions.map { $0.bankStatement }.uniqueElement
+//                )
+//            } else if formState.selectedAccount != nil {
+//                UnifiedTransactionFormView(
+//                  uniqueStatus: formState.selectedStatus,
+//                  uniqueMode: formState.selectedMode,
+//                  uniqueDate: formState.transactionDate,
+//                  uniquePointingDate: formState.pointingDate,
+//                  uniqueBankStatement: formState.bankStatement
+//                )
+//            }
             if transactionManager.selectedTransactions.count > 1 {
                 batchEditSection
             } else if formState.selectedAccount != nil {
@@ -297,6 +314,34 @@ struct OperationDialogView: View {
     }
 }
 
+struct UnifiedTransactionEditorView: View {
+    @ObservedObject var transactionManager: TransactionSelectionManager
+    @ObservedObject var formState: TransactionFormState
+
+    var body: some View {
+        Group {
+            if transactionManager.selectedTransactions.count > 1 {
+                batchEditSection
+            } else if formState.selectedAccount != nil {
+                TransactionFormView()
+            } else {
+                Text("Aucune transaction sélectionnée.")
+                    .foregroundColor(.gray)
+            }
+        }
+    }
+
+    private var batchEditSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Édition groupée de \(transactionManager.selectedTransactions.count) opérations")
+                .font(.headline)
+            // Ajoute tes champs de batch ici
+        }
+        .padding()
+        .background(.quaternary)
+        .cornerRadius(12)
+    }
+}
 
 struct HelpButton<Content: View>: View {
     @State private var showHelp = false
