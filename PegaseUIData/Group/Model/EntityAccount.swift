@@ -268,6 +268,7 @@ final class CurrentAccountManager : ObservableObject {
 final class DataContext {
     static let shared = DataContext()
     var context: ModelContext?
+    var undoManager: UndoManager?
 
     private init() {}
 }

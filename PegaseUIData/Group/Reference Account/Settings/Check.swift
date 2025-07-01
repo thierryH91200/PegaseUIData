@@ -34,8 +34,10 @@ final class CheckDataManager: ObservableObject {
             try modelContext.save()
         } catch {
             printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+            dump(error)
         }
     }
+    
     // Ajoute un nouveau carnet de chèques
     func addCheckBook(name: String, nbCheques: Int, numPremier: Int, numSuivant: Int, prefix: String, account: EntityAccount?) {
         guard let modelContext = modelContext else {
@@ -63,24 +65,26 @@ final class CheckDataManager: ObservableObject {
     }
 
     // Supprime un carnet de chèques
-    func deleteCheckBook(_ checkBook: EntityCheckBook) {
-        guard let modelContext = modelContext else {
-            printTag("Le contexte de modèle n'est pas initialisé.")
-            return
-        }
-        
-        modelContext.delete(checkBook)
-        
-        // Met à jour la liste
-        checkBooks?.removeAll { $0.id == checkBook.id }
-        
-        saveChanges()
-    }
+//    func deleteCheckBook(_ checkBook: EntityCheckBook) {
+//        guard let modelContext = modelContext else {
+//            printTag("Le contexte de modèle n'est pas initialisé.")
+//            return
+//        }
+//        
+//        modelContext.delete(checkBook)
+//        
+//        // Met à jour la liste
+//        checkBooks?.removeAll { $0.id == checkBook.id }
+//        
+//        saveChanges()
+//    }
 }
 
 // Vue principale pour l'affichage des carnets de chèques
 struct CheckView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.undoManager) private var undoManager
+
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
     @EnvironmentObject var dataManager: CheckDataManager
     
@@ -108,7 +112,7 @@ struct CheckView: View {
                 }
                 .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
                     // Mise à jour de la liste en cas de changement de compte
-                        dataManager.checkBooks = []
+                    dataManager.checkBooks?.removeAll()
                         selectedCheck = nil
                         selectedItem = nil
                         refreshData()
@@ -178,9 +182,10 @@ struct CheckView: View {
     // Supprime un carnet de chèques sélectionné
     private func delete() {
         if let checkBookToDelete = selectedCheck {
-            dataManager.deleteCheckBook(checkBookToDelete)
+            ChequeBookManager.shared.delete(entity: checkBookToDelete, undoManager: undoManager ?? nil)
             selectedCheck = nil
             selectedItem = nil
+            refreshData()
         }
     }
     
@@ -229,7 +234,7 @@ struct CheckBookTable: View {
                 Text(item.account!.initAccount?.codeAccount ?? "")
             }
         }
-
+        .tableStyle(.bordered)
     }
 }
 

@@ -17,7 +17,6 @@ struct PegaseUIDataApp: App {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.undoManager) var undoManager
 
-    
     @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
     var container: ModelContainer

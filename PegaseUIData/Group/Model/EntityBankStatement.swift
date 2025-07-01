@@ -111,7 +111,7 @@ final class BankStatementManager {
     
     // MARK: - Public Methods
     // Supprimer une transaction
-    func remove(entity: EntityBankStatement) {
+    func delete(entity: EntityBankStatement) {
         
         modelContext?.undoManager?.beginUndoGrouping()
         modelContext?.undoManager?.setActionName("DeleteBankStatement")

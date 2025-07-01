@@ -145,7 +145,7 @@ final class ListTransactionsManager: ListManaging {
 
     // MARK: remove Transaction
     @MainActor
-    func remove(entity: EntityTransaction) {
+    func delete(entity: EntityTransaction) {
         guard let modelContext else {
             printTag("Container invalide.")
             return

@@ -105,11 +105,10 @@ final class CategoryManager: ObservableObject {
         return categories.first { $0.name == name } ?? categories.first
     }
     
-    func remove(entity: EntityCategory) {
+    func delete(entity: EntityCategory) {
         modelContext?.delete(entity) // Supprime l'entité via le contexte
     }
 }
-
 
 extension Sequence where Element == EntityCategory {
     func filtered(byAccount account: EntityAccount) -> [EntityCategory] {

@@ -62,7 +62,6 @@ public class EntitySchedule : Identifiable{
             self.typeFrequence = typeFrequence
             self.account = account
         }
-    
 }
 
 extension EntitySchedule {
@@ -88,6 +87,9 @@ final class SchedulerManager: ScheduleManaging {
     var modelContext: ModelContext? {
         DataContext.shared.context
     }
+    var undoManager: UndoManager? {
+        DataContext.shared.undoManager
+    }
 
     init() { }
     
@@ -105,48 +107,22 @@ final class SchedulerManager: ScheduleManaging {
     }
     
     // Suppression d'une entité
-    func remove(entity: EntitySchedule) {
+    func delete(entity: EntitySchedule, undoManager: UndoManager?) {
+        modelContext?.undoManager = undoManager
         modelContext?.undoManager?.beginUndoGrouping()
         modelContext?.undoManager?.setActionName("Delete the schedule")
         modelContext?.delete(entity)
         modelContext?.undoManager?.endUndoGrouping()
-        
-        do {
-            try modelContext?.save()
-        } catch {
-            printTag("Erreur lors de la sauvegarde après suppression : \(error)")
-        }
     }
     
-    func undoLastAction() {
-        modelContext?.undoManager?.undo()
-        do {
-            try modelContext?.save()
-        } catch {
-            printTag("Erreur lors de la sauvegarde après undo : \(error)")
-        }
-    }
-    
-    func fetchEntitySchedules() -> [EntitySchedule] {
-        guard let lhs = currentAccount?.uuid else {
-            printTag("Erreur : Aucun compte actif défini.")
-            return []
-        }
-        
-        let predicate = #Predicate<EntitySchedule> { entity in entity.account.uuid == lhs }
-        let sort = [SortDescriptor(\EntitySchedule.libelle, order: .forward)]
-        
-        let descriptor = FetchDescriptor<EntitySchedule>(
-            predicate: predicate,
-            sortBy: sort )
-        
-        do {
-            return try modelContext?.fetch(descriptor) ?? []
-        } catch {
-            printTag("Erreur lors de la récupération des données : \(error.localizedDescription)")
-            return []
-        }
-    }
+//    func undoLastAction() {
+//        modelContext?.undoManager?.undo()
+//        do {
+//            try modelContext?.save()
+//        } catch {
+//            printTag("Erreur lors de la sauvegarde après undo : \(error)")
+//        }
+//    }
     
     // Récupérer toutes les données filtrées par compte
     func getAllData() -> [EntitySchedule]? {

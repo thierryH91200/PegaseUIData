@@ -59,7 +59,7 @@ struct SchedulerFormView: View {
         .navigationTitle(scheduler == nil ? "New scheduler" : "Edit scheduler")
         .background(.white)
         .onChange(of: scheduler) { oldValue, newValue in
-            printTag("[PegseUIData] scheduler a changé : \(oldValue?.libelle ?? "nil") -> \(newValue?.libelle ?? "nil")")
+            printTag("scheduler a changé : \(oldValue?.libelle ?? "nil") -> \(newValue?.libelle ?? "nil")")
         }
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {

@@ -64,6 +64,8 @@ struct SchedulerView: View {
 struct Scheduler: View {
     
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.undoManager) private var undoManager
+
     @EnvironmentObject var currentAccountManager : CurrentAccountManager
     @EnvironmentObject var dataManager : SchedulerDataManager
     
@@ -73,11 +75,22 @@ struct Scheduler: View {
     
     @State private var selectedItem: EntitySchedule.ID?
     @State private var selected: EntitySchedule?
+    
     @State private var selectedSchedule: EntitySchedule?
+    @State private var selectedItemID: UUID?
+    
     @State private var upcoming: [EntitySchedule] = []
     
     @State private var frequenceType     : [String]    = []
     @State var selectedType     : String
+    
+    var canUndo : Bool? {
+        undoManager?.canUndo ?? false
+    }
+    var canRedo : Bool? {
+        undoManager?.canRedo ?? false
+    }
+
     
     @State private var isAddDialogPresented = false
     @State private var isEditDialogPresented = false // Nouveau état pour afficher le dialog d'édition
@@ -169,6 +182,7 @@ struct Scheduler: View {
                 
                 Button(action: {
                     delete()
+                    setupDataManager()
                 }) {
                     Label("Delete", systemImage: "trash")
                         .padding()
@@ -179,6 +193,39 @@ struct Scheduler: View {
                 }
                 .buttonStyle(.bordered)
                 .disabled(selectedItem == nil) // Désactive si aucune ligne n'est sélectionnée
+                
+                
+                Button(action: {
+                    if let manager = undoManager, manager.canUndo {
+                        manager.undo()
+                        setupDataManager()
+                    }
+                }) {
+                    Label("Undo", systemImage: "arrow.uturn.backward")
+                        .frame(minWidth: 100) // Largeur minimale utile
+                        .padding()
+                        .background(canUndo == false ? Color.gray : Color.green)
+                        .opacity(canUndo == false  ? 0.6 : 1)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                }
+                .buttonStyle(.plain)
+               
+                Button(action: {
+                    if let manager = undoManager, manager.canRedo {
+                        manager.redo()
+                        setupDataManager()
+                    }
+                }) {
+                    Label("Redo", systemImage: "arrow.uturn.forward")
+                        .frame(minWidth: 100) // Largeur minimale utile
+                        .padding()
+                        .background( canRedo == false ? Color.gray : Color.orange)
+                        .opacity( canRedo  == false ? 0.6 : 1)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                }
+                .buttonStyle(.plain)
             }
             .padding()
 
@@ -186,13 +233,19 @@ struct Scheduler: View {
             Spacer()
         }
         
-        .sheet(isPresented: $isAddDialogPresented) {
-            SchedulerFormView(isPresented: $isAddDialogPresented, isModeCreate: $modeCreate, scheduler: $selected, selectedTypeIndex: indexForSelectedType())
+        .sheet(isPresented: $isAddDialogPresented, onDismiss: {setupDataManager()}) {
+            SchedulerFormView(isPresented: $isAddDialogPresented,
+                              isModeCreate: $modeCreate,
+                              scheduler: $selected,
+                              selectedTypeIndex: indexForSelectedType())
         }
         
-        .sheet(isPresented: $isEditDialogPresented) {
-            SchedulerFormView(isPresented: $isEditDialogPresented, isModeCreate: $modeCreate, scheduler: $selectedSchedule, selectedTypeIndex: indexForSelectedType())
-        }
+        .sheet(isPresented: $isEditDialogPresented, onDismiss: {setupDataManager()}) {
+            SchedulerFormView(isPresented: $isEditDialogPresented,
+                              isModeCreate: $modeCreate,
+                              scheduler: $selectedSchedule,
+                              selectedTypeIndex: indexForSelectedType())
+            }
     }
     
     private func affectSelect () {
@@ -202,6 +255,7 @@ struct Scheduler: View {
     
     private func setupDataManager() {
         DataContext.shared.context = modelContext
+        DataContext.shared.undoManager = undoManager
         
         if currentAccountManager.currentAccount != nil {
             dataManager.schedulers = SchedulerManager.shared.getAllData()!
@@ -210,13 +264,26 @@ struct Scheduler: View {
     
     private func delete() {
         
-        if let modeToDelete = selectedSchedule {
-            modelContext.delete(modeToDelete)  // Suppression de l'élément du contexte
-            selectedSchedule = nil  // Réinitialisation de la sélection
-            selectedItem = nil
-            try? modelContext.save()  // Sauvegarde du contexte après suppression
-            refreshData()
+        if let id = selectedItemID,
+           let item = schedulers.first(where: { $0.id == id }) {
+            
+            SchedulerManager.shared.delete(entity: item, undoManager: undoManager)
+            DispatchQueue.main.async {
+                selectedItemID = nil
+//                selectedItem = nil
+                refreshData()
+            }
+
         }
+        
+//        if let modeToDelete = selectedSchedule {
+//            SchedulerManager.shared.remove(entity: modeToDelete, undoManager: undoManager)
+//            DispatchQueue.main.async {
+//                selectedSchedule = nil
+//                selectedItem = nil
+////                refreshData()
+//            }
+//        }
     }
     private func refreshData() {
         dataManager.schedulers = SchedulerManager.shared.getAllData()!
@@ -275,6 +342,7 @@ struct SchedulerTable: View {
                         selection = item.id
                     }
                 }
+                .tag(item.id)
                 .onHover { hovering in
                     hoveredItemID = hovering ? item.id : nil
                 }

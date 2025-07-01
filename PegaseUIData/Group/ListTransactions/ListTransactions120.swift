@@ -232,7 +232,7 @@ struct TransactionLigne: View {
             // Supprime du contexte si non déjà supprimé
             for transaction in transactionsToDelete {
                 if !transaction.isDeleted {
-                    ListTransactionsManager.shared.remove(entity: transaction)
+                    ListTransactionsManager.shared.delete(entity: transaction)
                 }
             }
             

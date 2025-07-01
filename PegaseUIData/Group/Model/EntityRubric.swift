@@ -66,7 +66,7 @@ final class RubricManager {
         return result
     }
     
-    func remove(entity: EntityRubric) {
+    func delete(entity: EntityRubric) {
         modelContext?.delete(entity)
         entitiesRubric.removeAll { $0.id == entity.id }
     }

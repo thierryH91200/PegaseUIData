@@ -131,14 +131,14 @@ final class ChequeBookManager : ObservableObject {
         save() // Assurez-vous de sauvegarder le contexte après modification
     }
 
-    func delete(entity: EntityCheckBook)
+    func delete(entity: EntityCheckBook, undoManager: UndoManager? )
     {
+        modelContext?.undoManager = undoManager
+
         modelContext?.undoManager?.beginUndoGrouping()
         modelContext?.undoManager?.setActionName("DeleteCheckBook)")
         modelContext?.delete(entity)
         modelContext?.undoManager?.endUndoGrouping()
-        
-        save()
     }
 
     
@@ -197,12 +197,12 @@ class ChequeBookViewModel: ObservableObject {
         }
     }
     
-    func remove(at index: Int) {
-        guard carnetCheques.indices.contains(index) else { return }
-        let carnet = carnetCheques[index]
-        manager.delete(entity: carnet)
-        carnetCheques.remove(at: index)
-    }
+//    func remove(at index: Int) {
+//        guard carnetCheques.indices.contains(index) else { return }
+//        let carnet = carnetCheques[index]
+//        manager.delete(entity: carnet)
+//        carnetCheques.remove(at: index)
+//    }
     
     func reloadData() async {
         carnetCheques = manager.getAllData() ?? []

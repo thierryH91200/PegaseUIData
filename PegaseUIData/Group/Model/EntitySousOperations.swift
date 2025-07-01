@@ -100,7 +100,7 @@ final class SubTransactionsManager {
     }
     
     // Suppression d'une entité
-    func remove(entity: EntitySousOperation) {
+    func delete(entity: EntitySousOperation) {
         entity.transaction = nil
         modelContext?.delete(entity)
     }
