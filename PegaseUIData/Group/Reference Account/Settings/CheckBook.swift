@@ -64,20 +64,6 @@ final class CheckDataManager: ObservableObject {
         saveChanges()
     }
 
-    // Supprime un carnet de chèques
-//    func deleteCheckBook(_ checkBook: EntityCheckBook) {
-//        guard let modelContext = modelContext else {
-//            printTag("Le contexte de modèle n'est pas initialisé.")
-//            return
-//        }
-//        
-//        modelContext.delete(checkBook)
-//        
-//        // Met à jour la liste
-//        checkBooks?.removeAll { $0.id == checkBook.id }
-//        
-//        saveChanges()
-//    }
 }
 
 // Vue principale pour l'affichage des carnets de chèques

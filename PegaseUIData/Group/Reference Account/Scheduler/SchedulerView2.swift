@@ -25,7 +25,7 @@ struct SchedulerFormView: View {
     @Binding var isPresented: Bool
     @Binding var isModeCreate: Bool
     
-    @Binding var scheduler: EntitySchedule?
+    @State var scheduler: EntitySchedule?
     
     @State private var amount: String = ""
     @State private var dateValeur: Date = Date()

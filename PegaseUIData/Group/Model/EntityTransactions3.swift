@@ -9,7 +9,6 @@
 import Foundation
 import SwiftData
 
-
 public extension Sequence where Element: Equatable {
     var uniqueElements: [Element] {
         return self.reduce(into: []) {

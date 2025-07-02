@@ -117,57 +117,13 @@ final class BankManager : BankManaging {
     }
     
     func save() throws {
-    }
-
-}
-
-class BankViewModel: ObservableObject {
-    @Published var account: EntityAccount
-    @Published var bank: EntityBanqueInfo?
-    @Published var banks = [EntityBanqueInfo]()
-    private let manager = BankManager()
-    @Published var isLoading: Bool = false
-    
-    init(account: EntityAccount) {
-        self.account = account
-        self.bank = nil
         
-        loadInitialData()
-    }
-    
-    // MARK: Actions utilisateur :
-    private func loadInitialData() {
-        bank = manager.getAllData()
-    }
-    
-    func add(name: String) {
         do {
-            let _ = try manager.create(account: account)
-            reloadData()
-        } catch EnumError.accountNotFound {
-            printTag("Erreur : compte non trouvé")
-        } catch EnumError.saveFailed {
-            printTag("Erreur : échec de la sauvegarde")
+            try modelContext?.save()
         } catch {
-            printTag("Erreur inattendue : \(error)")
+            throw EnumError.saveFailed
         }
     }
-    
-    func delete() {
-        manager.delete(entity: bank!) // Appelle la méthode sans try
-        bank = nil
-        
-        reloadData()      // Recharger depuis la base de données
-    }
-    
-    // MARK: Communication avec les services ou les managers :
-    @discardableResult
-    func reloadData() -> EntityBanqueInfo {
-        bank = manager.getAllData()
-        return bank!
-    }
-    
-    func saveChanges() throws {
-        try manager.save()
-    }
+
 }
+

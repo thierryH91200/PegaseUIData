@@ -11,18 +11,19 @@ import SwiftData
 
 
 final class SchedulerDataManager: ObservableObject {
-    @Published var schedulers: [EntitySchedule] = [] {
-        didSet {
-            guard modelContext != nil else { return }
-            // Sauvegarder les modifications dès qu'il y a un changement
-            saveChanges()
-        }
-    }
+    @Published var schedulers: [EntitySchedule] = []
+    //    {
+    //        didSet {
+    //            guard modelContext != nil else { return }
+    //            // Sauvegarder les modifications dès qu'il y a un changement
+    //            saveChanges()
+    //        }
+    //    }
     
     var modelContext: ModelContext? {
         DataContext.shared.context
     }
-
+    
     func saveChanges() {
         
         do {
@@ -45,7 +46,7 @@ struct SchedulerView: View {
     
     var body: some View {
         
-
+        
         Scheduler( selectedType: "")
             .environmentObject(schedulerDataManager)
             .padding()
@@ -65,7 +66,7 @@ struct Scheduler: View {
     
     @Environment(\.modelContext) private var modelContext
     @Environment(\.undoManager) private var undoManager
-
+    
     @EnvironmentObject var currentAccountManager : CurrentAccountManager
     @EnvironmentObject var dataManager : SchedulerDataManager
     
@@ -74,10 +75,7 @@ struct Scheduler: View {
     @State private var schedulers: [EntitySchedule] = []
     
     @State private var selectedItem: EntitySchedule.ID?
-    @State private var selected: EntitySchedule?
-    
-    @State private var selectedSchedule: EntitySchedule?
-    @State private var selectedItemID: UUID?
+    @State private var lastDeletedID: UUID?
     
     @State private var upcoming: [EntitySchedule] = []
     
@@ -90,11 +88,15 @@ struct Scheduler: View {
     var canRedo : Bool? {
         undoManager?.canRedo ?? false
     }
-
     
     @State private var isAddDialogPresented = false
     @State private var isEditDialogPresented = false // Nouveau état pour afficher le dialog d'édition
     @State private var modeCreate = false
+    
+    var selectedSchedule: EntitySchedule? {
+        guard let id = selectedItem else { return nil }
+        return schedulers.first(where: { $0.id == id })
+    }
     
     let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -112,35 +114,45 @@ struct Scheduler: View {
             }
             SchedulerTable(schedulers: dataManager.schedulers, selection: $selectedItem)
                 .background(Color.red)
+                .tableStyle(.bordered)
                 .frame(height: 300)
                 .padding(.top, 0)
+            
                 .onAppear {
+                    DataContext.shared.context = modelContext
                     setupDataManager()
                 }
+            
+                .onChange(of: schedulers) { _, _ in
+                    if let restoredID = lastDeletedID,
+                       schedulers.contains(where: { $0.id == restoredID }) {
+                        selectedItem = restoredID
+                        lastDeletedID = nil
+                    }
+                }
+            
                 .onChange(of: selectedItem) { oldValue, newValue in
                     if let selected = newValue {
+                        schedulers = dataManager.schedulers
                         selectedItem = selected
-                        let schedulers = dataManager.schedulers
-                        selectedSchedule = schedulers.first(where: { $0.id == selected })
+                        
                     } else {
-                        selectedSchedule = nil // Désactive l’édition automatique
                         selectedItem = nil
                     }
                 }
+            
                 .onChange(of: CurrentAccountManager.shared.currentAccount) { old, newAccount in
                     
                     if newAccount != nil {
-                        dataManager.schedulers = []
-                        selectedSchedule = nil
+                        dataManager.schedulers.removeAll()
                         selectedItem = nil
-                        selected = nil
                         refreshData()
                     }
                 }
+            
                 .onChange(of: dataManager.schedulers) { old, new in
-                    selectedSchedule = nil
                     selectedItem = nil
-                    selected = nil
+                    schedulers = dataManager.schedulers
                     upcoming = dataManager.schedulers.filter {
                         $0.dateValeur >= Date()
                     }.sorted { $0.dateValeur < $1.dateValeur }
@@ -148,8 +160,6 @@ struct Scheduler: View {
                 .onReceive(NotificationCenter.default.publisher(for: .didSelectScheduler)) { notif in
                     if let scheduler = notif.object as? EntitySchedule {
                         selectedItem = scheduler.id
-                        selectedSchedule = scheduler
-                        selected = scheduler
                     }
                 }
             
@@ -157,7 +167,6 @@ struct Scheduler: View {
                 Button(action: {
                     isAddDialogPresented = true
                     modeCreate = true
-                    selected = nil
                 }) {
                     Label("Add", systemImage: "plus")
                         .padding()
@@ -194,11 +203,17 @@ struct Scheduler: View {
                 .buttonStyle(.bordered)
                 .disabled(selectedItem == nil) // Désactive si aucune ligne n'est sélectionnée
                 
-                
                 Button(action: {
                     if let manager = undoManager, manager.canUndo {
-                        manager.undo()
-                        setupDataManager()
+                        selectedItem = nil
+                        lastDeletedID = nil
+                        DispatchQueue.main.async {
+                            manager.undo()
+                            
+                            DispatchQueue.main.async {
+                                setupDataManager()
+                            }
+                        }
                     }
                 }) {
                     Label("Undo", systemImage: "arrow.uturn.backward")
@@ -210,7 +225,24 @@ struct Scheduler: View {
                         .cornerRadius(8)
                 }
                 .buttonStyle(.plain)
-               
+                
+                Button("Undo") {
+                    guard let manager = undoManager, manager.canUndo else { return }
+                    
+                    selectedItem = nil
+                    lastDeletedID = nil
+                    
+                    // Sauvegarde le contexte AVANT d'annuler
+                    try? modelContext.save()
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        manager.undo()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            setupDataManager()
+                        }
+                    }
+                }
+                
                 Button(action: {
                     if let manager = undoManager, manager.canRedo {
                         manager.redo()
@@ -228,7 +260,6 @@ struct Scheduler: View {
                 .buttonStyle(.plain)
             }
             .padding()
-
             UpcomingRemindersView(upcoming: upcoming)
             Spacer()
         }
@@ -236,21 +267,21 @@ struct Scheduler: View {
         .sheet(isPresented: $isAddDialogPresented, onDismiss: {setupDataManager()}) {
             SchedulerFormView(isPresented: $isAddDialogPresented,
                               isModeCreate: $modeCreate,
-                              scheduler: $selected,
+                              scheduler: selectedSchedule,
                               selectedTypeIndex: indexForSelectedType())
         }
         
         .sheet(isPresented: $isEditDialogPresented, onDismiss: {setupDataManager()}) {
             SchedulerFormView(isPresented: $isEditDialogPresented,
                               isModeCreate: $modeCreate,
-                              scheduler: $selectedSchedule,
+                              scheduler: selectedSchedule,
                               selectedTypeIndex: indexForSelectedType())
-            }
+        }
     }
     
     private func affectSelect () {
-        let schedulers = dataManager.schedulers
-        selectedSchedule = schedulers.first(where: { $0.id == selectedItem })
+        schedulers = dataManager.schedulers
+        //        selectedSchedule = schedulers.first(where: { $0.id == selectedItem })
     }
     
     private func setupDataManager() {
@@ -264,29 +295,25 @@ struct Scheduler: View {
     
     private func delete() {
         
-        if let id = selectedItemID,
+        if let id = selectedItem,
            let item = schedulers.first(where: { $0.id == id }) {
+            
+            lastDeletedID = item.id
             
             SchedulerManager.shared.delete(entity: item, undoManager: undoManager)
             DispatchQueue.main.async {
-                selectedItemID = nil
-//                selectedItem = nil
+                selectedItem = nil
+                lastDeletedID = nil
+                
                 refreshData()
             }
-
+            
         }
-        
-//        if let modeToDelete = selectedSchedule {
-//            SchedulerManager.shared.remove(entity: modeToDelete, undoManager: undoManager)
-//            DispatchQueue.main.async {
-//                selectedSchedule = nil
-//                selectedItem = nil
-////                refreshData()
-//            }
-//        }
     }
+    
     private func refreshData() {
         dataManager.schedulers = SchedulerManager.shared.getAllData()!
+        schedulers = dataManager.schedulers
     }
     
     private func indexForSelectedType() -> Int {
@@ -319,7 +346,7 @@ struct SchedulerTable: View {
         }
         .frame(minHeight: 300)
         .background(Color.white)
-
+        
     }
     
     @ViewBuilder
@@ -329,9 +356,9 @@ struct SchedulerTable: View {
             let isHovered = item.id == hoveredItemID
             let baseColor = index.isMultiple(of: 2) ? Color.white : Color(nsColor: .controlBackgroundColor)
             let rowColor = isSelected ? Color.accentColor.opacity(0.2)
-                : isHovered ? Color.gray.opacity(0.1)
-                : baseColor
-
+            : isHovered ? Color.gray.opacity(0.1)
+            : baseColor
+            
             rowView(item: item)
                 .background(rowColor)
                 .contentShape(Rectangle())

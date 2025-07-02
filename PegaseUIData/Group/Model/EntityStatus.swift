@@ -133,8 +133,12 @@ final class StatusManager: StatusManaging {
     
     func save () throws {
         
-        guard let context = modelContext else { throw EnumError.saveFailed }
-        try context.save()
+        do {
+            try modelContext?.save()
+            printTag("Sauvegarde réussie.")
+        } catch {
+            printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+        }
     }
     
     func saveContext() {
@@ -145,8 +149,7 @@ final class StatusManager: StatusManaging {
         }
         
         do {
-            try modelContext?.save()
-            printTag("Sauvegarde réussie.")
+            try save()
         } catch {
             printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }

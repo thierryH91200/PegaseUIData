@@ -58,7 +58,7 @@ struct Sidebar1A: View {
         }
         .onAppear {
             Task {
-                preloadDataIfNeeded(modelContext: modelContext)
+                Sidebar1A.preloadDataIfNeeded(modelContext: modelContext)
                 await MainActor.run {
                     if selectedAccount == nil, let firstFolder = folders.first, let firstAccount = firstFolder.children.first {
                         selectedAccount = firstAccount
@@ -70,14 +70,7 @@ struct Sidebar1A: View {
         Bouton()
     }
     
-    @ViewBuilder
-    private func tableView(account: EntityAccount) async -> some View {
-//        DataContext.shared.context = modelContext
-        let _ =  PaymentModeViewModel(account: account)
-        Text("Contenu du tableau ici")
-    }
-    
-    func preloadDataIfNeeded(modelContext: ModelContext) {
+    static func preloadDataIfNeeded(modelContext: ModelContext) {
         // Vérifie si des données existent déjà
         let existingFolders = try? modelContext.fetch(FetchDescriptor<EntityFolderAccount>())
         guard existingFolders?.isEmpty == true else { return }

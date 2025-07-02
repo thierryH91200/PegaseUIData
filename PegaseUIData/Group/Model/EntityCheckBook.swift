@@ -39,7 +39,7 @@ import SwiftUI
     }
   
     init() {
-        self.account = CurrentAccountManager.shared.getAccount()
+        self.account = CurrentAccountManager.shared.getAccount()!
     }
 }
 
@@ -133,12 +133,15 @@ final class ChequeBookManager : ObservableObject {
 
     func delete(entity: EntityCheckBook, undoManager: UndoManager? )
     {
-        modelContext?.undoManager = undoManager
+        
+        guard let context = modelContext else { return }
 
-        modelContext?.undoManager?.beginUndoGrouping()
-        modelContext?.undoManager?.setActionName("DeleteCheckBook)")
-        modelContext?.delete(entity)
-        modelContext?.undoManager?.endUndoGrouping()
+        context.undoManager = undoManager
+
+        context.undoManager?.beginUndoGrouping()
+        context.undoManager?.setActionName("Delete CheckBook")
+        context.delete(entity)
+        context.undoManager?.endUndoGrouping()
     }
 
     
@@ -172,39 +175,3 @@ final class ChequeBookManager : ObservableObject {
     }
 }
 
-class ChequeBookViewModel: ObservableObject {
-    @Published var account: EntityAccount
-    @Published var carnetCheques: [EntityCheckBook] = []
-    private let manager: ChequeBookManager
-    
-    init(account: EntityAccount, manager: ChequeBookManager) {
-        self.account = account
-        self.manager = manager
-        
-        Task {
-            await loadInitialData()
-        }
-    }
-    
-    @MainActor
-    private func loadInitialData() async {
-        carnetCheques = manager.getAllData() ?? []
-    }
-    
-    func add(name: String) {
-        if let newCarnet = manager.create(name: name) {
-            carnetCheques.append(newCarnet)
-        }
-    }
-    
-//    func remove(at index: Int) {
-//        guard carnetCheques.indices.contains(index) else { return }
-//        let carnet = carnetCheques[index]
-//        manager.delete(entity: carnet)
-//        carnetCheques.remove(at: index)
-//    }
-    
-    func reloadData() async {
-        carnetCheques = manager.getAllData() ?? []
-    }
-}

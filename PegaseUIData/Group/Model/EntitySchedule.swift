@@ -108,21 +108,14 @@ final class SchedulerManager: ScheduleManaging {
     
     // Suppression d'une entité
     func delete(entity: EntitySchedule, undoManager: UndoManager?) {
-        modelContext?.undoManager = undoManager
-        modelContext?.undoManager?.beginUndoGrouping()
-        modelContext?.undoManager?.setActionName("Delete the schedule")
-        modelContext?.delete(entity)
-        modelContext?.undoManager?.endUndoGrouping()
+        guard let context = modelContext else { return }
+
+        context.undoManager = undoManager
+        context.undoManager?.beginUndoGrouping()
+        context.undoManager?.setActionName("Delete Schedule")
+        context.delete(entity)
+        context.undoManager?.endUndoGrouping()
     }
-    
-//    func undoLastAction() {
-//        modelContext?.undoManager?.undo()
-//        do {
-//            try modelContext?.save()
-//        } catch {
-//            printTag("Erreur lors de la sauvegarde après undo : \(error)")
-//        }
-//    }
     
     // Récupérer toutes les données filtrées par compte
     func getAllData() -> [EntitySchedule]? {

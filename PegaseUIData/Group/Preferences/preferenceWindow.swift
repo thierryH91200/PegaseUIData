@@ -8,6 +8,7 @@
 import Cocoa
 import SwiftUI
 import UserNotifications
+import SwiftData
 
 class PreferencesWindowController: NSWindowController, NSWindowDelegate {
     static let shared = PreferencesWindowController()
@@ -61,14 +62,35 @@ struct PreferencesView: View {
 }
 
 struct GeneralSettingsView: View {
+    
+    @Environment(\.modelContext) private var modelContext
+
     @AppStorage("launchAtLogin") private var launchAtLogin = false
     @AppStorage("showInMenuBar") private var showInMenuBar = false
     @State private var notificationsEnabled: Bool = true
     @State private var justGrantedNotifications: Bool = false
+    @State private var showAlert = false
 
     private let refreshTimer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
 
     var body: some View {
+        Form {
+            Section(header: Text("Données d’exemple")) {
+                Button("Réinitialiser les données préchargées") {
+                    showAlert = true
+                }
+            }
+        }
+        .alert("Réinitialiser les données ?", isPresented: $showAlert) {
+            Button("Annuler", role: .cancel) {}
+            Button("Réinitialiser", role: .destructive) {
+                resetPreloadedData()
+            }
+        } message: {
+            Text("Cette opération supprimera toutes les données et rechargera les données d’exemple.")
+        }
+        .padding()
+
         VStack(alignment: .leading) {
             Toggle("Launch at login", isOn: $launchAtLogin)
             Toggle("Show in menu bar (hide from Dock)", isOn: $showInMenuBar)
@@ -104,6 +126,28 @@ struct GeneralSettingsView: View {
                     notificationsEnabled = newStatus
                 }
             }
+        }
+    }
+    private func resetPreloadedData() {
+        // Supprime le flag UserDefaults
+        UserDefaults.standard.removeObject(forKey: "didPreloadDefaultData")
+
+        // Supprime toutes les données (optionnel mais recommandé)
+        deleteAllEntities(of: EntityFolderAccount.self)
+        deleteAllEntities(of: EntityAccount.self)
+        deleteAllEntities(of: EntityPaymentMode.self)
+
+        // Recharge les données par ton preload habituel
+        Sidebar1A.preloadDataIfNeeded(modelContext: modelContext)
+    }
+
+    private func deleteAllEntities<T: PersistentModel>(of type: T.Type) {
+        let descriptor = FetchDescriptor<T>()
+        if let results = try? modelContext.fetch(descriptor) {
+            for entity in results {
+                modelContext.delete(entity)
+            }
+            try? modelContext.save()
         }
     }
 }
