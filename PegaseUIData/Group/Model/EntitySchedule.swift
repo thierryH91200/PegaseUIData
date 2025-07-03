@@ -76,7 +76,6 @@ protocol ScheduleManaging {
     func save () throws
 }
 
-
 final class SchedulerManager: ScheduleManaging {
 
     @Published var entities = [EntitySchedule]()

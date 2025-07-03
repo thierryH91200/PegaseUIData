@@ -13,17 +13,13 @@ import PDFKit
 
 
 final class StatementDataManager: ObservableObject {
-    @Published var statements: [EntityBankStatement]? {
-        didSet {
-            // Sauvegarder les modifications dès qu'il y a un changement
-            saveChanges()
-        }
-    }
+    @Published var statements: [EntityBankStatement] = []
+
     
     var modelContext: ModelContext? {
         DataContext.shared.context
     }
-
+    
     func saveChanges() {
         
         do {
@@ -38,11 +34,11 @@ struct BankStatementView: View {
     
     @Binding var isVisible: Bool
     @StateObject private var dataManager = StatementDataManager()
-
+    
     var body: some View {
         BankStatementListView()
             .environmentObject(dataManager)
-
+        
             .padding()
             .task {
                 await performFalseTask()
@@ -57,14 +53,31 @@ struct BankStatementView: View {
 
 struct BankStatementListView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.undoManager) private var undoManager
+    
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
     @EnvironmentObject var dataManager: StatementDataManager
+    
+    @State private var bankStatements: [EntityBankStatement] = []
         
     @State private var isAddDialogPresented = false
     @State private var isEditDialogPresented = false
-    
+    @State private var isModeCreate = false
+
     @State private var selectedItem: EntityBankStatement.ID?
-    @State private var selectedStatement : EntityBankStatement?
+    @State private var lastDeletedID: UUID?
+    
+    var selectedStatement: EntityBankStatement? {
+        guard let id = selectedItem else { return nil }
+        return bankStatements.first(where: { $0.id == id })
+    }
+    
+    var canUndo : Bool? {
+        undoManager?.canUndo ?? false
+    }
+    var canRedo : Bool? {
+        undoManager?.canRedo ?? false
+    }
     
     @State private var dragOver = false
     
@@ -82,37 +95,27 @@ struct BankStatementListView: View {
                     .font(.headline)
             }
             
-            BankStatementTable(statements: dataManager.statements ?? [], selection: $selectedItem)
+            BankStatementTable(statements: dataManager.statements, selection: $selectedItem)
                 .frame(height: 300)
                 .onAppear {
-                    
-                    // Créer un nouvel enregistrement si la base de données est vide
-                    if dataManager.statements == nil {
-
-                        DataContext.shared.context = modelContext
-                        let statements = BankStatementManager.shared.getAllData()
-                        dataManager.statements = statements
-                    }
+                    DataContext.shared.context = modelContext
+                    setupDataManager()
                 }
             
                 .onChange(of: selectedItem) { oldValue, newValue in
                     if let selected = newValue {
+                        bankStatements =  dataManager.statements
                         selectedItem = selected
-                        selectedStatement =  dataManager.statements!.first(where: { $0.id == selected })
-
-                    } else {
-                        selectedStatement = nil // Désactive l’édition automatique
-                        selectedItem = nil
                         
-                        printTag("Aucun élément sélectionné dans CheckView/onChange")
+                    } else {
+                        selectedItem = nil
                     }
                 }
             
                 .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
                     
                     if newAccount != nil {
-                        dataManager.statements = nil
-                        selectedStatement = nil
+                        dataManager.statements.removeAll()
                         selectedItem = nil
                         refreshData()
                     }
@@ -122,6 +125,8 @@ struct BankStatementListView: View {
                 // Bouton pour ajouter un enregistrement
                 Button(action: {
                     isAddDialogPresented = true
+                    isModeCreate = true
+
                 }) {
                     Label("Add", systemImage: "plus")
                         .padding()
@@ -133,6 +138,8 @@ struct BankStatementListView: View {
                 // Bouton pour modifier un enregistrement
                 Button(action: {
                     isEditDialogPresented = true
+                    isModeCreate = false
+
                 }) {
                     Label("Edit", systemImage: "pencil")
                         .padding()
@@ -155,6 +162,44 @@ struct BankStatementListView: View {
                         .cornerRadius(8)
                 }
                 .disabled(selectedStatement == nil) // Désactive le bouton si aucun élément n'est sélectionné
+                
+                Button(action: {
+                    if let manager = undoManager, manager.canUndo {
+                        selectedItem = nil
+                        lastDeletedID = nil
+                        manager.undo()
+                        
+                        DispatchQueue.main.async {
+                            setupDataManager()
+                        }
+                    }
+                }) {
+                    Label("Undo", systemImage: "arrow.uturn.backward")
+                        .frame(minWidth: 100) // Largeur minimale utile
+                        .padding()
+                        .background(canUndo == false ? Color.gray : Color.green)
+                        .opacity(canUndo == false  ? 0.6 : 1)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                }
+                .buttonStyle(.plain)
+                
+                Button(action: {
+                    if let manager = undoManager, manager.canRedo {
+                        manager.redo()
+                        setupDataManager()
+                    }
+                }) {
+                    Label("Redo", systemImage: "arrow.uturn.forward")
+                        .frame(minWidth: 100) // Largeur minimale utile
+                        .padding()
+                        .background( canRedo == false ? Color.gray : Color.orange)
+                        .opacity( canRedo  == false ? 0.6 : 1)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                }
+                .buttonStyle(.plain)
+
             }
             Spacer()
             
@@ -166,29 +211,51 @@ struct BankStatementListView: View {
             }
         }
         
-        .sheet(isPresented: $isEditDialogPresented) {
-            StatementFormView(statement: selectedStatement)
+        .sheet(isPresented: $isEditDialogPresented , onDismiss: {setupDataManager()}) {
+            StatementFormView(isPresented: $isEditDialogPresented,
+                              isModeCreate: $isModeCreate,
+                              statement: selectedStatement)
         }
         
-        .sheet(isPresented: $isAddDialogPresented) {
-            StatementFormView(statement: nil)
+        .sheet(isPresented: $isAddDialogPresented , onDismiss: {setupDataManager()}) {
+            StatementFormView(isPresented: $isEditDialogPresented,
+                              isModeCreate: $isModeCreate,
+                              statement: nil )
         }
     }
+    
+    private func setupDataManager() {
+        DataContext.shared.context = modelContext
+        DataContext.shared.undoManager = undoManager
         
+        if currentAccountManager.currentAccount != nil {
+            dataManager.statements = BankStatementManager.shared.getAllData()!
+        }
+    }
+
     private func delete() {
-        if let modeToDelete = selectedStatement {
-            modelContext.delete(modeToDelete)  // Suppression de l'élément du contexte
-            selectedStatement = nil  // Réinitialisation de la sélection
-            selectedItem = nil
-            try? modelContext.save()  // Sauvegarde du contexte après suppression
-            refreshData()
+        
+        if let id = selectedItem,
+           let item = bankStatements.first(where: { $0.id == id }) {
+            
+            lastDeletedID = item.id
+            
+            BankStatementManager.shared.delete(entity: item, undoManager: undoManager)
+            DispatchQueue.main.async {
+                selectedItem = nil
+                lastDeletedID = nil
+                
+                refreshData()
+            }
+            
         }
     }
     
     private func refreshData() {
-        dataManager.statements = BankStatementManager.shared.getAllData()
+        dataManager.statements = BankStatementManager.shared.getAllData() ?? [ ]
     }
 }
+
 
 struct BankStatementTable: View {
     
@@ -227,6 +294,7 @@ struct BankStatementTable: View {
 
 class StatementFormViewModel: ObservableObject {
     @Published var num: String = ""
+    @Published var libelle: String = ""
     @Published var startDate = Date()
     @Published var startSolde: String = ""
     @Published var interDate = Date()
@@ -236,7 +304,7 @@ class StatementFormViewModel: ObservableObject {
     @Published var cbDate = Date()
     @Published var cbSolde: String = ""
     @Published var pdfData: Data?
-
+    
     func load(from statement: EntityBankStatement) {
         num = String(statement.num)
         startDate = statement.startDate
@@ -249,7 +317,7 @@ class StatementFormViewModel: ObservableObject {
         cbSolde = formatPrice(statement.cbSolde)
         pdfData = statement.pdfDoc
     }
-
+    
     func apply(to statement: EntityBankStatement) {
         statement.num = Int(num) ?? 0
         statement.startDate = startDate
@@ -262,7 +330,7 @@ class StatementFormViewModel: ObservableObject {
         statement.cbSolde = cleanDouble(from: cbSolde)
         statement.pdfDoc = pdfData
     }
-
+    
     func reset() {
         num = ""
         startDate = Date()
@@ -280,10 +348,14 @@ class StatementFormViewModel: ObservableObject {
 struct StatementFormView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+        
+    @Binding var isPresented: Bool
+    @Binding var isModeCreate: Bool
     
+    @State var statement: EntityBankStatement?
+
     @StateObject private var viewModel = StatementFormViewModel()
     
-    let statement: EntityBankStatement?
     @State private var dragOver = false
     
     var body: some View {

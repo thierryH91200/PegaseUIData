@@ -11,28 +11,40 @@ import SwiftData
 
 
 final class SchedulerDataManager: ObservableObject {
-    @Published var schedulers: [EntitySchedule] = []
-    //    {
-    //        didSet {
-    //            guard modelContext != nil else { return }
-    //            // Sauvegarder les modifications dès qu'il y a un changement
-    //            saveChanges()
-    //        }
-    //    }
     
+    /// Liste des opérations planifiées, exposée en lecture seule
+    @Published var schedulers: [EntitySchedule] = []
+    
+    /// Contexte SwiftData
     var modelContext: ModelContext? {
         DataContext.shared.context
     }
     
+    /// Recharge les données à partir du modèle partagé
+    func refresh() {
+        guard let data = SchedulerManager.shared.getAllData() else {
+            print("❗️Erreur : getAllData() a renvoyé nil")
+            schedulers.removeAll()
+            return
+        }
+        schedulers = data
+    }
+    
+    /// Affecte une nouvelle liste d'opérations (optionnel)
+    func setSchedulers(_ newList: [EntitySchedule]) {
+        schedulers = newList
+    }
+    
+    /// Sauvegarde explicite du contexte
     func saveChanges() {
-        
         do {
             try modelContext?.save()
         } catch {
-            printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+            printTag("💥 Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
     }
     
+    /// Envoie une notification à d'autres vues
     func selectScheduler(_ scheduler: EntitySchedule) {
         NotificationCenter.default.post(name: .didSelectScheduler, object: scheduler)
     }
@@ -65,7 +77,7 @@ struct SchedulerView: View {
 struct Scheduler: View {
     
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.undoManager) private var undoManager
+    @Environment(\.undoManager)  private var undoManager
     
     @EnvironmentObject var currentAccountManager : CurrentAccountManager
     @EnvironmentObject var dataManager : SchedulerDataManager
@@ -73,11 +85,10 @@ struct Scheduler: View {
     @ObservedObject var accountManager = CurrentAccountManager.shared
     
     @State private var schedulers: [EntitySchedule] = []
-    
+    @State private var upcoming: [EntitySchedule] = []
+
     @State private var selectedItem: EntitySchedule.ID?
     @State private var lastDeletedID: UUID?
-    
-    @State private var upcoming: [EntitySchedule] = []
     
     @State private var frequenceType     : [String]    = []
     @State var selectedType     : String
@@ -90,8 +101,9 @@ struct Scheduler: View {
     }
     
     @State private var isAddDialogPresented = false
-    @State private var isEditDialogPresented = false // Nouveau état pour afficher le dialog d'édition
-    @State private var modeCreate = false
+    @State private var isEditDialogPresented = false
+
+    @State private var isModeCreate = false
     
     var selectedSchedule: EntitySchedule? {
         guard let id = selectedItem else { return nil }
@@ -119,7 +131,6 @@ struct Scheduler: View {
                 .padding(.top, 0)
             
                 .onAppear {
-                    DataContext.shared.context = modelContext
                     setupDataManager()
                 }
             
@@ -146,6 +157,8 @@ struct Scheduler: View {
                     if newAccount != nil {
                         dataManager.schedulers.removeAll()
                         selectedItem = nil
+//                        lastDeletedID = nil
+
                         refreshData()
                     }
                 }
@@ -157,6 +170,7 @@ struct Scheduler: View {
                         $0.dateValeur >= Date()
                     }.sorted { $0.dateValeur < $1.dateValeur }
                 }
+            
                 .onReceive(NotificationCenter.default.publisher(for: .didSelectScheduler)) { notif in
                     if let scheduler = notif.object as? EntitySchedule {
                         selectedItem = scheduler.id
@@ -166,7 +180,7 @@ struct Scheduler: View {
             HStack {
                 Button(action: {
                     isAddDialogPresented = true
-                    modeCreate = true
+                    isModeCreate = true
                 }) {
                     Label("Add", systemImage: "plus")
                         .padding()
@@ -178,7 +192,7 @@ struct Scheduler: View {
                 Button(action: {
                     affectSelect()
                     isEditDialogPresented = true
-                    modeCreate = false
+                    isModeCreate = false
                 }) {
                     Label("Edit", systemImage: "pencil")
                         .padding()
@@ -207,12 +221,11 @@ struct Scheduler: View {
                     if let manager = undoManager, manager.canUndo {
                         selectedItem = nil
                         lastDeletedID = nil
+
+                        undoManager?.undo()
+                        
                         DispatchQueue.main.async {
-                            manager.undo()
-                            
-                            DispatchQueue.main.async {
-                                setupDataManager()
-                            }
+                            refreshData()
                         }
                     }
                 }) {
@@ -226,27 +239,16 @@ struct Scheduler: View {
                 }
                 .buttonStyle(.plain)
                 
-                Button("Undo") {
-                    guard let manager = undoManager, manager.canUndo else { return }
-                    
-                    selectedItem = nil
-                    lastDeletedID = nil
-                    
-                    // Sauvegarde le contexte AVANT d'annuler
-                    try? modelContext.save()
-                    
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        manager.undo()
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            setupDataManager()
-                        }
-                    }
-                }
-                
                 Button(action: {
                     if let manager = undoManager, manager.canRedo {
+                        selectedItem = nil
+                        lastDeletedID = nil
+
                         manager.redo()
-                        setupDataManager()
+
+                        DispatchQueue.main.async {
+                            refreshData()
+                        }
                     }
                 }) {
                     Label("Redo", systemImage: "arrow.uturn.forward")
@@ -266,14 +268,14 @@ struct Scheduler: View {
         
         .sheet(isPresented: $isAddDialogPresented, onDismiss: {setupDataManager()}) {
             SchedulerFormView(isPresented: $isAddDialogPresented,
-                              isModeCreate: $modeCreate,
+                              isModeCreate: $isModeCreate,
                               scheduler: selectedSchedule,
                               selectedTypeIndex: indexForSelectedType())
         }
         
         .sheet(isPresented: $isEditDialogPresented, onDismiss: {setupDataManager()}) {
             SchedulerFormView(isPresented: $isEditDialogPresented,
-                              isModeCreate: $modeCreate,
+                              isModeCreate: $isModeCreate,
                               scheduler: selectedSchedule,
                               selectedTypeIndex: indexForSelectedType())
         }
@@ -289,7 +291,12 @@ struct Scheduler: View {
         DataContext.shared.undoManager = undoManager
         
         if currentAccountManager.currentAccount != nil {
-            dataManager.schedulers = SchedulerManager.shared.getAllData()!
+            if let allData = SchedulerManager.shared.getAllData() {
+                dataManager.schedulers = allData
+                schedulers = allData
+            } else {
+                print("❗️Erreur : getAllData() a renvoyé nil")
+            }
         }
     }
     
@@ -301,13 +308,13 @@ struct Scheduler: View {
             lastDeletedID = item.id
             
             SchedulerManager.shared.delete(entity: item, undoManager: undoManager)
+            dataManager.refresh()
             DispatchQueue.main.async {
                 selectedItem = nil
                 lastDeletedID = nil
                 
                 refreshData()
             }
-            
         }
     }
     

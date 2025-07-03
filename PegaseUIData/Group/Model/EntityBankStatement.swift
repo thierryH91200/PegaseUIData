@@ -79,8 +79,16 @@ extension EntityBankStatement {
     }
 }
 
-//final class BankStatementManager: NSObject {
-final class BankStatementManager {
+protocol BankStatementManaging {
+    func create(num: Int, startDate: Date, startSolde: Double) throws -> EntityBankStatement?
+    func getAllData() -> [EntityBankStatement]?
+    func delete(entity: EntityBankStatement, undoManager: UndoManager?)
+
+    func save () throws
+}
+
+
+final class BankStatementManager : BankStatementManaging{
     
     // Contexte pour les modifications
     static let shared = BankStatementManager()
@@ -111,12 +119,15 @@ final class BankStatementManager {
     
     // MARK: - Public Methods
     // Supprimer une transaction
-    func delete(entity: EntityBankStatement) {
-        
-        modelContext?.undoManager?.beginUndoGrouping()
-        modelContext?.undoManager?.setActionName("DeleteBankStatement")
-        modelContext?.delete(entity)
-        modelContext?.undoManager?.endUndoGrouping()
+    func delete(entity: EntityBankStatement, undoManager: UndoManager?) {
+        guard let context = modelContext else { return }
+
+        context.undoManager = undoManager
+
+        context.undoManager?.beginUndoGrouping()
+        context.undoManager?.setActionName("Delete BankStatement")
+        context.delete(entity)
+        context.undoManager?.endUndoGrouping()
     }
     
     // MARK: - Public Methods

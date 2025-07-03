@@ -11,18 +11,22 @@ import SwiftData
 
 // Gestionnaire de données pour les carnets de chèques
 final class CheckDataManager: ObservableObject {
-    @Published var checkBooks: [EntityCheckBook]?
-    {
-            didSet {
-                // Sauvegarde automatique dès qu'une modification est détectée
-                saveChanges()
-            }
-        }
-    
+    @Published var checkBooks: [EntityCheckBook] = []
+
     var modelContext: ModelContext? {
         DataContext.shared.context
     }
-
+    
+    /// Recharge les données à partir du modèle partagé
+    func refresh() {
+        guard let data = ChequeBookManager.shared.getAllData() else {
+            print("❗️Erreur : getAllData() a renvoyé nil")
+            checkBooks.removeAll()
+            return
+        }
+        checkBooks = data
+    }
+    
     // Sauvegarde les modifications dans SwiftData
     func saveChanges() {
         guard let modelContext = modelContext else {
@@ -38,32 +42,6 @@ final class CheckDataManager: ObservableObject {
         }
     }
     
-    // Ajoute un nouveau carnet de chèques
-    func addCheckBook(name: String, nbCheques: Int, numPremier: Int, numSuivant: Int, prefix: String, account: EntityAccount?) {
-        guard let modelContext = modelContext else {
-            printTag("Le contexte de modèle n'est pas initialisé.")
-            return
-        }
-        
-        let newCheckBook = EntityCheckBook()
-        newCheckBook.name = name
-        newCheckBook.nbCheques = nbCheques
-        newCheckBook.numPremier = numPremier
-        newCheckBook.numSuivant = numSuivant
-        newCheckBook.prefix = prefix
-        newCheckBook.account = account
-        
-        modelContext.insert(newCheckBook)
-        
-        // Ajoute à la liste
-        if checkBooks == nil {
-            checkBooks = [newCheckBook]
-        } else {
-            checkBooks?.append(newCheckBook)
-        }
-        saveChanges()
-    }
-
 }
 
 // Vue principale pour l'affichage des carnets de chèques
@@ -74,13 +52,27 @@ struct CheckView: View {
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
     @EnvironmentObject var dataManager: CheckDataManager
     
-    @State private var selectedItem: EntityCheckBook.ID? = nil
-    @State private var selectedCheck: EntityCheckBook?
-    
+    @State private var checkBooks: [EntityCheckBook] = []
+
+    @State private var selectedItem: EntityCheckBook.ID?
+    @State private var lastDeletedID: UUID?
+
+    var selectedCheckBook: EntityCheckBook? {
+        guard let id = selectedItem else { return nil }
+        return checkBooks.first(where: { $0.id == id })
+    }
+
     @State private var isAddDialogPresented = false
     @State private var isEditDialogPresented = false
     @State private var isModeCreate = false
-        
+    
+    var canUndo : Bool? {
+        undoManager?.canUndo ?? false
+    }
+    var canRedo : Bool? {
+        undoManager?.canRedo ?? false
+    }
+
     var body: some View {
         VStack(spacing: 10) {
             // Affiche le compte actuel
@@ -90,26 +82,31 @@ struct CheckView: View {
             }
             
             // Table des carnets de chèques
-            CheckBookTable(checkBooks: dataManager.checkBooks ?? [], selection: $selectedItem)
+            CheckBookTable(checkBooks: dataManager.checkBooks, selection: $selectedItem)
                 .frame(height: 300)
                 // Mise à jour de l'élément sélectionné
                 .onChange(of: selectedItem) { _, newValue in
-                    selectedCheck = dataManager.checkBooks?.first(where: { $0.id == newValue })
+                    if let selected = newValue {
+                        checkBooks = dataManager.checkBooks
+                        selectedItem = selected
+                        
+                    } else {
+                        selectedItem = nil
+                    }
                 }
                 .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
                     // Mise à jour de la liste en cas de changement de compte
-                    dataManager.checkBooks?.removeAll()
-                        selectedCheck = nil
-                        selectedItem = nil
-                        refreshData()
+                    dataManager.checkBooks.removeAll()
+                    selectedItem = nil
+                    refreshData()
                 }
+            
                 // Charge les données au démarrage de la vue
                 .onAppear {
+                    DataContext.shared.context = modelContext
                     setupDataManager()
-//                    currentAccount = currentAccountManager.currentAccount
                 }
 
-            
             // Boutons d'action
             HStack {
                 Button(action: {
@@ -135,24 +132,76 @@ struct CheckView: View {
                 }
                 .disabled(selectedItem == nil)
                 
-                Button(
-                    action: delete)
-                {
+                Button( action: {                            delete()
+                    setupDataManager()
+                }) {
                     Label("Delete", systemImage: "trash")
                         .padding()
-                        .background(Color.red)
+                        .background(selectedItem == nil ? Color.gray : Color.red) // Fond gris si désactivé
+                        .opacity(selectedItem == nil ? 0.6 : 1) // Opacité réduite si désactivé
                         .foregroundColor(.white)
                         .cornerRadius(8)
                 }
+                .buttonStyle(.bordered)
                 .disabled(selectedItem == nil)
+                
+                Button(action: {
+                    if let manager = undoManager, manager.canUndo {
+                        selectedItem = nil
+                        
+                        manager.undo()
+                        
+                        DispatchQueue.main.async {
+                            setupDataManager()
+                        }
+                    }
+                }) {
+                    Label("Undo", systemImage: "arrow.uturn.backward")
+                        .frame(minWidth: 100) // Largeur minimale utile
+                        .padding()
+                        .background(canUndo == false ? Color.gray : Color.green)
+                        .opacity(canUndo == false  ? 0.6 : 1)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                }
+                .buttonStyle(.plain)
+                Button(action: {
+                    if let manager = undoManager, manager.canRedo {
+                        selectedItem = nil
+                        lastDeletedID = nil
+
+                        manager.redo()
+
+                        DispatchQueue.main.async {
+                            refreshData()
+                        }
+                    }
+                }) {
+                    Label("Redo", systemImage: "arrow.uturn.forward")
+                        .frame(minWidth: 100) // Largeur minimale utile
+                        .padding()
+                        .background( canRedo == false ? Color.gray : Color.orange)
+                        .opacity( canRedo  == false ? 0.6 : 1)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                }
+                .buttonStyle(.plain)
             }
             
             // Feuilles modales pour l'ajout/modification
-            .sheet(isPresented: $isEditDialogPresented) {
-                CheckBookFormView(isPresented: $isEditDialogPresented, isModeCreate: $isModeCreate, checkBook: selectedCheck)
+            .sheet(isPresented: $isEditDialogPresented, onDismiss: {setupDataManager()})
+            {
+                CheckBookFormView(
+                    isPresented: $isEditDialogPresented,
+                    isModeCreate: $isModeCreate,
+                    checkBook: selectedCheckBook)
             }
-            .sheet(isPresented: $isAddDialogPresented) {
-                CheckBookFormView(isPresented: $isAddDialogPresented, isModeCreate: $isModeCreate, checkBook: nil)
+            .sheet(isPresented: $isAddDialogPresented , onDismiss: {setupDataManager()})
+            {
+                CheckBookFormView(
+                    isPresented: $isAddDialogPresented,
+                    isModeCreate: $isModeCreate,
+                    checkBook: nil)
             }
             .padding()
             Spacer()
@@ -162,22 +211,31 @@ struct CheckView: View {
     // Configure le gestionnaire de données
     private func setupDataManager() {
         DataContext.shared.context = modelContext
-        dataManager.checkBooks = ChequeBookManager.shared.getAllData()
+        dataManager.checkBooks = ChequeBookManager.shared.getAllData() ?? []
     }
     
     // Supprime un carnet de chèques sélectionné
     private func delete() {
-        if let checkBookToDelete = selectedCheck {
-            ChequeBookManager.shared.delete(entity: checkBookToDelete, undoManager: undoManager ?? nil)
-            selectedCheck = nil
-            selectedItem = nil
-            refreshData()
+        
+        if let id = selectedItem,
+           let item = checkBooks.first(where: { $0.id == id }) {
+            
+            lastDeletedID = item.id
+            
+            ChequeBookManager.shared.delete(entity: item, undoManager: undoManager)
+            dataManager.refresh()
+            DispatchQueue.main.async {
+                selectedItem = nil
+                lastDeletedID = nil
+                
+                refreshData()
+            }
         }
     }
     
     // Rafraîchit la liste des carnets de chèques
     private func refreshData() {
-        dataManager.checkBooks = ChequeBookManager.shared.getAllData()
+        dataManager.checkBooks = ChequeBookManager.shared.getAllData() ?? []
     }
 }
 
@@ -328,13 +386,12 @@ struct CheckBookFormView: View {
     
     private func save() {
         if isModeCreate { // Création
-            checkViewManager.addCheckBook(
+            ChequeBookManager.shared.create(
                 name: name,
                 nbCheques: nbCheques,
                 numPremier: numPremier,
                 numSuivant: numSuivant,
-                prefix: prefix,
-                account: CurrentAccountManager.shared.getAccount()
+                prefix: prefix
             )
         } else { // Modification
             if let existingItem = checkBook {

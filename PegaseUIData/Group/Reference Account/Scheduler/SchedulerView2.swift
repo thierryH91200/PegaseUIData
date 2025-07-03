@@ -20,6 +20,7 @@ private enum UpdateTrigger {
 struct SchedulerFormView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    
     @EnvironmentObject var schedulerDataManager: SchedulerDataManager
     
     @Binding var isPresented: Bool
