@@ -86,9 +86,6 @@ final class SchedulerManager: ScheduleManaging {
     var modelContext: ModelContext? {
         DataContext.shared.context
     }
-    var undoManager: UndoManager? {
-        DataContext.shared.undoManager
-    }
 
     init() { }
     
@@ -107,13 +104,13 @@ final class SchedulerManager: ScheduleManaging {
     
     // Suppression d'une entité
     func delete(entity: EntitySchedule, undoManager: UndoManager?) {
-        guard let context = modelContext else { return }
+        guard let modelContext = modelContext else { return }
 
-        context.undoManager = undoManager
-        context.undoManager?.beginUndoGrouping()
-        context.undoManager?.setActionName("Delete Schedule")
-        context.delete(entity)
-        context.undoManager?.endUndoGrouping()
+        modelContext.undoManager = undoManager
+        modelContext.undoManager?.beginUndoGrouping()
+        modelContext.undoManager?.setActionName("Delete Schedule")
+        modelContext.delete(entity)
+        modelContext.undoManager?.endUndoGrouping()
     }
     
     // Récupérer toutes les données filtrées par compte

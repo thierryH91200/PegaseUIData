@@ -12,7 +12,6 @@ import SwiftData
 
 final class SchedulerDataManager: ObservableObject {
     
-    /// Liste des opérations planifiées, exposée en lecture seule
     @Published var schedulers: [EntitySchedule] = []
     
     /// Contexte SwiftData
@@ -30,12 +29,7 @@ final class SchedulerDataManager: ObservableObject {
         schedulers = data
     }
     
-    /// Affecte une nouvelle liste d'opérations (optionnel)
-    func setSchedulers(_ newList: [EntitySchedule]) {
-        schedulers = newList
-    }
-    
-    /// Sauvegarde explicite du contexte
+    // Sauvegarde explicite du contexte
     func saveChanges() {
         do {
             try modelContext?.save()
@@ -81,14 +75,17 @@ struct Scheduler: View {
     
     @EnvironmentObject var currentAccountManager : CurrentAccountManager
     @EnvironmentObject var dataManager : SchedulerDataManager
-    
-    @ObservedObject var accountManager = CurrentAccountManager.shared
-    
+        
     @State private var schedulers: [EntitySchedule] = []
     @State private var upcoming: [EntitySchedule] = []
 
     @State private var selectedItem: EntitySchedule.ID?
     @State private var lastDeletedID: UUID?
+    
+    var selectedSchedule: EntitySchedule? {
+        guard let id = selectedItem else { return nil }
+        return schedulers.first(where: { $0.id == id })
+    }
     
     @State private var frequenceType     : [String]    = []
     @State var selectedType     : String
@@ -104,12 +101,7 @@ struct Scheduler: View {
     @State private var isEditDialogPresented = false
 
     @State private var isModeCreate = false
-    
-    var selectedSchedule: EntitySchedule? {
-        guard let id = selectedItem else { return nil }
-        return schedulers.first(where: { $0.id == id })
-    }
-    
+        
     let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .short // Format de date (ex. "22 janv. 2025")
@@ -133,7 +125,14 @@ struct Scheduler: View {
                 .onAppear {
                     setupDataManager()
                 }
-            
+                .onReceive(NotificationCenter.default.publisher(for: .NSUndoManagerDidUndoChange)) { _ in
+                    printTag("Undo effectué, on recharge les données")
+                    refreshData()
+                }
+                .onReceive(NotificationCenter.default.publisher(for: .NSUndoManagerDidRedoChange)) { _ in
+                    printTag("Redo effectué, on recharge les données")
+                    refreshData()
+                }
                 .onChange(of: schedulers) { _, _ in
                     if let restoredID = lastDeletedID,
                        schedulers.contains(where: { $0.id == restoredID }) {

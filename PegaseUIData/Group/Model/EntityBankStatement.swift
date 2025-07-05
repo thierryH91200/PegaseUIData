@@ -88,7 +88,7 @@ protocol BankStatementManaging {
 }
 
 
-final class BankStatementManager : BankStatementManaging{
+final class BankStatementManager : BankStatementManaging {
     
     // Contexte pour les modifications
     static let shared = BankStatementManager()

@@ -100,3 +100,13 @@ Vous pouvez créer un ticket sur la page Issues du dépôt GitHub :
 https://github.com/thierryH91200/PegaseUIData/issues
 
 Merci d’inclure un maximum de détails (version de macOS, étapes pour reproduire, capture d'écran si possible).
+
+
+
+Carnets de chéques  : ok
+Modes de paiement
+Relevés bancaire    : ok
+Echéanchier         : ok
+
+
+

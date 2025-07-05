@@ -17,7 +17,7 @@ final class CheckDataManager: ObservableObject {
         DataContext.shared.context
     }
     
-    /// Recharge les données à partir du modèle partagé
+    // Recharge les données à partir du modèle partagé
     func refresh() {
         guard let data = ChequeBookManager.shared.getAllData() else {
             print("❗️Erreur : getAllData() a renvoyé nil")
@@ -29,16 +29,10 @@ final class CheckDataManager: ObservableObject {
     
     // Sauvegarde les modifications dans SwiftData
     func saveChanges() {
-        guard let modelContext = modelContext else {
-            printTag("Le contexte de modèle n'est pas initialisé.")
-            return
-        }
-        
         do {
-            try modelContext.save()
+            try modelContext?.save()
         } catch {
             printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
-            dump(error)
         }
     }
     
@@ -84,12 +78,21 @@ struct CheckView: View {
             // Table des carnets de chèques
             CheckBookTable(checkBooks: dataManager.checkBooks, selection: $selectedItem)
                 .frame(height: 300)
+            
+                .onReceive(NotificationCenter.default.publisher(for: .NSUndoManagerDidUndoChange)) { _ in
+                    printTag("Undo effectué, on recharge les données")
+                    refreshData()
+                }
+                .onReceive(NotificationCenter.default.publisher(for: .NSUndoManagerDidRedoChange)) { _ in
+                    printTag("Redo effectué, on recharge les données")
+                    refreshData()
+                }
+
+            
                 // Mise à jour de l'élément sélectionné
                 .onChange(of: selectedItem) { _, newValue in
                     if let selected = newValue {
-                        checkBooks = dataManager.checkBooks
                         selectedItem = selected
-                        
                     } else {
                         selectedItem = nil
                     }
@@ -103,7 +106,7 @@ struct CheckView: View {
             
                 // Charge les données au démarrage de la vue
                 .onAppear {
-                    DataContext.shared.context = modelContext
+//                    DataContext.shared.context = modelContext
                     setupDataManager()
                 }
 
@@ -132,7 +135,8 @@ struct CheckView: View {
                 }
                 .disabled(selectedItem == nil)
                 
-                Button( action: {                            delete()
+                Button( action: {
+                    delete()
                     setupDataManager()
                 }) {
                     Label("Delete", systemImage: "trash")
@@ -148,11 +152,12 @@ struct CheckView: View {
                 Button(action: {
                     if let manager = undoManager, manager.canUndo {
                         selectedItem = nil
+                        lastDeletedID = nil
                         
                         manager.undo()
                         
                         DispatchQueue.main.async {
-                            setupDataManager()
+                            refreshData()
                         }
                     }
                 }) {
@@ -165,6 +170,7 @@ struct CheckView: View {
                         .cornerRadius(8)
                 }
                 .buttonStyle(.plain)
+                
                 Button(action: {
                     if let manager = undoManager, manager.canRedo {
                         selectedItem = nil
@@ -211,7 +217,16 @@ struct CheckView: View {
     // Configure le gestionnaire de données
     private func setupDataManager() {
         DataContext.shared.context = modelContext
-        dataManager.checkBooks = ChequeBookManager.shared.getAllData() ?? []
+        DataContext.shared.undoManager = undoManager
+
+        if currentAccountManager.currentAccount != nil {
+            if let allData = ChequeBookManager.shared.getAllData() {
+                dataManager.checkBooks = allData
+                checkBooks = allData
+            } else {
+                print("❗️Erreur : getAllData() a renvoyé nil")
+            }
+        }
     }
     
     // Supprime un carnet de chèques sélectionné
@@ -223,11 +238,10 @@ struct CheckView: View {
             lastDeletedID = item.id
             
             ChequeBookManager.shared.delete(entity: item, undoManager: undoManager)
-            dataManager.refresh()
+
             DispatchQueue.main.async {
                 selectedItem = nil
                 lastDeletedID = nil
-                
                 refreshData()
             }
         }
@@ -235,7 +249,8 @@ struct CheckView: View {
     
     // Rafraîchit la liste des carnets de chèques
     private func refreshData() {
-        dataManager.checkBooks = ChequeBookManager.shared.getAllData() ?? []
+        dataManager.checkBooks = ChequeBookManager.shared.getAllData()!
+        checkBooks = dataManager.checkBooks
     }
 }
 
@@ -290,8 +305,8 @@ struct CheckBookFormView: View {
     
     @Binding var isPresented: Bool
     @Binding var isModeCreate: Bool
-    
     let checkBook: EntityCheckBook?
+    
     @State private var name: String = ""
     @State private var nbCheques: Int = 0
     @State private var numPremier: Int = 0

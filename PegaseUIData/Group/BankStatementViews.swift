@@ -101,6 +101,15 @@ struct BankStatementListView: View {
                     DataContext.shared.context = modelContext
                     setupDataManager()
                 }
+                .onReceive(NotificationCenter.default.publisher(for: .NSUndoManagerDidUndoChange)) { _ in
+                    printTag("Undo effectué, on recharge les données")
+                    refreshData()
+                }
+                .onReceive(NotificationCenter.default.publisher(for: .NSUndoManagerDidRedoChange)) { _ in
+                    printTag("Redo effectué, on recharge les données")
+                    refreshData()
+                }
+
             
                 .onChange(of: selectedItem) { oldValue, newValue in
                     if let selected = newValue {

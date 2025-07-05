@@ -47,7 +47,7 @@ protocol PaymentModeManaging {
     func getAllNames(for account: EntityAccount) -> [String]
     func findOrCreate(account: EntityAccount, name: String, color: Color, uuid: UUID) -> EntityPaymentMode
     func find( account: EntityAccount?, name: String) -> EntityPaymentMode?
-    func delete(entity: EntityPaymentMode)
+    func delete(entity: EntityPaymentMode, undoManager: UndoManager?)
     func createDefaultPaymentModes(for account: EntityAccount)
 
     func save () throws
@@ -59,11 +59,12 @@ protocol PaymentModeManaging {
 //Contient la logique métier complexe
 //Est un singleton (shared)
 //Gère les données par défaut
-final class PaymentModeManager : PaymentModeManaging {
-    
+final class PaymentModeManager : PaymentModeManaging, ObservableObject {
+
     static let shared = PaymentModeManager()
     
-    var entities = [EntityPaymentMode]()
+    @Published var entities = [EntityPaymentMode]()
+    
     var modelContext: ModelContext? {
         DataContext.shared.context
     }
@@ -154,18 +155,15 @@ final class PaymentModeManager : PaymentModeManaging {
     }
     
     // MARK: delete ModePaiement
-    func delete(entity: EntityPaymentMode)
+    func delete(entity: EntityPaymentMode, undoManager: UndoManager?)
     {
-        modelContext?.undoManager?.beginUndoGrouping()
-        modelContext?.undoManager?.setActionName("Delete the modePayment")
-        modelContext?.delete(entity)
-        modelContext?.undoManager?.endUndoGrouping()
+        guard let modelContext = modelContext else { return }
 
-        do {
-            try modelContext?.save()
-        } catch {
-            printTag("Erreur lors de la sauvegarde après suppression : \(error)")
-        }
+        modelContext.undoManager = undoManager
+        modelContext.undoManager?.beginUndoGrouping()
+        modelContext.undoManager?.setActionName("Delete the Payment methods")
+        modelContext.delete(entity)
+        modelContext.undoManager?.endUndoGrouping()
     }
 
     // MARK: default ModePaiement

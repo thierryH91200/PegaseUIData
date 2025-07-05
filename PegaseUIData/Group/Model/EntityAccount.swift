@@ -207,31 +207,6 @@ final class AccountManager {
     }
 }
 
-class AccountViewModel: ObservableObject {
-    
-    @Published var items: [EntityAccount] = []
-    @Published var isLoading: Bool = false
-    
-    private let manager = AccountManager()
-    
-    init() {
-    }
-    
-    @Published var selectedAccount: EntityAccount? {
-        didSet {
-            load()
-        }
-    }
-    
-    @Published var modePayments: [EntityPaymentMode] = []
-    
-    func load() {
-    }
-    
-    func add(name: String) {
-    }
-}
-
 final class CurrentAccountManager : ObservableObject {
     
     static let shared = CurrentAccountManager()
@@ -241,7 +216,6 @@ final class CurrentAccountManager : ObservableObject {
     
     // Affectation d'un compte à la variable globale
     func setAccount(_ account: EntityAccount) {
-
         currentAccount = account
     }
     
@@ -249,7 +223,7 @@ final class CurrentAccountManager : ObservableObject {
     func getAccount()->EntityAccount? {
         return currentAccount
     }
-
+    
     func fetchDataForCurrentAccount() {
         guard let account = currentAccount else {
             printTag("No account selected.")
@@ -259,17 +233,9 @@ final class CurrentAccountManager : ObservableObject {
     }
     
     // Réinitialisation de la variable globale
-   func resetCurrentAccount() {
-
-       currentAccount = nil
+    func resetCurrentAccount() {
+        currentAccount = nil
     }
 }
 
-final class DataContext {
-    static let shared = DataContext()
-    var context: ModelContext?
-    var undoManager: UndoManager?
-
-    private init() {}
-}
 

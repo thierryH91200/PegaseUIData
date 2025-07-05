@@ -105,8 +105,16 @@ final class CategoryManager: ObservableObject {
         return categories.first { $0.name == name } ?? categories.first
     }
     
-    func delete(entity: EntityCategory) {
-        modelContext?.delete(entity) // Supprime l'entité via le contexte
+    func delete(entity: EntityCategory, undoManager: UndoManager?) {
+        
+        guard let modelContext = modelContext else { return }
+
+        modelContext.undoManager = undoManager
+        modelContext.undoManager?.beginUndoGrouping()
+        modelContext.undoManager?.setActionName("Delete Category")
+        modelContext.delete(entity)
+        modelContext.undoManager?.endUndoGrouping()
+
     }
 }
 

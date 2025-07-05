@@ -64,6 +64,7 @@ extension EntityCheckBook {
 final class ChequeBookManager : ObservableObject {
     
     static let shared = ChequeBookManager()
+    
     @Published var entities = [EntityCheckBook]()
     
     var account: EntityAccount?
@@ -87,12 +88,12 @@ final class ChequeBookManager : ObservableObject {
         }
         
         let entity = EntityCheckBook(
-            name: name,
-            nbCheques: nbCheques,
-            numPremier: numPremier,
-            numSuivant: numSuivant,
-            prefix: prefix,
-            account: account)
+            name       : name,
+            nbCheques  : nbCheques,
+            numPremier : numPremier,
+            numSuivant : numSuivant,
+            prefix     : prefix,
+            account    : account)
         
         modelContext?.insert(entity)
         
@@ -133,17 +134,14 @@ final class ChequeBookManager : ObservableObject {
 
     func delete(entity: EntityCheckBook, undoManager: UndoManager? )
     {
-        
-        guard let context = modelContext else { return }
+        guard let modelContext = modelContext else { return }
 
-        context.undoManager = undoManager
-
-        context.undoManager?.beginUndoGrouping()
-        context.undoManager?.setActionName("Delete CheckBook")
-        context.delete(entity)
-        context.undoManager?.endUndoGrouping()
+        modelContext.undoManager = undoManager
+        modelContext.undoManager?.beginUndoGrouping()
+        modelContext.undoManager?.setActionName("Delete CheckBook")
+        modelContext.delete(entity)
+        modelContext.undoManager?.endUndoGrouping()
     }
-
     
     private func defaultCarnetCheques(for account: EntityAccount) {
         guard entities.isEmpty else { return }

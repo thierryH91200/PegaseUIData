@@ -9,26 +9,27 @@ import SwiftUI
 import SwiftData
 
 final class ModePaiementDataManager: ObservableObject {
-    @Published var modePayments: [EntityPaymentMode]? {
-        didSet {
-            // Sauvegarder les modifications dès qu'il y a un changement
-            saveChanges()
-        }
-    }
+    @Published var modePayments: [EntityPaymentMode] = []
         
     var modelContext: ModelContext? {
         DataContext.shared.context
     }
-
-    /// Sauvegarde les changements dans le contexte SwiftData
-    func saveChanges() {
-        guard let modelContext = modelContext else {
-            printTag("Le contexte de modèle est indisponible.")
+    
+    // Recharge les données à partir du modèle partagé
+    func refresh() {
+        guard let data = PaymentModeManager.shared.getAllData() else {
+            print("❗️Erreur : getAllData() a renvoyé nil")
+            modePayments.removeAll()
             return
         }
+        modePayments = data
+    }
 
+
+    // Sauvegarde les modifications dans SwiftData
+    func saveChanges() {
         do {
-            try modelContext.save()
+            try modelContext?.save()
         } catch {
             printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
@@ -38,16 +39,33 @@ final class ModePaiementDataManager: ObservableObject {
 struct ModePaymentView: View {
     
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.undoManager) private var undoManager
+
     @EnvironmentObject var currentAccountManager : CurrentAccountManager
     @EnvironmentObject var dataManager : ModePaiementDataManager
+    
+    @State private var modePayments : [EntityPaymentMode] = []
 
     // Ajoutez un état pour suivre l'élément sélectionné
-    @State private var selectedItem: EntityPaymentMode.ID? = nil
-    @State private var selectedMode: EntityPaymentMode?
+    @State private var selectedItem: EntityPaymentMode.ID?
+    @State private var lastDeletedID: UUID?
     
+    var selectedMode: EntityPaymentMode? {
+        guard let id = selectedItem else { return nil }
+        return modePayments.first(where: { $0.id == id })
+    }
+
     @State private var isAddDialogPresented = false
     @State private var isEditDialogPresented = false
     @State private var modeCreate = false
+    
+//    var canUndo : Bool? {
+//        undoManager?.canUndo ?? false
+//    }
+//    var canRedo : Bool? {
+//        undoManager?.canRedo ?? false
+//    }
+
     
     var body: some View {
         VStack(spacing: 10) {
@@ -60,31 +78,33 @@ struct ModePaymentView: View {
 
             // Affiche le tableau des modes de paiement
             ModePaiementTable(
-                modePayments: dataManager.modePayments ?? [],
+                modePayments: dataManager.modePayments,
                 selection: $selectedItem)
                 .frame(height: 300)
             
-            // Met à jour la sélection
-           .onChange(of: selectedItem) { oldValue, newValue in
+            // Mise à jour de l'élément sélectionné
+           .onChange(of: selectedItem) { _, newValue in
                 
                 if let selected = newValue {
                     selectedItem = selected
-                    selectedMode = dataManager.modePayments!.first(where: { $0.id == selected })
-                    printTag("Sélectionné : \(selectedMode?.name ?? "Aucun")") 
-
                 } else {
-                    selectedMode = nil // Désactive l’édition automatique
                     selectedItem = nil
-
-                    printTag("Aucun élément sélectionné dans ModePaymentView / onCchange")
                 }
             }
             
+           .onReceive(NotificationCenter.default.publisher(for: .NSUndoManagerDidUndoChange)) { _ in
+               printTag("Undo effectué, on recharge les données")
+               refreshData()
+           }
+           .onReceive(NotificationCenter.default.publisher(for: .NSUndoManagerDidRedoChange)) { _ in
+               printTag("Redo effectué, on recharge les données")
+               refreshData()
+           }
+
             // Recharge les données lorsqu'un nouveau compte est sélectionné
             .onChange(of: currentAccountManager.currentAccount ) { old, newAccount in
                 if newAccount != nil {
-                    dataManager.modePayments = nil
-                    selectedMode = nil
+                    dataManager.modePayments.removeAll()
                     selectedItem = nil
                     refreshData()
                 }
@@ -120,11 +140,11 @@ struct ModePaymentView: View {
                         .foregroundColor(.white)
                         .cornerRadius(8)
                 }
-                .disabled(selectedMode == nil) // Désactive si aucune ligne n'est sélectionnée
+                .disabled(selectedItem == nil) // Désactive si aucune ligne n'est sélectionnée
                 
                 Button(action: {
-                    removeSelectedItem()
-                    refreshData()
+                    delete()
+                    setupDataManager()
                 })
                 {
                     Label("Delete", systemImage: "trash")
@@ -134,7 +154,30 @@ struct ModePaymentView: View {
                         .foregroundColor(.white)
                         .cornerRadius(8)
                 }
-                .disabled(selectedMode == nil) // Désactive si aucune ligne n'est sélectionnée
+                .disabled(selectedItem == nil) // Désactive si aucune ligne n'est sélectionnée
+                
+//                Button(action: {
+//                    if let manager = undoManager, manager.canUndo {
+//                        selectedItem = nil
+//                        lastDeletedID = nil
+//                        
+//                        manager.undo()
+//                        
+//                        DispatchQueue.main.async {
+//                            refreshData()
+//                        }
+//                    }
+//                }) {
+//                    Label("Undo", systemImage: "arrow.uturn.backward")
+//                        .frame(minWidth: 100) // Largeur minimale utile
+//                        .padding()
+//                        .background(canUndo == false ? Color.gray : Color.green)
+//                        .opacity(canUndo == false  ? 0.6 : 1)
+//                        .foregroundColor(.white)
+//                        .cornerRadius(8)
+//                }
+//                .buttonStyle(.plain)
+
             }
             .padding()
             Spacer()
@@ -144,31 +187,54 @@ struct ModePaymentView: View {
         
         // Formulaire d'ajout et de modification
         .sheet(isPresented: $isAddDialogPresented) {
-            ModePaiementFormView(isPresented: $isAddDialogPresented, isModeCtreate: $modeCreate, modePaiement: nil)
+            ModePaiementFormView(isPresented: $isAddDialogPresented,
+                                 isModeCtreate: $modeCreate,
+                                 modePaiement: nil)
         }
         .sheet(isPresented: $isEditDialogPresented) {
-            ModePaiementFormView(isPresented: $isEditDialogPresented, isModeCtreate: $modeCreate, modePaiement: selectedMode)
+            ModePaiementFormView(isPresented: $isEditDialogPresented,
+                                 isModeCtreate: $modeCreate,
+                                 modePaiement: selectedMode)
         }
     }
     
     private func setupDataManager() {
-        
         DataContext.shared.context = modelContext
-        dataManager.modePayments = PaymentModeManager.shared.getAllData()
+        DataContext.shared.undoManager = undoManager
+        
+        if currentAccountManager.currentAccount != nil {
+            if let allData = PaymentModeManager.shared.getAllData() {
+                dataManager.modePayments = allData
+                modePayments = allData
+            } else {
+                print("❗️Erreur : getAllData() a renvoyé nil")
+            }
+        }
     }
 
-    private func removeSelectedItem() {
-        if let modeToDelete = selectedMode {
-            modelContext.delete(modeToDelete)  // Suppression de l'élément du contexte
-            selectedMode = nil  // Réinitialisation de la sélection
-            selectedItem = nil
-            try? modelContext.save()  // Sauvegarde du contexte après suppression
+    private func delete()
+    {
+        if let id = selectedItem,
+           let modeToDelete = modePayments.first(where: { $0.id == id }) {
+
+            PaymentModeManager.shared.delete(entity: modeToDelete, undoManager: undoManager)
+            
+            DispatchQueue.main.async {
+                selectedItem = nil
+                lastDeletedID = nil
+                refreshData()
+            }
         }
     }
     
     private func refreshData() {
-//        guard let account = currentAccountManager.currentAccount else { return }
-        dataManager.modePayments = PaymentModeManager.shared.getAllData()
+        dataManager.modePayments = PaymentModeManager.shared.getAllData()!
+        modePayments = []
+        print(modePayments.count)
+        let modePayments1 = dataManager.modePayments
+        let modePayments2 = PaymentModeManager.shared.getAllData()!
+        modePayments = modePayments1
+        print(modePayments.count)
     }
 }
 
@@ -212,6 +278,7 @@ struct ModePaiementFormView: View {
     @Binding var isPresented: Bool
     @Binding var isModeCtreate: Bool
     let modePaiement: EntityPaymentMode?
+    
     @State private var name: String = ""
     @State private var selectedColor: Color = .gray
     
@@ -269,7 +336,6 @@ struct ModePaiementFormView: View {
     
     private func save() {
         let newItem: EntityPaymentMode
-//        let account = currentAccountManager.currentAccount
         
         if let existing = modePaiement {
             newItem = existing
@@ -277,7 +343,7 @@ struct ModePaiementFormView: View {
             let color = NSColor.fromSwiftUIColor(selectedColor)
             newItem = EntityPaymentMode(name: name, color: color)
             modelContext.insert(newItem)
-            modePaiementViewManager.modePayments?.append(newItem) // ✅ Ajouter à la liste
+            modePaiementViewManager.modePayments.append(newItem)
         }
         
         newItem.name = name
