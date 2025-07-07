@@ -20,7 +20,7 @@ import SwiftUI
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
 
-    var account: EntityAccount?
+    @Relationship var account: EntityAccount?
     
     public init(name: String,
                 nbCheques: Int,
@@ -66,9 +66,7 @@ final class ChequeBookManager : ObservableObject {
     static let shared = ChequeBookManager()
     
     @Published var entities = [EntityCheckBook]()
-    
-    var account: EntityAccount?
-    
+        
     var modelContext: ModelContext? {
         DataContext.shared.context
     }

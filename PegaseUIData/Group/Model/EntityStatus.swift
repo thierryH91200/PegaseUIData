@@ -15,10 +15,11 @@ import SwiftUI
     var rawType: Int
     
     @Attribute(.transformable(by: ColorTransformer.self)) var color: NSColor
-    var account: EntityAccount
-    @Attribute(.unique) var uuid: UUID = UUID()
 
+    @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
+    
+    @Relationship var account: EntityAccount
 
     var type: StatusType {
         get { StatusType(rawValue: rawType) ?? .planned }

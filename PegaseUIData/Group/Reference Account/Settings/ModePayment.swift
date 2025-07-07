@@ -59,12 +59,12 @@ struct ModePaymentView: View {
     @State private var isEditDialogPresented = false
     @State private var modeCreate = false
     
-//    var canUndo : Bool? {
-//        undoManager?.canUndo ?? false
-//    }
-//    var canRedo : Bool? {
-//        undoManager?.canRedo ?? false
-//    }
+    var canUndo : Bool? {
+        undoManager?.canUndo ?? false
+    }
+    var canRedo : Bool? {
+        undoManager?.canRedo ?? false
+    }
 
     
     var body: some View {
@@ -229,13 +229,8 @@ struct ModePaymentView: View {
     
     private func refreshData() {
         dataManager.modePayments = PaymentModeManager.shared.getAllData()!
-        modePayments = []
-        print(modePayments.count)
-        let modePayments1 = dataManager.modePayments
-        let modePayments2 = PaymentModeManager.shared.getAllData()!
-        modePayments = modePayments1
-        print(modePayments.count)
-    }
+        modePayments = dataManager.modePayments
+     }
 }
 
 struct ModePaiementTable: View {

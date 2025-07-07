@@ -27,7 +27,7 @@ public class EntityIdentity : Identifiable{
     
     @Attribute(.unique) var uuid: UUID = UUID()
     
-    var account    : EntityAccount
+    @Relationship var account    : EntityAccount
     
     public init(adress: String,
                 complement : String,

@@ -12,12 +12,13 @@ import SwiftData
 @Model public class EntityPaymentMode: Identifiable , Hashable {
     
     var name: String = ""
-    @Attribute(.transformable(by: ColorTransformer.self)) var color: NSColor
     
-    @Relationship var account: EntityAccount
+    @Attribute(.transformable(by: ColorTransformer.self)) var color: NSColor
     
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
+    
+    @Relationship var account: EntityAccount
     
     init(name: String = "Test", color: NSColor = .black ) {
         guard let account = CurrentAccountManager.shared.getAccount() else {

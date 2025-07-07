@@ -148,7 +148,7 @@ struct CheckView: View {
                 }
                 .buttonStyle(.bordered)
                 .disabled(selectedItem == nil)
-                
+#if !DEBUG
                 Button(action: {
                     if let manager = undoManager, manager.canUndo {
                         selectedItem = nil
@@ -170,6 +170,9 @@ struct CheckView: View {
                         .cornerRadius(8)
                 }
                 .buttonStyle(.plain)
+#endif // DEBUG
+#if DEBUG
+
                 
                 Button(action: {
                     if let manager = undoManager, manager.canRedo {
@@ -192,6 +195,8 @@ struct CheckView: View {
                         .cornerRadius(8)
                 }
                 .buttonStyle(.plain)
+#endif
+
             }
             
             // Feuilles modales pour l'ajout/modification

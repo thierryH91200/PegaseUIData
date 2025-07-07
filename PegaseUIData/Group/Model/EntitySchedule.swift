@@ -29,11 +29,12 @@ public class EntitySchedule : Identifiable{
     @Attribute(.unique) var uuid : UUID   = UUID()
     public var id                : UUID { uuid }
     
-    var account                  : EntityAccount
     var category                 : EntityCategory?
     var paymentMode              : EntityPaymentMode?
     @Relationship(inverse        : \EntityAccount.compteLie) var linkedAccount : EntityAccount?
     
+    @Relationship var account    : EntityAccount
+
     public init() {
         self.account = CurrentAccountManager.shared.getAccount()!
     }

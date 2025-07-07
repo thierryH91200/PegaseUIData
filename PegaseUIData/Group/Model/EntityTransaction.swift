@@ -35,7 +35,7 @@ import SwiftData
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
 
-    var account: EntityAccount
+    @Relationship var account: EntityAccount
     
 //    @Relationship(inverse: \EntityTransactions.operationLiee)
 //    var operationLiee: EntityTransactions?

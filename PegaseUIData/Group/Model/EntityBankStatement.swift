@@ -33,7 +33,7 @@ class EntityBankStatement: Identifiable {
     @Attribute var pdfLink    : String = ""
     @Attribute(.externalStorage) var pdfDoc: Data?
     
-    var account: EntityAccount
+    @Relationship var account: EntityAccount
     
     init(num       : Int  = 0,
          startDate : Date = Date(), startSolde : Double = 0.0,

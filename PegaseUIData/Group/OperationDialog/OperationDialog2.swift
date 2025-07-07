@@ -208,11 +208,12 @@ struct OperationDialogView: View {
         if transactionManager.isCreationMode {
             // Mode création : on crée une seule transaction
             let sousTransaction = formState.currentSousTransaction
+            guard let sousTransaction else { return }
             let transaction = formState.currentTransaction!
 
-            sousTransaction?.transaction = transaction
-            modelContext.insert(sousTransaction!)
-            transaction.addSubOperation(sousTransaction!)
+            sousTransaction.transaction = transaction
+            modelContext.insert(sousTransaction)
+            transaction.addSubOperation(sousTransaction)
             modelContext.insert(transaction)
         } else {
             // Mode édition : modifier toutes les transactions sélectionnées

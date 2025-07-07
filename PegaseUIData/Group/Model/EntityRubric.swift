@@ -21,7 +21,8 @@ public class EntityRubric: Identifiable {
     @Relationship(deleteRule: .cascade) var categorie : [EntityCategory] = []
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
-    var account: EntityAccount
+    
+    @Relationship var account: EntityAccount
     
     init( name: String, color: NSColor, account: EntityAccount) {
         self.name = name

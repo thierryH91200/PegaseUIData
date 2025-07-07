@@ -17,11 +17,11 @@ import SwiftUI
     var status      : EntityStatus?
     var category    : EntityCategory?
     var paymentMode : EntityPaymentMode?
-    
-    @Relationship var account: EntityAccount
-    
+      
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
+    
+    @Relationship var account: EntityAccount
 
     public init(account: EntityAccount,
                 category: EntityCategory? = nil,
