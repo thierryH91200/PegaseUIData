@@ -9,7 +9,7 @@
 import Foundation
 import SwiftData
 
-@Model public class EntityTransaction {
+@Model final class EntityTransaction {
 
     var createAt:  Date = Date().noon
     var updatedAt: Date = Date().noon

@@ -10,8 +10,9 @@ import Foundation
 import SwiftData
 import SwiftUI
 
+
 @Model
-public class EntitySchedule : Identifiable{
+final class EntitySchedule : Identifiable{
     var amount                   : Double = 0.0
     var dateCree                 : Date   = Date()
     var dateDebut                : Date   = Date()

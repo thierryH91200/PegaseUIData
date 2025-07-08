@@ -12,7 +12,7 @@ import SwiftData
 // MARK: - Identite
 
 @Model
-public class EntityIdentity : Identifiable{
+final class EntityIdentity : Identifiable{
     var adress     : String  = ""
     var complement : String  = ""
     var country    : String  = ""

@@ -10,7 +10,7 @@ import Foundation
 import SwiftData
 
 @Model
-public class EntityBanqueInfo : Identifiable{
+final class EntityBanqueInfo : Identifiable{
     var nomBanque  : String  = ""
     var adresse    : String  = ""
     var complement : String  = ""

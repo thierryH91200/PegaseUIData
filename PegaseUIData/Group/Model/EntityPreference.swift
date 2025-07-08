@@ -11,7 +11,7 @@ import SwiftData
 import SwiftUI
 
 
-@Model public class EntityPreference {
+@Model final class EntityPreference {
     
     var signe       : Bool = true
     var status      : EntityStatus?
@@ -23,7 +23,7 @@ import SwiftUI
     
     @Relationship var account: EntityAccount
 
-    public init(account: EntityAccount,
+    init(account: EntityAccount,
                 category: EntityCategory? = nil,
                 paymentMode: EntityPaymentMode? = nil,
                 status: EntityStatus? = nil) {

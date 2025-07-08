@@ -112,8 +112,7 @@ class BalanceManager: ObservableObject {
 struct SectionHeader: View {
     @ObservedObject var manager = BalanceManager()
     
-    //        @State var balance: Double = 123 //section.children.reduce(0) { $0 + $1.solde }
-    //        var balance: Double = section.children.reduce(0) { $0 + $1.solde }
+    @State var balance: Double = 0.0 //section.children.reduce(0) { $0 + $1.solde }
     
     let section: EntityFolderAccount
     
@@ -139,11 +138,15 @@ struct SectionHeader: View {
                 .frame(width: 80, alignment: .trailing) // Aligne à droite avec une largeur fixe
             
             // Boutons pour changer la balance (pour tester)
-            HStack {
-                Button("Increase") { manager.balance += 100 }
-                Button("Decrease") { manager.balance -= 100 }
-            }
-            .padding()
+//            HStack {
+//                Button("Increase") { manager.balance += 100 }
+//                Button("Decrease") { manager.balance -= 100 }
+//            }
+//            .padding()
+        }
+        .onAppear(){
+            balance = section.children.reduce(0) { $0 + $1.solde }
+
         }
         .padding(.bottom, 5)
     }

@@ -17,7 +17,6 @@ enum EnumError: Error {
     case fetchFailed
 }
 
-
 final class DataContext {
     static let shared = DataContext()
     var context: ModelContext?

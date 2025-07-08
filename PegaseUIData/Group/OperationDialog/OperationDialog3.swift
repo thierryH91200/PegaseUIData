@@ -48,6 +48,13 @@ struct TransactionFormViewModel: View {
     @Binding var selectedMode: EntityPaymentMode?
     @Binding var selectedAccount : EntityAccount?
     
+    // 🔁 Valeurs de remplacement pour édition multiple (batch)
+    var overrideTransactionDate: Date? = nil
+    var overridePointingDate: Date? = nil
+    var overrideStatus: EntityStatus? = nil
+    var overrideMode: EntityPaymentMode? = nil
+    var overrideBankStatement: String? = nil
+    
     @State private var selectedOperations: Set<EntityTransaction> = []
     
     // Récupère le compte courant de manière sécurisée.

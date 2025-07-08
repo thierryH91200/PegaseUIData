@@ -14,6 +14,8 @@ import AppKit
 protocol ListManaging {
     func createTransactions(formState: TransactionFormState) -> EntityTransaction
     func find(uuid: UUID) -> EntityTransaction?
+    func getAllComments(for account: EntityAccount) throws -> [String]
+
 }
 
 final class ListTransactionsManager: ListManaging {

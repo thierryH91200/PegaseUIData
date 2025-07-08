@@ -11,7 +11,7 @@ import SwiftData
 import SwiftUI
 
 
-@Model public class EntityInitAccount {
+@Model final class EntityInitAccount {
     var bic: String = ""
     var cleRib: String = ""
     var codeAccount: String = ""

@@ -60,9 +60,75 @@ struct FormTitleView: View {
     }
 }
 
-// MARK:  4. Composant de formulaire principal
+//// MARK:  4. Composant de formulaire principal
+//struct TransactionFormView: View {
+//    @EnvironmentObject var formState: TransactionFormState
+//
+//    var body: some View {
+//        TransactionFormViewModel(
+//            linkedAccount         : $formState.accounts,
+//            transactionDate       : $formState.transactionDate,
+//            pointingDate          : $formState.pointingDate,
+//            modes                 : $formState.paymentModes,
+//            status                : $formState.status,
+//            bankStatement         : $formState.bankStatement,
+//            checkNumber           : $formState.checkNumber,
+//            amount                : $formState.amount,
+//            selectedBankStatement : $formState.selectedBankStatement,
+//            selectedStatus        : $formState.selectedStatus,
+//            selectedMode          : $formState.selectedMode,
+//            selectedAccount       : $formState.selectedAccount
+//        )
+//        .accessibilityElement(children: .contain)
+//        .accessibilityLabel(String(localized: "Transaction form section"))
+//    }
+//}
+// TransactionFormUnifiedView.swift
+// PegaseUIData
+
+
+// ⚙️ Extension utilitaire pour extraire un élément unique
+extension Collection {
+    var uniqueElement: Element? {
+        count == 1 ? first : nil
+    }
+}
+
+// 🧩 Vue principale unifiée pour édition normale ou groupée
+struct TransactionFormUnifiedView: View {
+    @EnvironmentObject var transactionManager: TransactionSelectionManager
+    @EnvironmentObject var formState: TransactionFormState
+
+    var body: some View {
+        if transactionManager.selectedTransactions.count > 1 {
+            let uniqueStatus = transactionManager.selectedTransactions.compactMap { $0.status }.uniqueElement
+            let uniqueMode = transactionManager.selectedTransactions.compactMap { $0.paymentMode }.uniqueElement
+            let uniqueDate = transactionManager.selectedTransactions.map { $0.dateOperation }.uniqueElement
+            let uniquePointingDate = transactionManager.selectedTransactions.map { $0.datePointage }.uniqueElement
+            let uniqueBankStatement = transactionManager.selectedTransactions.map { $0.bankStatement }.uniqueElement.map { String($0) }
+
+            TransactionFormView(
+                overrideTransactionDate: uniqueDate,
+                overridePointingDate: uniquePointingDate,
+                overrideStatus: uniqueStatus,
+                overrideMode: uniqueMode,
+                overrideBankStatement: uniqueBankStatement
+            )
+        } else {
+            TransactionFormView()
+        }
+    }
+}
+
+// 📋 Vue d'entrée pour appeler TransactionFormViewModel avec ou sans override
 struct TransactionFormView: View {
     @EnvironmentObject var formState: TransactionFormState
+
+    var overrideTransactionDate: Date? = nil
+    var overridePointingDate: Date? = nil
+    var overrideStatus: EntityStatus? = nil
+    var overrideMode: EntityPaymentMode? = nil
+    var overrideBankStatement: String? = nil
 
     var body: some View {
         TransactionFormViewModel(
@@ -77,7 +143,12 @@ struct TransactionFormView: View {
             selectedBankStatement : $formState.selectedBankStatement,
             selectedStatus        : $formState.selectedStatus,
             selectedMode          : $formState.selectedMode,
-            selectedAccount       : $formState.selectedAccount
+            selectedAccount       : $formState.selectedAccount,
+            overrideTransactionDate: overrideTransactionDate,
+            overridePointingDate: overridePointingDate,
+            overrideStatus: overrideStatus,
+            overrideMode: overrideMode,
+            overrideBankStatement: overrideBankStatement
         )
         .accessibilityElement(children: .contain)
         .accessibilityLabel(String(localized: "Transaction form section"))

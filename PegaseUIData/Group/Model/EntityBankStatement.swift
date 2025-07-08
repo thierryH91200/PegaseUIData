@@ -11,7 +11,7 @@ import SwiftUI
 
 
 @Model
-class EntityBankStatement: Identifiable {
+final class EntityBankStatement: Identifiable {
        
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
@@ -86,7 +86,6 @@ protocol BankStatementManaging {
 
     func save () throws
 }
-
 
 final class BankStatementManager : BankStatementManaging, ObservableObject {
     

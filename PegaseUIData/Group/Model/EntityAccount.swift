@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 import SwiftUI
 
-@Model public class EntityFolderAccount: Identifiable  {
+@Model final class EntityFolderAccount: Identifiable  {
     
     var name: String = ""
     var nameImage: String = "folder.fill"

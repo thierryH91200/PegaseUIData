@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 import SwiftUI
 
-@Model public class EntityStatus :  Identifiable , Hashable {
+@Model final class EntityStatus :  Identifiable , Hashable {
     
     var name: String
     var rawType: Int

@@ -12,7 +12,7 @@ import AppKit
 
 
 @Model
-public class EntitySousOperation: Identifiable {
+final class EntitySousOperation: Identifiable {
     var amount: Double = 0.0
     var libelle: String? // Rend optionnel si nécessaire
     

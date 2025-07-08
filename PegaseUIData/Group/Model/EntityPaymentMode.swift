@@ -9,7 +9,7 @@
 import SwiftUI
 import SwiftData
 
-@Model public class EntityPaymentMode: Identifiable , Hashable {
+@Model final class EntityPaymentMode: Identifiable , Hashable {
     
     var name: String = ""
     

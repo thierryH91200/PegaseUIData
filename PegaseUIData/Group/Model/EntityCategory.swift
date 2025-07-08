@@ -10,7 +10,7 @@ import Foundation
 import SwiftData
 import SwiftUI
 
-@Model public class EntityCategory {
+@Model final class EntityCategory {
 
     var name: String
     var objectif: Double = 0.0
@@ -114,7 +114,6 @@ final class CategoryManager: ObservableObject {
         modelContext.undoManager?.setActionName("Delete Category")
         modelContext.delete(entity)
         modelContext.undoManager?.endUndoGrouping()
-
     }
 }
 

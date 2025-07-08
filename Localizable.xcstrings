@@ -4262,6 +4262,7 @@
       }
     },
     "Decrease" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -7340,6 +7341,7 @@
       }
     },
     "Increase" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {

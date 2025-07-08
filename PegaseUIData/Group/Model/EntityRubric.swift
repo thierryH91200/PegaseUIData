@@ -12,7 +12,7 @@ import SwiftUI
 
 
 @Model
-public class EntityRubric: Identifiable {
+final class EntityRubric: Identifiable {
     
     var name: String = ""
     @Attribute(.transformable(by: ColorTransformer.self)) var color: NSColor
