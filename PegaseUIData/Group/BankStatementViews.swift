@@ -10,30 +10,10 @@ import SwiftData
 import UniformTypeIdentifiers
 import PDFKit
 
-
-
-final class StatementDataManager: ObservableObject {
-    @Published var statements: [EntityBankStatement] = []
-
-    
-    var modelContext: ModelContext? {
-        DataContext.shared.context
-    }
-    
-    func saveChanges() {
-        
-        do {
-            try modelContext?.save()
-        } catch {
-            printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
-        }
-    }
-}
-
 struct BankStatementView: View {
     
     @Binding var isVisible: Bool
-    @StateObject private var dataManager = StatementDataManager()
+    @StateObject var dataManager = BankStatementManager()
     
     var body: some View {
         BankStatementListView()
@@ -56,7 +36,7 @@ struct BankStatementListView: View {
     @Environment(\.undoManager) private var undoManager
     
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
-    @EnvironmentObject var dataManager: StatementDataManager
+    @EnvironmentObject var dataManager: BankStatementManager
     
     @State private var bankStatements: [EntityBankStatement] = []
         

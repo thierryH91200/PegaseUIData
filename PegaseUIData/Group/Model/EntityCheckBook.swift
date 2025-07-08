@@ -65,7 +65,7 @@ final class ChequeBookManager : ObservableObject {
     
     static let shared = ChequeBookManager()
     
-    @Published var entities = [EntityCheckBook]()
+    @Published var checkBooks = [EntityCheckBook]()
         
     var modelContext: ModelContext? {
         DataContext.shared.context
@@ -117,12 +117,12 @@ final class ChequeBookManager : ObservableObject {
             sortBy: sort )
         
         do {
-            entities = try modelContext?.fetch(descriptor) ??   []
+            checkBooks = try modelContext?.fetch(descriptor) ??   []
         } catch {
             printTag("Error fetching data from SwiftData: \(error)")
-            return nil
+            return []
         }
-        return entities
+        return checkBooks
     }
 
     func update(entity: EntityCheckBook, name: String) {
@@ -142,7 +142,7 @@ final class ChequeBookManager : ObservableObject {
     }
     
     private func defaultCarnetCheques(for account: EntityAccount) {
-        guard entities.isEmpty else { return }
+        guard checkBooks.isEmpty else { return }
         
         let entityCarnetCheques = EntityCheckBook()
         entityCarnetCheques.name = "Check"
@@ -156,7 +156,7 @@ final class ChequeBookManager : ObservableObject {
         
         do {
             try modelContext?.save()
-            entities.append(entityCarnetCheques)
+            checkBooks.append(entityCarnetCheques)
         } catch {
             printTag("Error saving default Carnet Cheques: \(error)")
         }

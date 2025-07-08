@@ -9,42 +9,13 @@ import SwiftUI
 import SwiftData
 
 
-// Gestionnaire de données pour les carnets de chèques
-final class CheckDataManager: ObservableObject {
-    @Published var checkBooks: [EntityCheckBook] = []
-
-    var modelContext: ModelContext? {
-        DataContext.shared.context
-    }
-    
-    // Recharge les données à partir du modèle partagé
-    func refresh() {
-        guard let data = ChequeBookManager.shared.getAllData() else {
-            print("❗️Erreur : getAllData() a renvoyé nil")
-            checkBooks.removeAll()
-            return
-        }
-        checkBooks = data
-    }
-    
-    // Sauvegarde les modifications dans SwiftData
-    func saveChanges() {
-        do {
-            try modelContext?.save()
-        } catch {
-            printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
-        }
-    }
-    
-}
-
 // Vue principale pour l'affichage des carnets de chèques
 struct CheckView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.undoManager) private var undoManager
 
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
-    @EnvironmentObject var dataManager: CheckDataManager
+    @EnvironmentObject var dataManager: ChequeBookManager
     
     @State private var checkBooks: [EntityCheckBook] = []
 
@@ -306,7 +277,7 @@ struct CheckBookTable: View {
 struct CheckBookFormView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject var checkViewManager: CheckDataManager
+    @EnvironmentObject var dataManager: ChequeBookManager
     
     @Binding var isPresented: Bool
     @Binding var isModeCreate: Bool

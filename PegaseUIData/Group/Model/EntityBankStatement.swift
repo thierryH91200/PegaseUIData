@@ -88,19 +88,19 @@ protocol BankStatementManaging {
 }
 
 
-final class BankStatementManager : BankStatementManaging {
+final class BankStatementManager : BankStatementManaging, ObservableObject {
     
     // Contexte pour les modifications
     static let shared = BankStatementManager()
     var currentAccount: EntityAccount?
     
-    private var entities = [EntityBankStatement]()
+    @Published var statements = [EntityBankStatement]()
     
     var modelContext: ModelContext? {
         DataContext.shared.context
     }
 
-    private init() { }
+    init() { }
     
     func create(num: Int, startDate: Date, startSolde: Double) throws -> EntityBankStatement? {
         
@@ -148,12 +148,12 @@ final class BankStatementManager : BankStatementManaging {
                 predicate: predicate,
                 sortBy: sort )
             
-            entities = try modelContext?.fetch(descriptor) ?? []
+            statements = try modelContext?.fetch(descriptor) ?? []
         } catch {
             printTag("Erreur lors de la récupération des données : \(error.localizedDescription)")
-            return nil
+            return []
         }
-        return entities
+        return statements
     }
     
     func save () throws {

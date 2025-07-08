@@ -64,7 +64,7 @@ final class PaymentModeManager : PaymentModeManaging, ObservableObject {
 
     static let shared = PaymentModeManager()
     
-    @Published var entities = [EntityPaymentMode]()
+    @Published var modePayments = [EntityPaymentMode]()
     
     var modelContext: ModelContext? {
         DataContext.shared.context
@@ -169,7 +169,7 @@ final class PaymentModeManager : PaymentModeManaging, ObservableObject {
 
     // MARK: default ModePaiement
     func createDefaultPaymentModes(for account: EntityAccount) {
-        entities.removeAll()
+        modePayments.removeAll()
         
         // Liste des noms et couleurs des méthodes de paiement
         let names = [ String(localized :"Bank Card"),
@@ -210,7 +210,7 @@ final class PaymentModeManager : PaymentModeManaging, ObservableObject {
         
         // Récupération des entités EntityPaymentMode liées au compte actuel
         do {
-            entities = try modelContext?.fetch(fetchDescriptor) ?? []
+            modePayments = try modelContext?.fetch(fetchDescriptor) ?? []
         } catch {
             printTag("Erreur lors de la récupération des modes de paiement : \(error.localizedDescription)")
         }

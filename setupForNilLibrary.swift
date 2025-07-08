@@ -38,7 +38,7 @@ struct AccountFactory {
         DataContext.shared.context = modelContext
 
         PaymentModeManager.shared.createDefaultPaymentModes(for: account)
-        account.paymentMode = PaymentModeManager.shared.entities
+        account.paymentMode = PaymentModeManager.shared.modePayments
         
         StatusManager.shared.defaultStatus(account: account)
         account.status = StatusManager.shared.entityStatus

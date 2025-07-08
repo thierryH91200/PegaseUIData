@@ -77,9 +77,9 @@ protocol ScheduleManaging {
     func save () throws
 }
 
-final class SchedulerManager: ScheduleManaging {
+final class SchedulerManager: ScheduleManaging, ObservableObject  {
 
-    @Published var entities = [EntitySchedule]()
+    @Published var schedulers = [EntitySchedule]()
     
     var currentAccount: EntityAccount?
     static let shared = SchedulerManager()
@@ -94,7 +94,7 @@ final class SchedulerManager: ScheduleManaging {
         let entity = EntitySchedule()
         modelContext?.insert(entity)
         try save()
-        entities.append(entity)
+        schedulers.append(entity)
         
         return entity
     }
@@ -132,13 +132,14 @@ final class SchedulerManager: ScheduleManaging {
         
         do {
             // Récupérez les entités en utilisant le FetchDescriptor
-            entities = try modelContext?.fetch( descriptor ) ?? []
+            schedulers = try modelContext?.fetch( descriptor ) ?? []
         } catch {
             printTag("Erreur lors de la récupération des données: \(error)")
-            return nil // Retourne nil en cas d'erreur
+            return [] // Retourne nil en cas d'erreur
         }
-        return entities
+        return schedulers
     }
+    
     
     @MainActor func createTransaction (entitySchedule: EntitySchedule) {
         
@@ -322,6 +323,10 @@ final class SchedulerManager: ScheduleManaging {
         } catch {
             throw EnumError.saveFailed
         }
+    }
+    
+    func selectScheduler(_ scheduler: EntitySchedule) {
+        NotificationCenter.default.post(name: .didSelectScheduler, object: scheduler)
     }
     
 }

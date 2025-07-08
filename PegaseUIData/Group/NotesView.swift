@@ -10,7 +10,7 @@ import SwiftData
 struct NotesView: View {
     
     @Binding var isVisible: Bool
-    @StateObject private var dataManager = StatementDataManager()
+    @StateObject private var dataManager = BankStatementManager()
 
     var body: some View {
         NotesView10()
@@ -32,7 +32,7 @@ struct NotesView: View {
 struct NotesView10: View {
     @Environment(\.modelContext) private var modelContext: ModelContext
 
-    @EnvironmentObject var dataManager: StatementDataManager
+    @EnvironmentObject var dataManager: BankStatementManager
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
 
     // Récupère le compte courant de manière sécurisée.

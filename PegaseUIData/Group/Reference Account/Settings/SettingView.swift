@@ -35,7 +35,7 @@ enum TabSelection: Hashable {
 
 struct SettingTab1: View {
     
-    @StateObject private var chequeViewManager       = CheckDataManager()
+    @StateObject private var chequeViewManager       = ChequeBookManager()
     @StateObject private var modePaiementDataManager = PaymentModeManager()
     @StateObject private var rubricDataManager       = RubricDataManager()
     @StateObject private var preferenceDataManager   = PreferenceDataManager()
@@ -90,8 +90,8 @@ struct SettingTab1: View {
 struct SettingTab: View {
     
     
-    @StateObject private var chequeViewManager       = CheckDataManager()
-    @StateObject private var modePaiementDataManager = ModePaiementDataManager()
+    @StateObject private var chequeViewManager       = ChequeBookManager()
+    @StateObject private var modePaiementDataManager = PaymentModeManager()
     @StateObject private var rubricDataManager       = RubricDataManager()
     @StateObject private var preferenceDataManager   = PreferenceDataManager()
     

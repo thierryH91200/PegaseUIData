@@ -21,7 +21,7 @@ struct SchedulerFormView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     
-    @EnvironmentObject var schedulerDataManager: SchedulerDataManager
+    @EnvironmentObject var dataManager: SchedulerManager
     
     @Binding var isPresented: Bool
     @Binding var isModeCreate: Bool
@@ -293,10 +293,10 @@ struct SchedulerFormView: View {
             
             try? modelContext.save()
             let allSchedulers = SchedulerManager.shared.getAllData()!
-            schedulerDataManager.schedulers = allSchedulers
+            dataManager.schedulers = allSchedulers
             if let last = allSchedulers.sorted(by: { $0.dateValeur < $1.dateValeur }).last {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                    schedulerDataManager.selectScheduler(last)
+                    dataManager.selectScheduler(last)
                 }
             }
             NotificationManager.shared.scheduleReminder(for: newItem!)

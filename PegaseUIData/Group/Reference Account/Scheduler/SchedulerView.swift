@@ -10,43 +10,9 @@ import SwiftUI
 import SwiftData
 
 
-final class SchedulerDataManager: ObservableObject {
-    
-    @Published var schedulers: [EntitySchedule] = []
-    
-    /// Contexte SwiftData
-    var modelContext: ModelContext? {
-        DataContext.shared.context
-    }
-    
-    /// Recharge les données à partir du modèle partagé
-    func refresh() {
-        guard let data = SchedulerManager.shared.getAllData() else {
-            print("❗️Erreur : getAllData() a renvoyé nil")
-            schedulers.removeAll()
-            return
-        }
-        schedulers = data
-    }
-    
-    // Sauvegarde explicite du contexte
-    func saveChanges() {
-        do {
-            try modelContext?.save()
-        } catch {
-            printTag("💥 Erreur lors de la sauvegarde : \(error.localizedDescription)")
-        }
-    }
-    
-    /// Envoie une notification à d'autres vues
-    func selectScheduler(_ scheduler: EntitySchedule) {
-        NotificationCenter.default.post(name: .didSelectScheduler, object: scheduler)
-    }
-}
-
 struct SchedulerView: View {
     
-    @StateObject private var schedulerDataManager = SchedulerDataManager()
+    @StateObject private var dataManager = SchedulerManager()
     
     @Binding var isVisible: Bool
     
@@ -54,7 +20,7 @@ struct SchedulerView: View {
         
         
         Scheduler( selectedType: "")
-            .environmentObject(schedulerDataManager)
+            .environmentObject(dataManager)
             .padding()
             .task {
                 await performFalseTask()
@@ -74,7 +40,7 @@ struct Scheduler: View {
     @Environment(\.undoManager)  private var undoManager
     
     @EnvironmentObject var currentAccountManager : CurrentAccountManager
-    @EnvironmentObject var dataManager : SchedulerDataManager
+    @EnvironmentObject var dataManager : SchedulerManager
         
     @State private var schedulers: [EntitySchedule] = []
     @State private var upcoming: [EntitySchedule] = []
@@ -307,7 +273,7 @@ struct Scheduler: View {
             lastDeletedID = item.id
             
             SchedulerManager.shared.delete(entity: item, undoManager: undoManager)
-            dataManager.refresh()
+            _ = SchedulerManager.shared.getAllData()
             DispatchQueue.main.async {
                 selectedItem = nil
                 lastDeletedID = nil

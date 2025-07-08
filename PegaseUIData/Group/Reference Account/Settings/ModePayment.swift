@@ -8,41 +8,13 @@
 import SwiftUI
 import SwiftData
 
-final class ModePaiementDataManager: ObservableObject {
-    @Published var modePayments: [EntityPaymentMode] = []
-        
-    var modelContext: ModelContext? {
-        DataContext.shared.context
-    }
-    
-    // Recharge les données à partir du modèle partagé
-    func refresh() {
-        guard let data = PaymentModeManager.shared.getAllData() else {
-            print("❗️Erreur : getAllData() a renvoyé nil")
-            modePayments.removeAll()
-            return
-        }
-        modePayments = data
-    }
-
-
-    // Sauvegarde les modifications dans SwiftData
-    func saveChanges() {
-        do {
-            try modelContext?.save()
-        } catch {
-            printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
-        }
-    }
-}
-
 struct ModePaymentView: View {
     
     @Environment(\.modelContext) private var modelContext
     @Environment(\.undoManager) private var undoManager
 
     @EnvironmentObject var currentAccountManager : CurrentAccountManager
-    @EnvironmentObject var dataManager : ModePaiementDataManager
+    @EnvironmentObject var dataManager : PaymentModeManager
     
     @State private var modePayments : [EntityPaymentMode] = []
 
@@ -267,7 +239,7 @@ struct ModePaiementTable: View {
 struct ModePaiementFormView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject var modePaiementViewManager: ModePaiementDataManager
+    @EnvironmentObject var modePaiementViewManager: PaymentModeManager
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
 
     @Binding var isPresented: Bool
