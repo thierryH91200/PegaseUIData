@@ -55,10 +55,11 @@ struct OperationDialogView: View {
 //                  uniqueBankStatement: formState.bankStatement
 //                )
 //            }
-            if transactionManager.selectedTransactions.count > 1 {
-                batchEditSection
-            } else if formState.selectedAccount != nil {
-                TransactionFormView()
+            VStack {
+                TransactionFormUnifiedView()
+            }
+            .onChange(of: transactionManager.selectedTransactions) { old, newSelection in
+                formState.updateBatchValues(from: newSelection)
             }
             
             // Section des sous-opérations

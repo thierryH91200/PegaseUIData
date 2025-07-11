@@ -45,43 +45,47 @@ final class EntitySousOperation: Identifiable {
     }
 }
 
-final class SubTransactionsManager {
-    
-    var formState : TransactionFormState = TransactionFormState()
+// SubTransactionsManager.swift
+// PegaseUIData
 
-    static let shared =  SubTransactionsManager()
-    
-    var entities : [EntitySousOperation] = []
-    var subOperation : EntitySousOperation?
-    
+import SwiftUI
+
+final class SubTransactionsManager {
+    static let shared = SubTransactionsManager()
+
+    var entities: [EntitySousOperation] = []
+    var subOperation: EntitySousOperation?
+
     var modelContext: ModelContext? {
         DataContext.shared.context
     }
 
-    init() {
-    }
-    
-    @MainActor func createSubTransactions(comment: String,
-                               category: EntityCategory,
-                               amount: String,
-                               formState: TransactionFormState ) {
-                
-//        self.formState = formState
-        let newSub = formState.currentSousTransaction ?? EntitySousOperation()
+    private init() { }
+
+    @MainActor
+    func createSubTransactions(
+        comment: String,
+        category: EntityCategory,
+        amount: String,
+        formState: TransactionFormState
+    ) {
+        guard let newSub = formState.currentSousTransaction else { return }
+
         modelContext?.insert(newSub)
         self.subOperation = newSub
+
         update(comment: comment, category: category, amount: amount)
-        
+
         if let transaction = formState.currentTransaction, let sub = subOperation {
             transaction.addSubOperation(sub)
             formState.entityTransactions.append(transaction)
         }
-        
+
         if formState.currentTransaction?.sousOperations == nil {
             formState.currentTransaction?.sousOperations = []
         }
     }
-    
+   
     private func update(comment: String,
                         category: EntityCategory,
                         amount: String) {

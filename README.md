@@ -125,4 +125,11 @@ When submitting a bug report, please provide as much detail as possible, includi
 This information helps us identify and resolve the problem more efficiently.
 
 
+## Stargazers over time
+[![Stargazers over time](https://starchart.cc/thierryH91200/PegaseUIData.svg?variant=adaptive)](https://starchart.cc/thierryH91200/PegaseUIData)
+
+
+
+
+
 

@@ -168,6 +168,7 @@ final class PaymentModeManager : PaymentModeManaging, ObservableObject {
     }
 
     // MARK: default ModePaiement
+    
     func createDefaultPaymentModes(for account: EntityAccount) {
         modePayments.removeAll()
         

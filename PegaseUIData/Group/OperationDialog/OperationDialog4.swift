@@ -12,31 +12,69 @@ import SwiftData
 import Observation
 import Combine
 
-// MARK: 2. État du formulaire
-class TransactionFormState: ObservableObject {
-        
+@MainActor
+final class TransactionFormState: ObservableObject {
+    // 🧾 Données principales du formulaire
     @Published var accounts: [EntityAccount] = []
-    @Published var linkedAccount: String = ""
     @Published var transactionDate: Date = Date()
-    @Published var paymentModes: [EntityPaymentMode] = []
     @Published var pointingDate: Date = Date()
+    @Published var paymentModes: [EntityPaymentMode] = []
     @Published var status: [EntityStatus] = []
-    
     @Published var bankStatement: Double = 0.0
     @Published var checkNumber: Int = 0
+    @Published var amount: String = ""
+
+    @Published var selectedBankStatement: String = ""
+    @Published var selectedStatus: EntityStatus? = nil
+    @Published var selectedMode: EntityPaymentMode? = nil
+    @Published var selectedAccount: EntityAccount? = nil
+
+    // 🔁 Indicateur de mode édition groupée (batch editing)
+    @Published var isBatchEditing: Bool = false
+
+    // 🧩 Valeurs uniques extraites automatiquement lors d’un batch edit
+    @Published var batchUniqueTransactionDate: Date? = nil
+    @Published var batchUniquePointingDate: Date? = nil
+    @Published var batchUniqueStatus: EntityStatus? = nil
+    @Published var batchUniqueMode: EntityPaymentMode? = nil
+    @Published var batchUniqueBankStatement: String? = nil
     
-    @Published var amount: String = "0,00 €"
-    
+    @Published var subOperations: [EntitySousOperation] = []
+    @Published var currentSousTransaction: EntitySousOperation? = nil
     @Published var isShowingDialog: Bool = false
     
-    @Published var currentSousTransaction: EntitySousOperation?
-    @Published var subOperations: [EntitySousOperation] = []
-
-    @Published var currentTransaction: EntityTransaction?
+    @Published var currentTransaction: EntityTransaction? = nil
     @Published var entityTransactions: [EntityTransaction] = []
-    
-    @Published var selectedBankStatement: String = ""
-    @Published var selectedStatus: EntityStatus?
-    @Published var selectedMode: EntityPaymentMode?
-    @Published var selectedAccount: EntityAccount?
+
+
+    // 📥 Méthode pour charger des valeurs batch depuis les transactions sélectionnées
+    func updateBatchValues(from transactions: [EntityTransaction]) {
+        isBatchEditing = transactions.count > 1
+
+        batchUniqueTransactionDate = transactions.map { $0.dateOperation }.uniqueElement
+        batchUniquePointingDate = transactions.map { $0.datePointage }.uniqueElement
+        batchUniqueStatus = transactions.compactMap { $0.status }.uniqueElement
+        batchUniqueMode = transactions.compactMap { $0.paymentMode }.uniqueElement
+        batchUniqueBankStatement = transactions.map { $0.bankStatement }.uniqueElement.map { String($0) }
+    }
+
+    // 🔄 Réinitialisation complète
+    func reset() {
+        isBatchEditing = false
+        batchUniqueTransactionDate = nil
+        batchUniquePointingDate = nil
+        batchUniqueStatus = nil
+        batchUniqueMode = nil
+        batchUniqueBankStatement = nil
+
+        transactionDate = Date()
+        pointingDate = Date()
+        checkNumber = 0
+        bankStatement = 0.0
+        amount = ""
+        selectedBankStatement = ""
+        selectedStatus = nil
+        selectedMode = nil
+        selectedAccount = nil
+    }
 }

@@ -141,7 +141,7 @@ final class ChequeBookManager : ObservableObject {
         modelContext.undoManager?.endUndoGrouping()
     }
     
-    private func defaultCarnetCheques(for account: EntityAccount) {
+    private func defaultCarnetCheques() {
         guard checkBooks.isEmpty else { return }
         
         let entityCarnetCheques = EntityCheckBook()
@@ -150,7 +150,6 @@ final class ChequeBookManager : ObservableObject {
         entityCarnetCheques.numPremier = 1
         entityCarnetCheques.numSuivant = 15
         entityCarnetCheques.nbCheques = 25
-        entityCarnetCheques.account = account
         entityCarnetCheques.uuid = UUID()
         modelContext?.insert(entityCarnetCheques)
         
@@ -166,7 +165,7 @@ final class ChequeBookManager : ObservableObject {
         do {
             try modelContext?.save()
         } catch {
-            printTag(" lors de la sauvegarde de l'entité : \(error)")
+            printTag("Erreur lors de la sauvegarde de l'entité : \(error)")
         }
     }
 }
