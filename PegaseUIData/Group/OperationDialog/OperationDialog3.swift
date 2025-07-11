@@ -258,11 +258,16 @@ struct TransactionFormViewModel: View {
             }
             
             .onChange(of: linkedAccount) { old, newValue in
-                if !newValue.contains( selectedAccount! ) {
+                guard let selected = selectedAccount else {
+                    selectedAccount = newValue.first
+                    return
+                }
+
+                if !newValue.contains(selected) {
                     selectedAccount = newValue.first
                 }
             }
-            .onChange(of: selectedAccount) { oldValue, newValue in
+             .onChange(of: selectedAccount) { oldValue, newValue in
                 printTag("Compte sélectionné mis à jour : \(newValue?.name ?? "nil")")
             }
         }
