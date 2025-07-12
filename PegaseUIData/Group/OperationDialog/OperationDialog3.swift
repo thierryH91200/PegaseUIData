@@ -47,6 +47,8 @@ struct TransactionFormViewModel: View {
     @Binding var selectedStatus: EntityStatus?
     @Binding var selectedMode: EntityPaymentMode?
     @Binding var selectedAccount : EntityAccount?
+//    @State private var selectedAccount: EntityAccount? = nil
+
     
     // 🔁 Valeurs de remplacement pour édition multiple (batch)
     var overrideTransactionDate: Date? = nil
@@ -76,12 +78,19 @@ struct TransactionFormViewModel: View {
         Grid(alignment: .leading, horizontalSpacing: 20, verticalSpacing: 12) {
             GridRow {
                 FormField(label: "Linked Account") {
+                    
+
                     Picker("", selection: $selectedAccount) {
+                        // Option "aucun compte sélectionné"
+                        Text(String(localized: "(no account)"))
+                            .tag(nil as EntityAccount?)  // 👈 corrige l'erreur
+                        
+                        // Autres comptes
                         ForEach(linkedAccount, id: \.uuid) { account in
                             let isCurrent = compteCurrent == account
                             Text(isCurrent ? String(localized: "(no transfer)") :
-                                             (account.initAccount?.codeAccount ?? ""))
-                                .tag(account)
+                                    (account.initAccount?.codeAccount ?? ""))
+                            .tag(account as EntityAccount?) // 👈 obligatoire ici aussi
                         }
                     }
                 }
@@ -225,8 +234,33 @@ struct TransactionFormViewModel: View {
                 }
             }
             .onAppear {
+                
+//                if let selected = selectedAccount {
+//                    selectedAccount = linkedAccount.first(where: { $0.uuid == selected.uuid })
+//                } else {
+//                    selectedAccount = nil // 👈 force un état cohérent pour SwiftUI
+//                }
+            
+                selectedAccount = linkedAccount.first(where: { $0.uuid == selectedAccount?.uuid })
+                
+                printTag("selectedAccount.uuid = \(selectedAccount?.uuid.uuidString ?? "nil")")
+                printTag("linkedAccount UUIDs:")
+                linkedAccount.forEach {
+                    printTag("- \($0.uuid)")
+                }
+
+                if selectedAccount == nil {
+                    selectedAccount = nil // Pour que le Picker reconnaisse l'état initial
+                }
+
+                
                 DataContext.shared.context = modelContext
                 let account = CurrentAccountManager.shared.getAccount()
+                guard let account = account else { return }
+                if let oldSelected = selectedAccount {
+                    selectedAccount = linkedAccount.first(where: { $0.uuid == oldSelected.uuid })
+                }
+
                 entityPreference = PreferenceManager.shared.getAllData(for: account)
                 
                 //            if selectedAccount == nil, let firstAccount = linkedAccount.first {
@@ -258,14 +292,17 @@ struct TransactionFormViewModel: View {
             }
             
             .onChange(of: linkedAccount) { old, newValue in
-                guard let selected = selectedAccount else {
-                    selectedAccount = newValue.first
-                    return
+                if let oldSelected = selectedAccount {
+                    selectedAccount = newValue.first(where: { $0.uuid == oldSelected.uuid })
                 }
 
-                if !newValue.contains(selected) {
-                    selectedAccount = newValue.first
-                }
+//                    selectedAccount = newValue.first
+                    return
+                
+
+//                if !newValue.contains(selected) {
+//                    selectedAccount = newValue.first
+//                }
             }
              .onChange(of: selectedAccount) { oldValue, newValue in
                 printTag("Compte sélectionné mis à jour : \(newValue?.name ?? "nil")")
@@ -298,6 +335,7 @@ struct FormField<Content: View>: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline) {
             Text(label)
+                .bold()
                 .frame(width: 120, alignment: .leading)
             content
                 .frame(maxWidth: .infinity, alignment: .leading)

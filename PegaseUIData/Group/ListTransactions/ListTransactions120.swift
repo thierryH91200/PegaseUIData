@@ -199,9 +199,6 @@ struct TransactionLigne: View {
             selectedTransactions.removeAll()
             selectedTransactions.formUnion(idsInRange)
             
-            printTag("Last index: \(lastIndex), Current index: \(currentIndex)")
-            printTag("IDs in range: \(idsInRange)")
-            
         } else if isCommand {
             if selectedTransactions.contains(transaction.id) {
                 selectedTransactions.remove(transaction.id)

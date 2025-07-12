@@ -123,35 +123,39 @@ struct TransactionFormUnifiedView: View {
 // 📋 Vue d'entrée pour appeler TransactionFormViewModel avec ou sans override
 struct TransactionFormView: View {
     @EnvironmentObject var formState: TransactionFormState
-
+    
     var overrideTransactionDate: Date? = nil
     var overridePointingDate: Date? = nil
     var overrideStatus: EntityStatus? = nil
     var overrideMode: EntityPaymentMode? = nil
     var overrideBankStatement: String? = nil
-
+    
     var body: some View {
-        TransactionFormViewModel(
-            linkedAccount         : $formState.accounts,
-            transactionDate       : $formState.transactionDate,
-            pointingDate          : $formState.pointingDate,
-            modes                 : $formState.paymentModes,
-            status                : $formState.status,
-            bankStatement         : $formState.bankStatement,
-            checkNumber           : $formState.checkNumber,
-            amount                : $formState.amount,
-            selectedBankStatement : $formState.selectedBankStatement,
-            selectedStatus        : $formState.selectedStatus,
-            selectedMode          : $formState.selectedMode,
-            selectedAccount       : $formState.selectedAccount,
-            overrideTransactionDate: overrideTransactionDate,
-            overridePointingDate: overridePointingDate,
-            overrideStatus: overrideStatus,
-            overrideMode: overrideMode,
-            overrideBankStatement: overrideBankStatement
-        )
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel(String(localized: "Transaction form section"))
+        if $formState.accounts.count == 0 {
+            EmptyView()
+        } else {
+            TransactionFormViewModel(
+                linkedAccount         : $formState.accounts,
+                transactionDate       : $formState.transactionDate,
+                pointingDate          : $formState.pointingDate,
+                modes                 : $formState.paymentModes,
+                status                : $formState.status,
+                bankStatement         : $formState.bankStatement,
+                checkNumber           : $formState.checkNumber,
+                amount                : $formState.amount,
+                selectedBankStatement : $formState.selectedBankStatement,
+                selectedStatus        : $formState.selectedStatus,
+                selectedMode          : $formState.selectedMode,
+                selectedAccount       : $formState.selectedAccount,
+                overrideTransactionDate: overrideTransactionDate,
+                overridePointingDate: overridePointingDate,
+                overrideStatus: overrideStatus,
+                overrideMode: overrideMode,
+                overrideBankStatement: overrideBankStatement
+            )
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel(String(localized: "Transaction form section"))
+        }
     }
 }
 

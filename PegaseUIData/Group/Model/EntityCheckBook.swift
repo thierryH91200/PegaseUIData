@@ -22,7 +22,7 @@ import SwiftUI
 
     @Relationship var account: EntityAccount?
     
-    public init(name: String,
+    init(name: String,
                 nbCheques: Int,
                 numPremier: Int,
                 numSuivant: Int,

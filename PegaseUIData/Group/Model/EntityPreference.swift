@@ -97,7 +97,7 @@ final class PreferenceManager: PreferenceManaging {
     
     func getAllData(for account: EntityAccount?) -> EntityPreference? {
         guard let account = account else {
-            printTag("Erreur : Account est nil")
+            printTag("Preference : Erreur : Account est nil")
             return nil
         }
         let accountID = account.uuid

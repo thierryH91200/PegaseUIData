@@ -112,7 +112,7 @@ final class StatusManager: StatusManaging {
     
     func getAllData(for account: EntityAccount?) -> [EntityStatus]? {
         guard let account = account else {
-            printTag("Erreur : Account est nil")
+            printTag("Status : Erreur : Account est nil")
             return nil
         }
         

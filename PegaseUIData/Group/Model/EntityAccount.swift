@@ -51,7 +51,7 @@ extension EntityFolderAccount {
     }
 }
 
-@Model public class EntityAccount: Identifiable {
+@Model class EntityAccount: Identifiable {
 
     var name: String = ""
     var nameIcon: String = ""
@@ -111,10 +111,15 @@ extension EntityFolderAccount {
     }
 }
 
-extension EntityAccount: Equatable {
-    public static func == (lhs: EntityAccount, rhs: EntityAccount) -> Bool {
+extension EntityAccount: Equatable , Hashable {
+    static func == (lhs: EntityAccount, rhs: EntityAccount) -> Bool {
         lhs.uuid == rhs.uuid
     }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(uuid)
+    }
+
 }
 
 extension EntityAccount {

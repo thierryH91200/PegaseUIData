@@ -37,24 +37,6 @@ struct OperationDialogView: View {
             FormTitleView(formMode: transactionManager.formMode)
             Divider()
             
-            // Formulaire principal
-//            if transactionManager.selectedTransactions.count > 1 {
-//                UnifiedTransactionFormView(
-//                  uniqueStatus: transactionManager.selectedTransactions.compactMap { $0.status }.uniqueElement,
-//                  uniqueMode: transactionManager.selectedTransactions.compactMap { $0.paymentMode }.uniqueElement,
-//                  uniqueDate: transactionManager.selectedTransactions.map { $0.dateOperation }.uniqueElement,
-//                  uniquePointingDate: transactionManager.selectedTransactions.map { $0.datePointage }.uniqueElement,
-//                  uniqueBankStatement: transactionManager.selectedTransactions.map { $0.bankStatement }.uniqueElement
-//                )
-//            } else if formState.selectedAccount != nil {
-//                UnifiedTransactionFormView(
-//                  uniqueStatus: formState.selectedStatus,
-//                  uniqueMode: formState.selectedMode,
-//                  uniqueDate: formState.transactionDate,
-//                  uniquePointingDate: formState.pointingDate,
-//                  uniqueBankStatement: formState.bankStatement
-//                )
-//            }
             VStack {
                 TransactionFormUnifiedView()
             }
@@ -80,8 +62,7 @@ struct OperationDialogView: View {
         }
         .padding()
         .sheet(isPresented: $formState.isShowingDialog) {
-            SubOperationDialog( subOperation: $formState.currentSousTransaction
-            )
+            SubOperationDialog( subOperation: $formState.currentSousTransaction )
         }
         
         .onChange(of: formState.subOperations) { oldValue, newValue in
@@ -418,8 +399,8 @@ struct BatchEditFormView: View {
             Text("Multiple modifications")
                 .font(.title3)
             
-            modePaiementPicker
-            statutPicker
+            modePaiementPicker  //ok
+            statutPicker        //ok
             
             DatePicker("Operation Date", selection: $formState.transactionDate, displayedComponents: .date)
                 .foregroundStyle(uniqueDate == nil ? .secondary : .primary)
