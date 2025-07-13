@@ -308,7 +308,7 @@ struct UnifiedTransactionEditorView: View {
             } else if formState.selectedAccount != nil {
                 TransactionFormView()
             } else {
-                Text("Aucune transaction sélectionnée.")
+                Text("No transaction selected.")
                     .foregroundColor(.gray)
             }
         }

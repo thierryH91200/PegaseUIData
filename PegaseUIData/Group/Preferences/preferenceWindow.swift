@@ -76,18 +76,18 @@ struct GeneralSettingsView: View {
     var body: some View {
         Form {
             Section(header: Text("Données d’exemple")) {
-                Button("Réinitialiser les données préchargées") {
+                Button("Reset preloaded data") {
                     showAlert = true
                 }
             }
         }
-        .alert("Réinitialiser les données ?", isPresented: $showAlert) {
-            Button("Annuler", role: .cancel) {}
+        .alert("Reset data?", isPresented: $showAlert) {
+            Button("Cancel", role: .cancel) {}
             Button("Réinitialiser", role: .destructive) {
                 resetPreloadedData()
             }
         } message: {
-            Text("Cette opération supprimera toutes les données et rechargera les données d’exemple.")
+            Text("This operation will delete all data and reload the sample data.")
         }
         .padding()
 

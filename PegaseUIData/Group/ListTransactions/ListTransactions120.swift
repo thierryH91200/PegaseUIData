@@ -235,7 +235,7 @@ struct TransactionLigne: View {
             
             // Vide la sélection
             selectedTransactions.removeAll()
-            dataManager.loadTransactions()
+            _ = ListTransactionsManager.shared.getAllData(ascending: false)
         }
     }
     private func mettreAJourStatusPourSelection(nouveauStatus: String) {

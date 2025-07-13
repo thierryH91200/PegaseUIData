@@ -32,13 +32,13 @@ struct ListTransactionsView100: View {
                 executed: executed,
             )
             
-            //#if DEBUG
-            //            Button("Load demo data") {
-            //                loadDemoData()
-            //            }
-            //            .textCase(.lowercase) // empêche SwiftUI de mettre en majuscules
-            //            .padding(.bottom)
-            //#endif
+            #if DEBUG
+                        Button("Load demo data") {
+                            loadDemoData()
+                        }
+                        .textCase(.lowercase) // empêche SwiftUI de mettre en majuscules
+                        .padding(.bottom)
+            #endif
             
             Divider()
             ListTransactions200(isVisible: $isVisible, selectedTransactions: $selectedTransactions)

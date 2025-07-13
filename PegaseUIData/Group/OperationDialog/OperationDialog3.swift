@@ -13,16 +13,6 @@ import SwiftUI
 import AppKit
 import SwiftData
 
-// MARK: - Managers
-// PaymentModeManager et RubricManager comme ObservableObject
-class ModeManager: ObservableObject {
-    @Published var names: [String] = []
-    @Published var paymentModes: [EntityPaymentMode] = []
-}
-
-class RubriqueManager: ObservableObject {
-    @Published var rubrics: [String] = []
-}
 
 // MARK: - TransactionFormViewModel
 struct TransactionFormViewModel: View {
@@ -49,7 +39,6 @@ struct TransactionFormViewModel: View {
     @Binding var selectedAccount : EntityAccount?
 //    @State private var selectedAccount: EntityAccount? = nil
 
-    
     // 🔁 Valeurs de remplacement pour édition multiple (batch)
     var overrideTransactionDate: Date? = nil
     var overridePointingDate: Date? = nil
@@ -253,7 +242,6 @@ struct TransactionFormViewModel: View {
                     selectedAccount = nil // Pour que le Picker reconnaisse l'état initial
                 }
 
-                
                 DataContext.shared.context = modelContext
                 let account = CurrentAccountManager.shared.getAccount()
                 guard let account = account else { return }
@@ -295,16 +283,11 @@ struct TransactionFormViewModel: View {
                 if let oldSelected = selectedAccount {
                     selectedAccount = newValue.first(where: { $0.uuid == oldSelected.uuid })
                 }
-
-//                    selectedAccount = newValue.first
-                    return
                 
-
-//                if !newValue.contains(selected) {
-//                    selectedAccount = newValue.first
-//                }
+                //                    selectedAccount = newValue.first
+                return
             }
-             .onChange(of: selectedAccount) { oldValue, newValue in
+            .onChange(of: selectedAccount) { oldValue, newValue in
                 printTag("Compte sélectionné mis à jour : \(newValue?.name ?? "nil")")
             }
         }
@@ -313,12 +296,12 @@ struct TransactionFormViewModel: View {
     
     func load(from operation: EntityTransaction) {
         transactionDate = operation.dateOperation
-        pointingDate = operation.datePointage
-        bankStatement = operation.bankStatement
-        checkNumber = Int(operation.checkNumber)!
-        amount = String(operation.amount)
-        selectedStatus = operation.status
-        selectedMode = operation.paymentMode
+        pointingDate    = operation.datePointage
+        bankStatement   = operation.bankStatement
+        checkNumber     = Int(operation.checkNumber)!
+        amount          = String(operation.amount)
+        selectedStatus  = operation.status
+        selectedMode    = operation.paymentMode
         selectedAccount = operation.account
     }
 }

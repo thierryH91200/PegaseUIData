@@ -15,30 +15,6 @@ final class ListDataManager: ObservableObject {
     var modelContext: ModelContext? {
         DataContext.shared.context
     }
-
-    // Sauvegarde les modifications dans SwiftData
-    func saveChanges() {
-        guard let modelContext = modelContext else {
-            printTag("Le contexte de modèle n'est pas initialisé.")
-            return
-        }
-        
-        do {
-            try modelContext.save()
-        } catch {
-            printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
-        }
-    }
-    
-    @MainActor func deleteTransaction(_ transaction: EntityTransaction) {
-        guard let modelContext = modelContext else { return }
-               
-        modelContext.delete(transaction)
-        
-        // Rafraîchir complètement la liste après suppression
-        saveChanges()
-        loadTransactions()  // Recharger la liste des transactions
-    }
     
     @MainActor
     func loadTransactions() {

@@ -135,23 +135,23 @@ struct TransactionFormView: View {
             EmptyView()
         } else {
             TransactionFormViewModel(
-                linkedAccount         : $formState.accounts,
-                transactionDate       : $formState.transactionDate,
-                pointingDate          : $formState.pointingDate,
-                modes                 : $formState.paymentModes,
-                status                : $formState.status,
-                bankStatement         : $formState.bankStatement,
-                checkNumber           : $formState.checkNumber,
-                amount                : $formState.amount,
-                selectedBankStatement : $formState.selectedBankStatement,
-                selectedStatus        : $formState.selectedStatus,
-                selectedMode          : $formState.selectedMode,
-                selectedAccount       : $formState.selectedAccount,
-                overrideTransactionDate: overrideTransactionDate,
-                overridePointingDate: overridePointingDate,
-                overrideStatus: overrideStatus,
-                overrideMode: overrideMode,
-                overrideBankStatement: overrideBankStatement
+                linkedAccount           : $formState.accounts,
+                transactionDate         : $formState.transactionDate,
+                pointingDate            : $formState.pointingDate,
+                modes                   : $formState.paymentModes,
+                status                  : $formState.status,
+                bankStatement           : $formState.bankStatement,
+                checkNumber             : $formState.checkNumber,
+                amount                  : $formState.amount,
+                selectedBankStatement   : $formState.selectedBankStatement,
+                selectedStatus          : $formState.selectedStatus,
+                selectedMode            : $formState.selectedMode,
+                selectedAccount         : $formState.selectedAccount,
+                overrideTransactionDate : overrideTransactionDate,
+                overridePointingDate    : overridePointingDate,
+                overrideStatus          : overrideStatus,
+                overrideMode            : overrideMode,
+                overrideBankStatement   : overrideBankStatement
             )
             .accessibilityElement(children: .contain)
             .accessibilityLabel(String(localized: "Transaction form section"))
