@@ -33,6 +33,12 @@ final class EntityRubric: Identifiable {
     }
 }
 
+extension EntityRubric: CustomStringConvertible {
+    public var description: String {
+        "EntityRubric(name: \(name), total: \(total), account: \(account.name), uuid: \(uuid))"
+    }
+}
+
 final class RubricManager {
     
     static let shared = RubricManager()

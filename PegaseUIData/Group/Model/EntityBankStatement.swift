@@ -61,6 +61,12 @@ final class EntityBankStatement: Identifiable {
     }
 }
 
+extension EntityBankStatement: CustomStringConvertible {
+    public var description: String {
+        "EntityBankStatement(title: \(num), date: \(startSolde.formatted()), uuid: \(uuid))"
+    }
+}
+
 extension EntityBankStatement {
     
     func formatEuro(_ value: Double) -> String {

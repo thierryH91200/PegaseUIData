@@ -75,7 +75,7 @@ struct GeneralSettingsView: View {
 
     var body: some View {
         Form {
-            Section(header: Text("Données d’exemple")) {
+            Section(header: Text("Example data")) {
                 Button("Reset preloaded data") {
                     showAlert = true
                 }
@@ -83,7 +83,7 @@ struct GeneralSettingsView: View {
         }
         .alert("Reset data?", isPresented: $showAlert) {
             Button("Cancel", role: .cancel) {}
-            Button("Réinitialiser", role: .destructive) {
+            Button("Reset", role: .destructive) {
                 resetPreloadedData()
             }
         } message: {

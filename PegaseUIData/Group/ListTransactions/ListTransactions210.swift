@@ -15,10 +15,10 @@ import SwiftData
 struct TransactionDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var dataManager : ListDataManager
+//    @EnvironmentObject private var dataManager : ListDataManager
     
     private var transaction: EntityTransaction {
-        dataManager.listTransactions[currentSectionIndex]
+        ListTransactionsManager.shared.listTransactions[currentSectionIndex]
     }
     
     @State var currentSectionIndex: Int
@@ -51,7 +51,7 @@ struct TransactionDetailView: View {
                         .background(Color.gray.opacity(0.2))
                         .cornerRadius(8)
                 }
-                .disabled(currentSectionIndex >= dataManager.listTransactions.count - 1)
+                .disabled(currentSectionIndex >= ListTransactionsManager.shared.listTransactions.count - 1)
             }
             .padding()
             
@@ -173,7 +173,7 @@ struct TransactionDetailView: View {
         .padding()
         .frame(minWidth: 400, minHeight: 300)
         .onAppear {
-            if let index = dataManager.listTransactions.firstIndex(where: { $0.id == selectedTransaction.first }) {
+            if let index = ListTransactionsManager.shared.listTransactions.firstIndex(where: { $0.id == selectedTransaction.first }) {
                 currentSectionIndex = index
             }
         }
@@ -185,7 +185,7 @@ struct TransactionDetailView: View {
     }
     
     private func showNextSection() {
-        guard currentSectionIndex < dataManager.listTransactions.count - 1 else { return }
+        guard currentSectionIndex < ListTransactionsManager.shared.listTransactions.count - 1 else { return }
         currentSectionIndex += 1
     }
 }

@@ -12,7 +12,6 @@ import SwiftData
 struct ListTransactionsView100: View {
     
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var dataManager           : ListDataManager
     
     @State private var selectedTransactions: Set<UUID> = []
     @Binding var isVisible: Bool
@@ -20,7 +19,7 @@ struct ListTransactionsView100: View {
     @Binding var planned: Double
     @Binding var engaged: Double
     
-    private var transactions: [EntityTransaction] { dataManager.listTransactions }
+    private var transactions: [EntityTransaction] { ListTransactionsManager.shared.listTransactions }
     
     var body: some View {
         
@@ -29,7 +28,7 @@ struct ListTransactionsView100: View {
             SummaryView(
                 planned: planned,
                 engaged: engaged,
-                executed: executed,
+                executed: executed
             )
             
             #if DEBUG
@@ -137,10 +136,9 @@ struct ListTransactions200: View {
     @Environment(\.modelContext) private var modelContext
     
     @EnvironmentObject private var currentAccountManager : CurrentAccountManager
-    @EnvironmentObject private var dataManager           : ListDataManager
     @EnvironmentObject private var colorManager          : ColorManager
     
-    private var transactions: [EntityTransaction] { dataManager.listTransactions }
+    private var transactions: [EntityTransaction] { ListTransactionsManager.shared.listTransactions }
     
     @Binding var isVisible: Bool
     @Binding var selectedTransactions: Set<UUID>
@@ -168,18 +166,26 @@ struct ListTransactions200: View {
             .onChange(of: colorManager.colorChoix) { old, new in
             }
         
-            .onReceive(NotificationCenter.default.publisher(for: .transactionsImported)) { _ in
-                printTag("transactionsImported notification received")
+            .onReceive(NotificationCenter.default.publisher(for: .transactionsAddEdit)) { _ in
+                printTag("transactionsAddEdit notification received")
                 
-                loadTransactions()
+                _ = ListTransactionsManager.shared.getAllData()
                 withAnimation {
                     refresh.toggle()
                 }
             }
-        
+            .onReceive(NotificationCenter.default.publisher(for: .transactionsImported)) { _ in
+                printTag("transactionsImported notification received")
+                
+                _ = ListTransactionsManager.shared.getAllData()
+                withAnimation {
+                    refresh.toggle()
+                }
+            }
+
             .onChange(of: currentAccountManager.currentAccount) { old, new in
                 printTag("Changement de compte détecté: \(String(describing: new))")
-                loadTransactions()
+                _ = ListTransactionsManager.shared.getAllData()
                 
                 withAnimation {
                     refresh.toggle()
@@ -217,7 +223,7 @@ struct ListTransactions200: View {
                         
                         let newTransaction = EntityTransaction()
                         newTransaction.dateOperation = transaction.dateOperation
-                        newTransaction.datePointage  =  transaction.datePointage
+                        newTransaction.datePointage  = transaction.datePointage
                         newTransaction.status        = status
                         newTransaction.paymentMode   = paymentMode
                         newTransaction.checkNumber   = transaction.checkNumber
@@ -248,7 +254,7 @@ struct ListTransactions200: View {
                     }
                     try? modelContext.save()
                     
-                    loadTransactions()
+                    _ = ListTransactionsManager.shared.getAllData()
                     clipboardTransactions = []
                     isCutOperation = false
                 }
@@ -313,10 +319,10 @@ struct ListTransactions200: View {
             .padding(.horizontal, 2)
     }
     
-    @MainActor
-    func loadTransactions() {
-        dataManager.listTransactions = ListTransactionsManager.shared.getAllData(ascending: false)
-    }
+//    @MainActor
+//    func loadTransactions() {
+//        dataManager.listTransactions = ListTransactionsManager.shared.getAllData(ascending: false)
+//    }
     
     @MainActor
     func resetDatabase(using context: ModelContext) {
@@ -327,7 +333,7 @@ struct ListTransactions200: View {
         }
         
         try? context.save()
-        loadTransactions()
+//        loadTransactions()
         balanceCalculation()
     }
     
@@ -425,7 +431,7 @@ struct ListTransactions200: View {
         let initialBalance = balancePrevu + balanceEngage + balanceRealise
         
         // Vérification des transactions disponibles
-        let transactions = dataManager.listTransactions
+        let transactions = ListTransactionsManager.shared.listTransactions
         
         let count = transactions.count
         

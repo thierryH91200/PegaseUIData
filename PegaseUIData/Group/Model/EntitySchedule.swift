@@ -66,6 +66,12 @@ final class EntitySchedule : Identifiable{
         }
 }
 
+extension EntitySchedule: CustomStringConvertible {
+    public var description: String {
+        "EntitySchedule(libelle: \(libelle), amount: \(amount), dateValeur: \(dateValeur.formatted()), isProcessed: \(isProcessed), uuid: \(uuid))"
+    }
+}
+
 extension EntitySchedule {
     var categoryName: String {
         category?.name ?? "N/A"

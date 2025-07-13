@@ -24,8 +24,8 @@ final class ListTransactionsManager: ListManaging {
 
     static let shared = ListTransactionsManager()
     
-    var entities : [EntityTransaction] = []
-    var entity : EntityTransaction = EntityTransaction()
+    var listTransactions : [EntityTransaction] = []
+    var listTransaction : EntityTransaction = EntityTransaction()
     
     var ascending = false
     
@@ -132,7 +132,7 @@ final class ListTransactionsManager: ListManaging {
 
         do {
             // Récupération des entités depuis le contexte
-            entities = try modelContext?.fetch(fetchDescriptor) ?? []
+            listTransactions = try modelContext?.fetch(fetchDescriptor) ?? []
         } catch {
             printTag("Erreur lors de la récupération des données avec SwiftData : \(error)")
             return []
@@ -142,7 +142,7 @@ final class ListTransactionsManager: ListManaging {
         if currentAccount.isDemo {
             adjustDate(for: currentAccount)
         }
-        return entities
+        return listTransactions
     }
 
     // MARK: remove Transaction
@@ -166,7 +166,7 @@ final class ListTransactionsManager: ListManaging {
     }
     
     func printTransactions() {
-        for entity in entities {
+        for entity in listTransactions {
             print(entity.datePointage)
             print(entity.dateOperation)
             print(entity.status?.name ?? "no status")
@@ -184,9 +184,9 @@ final class ListTransactionsManager: ListManaging {
     func adjustDate (for account: EntityAccount) {
         let currentAccount = account
 
-        guard entities.isEmpty == false else {return}
-        let diffDate = (entities.first?.datePointage.timeIntervalSinceNow)!
-        for entity in entities {
+        guard listTransactions.isEmpty == false else {return}
+        let diffDate = (listTransactions.first?.datePointage.timeIntervalSinceNow)!
+        for entity in listTransactions {
             entity.datePointage  = (entity.datePointage  - diffDate).noon
             entity.dateOperation = (entity.dateOperation - diffDate).noon
         }

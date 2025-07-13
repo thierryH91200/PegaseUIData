@@ -13,12 +13,25 @@ import DGCharts
 struct TreasuryCurveView: View {
     
     @Binding var isVisible: Bool
+    @Binding var executed: Double
+    @Binding var planned: Double
+    @Binding var engaged: Double
+
 
     var body: some View {
-        TreasuryCurve()
-            .task {
-                await performFalseTask()
-            }
+        VStack(spacing: 0) {
+
+            SummaryView(
+                planned: planned,
+                engaged: engaged,
+                executed: executed
+            )
+            
+            TreasuryCurve()
+                .task {
+                    await performFalseTask()
+                }
+        }
     }
     private func performFalseTask() async {
         // Exécuter une tâche asynchrone (par exemple, un délai)

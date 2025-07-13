@@ -21,6 +21,7 @@ extension Notification.Name {
     static let resetDatabaseRequested = Notification.Name("resetDatabaseRequested")
 
     static let transactionsImported = Notification.Name("transactionsImported")
+    static let transactionsAddEdit = Notification.Name("transactionsAddEdit")
 
 }
 

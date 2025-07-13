@@ -27,7 +27,6 @@ struct ImportTransactionFileView: View {
                                  String(localized:"Rubric"),
                                  String(localized:"Category"),
                                  String(localized:"Payment method"),
-                                 
                                  String(localized:"Status"),
                                  String(localized:"Amount")]
     

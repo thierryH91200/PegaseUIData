@@ -40,6 +40,12 @@ import SwiftData
     }
 }
 
+extension EntityPaymentMode: CustomStringConvertible {
+    public var description: String {
+        "EntityPaymentMode(name: \(name), color: \(color), uuid: \(uuid))"
+    }
+}
+
 protocol PaymentModeManaging {
     
     func create(account: EntityAccount?, name: String, color: NSColor) throws -> EntityPaymentMode?

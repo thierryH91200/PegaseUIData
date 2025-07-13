@@ -35,7 +35,6 @@ import SwiftUI
         hasher.combine(uuid)
     }
 
-
     init(type : StatusType, account : EntityAccount) {
         self.name    = type.localizedName
         self.rawType = type.rawValue
@@ -46,7 +45,7 @@ import SwiftUI
 
 extension EntityStatus: CustomStringConvertible {
     public var description: String {
-        "Status: \(name), type: \(type), color: \(color)"
+        "EntityStatus(name: \(name), type: \(type), color: \(color.description), account: \(account.name), uuid: \(uuid))"
     }
 }
 

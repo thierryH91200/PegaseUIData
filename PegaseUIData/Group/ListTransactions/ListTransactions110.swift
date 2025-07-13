@@ -15,7 +15,6 @@ struct OperationRow: View {
     @Environment(\.dismiss) private var dismiss
 
     @EnvironmentObject private var currentAccountManager : CurrentAccountManager
-    @EnvironmentObject private var dataManager           : ListDataManager
     @EnvironmentObject private var colorManager          : ColorManager
     
     @Binding var selectedTransactions: Set<UUID>
@@ -35,7 +34,7 @@ struct OperationRow: View {
                                  String(localized:"Status"),
                                  String(localized:"Amount")]
 
-    private var transactions: [EntityTransaction] { dataManager.listTransactions }
+    private var transactions: [EntityTransaction] { ListTransactionsManager.shared.listTransactions }
     // Récupère le compte courant de manière sécurisée.
     var compteCurrent: EntityAccount? {
         CurrentAccountManager.shared.getAccount()
@@ -61,7 +60,7 @@ struct OperationRow: View {
             let visibleTransactions = grouped.flatMap { $0.monthGroups.flatMap { $0.transactions } }
             ForEach(grouped, id: \.year) { yearGroup in
                 Section(header:
-                    Label("Année : \(yearGroup.year)", systemImage: "calendar")
+                    Label("Year : \(yearGroup.year)", systemImage: "calendar")
                         .font(.headline)
                         .contentShape(Rectangle()) // 👈 rend toute la zone réactive
                         .buttonStyle(PlainButtonStyle()) // 👈 évite les interférences

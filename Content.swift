@@ -98,7 +98,6 @@ struct ContentView100: View {
 
     @StateObject private var transactionManager = TransactionSelectionManager()
     @StateObject private var colorManager = ColorManager()
-    @StateObject private var listDataManager = ListDataManager()
     @StateObject private var currentAccountManager = CurrentAccountManager.shared
 
     @State private var selectedTransaction: EntityTransaction?
@@ -148,7 +147,6 @@ struct ContentView100: View {
                 }
             }
             .environmentObject(transactionManager)
-            .environmentObject(listDataManager)
             .environmentObject(currentAccountManager)
             .navigationSplitViewStyle(.balanced)
 
@@ -322,9 +320,15 @@ struct DetailContainer: View {
 
     var detailViews: [String: (Binding<Bool>) -> AnyView] {
         [
-            String(localized: "List of transactions",table: "Menu")     : { isVisible in AnyView(ListTransactionsView100(isVisible    : isVisible, executed: $executed, planned: $planned, engaged: $engaged)) },
-            //selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)) },
-            String(localized: "Cash flow curve",table: "Menu")          : { isVisible in AnyView(TreasuryCurveView(isVisible          : isVisible)) },
+            String(localized: "List of transactions",table: "Menu")     : { isVisible in AnyView(ListTransactionsView100(isVisible    : isVisible,
+                                                                                                                         executed: $executed,
+                                                                                                                         planned: $planned,
+                                                                                                                         engaged: $engaged)) },
+            String(localized: "Cash flow curve",table: "Menu")          : { isVisible in AnyView(TreasuryCurveView(isVisible          : isVisible,
+                                                                                                                   executed: $executed,
+                                                                                                                   planned: $planned,
+                                                                                                                   engaged: $engaged)) },
+
             String(localized: "Bank website",table: "Menu")             : { isVisible in AnyView(BankWebsiteView(isVisible            : isVisible)) },
             String(localized: "Internet rapprochement",table: "Menu")   : { isVisible in AnyView(InternetReconciliationView(isVisible : isVisible)) },
             String(localized: "Bank statement",table: "Menu")           : { isVisible in AnyView(BankStatementView(isVisible          : isVisible)) },

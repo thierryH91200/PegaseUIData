@@ -40,7 +40,6 @@ final class EntityBanqueInfo : Identifiable{
 
 protocol BankManaging {
     func create(account: EntityAccount?) throws -> EntityBanqueInfo
-    func update()
     func delete(entity: EntityBanqueInfo)
 
     func getAllData() -> EntityBanqueInfo? 
@@ -81,10 +80,6 @@ final class BankManager : BankManaging {
         
         return entity
     }
-    
-    func update() {
-    }
-    
     
     func delete(entity: EntityBanqueInfo) {
         modelContext?.delete(entity  )

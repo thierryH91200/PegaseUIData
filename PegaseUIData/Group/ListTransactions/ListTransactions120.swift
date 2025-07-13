@@ -12,7 +12,6 @@ import SwiftData
 struct TransactionLigne: View {
     
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var dataManager  : ListDataManager
     @EnvironmentObject var transactionManager   : TransactionSelectionManager
     @EnvironmentObject private var colorManager : ColorManager
     
@@ -111,7 +110,7 @@ struct TransactionLigne: View {
             }
             // Liste des noms et couleurs des status
             let names = [ String(localized :"Planned"),
-                          String(localized :"In progres"),
+                          String(localized :"In progress"),
                           String(localized :"Executed") ]
             Menu {
                 Button(names[0]) { mettreAJourStatusPourSelection(nouveauStatus: names[0]) }
@@ -131,7 +130,7 @@ struct TransactionLigne: View {
             .padding()
         }
         .popover(isPresented: $showTransactionInfo, arrowEdge: .top) {
-            if let index = dataManager.listTransactions.firstIndex(where: { $0.id == transaction.id }) {
+            if let index = ListTransactionsManager.shared.listTransactions.firstIndex(where: { $0.id == transaction.id }) {
                 TransactionDetailView(currentSectionIndex: index, selectedTransaction: $selectedTransactions)
                     .frame(minWidth: 400, minHeight: 300)
             } else {
@@ -146,10 +145,10 @@ struct TransactionLigne: View {
             NSEvent.addLocalMonitorForEvents(matching: [.keyDown]) { event in
                 if event.modifierFlags.contains(.command), event.charactersIgnoringModifiers == "a" {
                     // Tout sélectionner
-                    for transaction in dataManager.listTransactions {
+                    for transaction in ListTransactionsManager.shared.listTransactions {
                         selectedTransactions.insert(transaction.id)
                     }
-                    transactionManager.selectedTransactions = dataManager.listTransactions
+                    transactionManager.selectedTransactions = ListTransactionsManager.shared.listTransactions
                     return nil
                 }
                 
@@ -177,7 +176,7 @@ struct TransactionLigne: View {
         _ = selectedTransactions.compactMap { id in
             transaction(for: id)
         }
-        return dataManager.listTransactions.first { $0.id == id }
+        return ListTransactionsManager.shared.listTransactions.first { $0.id == id }
     }
     
     private func toggleSelection() {
@@ -215,16 +214,16 @@ struct TransactionLigne: View {
         }
 
         if let firstSelectedId = selectedTransactions.first {
-            transactionManager.selectedTransaction = dataManager.listTransactions.first { $0.id == firstSelectedId }
+            transactionManager.selectedTransaction = ListTransactionsManager.shared.listTransactions.first { $0.id == firstSelectedId }
         }
-        transactionManager.selectedTransactions = dataManager.listTransactions.filter { selectedTransactions.contains($0.id) }
+        transactionManager.selectedTransactions = ListTransactionsManager.shared.listTransactions.filter { selectedTransactions.contains($0.id) }
         transactionManager.isCreationMode = false
     }
     
     private func supprimerTransactionsSelectionnees() {
         withAnimation {
             // Copie locale des éléments à supprimer
-            let transactionsToDelete = dataManager.listTransactions.filter { selectedTransactions.contains($0.id) }
+            let transactionsToDelete = ListTransactionsManager.shared.listTransactions.filter { selectedTransactions.contains($0.id) }
             
             // Supprime du contexte si non déjà supprimé
             for transaction in transactionsToDelete {
@@ -240,7 +239,7 @@ struct TransactionLigne: View {
     }
     private func mettreAJourStatusPourSelection(nouveauStatus: String) {
         withAnimation {
-            let selected = dataManager.listTransactions.filter { selectedTransactions.contains($0.id) }
+            let selected = ListTransactionsManager.shared.listTransactions.filter { selectedTransactions.contains($0.id) }
             let status = StatusManager.shared.find(name: nouveauStatus)!
             for transaction in selected {
                 transaction.status = status

@@ -33,6 +33,7 @@ struct TreasuryCurve: View {
     @AppStorage("enableSoundFeedback") private var enableSoundFeedback: Bool = true
 
     var body: some View {
+        
         GeometryReader { geometry in
             VStack {
                 Text("Treasury curve")

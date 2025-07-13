@@ -8,21 +8,6 @@
 import SwiftUI
 import SwiftData
 
-// Gestionnaire de données pour les listTransactions
-final class ListDataManager: ObservableObject {
-    @Published var listTransactions: [EntityTransaction] = []
-         
-    var modelContext: ModelContext? {
-        DataContext.shared.context
-    }
-    
-    @MainActor
-    func loadTransactions() {
-        
-        self.listTransactions = ListTransactionsManager.shared.getAllData(ascending: false)
-        objectWillChange.send()
-    }
-}
 
 enum ColumnWidths {
     static let dateOperation: CGFloat = 120

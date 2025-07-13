@@ -17,7 +17,7 @@ struct OperationDialogView: View {
     
     @EnvironmentObject var transactionManager: TransactionSelectionManager
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
-    @EnvironmentObject var dataManager: ListDataManager
+//    @EnvironmentObject var dataManager: ListDataManager
     
     @EnvironmentObject var formState: TransactionFormState
     
@@ -140,7 +140,7 @@ struct OperationDialogView: View {
     
     private func refreshData() {
         DataContext.shared.context = modelContext
-        dataManager.listTransactions = ListTransactionsManager.shared.getAllData()
+        _ = ListTransactionsManager.shared.getAllData()
     }
     
     func configureFormState() async throws {
@@ -219,8 +219,8 @@ struct OperationDialogView: View {
             printTag("❌ Erreur lors de l'enregistrement : \(error)")
         }
 
-        dataManager.loadTransactions()
         resetListTransactions()
+        NotificationCenter.default.post(name: .transactionsAddEdit, object: nil)
     }
     
     func contextSaveEdition() {

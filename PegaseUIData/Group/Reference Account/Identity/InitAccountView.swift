@@ -173,7 +173,7 @@ struct ReportView: View {
         }
         
         VStack(alignment: .leading) {
-            Text("In progres")
+            Text("In progress")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             TextField("Enter Engaged value", text: Binding(

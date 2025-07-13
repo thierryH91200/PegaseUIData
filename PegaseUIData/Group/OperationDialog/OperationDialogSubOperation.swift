@@ -13,7 +13,6 @@ struct SubOperationDialog: View {
     
     @Environment(\.modelContext) private var modelContext: ModelContext
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject var dataManager: ListDataManager
     @EnvironmentObject var formState: TransactionFormState
     
     @EnvironmentObject var transactionManager: TransactionSelectionManager
