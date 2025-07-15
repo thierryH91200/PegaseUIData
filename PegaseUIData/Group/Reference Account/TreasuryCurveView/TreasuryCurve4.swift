@@ -16,27 +16,6 @@ import SwiftUI
 import SwiftData
 import DGCharts
 
-struct DataTresorerie : Equatable{
-    var x: Double = 0.0
-    var soldeRealise: Double = 0.0
-    var soldeEngage: Double = 0.0
-    var soldePrevu: Double = 0.0
-
-    init(x: Double, soldeRealise: Double, soldeEngage: Double, soldePrevu: Double)
-    {
-        self.x  = x
-        self.soldeRealise = soldeRealise
-        self.soldeEngage = soldeEngage
-        self.soldePrevu = soldePrevu
-    }
-    init() {
-        self.x  = 0
-        self.soldeRealise = 0
-        self.soldeEngage = 0
-        self.soldePrevu = 0
-    }
-}
-
 struct DGLineChartRepresentable: NSViewRepresentable {
     @ObservedObject var viewModel: TresuryLineViewModel
     let entries: [ChartDataEntry]
@@ -167,8 +146,8 @@ struct DGLineChartRepresentable: NSViewRepresentable {
         let label = [String(localized:"Planned"),
                      String(localized:"In progress"),
                      String(localized:"Executed")   ]
-        let set1 = setDataSet(values: values0, label: label[0],  color: #colorLiteral(red: 0.2745098174, green: 0.4862745106, blue: 0.1411764771, alpha: 1))
-        let set2 = setDataSet(values: values1, label: label[1],  color: #colorLiteral(red: 0.5058823824, green: 0.3372549117, blue: 0.06666667014, alpha: 1))
+        let set1 = setDataSet(values: values0, label: label[0], color: #colorLiteral(red: 0.2745098174, green: 0.4862745106, blue: 0.1411764771, alpha: 1))
+        let set2 = setDataSet(values: values1, label: label[1], color: #colorLiteral(red: 0.5058823824, green: 0.3372549117, blue: 0.06666667014, alpha: 1))
         let set3 = setDataSet(values: values2, label: label[2], color: #colorLiteral(red: 0.9529411793, green: 0.6862745285, blue: 0.1333333403, alpha: 1))
 
         let dataSet = LineChartData(dataSets: [set1, set2, set3])
@@ -265,7 +244,9 @@ struct DGLineChartRepresentable: NSViewRepresentable {
         
         guard !transactions.isEmpty else { return }
 
-        var localGraph: [DataTresorerie] = []
+//        var dataGraph : [DataTresorerie] = []
+        var dataTresorerie = DataTresorerie()
+        var dataGraph : [DataTresorerie] = []
 
         let initAccount = InitAccountManager.shared.getAllData()
         var soldeRealise = initAccount?.realise ?? 0
@@ -276,6 +257,7 @@ struct DGLineChartRepresentable: NSViewRepresentable {
         var engage = 0.0
 
         let calendar = Calendar.current
+        
         // Normalize firstDate to midnight using Calendar
         firstDate = calendar.startOfDay(for: transactions.first!.datePointage).timeIntervalSince1970
         let minValue = Double(firstDate / hourSeconds)
@@ -298,34 +280,41 @@ struct DGLineChartRepresentable: NSViewRepresentable {
                     prevu += tx.amount
                 case .inProgress:
                     engage += tx.amount
-                case .executed?, .none, .some(_):
+                case .executed:
                     soldeRealise += tx.amount
+                case .none:
+                    let _ = 0.0
                 }
             }
 
-            soldePrevu = soldeRealise + engage + prevu
-            soldeEngage = soldeRealise + engage
+            soldePrevu  += soldeRealise + engage + prevu
+            soldeEngage += soldeRealise + engage
+            
+            prevu  = 0.0
+            engage = 0.0
 
-            let dataTresorerie = DataTresorerie(
-                x: Double(offset),
-                soldeRealise: soldeRealise,
-                soldeEngage: soldeEngage,
-                soldePrevu: soldePrevu
+            printTag("\(offset)    \(soldePrevu)  \(soldeEngage)  \(soldeRealise)")
+            
+            dataTresorerie = DataTresorerie(
+                x            : Double(offset),
+                soldeRealise : soldeRealise,
+                soldeEngage  : soldeEngage,
+                soldePrevu   : soldePrevu
             )
-            localGraph.append(dataTresorerie)
+            dataGraph.append(dataTresorerie)
         }
-        if localGraph.count != viewModel.dataGraph.count {
-            viewModel.dataGraph = localGraph
+        if dataGraph.count != viewModel.dataGraph.count {
+            viewModel.dataGraph = dataGraph
         } else {
             var isDifferent = false
-            for (a, b) in zip(localGraph, viewModel.dataGraph) {
+            for (a, b) in zip(dataGraph, viewModel.dataGraph) {
                 if a != b {
                     isDifferent = true
                     break
                 }
             }
             if isDifferent {
-                viewModel.dataGraph = localGraph
+                viewModel.dataGraph = dataGraph
             }
         }
     }

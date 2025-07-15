@@ -13,10 +13,10 @@ struct RecetteDepensePieView: View {
     @Binding var isVisible: Bool
 
     var body: some View {
-        RecetteDepensePie()
-            .task {
-                await performFalseTask()
-            }
+//        RecetteDepensePie()
+//            .task {
+//                await performFalseTask()
+//            }
     }
 
     private func performFalseTask() async {

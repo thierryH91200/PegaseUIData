@@ -22,6 +22,9 @@ class TresuryLineViewModel: ObservableObject {
     @Published var selectedStart: Double = 0
     @Published var selectedEnd: Double = 30
     
+    let hourSeconds = 3600.0 * 24.0 // one day
+
+    
     @State private var chartView : LineChartView?
     
     static let shared = TresuryLineViewModel()
@@ -41,16 +44,22 @@ class TresuryLineViewModel: ObservableObject {
             }
             return
         }
-
-        let firstOpDate = Calendar.current.startOfDay(for: allTransactions.first!.dateOperation)
-        let lastOpDate = Calendar.current.startOfDay(for: allTransactions.last!.dateOperation)
-
-        self.firstDate = firstOpDate.timeIntervalSince1970
-        self.lastDate = lastOpDate.timeIntervalSince1970
+        
+        firstDate = (allTransactions.first?.dateOperation.timeIntervalSince1970)! - hourSeconds
+        lastDate = (allTransactions.last?.dateOperation.timeIntervalSince1970)! + hourSeconds
+        let miniDate = allTransactions.first?.dateOperation
+        
+        let totalDays = (lastDate - firstDate) / hourSeconds
+//        minValue = 0
+//        maxValue = totalDays
+//        lowerValue = 0
+//        upperValue = totalDays
+        
+        printTag("\(firstDate)   \(lastDate)   \((lastDate - firstDate) / hourSeconds)")
 
         // Appliquer la plage sélectionnée
-        let startDate = Calendar.current.date(byAdding: .day, value: Int(self.selectedStart), to: minDate)!
-        let endDate   = Calendar.current.date(byAdding: .day, value: Int(self.selectedEnd), to: minDate)!
+        let startDate = Calendar.current.date(byAdding: .day, value: Int(self.selectedStart), to: miniDate!)!
+        let endDate   = Calendar.current.date(byAdding: .day, value: Int(self.selectedEnd), to: miniDate!)!
 
         let filteredTransactions = allTransactions.filter {
             $0.dateOperation >= startDate && $0.dateOperation <= endDate

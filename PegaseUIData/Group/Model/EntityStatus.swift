@@ -26,7 +26,7 @@ import SwiftUI
         set { rawType = newValue.rawValue }
     }
     
-    // Implémentez `Hashable`
+    // Implémente Hashable
     public static func == (lhs: EntityStatus, rhs: EntityStatus) -> Bool {
         lhs.uuid == rhs.uuid
     }

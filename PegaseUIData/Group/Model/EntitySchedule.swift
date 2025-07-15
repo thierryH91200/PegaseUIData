@@ -88,7 +88,6 @@ final class SchedulerManager: ScheduleManaging, ObservableObject  {
 
     @Published var schedulers = [EntitySchedule]()
     
-    var currentAccount: EntityAccount?
     static let shared = SchedulerManager()
     
     var modelContext: ModelContext? {

@@ -15,10 +15,10 @@ struct CategorieBar1View: View {
     @Binding var isVisible: Bool
     
     var body: some View {
-        CategorieBar1View1()
-            .task {
-                await performFalseTask()
-            }
+//        CategorieBar1View1()
+//            .task {
+//                await performFalseTask()
+//            }
     }
     
     private func performFalseTask() async {

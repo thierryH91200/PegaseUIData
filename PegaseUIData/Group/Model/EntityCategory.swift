@@ -36,9 +36,7 @@ import SwiftUI
 final class CategoryManager: ObservableObject {
     
     static let shared = CategoryManager()
-    
-    @Query private var entities: [EntityCategory] // Liste des entités chargées de manière réactive
-    
+     
     var modelContext: ModelContext? {
         DataContext.shared.context
     }

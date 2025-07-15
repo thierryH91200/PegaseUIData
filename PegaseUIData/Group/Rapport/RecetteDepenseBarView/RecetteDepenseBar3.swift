@@ -16,10 +16,28 @@ struct RecetteDepenseView: View {
 
     @StateObject private var viewModel = RecetteDepenseBarViewModel()
 
-    @State private var minDate = Calendar.current.date(byAdding: .day, value: -30, to: Date())!
-    @State private var maxDate = Date()
+    let transactions: [EntityTransaction]
+
+    @Binding var lowerValue: Double
+    @Binding var upperValue: Double
+    @Binding var minDate: Date
+    @Binding var maxDate: Date
+
     @State private var selectedStart: Double = 0
     @State private var selectedEnd: Double = 30
+    
+    private var firstDate: Date {
+        transactions.first?.dateOperation ?? Date()
+    }
+
+    private var lastDate: Date {
+        transactions.last?.dateOperation ?? Date()
+    }
+
+    private var durationDays: Double {
+        lastDate.timeIntervalSince(firstDate) / 86400
+    }
+
 
     var body: some View {
         
@@ -43,10 +61,12 @@ struct RecetteDepenseView: View {
                         .font(.callout)
                         .foregroundColor(.secondary)
                     
-                    RangeSlider(minValue: 0,
-                                maxValue: maxDate.timeIntervalSince(minDate) / (60 * 60 * 24),
-                                lowerValue: $selectedStart,
-                                upperValue: $selectedEnd)
+                    RangeSlider(
+                        minValue: .constant(0),
+                        maxValue: .constant(durationDays),
+                        lowerValue: $lowerValue,
+                        upperValue: $upperValue
+                    )
                     .frame(height: 30)
                     
                     Spacer()

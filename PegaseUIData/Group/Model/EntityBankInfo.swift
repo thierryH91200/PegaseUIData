@@ -50,8 +50,6 @@ final class BankManager : BankManaging {
     
     static let shared = BankManager()
     var entitiesBank = [EntityBanqueInfo]()
-    var banks = [EntityBanqueInfo]()
-    var bank : EntityBanqueInfo?
     
     var modelContext: ModelContext? {
         DataContext.shared.context

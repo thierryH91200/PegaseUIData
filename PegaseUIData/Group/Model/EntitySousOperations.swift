@@ -53,7 +53,6 @@ import SwiftUI
 final class SubTransactionsManager {
     static let shared = SubTransactionsManager()
 
-    var entities: [EntitySousOperation] = []
     var subOperation: EntitySousOperation?
 
     var modelContext: ModelContext? {

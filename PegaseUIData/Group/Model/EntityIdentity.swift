@@ -72,7 +72,7 @@ final class IdentityManager  {
     // Contexte pour les modifications
     static let shared = IdentityManager()
     
-    private var entities = [EntityIdentity]()
+    private var identities = [EntityIdentity]()
     
     var modelContext: ModelContext? {
         DataContext.shared.context
@@ -110,12 +110,12 @@ final class IdentityManager  {
                 predicate: predicate,
                 sortBy: sort )
             
-            entities = try modelContext?.fetch(fetchDescriptor) ?? []
+            identities = try modelContext?.fetch(fetchDescriptor) ?? []
             
         } catch {
             printTag("Erreur lors de la récupération des données : \(error.localizedDescription)")
             return nil
         }
-        return entities.first
+        return identities.first
     }
 }

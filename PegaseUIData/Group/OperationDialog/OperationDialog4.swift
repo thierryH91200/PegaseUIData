@@ -16,8 +16,8 @@ import Combine
 final class TransactionFormState: ObservableObject {
     // 🧾 Données principales du formulaire
     @Published var accounts: [EntityAccount] = []
-    @Published var transactionDate: Date = Date()
-    @Published var pointingDate: Date = Date()
+    @Published var transactionDate: Date = Date().noon
+    @Published var pointingDate: Date = Date().noon
     @Published var paymentModes: [EntityPaymentMode] = []
     @Published var status: [EntityStatus] = []
     @Published var bankStatement: Double = 0.0
@@ -67,8 +67,8 @@ final class TransactionFormState: ObservableObject {
         batchUniqueMode = nil
         batchUniqueBankStatement = nil
 
-        transactionDate = Date()
-        pointingDate = Date()
+        transactionDate = Date().noon
+        pointingDate = Date().noon
         checkNumber = 0
         bankStatement = 0.0
         amount = ""

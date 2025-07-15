@@ -11,62 +11,73 @@ import DGCharts
 
 
 struct RangeSlider: View {
-    var minValue: Double
-    var maxValue: Double
+    @Binding var minValue: Double
+    @Binding var maxValue: Double
 
     @Binding var lowerValue: Double
     @Binding var upperValue: Double
 
+    private let thumbSize: CGFloat = 24
+
     var body: some View {
         GeometryReader { geometry in
-            let width = geometry.size.width
-            let knobSize: CGFloat = 20
-            let range = maxValue - minValue
-            let safeRange = range == 0 ? 1 : range
+            let width = geometry.size.width - thumbSize
 
-            let lowerX = width * CGFloat((lowerValue - minValue) / safeRange)
-            let upperX = width * CGFloat((upperValue - minValue) / safeRange)
+            // Position en pixels des poignées
+            let lowerThumbPosition = position(for: lowerValue, in: width)
+            let upperThumbPosition = position(for: upperValue, in: width)
 
-            ZStack(alignment: .leading) {
+            ZStack {
+                // Piste globale
                 Capsule()
                     .fill(Color.gray.opacity(0.3))
-                    .frame(height: 4)
+                    .frame(height: 6)
+
+                // Piste sélectionnée
                 Capsule()
-                    .fill(Color.blue)
-                    .frame(width: max(0, upperX - lowerX), height: 4)
-                    .offset(x: lowerX)
+                    .fill(Color.accentColor)
+                    .frame(width: upperThumbPosition - lowerThumbPosition, height: 6)
+                    .offset(x: lowerThumbPosition + thumbSize / 2)
 
-                // Lower knob
+                // Poignée gauche
                 Circle()
-                    .fill(Color.white)
-                    .frame(width: knobSize, height: knobSize)
-                    .shadow(radius: 2)
-                    .position(x: lowerX, y: 10)
-                    .gesture(DragGesture().onChanged { value in
-                        let percent = max(0, min(1, value.location.x / width))
-                        lowerValue = min(maxValue, max(minValue, percent * range))
-                        if lowerValue > upperValue {
-                            lowerValue = upperValue
-                        }
-                    })
+                    .frame(width: thumbSize, height: thumbSize)
+                    .foregroundColor(.accentColor)
+                    .position(x: lowerThumbPosition + thumbSize / 2, y: geometry.size.height / 2)
+                    .gesture(
+                        DragGesture()
+                            .onChanged { value in
+                                let percent = min(max(0, value.location.x - thumbSize / 2), width) / width
+                                lowerValue = valueFrom(percent: percent)
+                                lowerValue = min(lowerValue, upperValue)
+                            }
+                    )
 
-                // Upper knob
+                // Poignée droite
                 Circle()
-                    .fill(Color.white)
-                    .frame(width: knobSize, height: knobSize)
-                    .shadow(radius: 2)
-                    .position(x: upperX, y: 10)
-                    .gesture(DragGesture().onChanged { value in
-                        let percent = max(0, min(1, value.location.x / width))
-                        upperValue = min(maxValue, max(minValue, percent * range))
-                        if upperValue < lowerValue {
-                            upperValue = lowerValue
-                        }
-                    })
+                    .frame(width: thumbSize, height: thumbSize)
+                    .foregroundColor(.accentColor)
+                    .position(x: upperThumbPosition + thumbSize / 2, y: geometry.size.height / 2)
+                    .gesture(
+                        DragGesture()
+                            .onChanged { value in
+                                let percent = min(max(0, value.location.x - thumbSize / 2), width) / width
+                                upperValue = valueFrom(percent: percent)
+                                upperValue = max(upperValue, lowerValue)
+                            }
+                    )
             }
         }
-        .animation(.easeInOut(duration: 0.2), value: lowerValue)
-        .animation(.easeInOut(duration: 0.2), value: upperValue)
+        .frame(height: thumbSize * 2)
+    }
+
+    private func position(for value: Double, in width: CGFloat) -> CGFloat {
+        let percent = (value - minValue) / (maxValue - minValue)
+        return CGFloat(percent) * width
+    }
+
+    private func valueFrom(percent: CGFloat) -> Double {
+        minValue + Double(percent) * (maxValue - minValue)
     }
 }
 

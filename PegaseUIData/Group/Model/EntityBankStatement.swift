@@ -97,7 +97,6 @@ final class BankStatementManager : BankStatementManaging, ObservableObject {
     
     // Contexte pour les modifications
     static let shared = BankStatementManager()
-    var currentAccount: EntityAccount?
     
     @Published var statements = [EntityBankStatement]()
     

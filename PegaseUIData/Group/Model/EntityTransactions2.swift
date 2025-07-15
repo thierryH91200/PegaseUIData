@@ -25,7 +25,6 @@ final class ListTransactionsManager: ListManaging {
     static let shared = ListTransactionsManager()
     
     var listTransactions : [EntityTransaction] = []
-    var listTransaction : EntityTransaction = EntityTransaction()
     
     var ascending = false
     

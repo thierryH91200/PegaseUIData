@@ -17,8 +17,25 @@ struct TreasuryCurve: View {
     @State var lineDataEntries: [ChartDataEntry] = []
     @StateObject private var viewModel = TresuryLineViewModel()
     
-    @State private var minDate = Date()
-    @State private var maxDate = Date()
+    let transactions: [EntityTransaction]
+    
+    @Binding var lowerValue: Double
+    @Binding var upperValue: Double
+    @Binding var minDate: Date
+    @Binding var maxDate: Date
+    
+    private var firstDate: Date {
+        transactions.first?.dateOperation ?? Date()
+    }
+
+    private var lastDate: Date {
+        transactions.last?.dateOperation ?? Date()
+    }
+
+    private var durationDays: Double {
+        lastDate.timeIntervalSince(firstDate) / 86400
+    }
+
     @State private var selectedStart: Double = 0
     @State private var selectedEnd: Double = 30
     private let oneDay = 3600.0 * 24.0 // one day
@@ -54,12 +71,12 @@ struct TreasuryCurve: View {
                             .font(.callout)
                             .foregroundColor(.secondary)
                         
-                        RangeSlider(minValue: minDate.timeIntervalSince(minDate) / (oneDay),
-                                    maxValue: maxDate.timeIntervalSince(minDate) / (oneDay),
-                                    lowerValue: $selectedStart,
-                                    upperValue: $selectedEnd)
+                        RangeSlider(minValue: .constant(0),
+                                    maxValue: .constant(durationDays),
+                                    lowerValue: $lowerValue,
+                                    upperValue: $upperValue
+                        )
                         .frame(height: 30)
-                        
                     }
                     .padding(.top, 4)
                     .padding(.horizontal)

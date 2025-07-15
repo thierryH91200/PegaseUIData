@@ -15,10 +15,10 @@ struct ModePaiementPieView: View {
     @Binding var isVisible: Bool
     
     var body: some View {
-        ModePaiementView()
-            .task {
-                await performFalseTask()
-            }
+//        ModePaiementView()
+//            .task {
+//                await performFalseTask()
+//            }
     }
     
     private func performFalseTask() async {

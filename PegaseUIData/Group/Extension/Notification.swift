@@ -33,3 +33,16 @@ extension UTType {
         UTType(importedAs: "com.opengroup.ofx")
     }
 }
+
+extension View {
+    func debugFrame(_ label: String = "") -> some View {
+        self.background(
+            GeometryReader { geo in
+                Color.clear
+                    .onAppear {
+                        print("[\(label)] size: \(geo.size)")
+                    }
+            }
+        )
+    }
+}

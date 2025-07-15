@@ -52,12 +52,12 @@ struct SettingTab1: View {
                 }
                 .tag(TabSelection.rubric)
             
-            ModePaiementView()
-                .environmentObject(modePaiementDataManager)
-                .tabItem {
-                    Label("Modes de paiement", systemImage: "creditcard")
-                }
-                .tag(TabSelection.modePaiement)
+//            ModePaiementView()
+//                .environmentObject(modePaiementDataManager)
+//                .tabItem {
+//                    Label("Modes de paiement", systemImage: "creditcard")
+//                }
+//                .tag(TabSelection.modePaiement)
             
             PreferenceTransactionView()
                 .environmentObject(preferenceDataManager)

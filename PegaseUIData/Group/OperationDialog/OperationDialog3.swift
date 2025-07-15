@@ -294,16 +294,16 @@ struct TransactionFormViewModel: View {
     }
     
     
-    func load(from operation: EntityTransaction) {
-        transactionDate = operation.dateOperation
-        pointingDate    = operation.datePointage
-        bankStatement   = operation.bankStatement
-        checkNumber     = Int(operation.checkNumber)!
-        amount          = String(operation.amount)
-        selectedStatus  = operation.status
-        selectedMode    = operation.paymentMode
-        selectedAccount = operation.account
-    }
+//    func load(from operation: EntityTransaction) {
+//        transactionDate = operation.dateOperation
+//        pointingDate    = operation.datePointage
+//        bankStatement   = operation.bankStatement
+//        checkNumber     = Int(operation.checkNumber)!
+//        amount          = String(operation.amount)
+//        selectedStatus  = operation.status
+//        selectedMode    = operation.paymentMode
+//        selectedAccount = operation.account
+//    }
 }
 
 struct FormField<Content: View>: View {

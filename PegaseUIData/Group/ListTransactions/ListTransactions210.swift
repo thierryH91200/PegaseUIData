@@ -15,7 +15,6 @@ import SwiftData
 struct TransactionDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-//    @EnvironmentObject private var dataManager : ListDataManager
     
     private var transaction: EntityTransaction {
         ListTransactionsManager.shared.listTransactions[currentSectionIndex]
@@ -189,13 +188,6 @@ struct TransactionDetailView: View {
         currentSectionIndex += 1
     }
 }
-
-
-
-
-
-
-
 
 //    .onAppear {
 //        NSEvent.addLocalMonitorForEvents(matching: [.keyDown]) { event in

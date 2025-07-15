@@ -14,10 +14,10 @@ struct RubriquePieView: View {
     @Binding var isVisible: Bool
     
     var body: some View {
-        RubriquePie()
-            .task {
-                await performFalseTask()
-            }
+//        RubriquePie()
+//            .task {
+//                await performFalseTask()
+//            }
     }
     
     private func performFalseTask() async {

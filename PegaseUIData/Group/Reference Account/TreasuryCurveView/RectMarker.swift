@@ -184,7 +184,7 @@ open class RectMarker: MarkerImage
     {
         dateFormatter.dateStyle = .medium
         dateFormatter.timeStyle = .none
-        let date2 = Date(timeIntervalSince1970: ((value * interval) + miniTime)  )
+        let date2 = Date(timeIntervalSince1970: (((value + 1) * interval) + miniTime)  )
         let date = dateFormatter.string(from: date2)
         return  date
     }
