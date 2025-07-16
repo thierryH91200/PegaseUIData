@@ -71,7 +71,8 @@ struct CategorieBar2View2: View {
                         minValue: .constant(0),
                         maxValue: .constant(durationDays),
                         lowerValue: $lowerValue,
-                        upperValue: $upperValue
+                        upperValue: $upperValue,
+                        referenceDate: minDate // 👈 ici
                     )
                     .frame(height: 30)
                 }

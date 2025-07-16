@@ -65,7 +65,9 @@ struct RubriqueBar: View {
                     RangeSlider(minValue: .constant(0),
                                 maxValue: .constant(durationDays),
                                 lowerValue: $selectedStart,
-                                upperValue: $selectedEnd)
+                                upperValue: $selectedEnd,
+                                referenceDate: minDate // 👈 ici
+                        )
                         .frame(height: 30)
                 }
                 .padding(.top, 4)

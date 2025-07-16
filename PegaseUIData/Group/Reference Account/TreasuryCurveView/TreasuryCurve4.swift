@@ -293,7 +293,7 @@ struct DGLineChartRepresentable: NSViewRepresentable {
             prevu  = 0.0
             engage = 0.0
 
-            printTag("\(offset)    \(soldePrevu)  \(soldeEngage)  \(soldeRealise)")
+            printTag("n°\(offset)    \(soldePrevu)  \(soldeEngage)  \(soldeRealise)")
             
             dataTresorerie = DataTresorerie(
                 x            : Double(offset),

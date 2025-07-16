@@ -19,6 +19,9 @@ struct TreasuryCurve: View {
     
     let transactions: [EntityTransaction]
     
+    @Binding var allTransactions: [EntityTransaction]
+    @State var filteredTransactions: [EntityTransaction] = []
+    
     @Binding var lowerValue: Double
     @Binding var upperValue: Double
     @Binding var minDate: Date
@@ -34,6 +37,10 @@ struct TreasuryCurve: View {
 
     private var durationDays: Double {
         lastDate.timeIntervalSince(firstDate) / 86400
+    }
+    
+    private var totalAmount: Double {
+        filteredTransactions.reduce(0) { $0 + $1.amount }
     }
 
     @State private var selectedStart: Double = 0
@@ -67,16 +74,28 @@ struct TreasuryCurve: View {
 
                 GroupBox(label: Label("Filter by period", systemImage: "calendar")) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("From \(formattedDate(from: selectedStart)) to \(formattedDate(from: selectedEnd))")
+                        Text("Période sélectionnée : \(dateFromOffset(lowerValue)) → \(dateFromOffset(upperValue))")
+
+//                        Text("From \(formattedDate(from: selectedStart)) to \(formattedDate(from: selectedEnd))")
                             .font(.callout)
                             .foregroundColor(.secondary)
                         
                         RangeSlider(minValue: .constant(0),
                                     maxValue: .constant(durationDays),
                                     lowerValue: $lowerValue,
-                                    upperValue: $upperValue
+                                    upperValue: $upperValue,
+                                    referenceDate: minDate // 👈 ici
                         )
-                        .frame(height: 30)
+                        .frame(height: 50)
+                        
+                        Text("\(selectedDays) jours du \(formattedDate(from: lowerValue)) au \(formattedDate(from: upperValue)) — \(filteredTransactions.count) transaction\(filteredTransactions.count > 1 ? "s" : ""), solde total : \(formattedAmount(totalAmount))")
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                            .padding(.top, 4)
+                        
+                        List(filteredTransactions, id: \.uuid) { transaction in
+                            Text(transaction.sousOperations.first?.libelle ?? "N/A")
+                        }
                     }
                     .padding(.top, 4)
                     .padding(.horizontal)
@@ -112,6 +131,21 @@ struct TreasuryCurve: View {
                     }
                 }
                 .onAppear {
+                    
+                    allTransactions = ListTransactionsManager.shared.getAllData().sorted { $0.dateOperation < $1.dateOperation }
+
+                    guard let first = allTransactions.first?.dateOperation,
+                          let last = allTransactions.last?.dateOperation else { return }
+
+                    minDate = first
+                    maxDate = last
+
+                    let totalDays = last.timeIntervalSince(first) / 86400
+                    lowerValue = 0
+                    upperValue = totalDays
+
+                    applyFilter()
+
                     let initAccount = InitAccountManager.shared.getAllData()
                     soldeBanque = initAccount?.realise ?? 0
                     soldeEngage  = initAccount?.engage ?? 0
@@ -132,18 +166,44 @@ struct TreasuryCurve: View {
                         updateChart()
                     }
                 }
-                .onChange(of: selectedStart) { _, newStart in
-                    viewModel.selectedStart = newStart
-                    updateChart()
+                .onChange(of: lowerValue) { _, newStart in
+                    applyFilter()
+
+//                    viewModel.selectedStart = newStart
+//                    updateChart()
                 }
                 .onChange(of: selectedEnd) { _, newEnd in
-                    viewModel.selectedEnd = newEnd
-                    updateChart()
+                    applyFilter()
+
+//                    viewModel.selectedEnd = newEnd
+//                    updateChart()
                 }
             }
         }
     }
     
+    func dateFromOffset(_ offset: Double) -> String {
+        let date = Calendar.current.date(byAdding: .day, value: Int(offset), to: minDate) ?? minDate
+        return date.formatted(date: .abbreviated, time: .omitted)
+    }
+    
+    func applyFilter() {
+        guard !allTransactions.isEmpty else {
+            filteredTransactions = []
+            return
+        }
+
+        let startDate = Calendar.current.date(byAdding: .day, value: Int(lowerValue), to: minDate) ?? minDate
+        let endDate = Calendar.current.date(byAdding: .day, value: Int(upperValue), to: minDate) ?? maxDate
+
+        filteredTransactions = allTransactions.filter {
+            $0.dateOperation >= startDate && $0.dateOperation <= endDate
+        }
+    }
+    private var selectedDays: Int {
+        max(Int(upperValue - lowerValue) + 1, 1)
+    }
+
     private func updateChart() {
         
         guard let chartView = chartView else { return }
@@ -159,5 +219,12 @@ struct TreasuryCurve: View {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         return formatter.string(from: date)
+    }
+    
+    private func formattedAmount(_ amount: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = Locale.current
+        return formatter.string(from: NSNumber(value: amount)) ?? "\(amount)"
     }
 }

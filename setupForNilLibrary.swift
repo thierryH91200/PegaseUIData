@@ -41,7 +41,7 @@ struct AccountFactory {
         account.paymentMode = PaymentModeManager.shared.modePayments
         
         StatusManager.shared.defaultStatus(account: account)
-        account.status = StatusManager.shared.entityStatus
+        account.status = StatusManager.shared.status
         
         RubricManager.shared.defaultRubric(for: account)
         let rubric = RubricManager.shared.getAllData(account: account)

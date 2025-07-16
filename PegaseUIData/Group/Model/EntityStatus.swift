@@ -62,7 +62,7 @@ final class StatusManager: StatusManaging {
     
     static let shared = StatusManager()
     
-    var entityStatus = [EntityStatus]()
+    var status = [EntityStatus]()
     
     var modelContext: ModelContext? {
         DataContext.shared.context
@@ -124,11 +124,11 @@ final class StatusManager: StatusManaging {
             sortBy: sort )
         
         do {
-            entityStatus = try modelContext?.fetch(fetchDescriptor) ?? []
+            status = try modelContext?.fetch(fetchDescriptor) ?? []
         } catch {
             printTag("Erreur lors de la récupération des données : \(error.localizedDescription)")
         }
-        return entityStatus
+        return status
     }
     
     func save () throws {
@@ -156,7 +156,7 @@ final class StatusManager: StatusManaging {
     }
     
     func defaultStatus(account: EntityAccount) {
-        entityStatus.removeAll()
+        status.removeAll()
         
         for type in StatusType.allCases {
             let status = EntityStatus(type: type, account: account)

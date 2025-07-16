@@ -55,7 +55,7 @@ class TresuryLineViewModel: ObservableObject {
 //        lowerValue = 0
 //        upperValue = totalDays
         
-        printTag("\(firstDate)   \(lastDate)   \((lastDate - firstDate) / hourSeconds)")
+//        printTag("\(firstDate)   \(lastDate)   \((lastDate - firstDate) / hourSeconds)")
 
         // Appliquer la plage sélectionnée
         let startDate = Calendar.current.date(byAdding: .day, value: Int(self.selectedStart), to: miniDate!)!
