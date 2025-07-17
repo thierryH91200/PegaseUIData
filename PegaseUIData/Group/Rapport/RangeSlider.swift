@@ -12,90 +12,88 @@ import DGCharts
 
 import SwiftUI
 
+import SwiftUI
+
 struct RangeSlider: View {
     @Binding var minValue: Double
     @Binding var maxValue: Double
     @Binding var lowerValue: Double
     @Binding var upperValue: Double
     
-    var referenceDate: Date // correspond à minDate
-    
-    private var selectedDays: Int {
-        max(Int(upperValue - lowerValue) + 1, 1) // Sécurité minimale
-    }
-    
-    let step: Double = 1.0
+    var referenceDate: Date
+    var transactionCount: Int // 👈 Ajouté ici
 
     private let thumbSize: CGFloat = 28
     private let trackHeight: CGFloat = 6
-
+    private let overlapOffset: CGFloat = 6 // décalage en cas d'overlap
+    
+    private var selectedDays: Int {
+        max(Int(upperValue - lowerValue) + 1, 1)
+    }
+    
     var body: some View {
         GeometryReader { geometry in
             let availableWidth = geometry.size.width - thumbSize
-            // 1. Positions brutes pour les thumbs
             let lowerPos = position(for: lowerValue, in: availableWidth)
             let upperPos = position(for: upperValue, in: availableWidth)
+            
+            let overlap = abs(upperPos - lowerPos) < thumbSize
 
-            // 2. Positions “safe” pour les labels (ne dépassent pas)
-            let labelLowerPos = min(max(lowerPos, 40), availableWidth - 40)
-            let labelUpperPos = min(max(upperPos, 40), availableWidth - 40)
-
-            ZStack(alignment: .topLeading) {
+                        ZStack(alignment: .topLeading) {
                 VStack(spacing: 4) {
-                    // 🔷 1. Dates au-dessus des poignées
+                    // ✅ Affichage des dates
                     ZStack {
                         Text(dateString(for: lowerValue))
                             .font(.caption2)
-                            .position(x: labelLowerPos + thumbSize / 2, y: 10)
-
+                            .position(x: lowerPos + thumbSize / 2, y: 10)
+                        
                         Text(dateString(for: upperValue))
                             .font(.caption2)
-                            .position(x: labelUpperPos + thumbSize / 2, y: 10)
+                            .position(x: upperPos + thumbSize / 2, y: 10)
                     }
                     .frame(height: 20)
-                    .padding(.horizontal, thumbSize / 2)
-
-                    // 🔷 2. Slider principal avec les poignées
+                    
+                    // ✅ Slider
                     ZStack(alignment: .leading) {
-                        // Piste grise
                         Capsule()
                             .fill(Color.secondary.opacity(0.3))
                             .frame(height: trackHeight)
                             .padding(.horizontal, thumbSize / 2)
-
-                        // Piste bleue sélectionnée
+                        
                         Capsule()
                             .fill(Color.accentColor)
-                            .frame(
-                                width: upperPos - lowerPos,
-                                height: trackHeight
-                            )
+                            .frame(width: upperPos - lowerPos, height: trackHeight)
                             .padding(.leading, lowerPos + thumbSize / 2)
                             .padding(.trailing, availableWidth - upperPos + thumbSize / 2)
-
+                        
                         // Poignée gauche
-                        thumbView
-                            .offset(x: lowerPos)
-                            .gesture(
-                                DragGesture()
-                                    .onChanged { value in
+                            thumbView(isLeft: true)
+                                .offset(x: lowerPos, y: overlap ? 10 : 0)
+                                .gesture(
+                                    DragGesture().onChanged { value in
                                         let percent = clampedPercent(from: value.location.x, width: availableWidth)
-                                        lowerValue = min(valueFrom(percent: percent), upperValue)
+                                        let newValue = round(valueFrom(percent: percent))
+                                        if newValue <= upperValue { // ✅ On empêche de dépasser la poignée droite
+                                            lowerValue = newValue
+                                        }
                                     }
-                            )
+                                )
 
-                        // Poignée droite
-                        thumbView
-                            .offset(x: upperPos)
-                            .gesture(
-                                DragGesture()
-                                    .onChanged { value in
+                            thumbView(isLeft: false)
+                            .offset(x: upperPos, y: 0)
+                                .gesture(
+                                    DragGesture().onChanged { value in
                                         let percent = clampedPercent(from: value.location.x, width: availableWidth)
-                                        upperValue = max(valueFrom(percent: percent), lowerValue)
+                                        let newValue = round(valueFrom(percent: percent))
+                                        if newValue >= lowerValue { // ✅ On empêche de dépasser la poignée gauche
+                                            upperValue = newValue
+                                        }
                                     }
-                            )
+                                )
                     }
                 }
+                
+                // ✅ Nombre de jours sélectionnés
                 Text("Number of days selected : \(selectedDays)")
                     .font(.footnote)
                     .foregroundColor(.secondary)
@@ -105,45 +103,46 @@ struct RangeSlider: View {
         }
         .frame(height: thumbSize)
     }
-
-    private var thumbView: some View {
-        Circle()
-            .fill(Color.white)
-            .frame(width: thumbSize, height: thumbSize)
-            .shadow(radius: 2)
-            .overlay(
-                Circle()
-                    .stroke(Color.accentColor, lineWidth: 2)
-            )
-    }
-
+        
+    // ✅ Calculs
     private func position(for value: Double, in width: CGFloat) -> CGFloat {
         guard maxValue > minValue else { return 0 }
         let percent = (value - minValue) / (maxValue - minValue)
-        let pos = CGFloat(percent) * width
-//        pos = min(pos, width - 40)
-        return pos
+        return CGFloat(percent) * width
     }
-
+    
     private func valueFrom(percent: CGFloat) -> Double {
-        let rawValue = minValue + Double(percent) * (maxValue - minValue)
-        let steppedValue = (rawValue / step).rounded() * step
-        return steppedValue
+        minValue + Double(percent) * (maxValue - minValue)
     }
     
     private func clampedPercent(from x: CGFloat, width: CGFloat) -> CGFloat {
         min(max(0, x - thumbSize / 2), width) / width
     }
     
-    private func dateString(for offset: Double) -> String {
-        let calendar = Calendar.current
-        if let date = calendar.date(byAdding: .day, value: Int(offset), to: referenceDate) {
-            let formatter = DateFormatter()
-            formatter.dateStyle = .medium
-            return formatter.string(from: date)
-        }
-        return "–"
+    private func dateString(for value: Double) -> String {
+        let daysToAdd = Int(value)
+        let date = Calendar.current.date(byAdding: .day, value: daysToAdd, to: referenceDate) ?? referenceDate
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter.string(from: date)
     }
+    
+    private func thumbView(isLeft: Bool) -> some View {
+        ZStack {
+            Circle()
+                .fill(Color.white)
+                .frame(width: thumbSize, height: thumbSize)
+                .shadow(radius: 2)
+                .overlay(
+                    Circle().stroke(Color.accentColor, lineWidth: 2)
+                )
+
+            Image(systemName: isLeft ? "chevron.right" : "chevron.left")
+                .foregroundColor(.accentColor)
+                .font(.system(size: thumbSize * 0.5, weight: .bold))
+        }
+    }
+
 }
 
 struct SinglePieChartView: NSViewRepresentable {

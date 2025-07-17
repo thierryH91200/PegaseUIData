@@ -58,7 +58,6 @@ protocol PaymentModeManaging {
     func createDefaultPaymentModes(for account: EntityAccount)
 
     func save () throws
-
 }
 
 //Gère les opérations CRUD (Create, Read, Update, Delete)

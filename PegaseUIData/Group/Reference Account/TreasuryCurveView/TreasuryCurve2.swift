@@ -30,11 +30,11 @@ struct TreasuryCurve: View {
     private var firstDate: Date {
         transactions.first?.dateOperation ?? Date()
     }
-
+    
     private var lastDate: Date {
         transactions.last?.dateOperation ?? Date()
     }
-
+    
     private var durationDays: Double {
         lastDate.timeIntervalSince(firstDate) / 86400
     }
@@ -42,20 +42,20 @@ struct TreasuryCurve: View {
     private var totalAmount: Double {
         filteredTransactions.reduce(0) { $0 + $1.amount }
     }
-
+    
     @State private var selectedStart: Double = 0
     @State private var selectedEnd: Double = 30
     private let oneDay = 3600.0 * 24.0 // one day
-
+    
     @State private var chartView : LineChartView?
     @State private var rotationAngle: Double = 0
     
     @State var soldeBanque = 0.0
     @State var soldePrevu   = 0.0
     @State var soldeEngage  = 0.0
-
+    
     @AppStorage("enableSoundFeedback") private var enableSoundFeedback: Bool = true
-
+    
     var body: some View {
         
         GeometryReader { geometry in
@@ -66,17 +66,17 @@ struct TreasuryCurve: View {
                 
                 DGLineChartRepresentable(viewModel: viewModel,
                                          entries: viewModel.dataEntries)
-                    .frame(width: geometry.size.width, height: 400)
-                    .padding()
-                    .onAppear {
-                        viewModel.updateAccount(minDate: minDate)
-                    }
-
+                .frame(width: geometry.size.width, height: 400)
+                .padding()
+                .onAppear {
+                    viewModel.updateAccount(minDate: minDate)
+                }
+                
                 GroupBox(label: Label("Filter by period", systemImage: "calendar")) {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Période sélectionnée : \(dateFromOffset(lowerValue)) → \(dateFromOffset(upperValue))")
-
-//                        Text("From \(formattedDate(from: selectedStart)) to \(formattedDate(from: selectedEnd))")
+                        
+                        //                        Text("From \(formattedDate(from: selectedStart)) to \(formattedDate(from: selectedEnd))")
                             .font(.callout)
                             .foregroundColor(.secondary)
                         
@@ -84,7 +84,8 @@ struct TreasuryCurve: View {
                                     maxValue: .constant(durationDays),
                                     lowerValue: $lowerValue,
                                     upperValue: $upperValue,
-                                    referenceDate: minDate // 👈 ici
+                                    referenceDate: minDate ,
+                                    transactionCount: filteredTransactions.count
                         )
                         .frame(height: 50)
                         
@@ -130,57 +131,58 @@ struct TreasuryCurve: View {
                         .padding(.top, 8)
                     }
                 }
-                .onAppear {
-                    
-                    allTransactions = ListTransactionsManager.shared.getAllData().sorted { $0.dateOperation < $1.dateOperation }
-
-                    guard let first = allTransactions.first?.dateOperation,
-                          let last = allTransactions.last?.dateOperation else { return }
-
-                    minDate = first
-                    maxDate = last
-
-                    let totalDays = last.timeIntervalSince(first) / 86400
-                    lowerValue = 0
-                    upperValue = totalDays
-
-                    applyFilter()
-
-                    let initAccount = InitAccountManager.shared.getAllData()
-                    soldeBanque = initAccount?.realise ?? 0
-                    soldeEngage  = initAccount?.engage ?? 0
-                    soldePrevu   = initAccount?.prevu ?? 0
-
-                    DataContext.shared.context = modelContext
-                    let allTransactions = ListTransactionsManager.shared.getAllData()
-                    guard let first = allTransactions.first?.dateOperation,
-                          let last = allTransactions.last?.dateOperation else { return }
-
-                    minDate = first
-                    maxDate = last
-                    selectedEnd = maxDate.timeIntervalSince(minDate) / oneDay
-
-                    chartView = LineChartView()
-                    if let chartView = chartView {
-                        TresuryLineViewModel.shared.configure(with: chartView)
-                        updateChart()
-                    }
+            }
+            .onAppear {
+                
+                allTransactions = ListTransactionsManager.shared.getAllData().sorted { $0.dateOperation < $1.dateOperation }
+                
+                guard let first = allTransactions.first?.dateOperation,
+                      let last = allTransactions.last?.dateOperation else { return }
+                
+                minDate = first
+                maxDate = last
+                
+                let totalDays = last.timeIntervalSince(first) / 86400
+                lowerValue = 0
+                upperValue = totalDays
+                
+                applyFilter()
+                
+                let initAccount = InitAccountManager.shared.getAllData()
+                soldeBanque = initAccount?.realise ?? 0
+                soldeEngage  = initAccount?.engage ?? 0
+                soldePrevu   = initAccount?.prevu ?? 0
+                
+                DataContext.shared.context = modelContext
+                let allTransactions = ListTransactionsManager.shared.getAllData()
+                guard let first = allTransactions.first?.dateOperation,
+                      let last = allTransactions.last?.dateOperation else { return }
+                
+                minDate = first
+                maxDate = last
+                selectedEnd = maxDate.timeIntervalSince(minDate) / oneDay
+                
+                chartView = LineChartView()
+                if let chartView = chartView {
+                    TresuryLineViewModel.shared.configure(with: chartView)
+                    updateChart()
                 }
-                .onChange(of: lowerValue) { _, newStart in
-                    applyFilter()
-
-//                    viewModel.selectedStart = newStart
-//                    updateChart()
-                }
-                .onChange(of: selectedEnd) { _, newEnd in
-                    applyFilter()
-
-//                    viewModel.selectedEnd = newEnd
-//                    updateChart()
-                }
+            }
+            .onChange(of: lowerValue) { _, newStart in
+                applyFilter()
+                
+                //                    viewModel.selectedStart = newStart
+                //                    updateChart()
+            }
+            .onChange(of: selectedEnd) { _, newEnd in
+                applyFilter()
+                
+                //                    viewModel.selectedEnd = newEnd
+                //                    updateChart()
             }
         }
     }
+    
     
     func dateFromOffset(_ offset: Double) -> String {
         let date = Calendar.current.date(byAdding: .day, value: Int(offset), to: minDate) ?? minDate
@@ -192,10 +194,10 @@ struct TreasuryCurve: View {
             filteredTransactions = []
             return
         }
-
+        
         let startDate = Calendar.current.date(byAdding: .day, value: Int(lowerValue), to: minDate) ?? minDate
         let endDate = Calendar.current.date(byAdding: .day, value: Int(upperValue), to: minDate) ?? maxDate
-
+        
         filteredTransactions = allTransactions.filter {
             $0.dateOperation >= startDate && $0.dateOperation <= endDate
         }
@@ -203,13 +205,13 @@ struct TreasuryCurve: View {
     private var selectedDays: Int {
         max(Int(upperValue - lowerValue) + 1, 1)
     }
-
+    
     private func updateChart() {
         
         guard let chartView = chartView else { return }
         
         DataContext.shared.context = modelContext
-
+        
         viewModel.configure(with: chartView)
         viewModel.updateAccount(minDate: minDate) // ← cette ligne est manquante
     }

@@ -66,7 +66,8 @@ struct RubriqueBar: View {
                                 maxValue: .constant(durationDays),
                                 lowerValue: $selectedStart,
                                 upperValue: $selectedEnd,
-                                referenceDate: minDate // 👈 ici
+                                referenceDate: minDate,
+                                transactionCount: 5
                         )
                         .frame(height: 30)
                 }

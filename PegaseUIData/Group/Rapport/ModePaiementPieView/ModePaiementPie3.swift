@@ -67,7 +67,7 @@ struct ModePaiementView: View {
                         maxValue: .constant(durationDays),
                         lowerValue: $lowerValue,
                         upperValue: $upperValue,
-                        referenceDate: minDate // 👈 ici
+                        referenceDate: minDate, transactionCount: 5
                     )
                         .frame(height: 30)
 

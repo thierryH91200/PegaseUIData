@@ -43,14 +43,14 @@ final class RubricManager {
     
     static let shared = RubricManager()
     
-    // Contexte pour les modifications
     var currentAccount: EntityAccount {
         CurrentAccountManager.shared.getAccount()!
     }
 
     var entitiesRubric: [EntityRubric] = []
     
-    var modelContext: ModelContext? {
+    // Contexte pour les modifications
+   var modelContext: ModelContext? {
         DataContext.shared.context
     }
     
