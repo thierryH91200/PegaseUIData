@@ -51,10 +51,8 @@ class CategorieBar1ViewModel: ObservableObject {
     }
 
     
-    func updateAccount() {
-        let startDate: Date? = nil
-        let endDate: Date? = nil
-        let transactions = ListTransactionsManager.shared.getAllData(from: startDate, to: endDate)
+    func updateAccount(minDate: Date) {
+        let transactions = ListTransactionsManager.shared.getAllData()
 
         DispatchQueue.main.async {
             self.listTransactions = transactions

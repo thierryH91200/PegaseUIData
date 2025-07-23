@@ -13,32 +13,35 @@ import DGCharts
 struct CategorieBar1View1: View {
     
     @Environment(\.modelContext) private var modelContext
-
+    
     @StateObject private var viewModel = CategorieBar1ViewModel()
-   
+    
     let transactions: [EntityTransaction]
-
+    
+    @Binding var allTransactions: [EntityTransaction]
+    @State var filteredTransactions: [EntityTransaction] = []
+    
     @Binding var lowerValue: Double
     @Binding var upperValue: Double
     @Binding var minDate: Date
     @Binding var maxDate: Date
-
+    
     private var firstDate: Date {
         transactions.first?.dateOperation ?? Date()
     }
-
+    
     private var lastDate: Date {
         transactions.last?.dateOperation ?? Date()
     }
-
+    
     private var durationDays: Double {
         lastDate.timeIntervalSince(firstDate) / 86400
     }
-        
+    
     @State private var selectedStart: Double = 0
     @State private var selectedEnd: Double = 30
     private let oneDay = 3600.0 * 24.0 // one day
-
+    
     @State private var chartView: BarChartView?
     
     var body: some View {
@@ -46,7 +49,7 @@ struct CategorieBar1View1: View {
             Text("CategorieBar1View1")
                 .font(.headline)
                 .padding()
- 
+            
             Text("Total: \(viewModel.totalValue, format: .currency(code: viewModel.currencyCode))")
                 .font(.title3)
                 .bold()
@@ -64,7 +67,7 @@ struct CategorieBar1View1: View {
                     }
                     .font(.caption)
                     .padding(.bottom, 4)
-
+                    
                     ForEach(viewModel.labels, id: \.self) { label in
                         Toggle(label, isOn: Binding(
                             get: { viewModel.selectedCategories.isEmpty || viewModel.selectedCategories.contains(label) },
@@ -88,9 +91,13 @@ struct CategorieBar1View1: View {
             
             DGBarChart1Representable(viewModel: viewModel,
                                      entries: viewModel.dataEntries)
+            .frame(width: 600, height: 400)
+            .padding()
+            .onAppear {
+                viewModel.updateAccount(minDate: minDate)
+            }
+
             
-                .frame(width: 600, height: 400)
-                .padding()
 
             GroupBox(label: Label("Filter by period", systemImage: "calendar")) {
                 VStack(alignment: .leading, spacing: 8) {
@@ -104,9 +111,9 @@ struct CategorieBar1View1: View {
                         lowerValue: $lowerValue,
                         upperValue: $upperValue,
                         referenceDate: minDate,
-                        transactionCount: 5
+                        transactionCount: filteredTransactions.count
                     )
-                        .frame(height: 30)
+                        .frame(height: 50)
                 }
                 .padding(.top, 4)
                 .padding(.horizontal)
@@ -138,6 +145,21 @@ struct CategorieBar1View1: View {
             updateChart()
         }
     }
+    
+    func applyFilter() {
+        guard !allTransactions.isEmpty else {
+            filteredTransactions = []
+            return
+        }
+        
+        let startDate = Calendar.current.date(byAdding: .day, value: Int(lowerValue), to: minDate) ?? minDate
+        let endDate = Calendar.current.date(byAdding: .day, value: Int(upperValue), to: minDate) ?? maxDate
+        
+        filteredTransactions = allTransactions.filter {
+            $0.dateOperation >= startDate && $0.dateOperation <= endDate
+        }
+    }
+
 
     private func updateChart() {
 //        let start = Calendar.current.date(byAdding: .day, value: Int(selectedStart), to: minDate)!

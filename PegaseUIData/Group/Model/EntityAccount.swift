@@ -205,10 +205,10 @@ final class AccountManager {
         let name     = entityAccount.name
         let identity = entityAccount.identity
         let idName   = identity?.name
-        let idPrenom = identity?.surName
+        let idSurname = identity?.surName
         let idNumber = entityAccount.initAccount?.codeAccount
         
-        printTag("\(description)       : \(name) \(idName ?? "") \(idPrenom ?? "") \(idNumber ?? "")")
+        printTag("\(description)       : \(name) \(idName ?? "") \(idSurname ?? "") \(idNumber ?? "")")
     }
 }
 

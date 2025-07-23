@@ -257,6 +257,10 @@ struct ListTransactions200: View {
                     _ = ListTransactionsManager.shared.getAllData()
                     clipboardTransactions = []
                     isCutOperation = false
+                    withAnimation {
+                        refresh.toggle()
+                    }
+A
                 }
             }
     }

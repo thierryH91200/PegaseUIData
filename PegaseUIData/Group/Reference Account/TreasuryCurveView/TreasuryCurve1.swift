@@ -18,7 +18,6 @@ struct TreasuryCurveView: View {
     @Binding var engaged: Double
     
     @State private var allTransactions: [EntityTransaction] = []
-//    @State private var filteredTransactions: [EntityTransaction] = []
 
     @State private var lowerValue: Double = 0
     @State private var upperValue: Double = 0

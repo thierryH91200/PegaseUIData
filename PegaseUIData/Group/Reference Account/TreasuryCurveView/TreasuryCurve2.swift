@@ -13,6 +13,7 @@ import AppKit
 struct TreasuryCurve: View {
     
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject var currentAccountManager: CurrentAccountManager
     
     @State var lineDataEntries: [ChartDataEntry] = []
     @StateObject private var viewModel = TresuryLineViewModel()
@@ -70,6 +71,11 @@ struct TreasuryCurve: View {
                 .padding()
                 .onAppear {
                     viewModel.updateAccount(minDate: minDate)
+                }
+                .onChange(of: currentAccountManager.currentAccount) { oldAccount, newAccount in
+                    if oldAccount != newAccount {
+                        viewModel.refresh(for: newAccount, minDate: minDate)
+                    }
                 }
                 
                 GroupBox(label: Label("Filter by period", systemImage: "calendar")) {
@@ -170,15 +176,17 @@ struct TreasuryCurve: View {
             }
             .onChange(of: lowerValue) { _, newStart in
                 applyFilter()
-                
-                //                    viewModel.selectedStart = newStart
-                //                    updateChart()
             }
             .onChange(of: selectedEnd) { _, newEnd in
                 applyFilter()
-                
-                //                    viewModel.selectedEnd = newEnd
-                //                    updateChart()
+            }
+            .onChange(of: currentAccountManager.currentAccount) { _, newAccount in
+                if newAccount != nil {
+                    // Recharger les données pour le nouveau compte
+                    viewModel.updateAccount(minDate: minDate)
+                    viewModel.dataGraph.removeAll()
+                    viewModel.dataEntries.removeAll()
+                }
             }
         }
     }

@@ -13,12 +13,26 @@ import DGCharts
 struct CategorieBar1View: View {
     
     @Binding var isVisible: Bool
+
+    @State private var transactions: [EntityTransaction] = []
+    @State private var allTransactions: [EntityTransaction] = []
+    
+    @State private var lowerValue: Double = 0
+    @State private var upperValue: Double = 0
+    @State private var minDate: Date = Date()
+    @State private var maxDate: Date = Date()
+
     
     var body: some View {
-//        CategorieBar1View1()
-//            .task {
-//                await performFalseTask()
-//            }
+        CategorieBar1View1(transactions: transactions,
+                           allTransactions: $allTransactions,
+                           lowerValue: $lowerValue,
+                           upperValue: $upperValue,
+                           minDate: $minDate,
+                           maxDate: $maxDate)
+            .task {
+                await performFalseTask()
+            }
     }
     
     private func performFalseTask() async {

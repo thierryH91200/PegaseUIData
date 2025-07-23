@@ -20,7 +20,6 @@ struct Sidebar1A: View {
             ForEach(folders) { folder in
                 Section(header: SectionHeader(section: folder)) {
                     
-//                    let sortedChildren = folder.children.sorted { $0.name < $1.name }
                     ForEach(folder.childrenSorted, id: \.id) { child in
                         AccountRow(account: child, isSelected: selectedAccount?.id == child.id)
                             .tag(child)
