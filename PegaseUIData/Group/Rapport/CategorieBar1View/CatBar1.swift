@@ -13,6 +13,10 @@ import DGCharts
 struct CategorieBar1View: View {
     
     @Binding var isVisible: Bool
+    @Binding var executed: Double
+    @Binding var planned: Double
+    @Binding var engaged: Double
+
 
     @State private var transactions: [EntityTransaction] = []
     @State private var allTransactions: [EntityTransaction] = []
@@ -24,6 +28,13 @@ struct CategorieBar1View: View {
 
     
     var body: some View {
+        
+        SummaryView(
+            planned: planned,
+            engaged: engaged,
+            executed: executed
+        )
+
         CategorieBar1View1(transactions: transactions,
                            allTransactions: $allTransactions,
                            lowerValue: $lowerValue,

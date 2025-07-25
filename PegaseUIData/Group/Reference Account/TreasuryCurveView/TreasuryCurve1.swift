@@ -17,14 +17,13 @@ struct TreasuryCurveView: View {
     @Binding var planned: Double
     @Binding var engaged: Double
     
+    @State private var transactions: [EntityTransaction] = []
     @State private var allTransactions: [EntityTransaction] = []
 
     @State private var lowerValue: Double = 0
     @State private var upperValue: Double = 0
     @State private var minDate: Date = Date()
     @State private var maxDate: Date = Date()
-
-    @State private var transactions: [EntityTransaction] = []
 
     var body: some View {
         VStack(spacing: 0) {
@@ -35,14 +34,7 @@ struct TreasuryCurveView: View {
                 executed: executed
             )
             
-            TreasuryCurve(
-                transactions: transactions,
-                allTransactions: $allTransactions,
-                lowerValue: $lowerValue,
-                upperValue: $upperValue,
-                minDate: $minDate,
-                maxDate: $maxDate
-            )
+            TreasuryCurve(allTransactions: $allTransactions)
                 .task {
                     await performFalseTask()
                 }

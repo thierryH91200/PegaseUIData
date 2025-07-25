@@ -12,13 +12,85 @@ import DGCharts
 
 
 
-protocol TReasuryManaging {
-    func configure(with chartView: LineChartView)
-    func updateAccount(minDate: Date) 
-
+protocol TeeasuryManaging {
+    func refresh(for account: EntityAccount?, minDate: Date)
+    func updateChartData()
 }
 
-class TresuryLineViewModel: ObservableObject {
+//class TresuryLineViewModel: ObservableObject, TeeasuryManaging {
+//    @Published var listTransactions: [EntityTransaction] = []
+//    @Published var dataGraph: [DataTresorerie] = []
+//
+//    private(set) var firstDate: Date = Date()
+//    private(set) var lastDate: Date = Date()
+//
+//    @Published var lowerValue: Double = 0
+//    @Published var upperValue: Double = 0
+//
+//    private let hourSeconds = 86400.0
+//    private var groupedTransactions: [Date: [EntityTransaction]] = [:]
+//
+//    func refresh(for account: EntityAccount?, minDate: Date) {
+//        guard let account else {
+//            listTransactions = []
+//            dataGraph = []
+//            return
+//        }
+//
+//        listTransactions = ListTransactionsManager.shared
+//            .getAllData()
+//            .filter { $0.account == account }
+//            .sorted { $0.dateOperation < $1.dateOperation }
+//
+//        guard let first = listTransactions.first?.dateOperation,
+//              let last = listTransactions.last?.dateOperation else { return }
+//
+//        firstDate = Calendar.current.startOfDay(for: first)
+//        lastDate = Calendar.current.startOfDay(for: last)
+//        lowerValue = 0
+//        upperValue = lastDate.timeIntervalSince(firstDate) / hourSeconds
+//
+//        groupedTransactions = Dictionary(grouping: listTransactions) {
+//            Calendar.current.startOfDay(for: $0.datePointage)
+//        }
+//
+//        updateChartData()
+//    }
+//
+//    func updateChartData() {
+//        guard !listTransactions.isEmpty else { return }
+//        var data: [DataTresorerie] = []
+//        let start = Int(lowerValue)
+//        let end = Int(upperValue)
+//
+//        var soldeRealise = InitAccountManager.shared.getAllData()?.realise ?? 0
+//        var soldePrevu = InitAccountManager.shared.getAllData()?.prevu ?? 0
+//        var soldeEngage = InitAccountManager.shared.getAllData()?.engage ?? 0
+//
+//        for offset in start...end {
+//            let currentDate = firstDate.addingTimeInterval(Double(offset) * hourSeconds)
+//            let dayTransactions = groupedTransactions[currentDate] ?? []
+//
+//            let prevu = dayTransactions.filter { $0.status?.type == .planned }.reduce(0) { $0 + $1.amount }
+//            let engage = dayTransactions.filter { $0.status?.type == .inProgress }.reduce(0) { $0 + $1.amount }
+//            let executed = dayTransactions.filter { $0.status?.type == .executed }.reduce(0) { $0 + $1.amount }
+//
+//            soldeRealise += executed
+//            soldeEngage += engage
+//            soldePrevu += prevu
+//
+//            data.append(DataTresorerie(
+//                x: Double(offset),
+//                soldeRealise: soldeRealise,
+//                soldeEngage: soldeEngage,
+//                soldePrevu: soldePrevu
+//            ))
+//        }
+//        DispatchQueue.main.async { self.dataGraph = data }
+//    }
+//}
+
+class TresuryLineViewModel: ObservableObject, TeeasuryManaging {
     
     @Published var listTransactions: [EntityTransaction] = []
     @Published var dataGraph: [DataTresorerie] = []
@@ -31,49 +103,14 @@ class TresuryLineViewModel: ObservableObject {
     @Published var selectedEnd: Double = 30
     
     @Published var lowerValue: Double = 0
-    @Published var upperValue: Double = 30
+    @Published var upperValue: Double = 0
 
-    
     let hourSeconds = 3600.0 * 24.0 // one day
-
-    
-    @State private var chartView : LineChartView?
     
     static let shared = TresuryLineViewModel()
 
-    func configure(with chartView: LineChartView)
-    {
-        self.chartView = chartView
-    }
     
-    func updateAccount(minDate: Date) {
-        // Charger toutes les transactions d'abord
-        let allTransactions = ListTransactionsManager.shared.getAllData()
-        self.lowerValue = 0
-        self.upperValue = Double(max(0, (allTransactions.last?.dateOperation.timeIntervalSince(allTransactions.first?.dateOperation ?? Date())) ?? 0) / 86400)
-
-        guard !allTransactions.isEmpty else {
-            self.dataGraph = []
-            self.listTransactions = []
-            return
-        }
-        
-        firstDate = (allTransactions.first?.dateOperation.timeIntervalSince1970)! - hourSeconds
-        lastDate = (allTransactions.last?.dateOperation.timeIntervalSince1970)! + hourSeconds
-        let miniDate = allTransactions.first?.dateOperation
-        
-        // Appliquer la plage sélectionnée
-        let startDate = Calendar.current.date(byAdding: .day, value: Int(self.selectedStart), to: miniDate!)!
-        let endDate   = Calendar.current.date(byAdding: .day, value: Int(self.selectedEnd), to: miniDate!)!
-
-        let filteredTransactions = allTransactions.filter {
-            $0.dateOperation >= startDate && $0.dateOperation <= endDate
-        }
-
-        DispatchQueue.main.async {
-            self.listTransactions = filteredTransactions
-        }
-    }
+//    func updateAccount(minDate: Date) {
     
     func refresh(for account: EntityAccount?, minDate: Date)  {
         guard account != nil else {
@@ -86,9 +123,6 @@ class TresuryLineViewModel: ObservableObject {
 
         self.listTransactions = allTransactions
         self.updateChartData()
-
-        updateAccount(minDate: minDate)
-        updateChartData()              // pour mettre à jour la courbe
     }
     
     func updateChartData() {
@@ -134,6 +168,8 @@ class TresuryLineViewModel: ObservableObject {
                 soldePrevu: soldePrevu
             ))
         }
-        DispatchQueue.main.async { self.dataGraph = dataGraph }
+        DispatchQueue.main.async {
+            self.dataGraph = dataGraph
+        }
     }
 }

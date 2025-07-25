@@ -260,7 +260,6 @@ struct ListTransactions200: View {
                     withAnimation {
                         refresh.toggle()
                     }
-A
                 }
             }
     }
@@ -271,7 +270,6 @@ A
             headerViewSection
             transactionListSection
         }
-        //        .padding()
     }
     
     private var summaryViewSection: some View {
@@ -322,12 +320,7 @@ A
             .frame(width: 2, height: 20)
             .padding(.horizontal, 2)
     }
-    
-//    @MainActor
-//    func loadTransactions() {
-//        dataManager.listTransactions = ListTransactionsManager.shared.getAllData(ascending: false)
-//    }
-    
+        
     @MainActor
     func resetDatabase(using context: ModelContext) {
         let transactions = ListTransactionsManager.shared.getAllData()

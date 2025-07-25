@@ -13,7 +13,7 @@ import DGCharts
 struct CategorieBar1View1: View {
     
     @Environment(\.modelContext) private var modelContext
-    
+    @EnvironmentObject var currentAccountManager: CurrentAccountManager
     @StateObject private var viewModel = CategorieBar1ViewModel()
     
     let transactions: [EntityTransaction]
