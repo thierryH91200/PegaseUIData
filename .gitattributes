@@ -1,0 +1,17 @@
+# Forcer l’identification des fichiers Swift
+*.swift linguist-language=Swift
+
+# Exclure le Makefile des statistiques de langage
+Makefile linguist-detectable=false
+
+# Ignorer ce fichier .gitattributes lui-même
+.gitattributes linguist-detectable=false
+
+# Marquer des dossiers tiers ou générés comme 'vendored' ou non pertinents
+Pods/** linguist-vendored
+fastlane/** linguist-vendored
+
+# Exclure d'autres types de fichiers courants
+*.html linguist-vendored
+*.js linguist-vendored
+*.css linguist-vendored
