@@ -6,14 +6,35 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		03D56D1F2E3BDA82008092AA /* _config.yml in Resources */ = {isa = PBXBuildFile; fileRef = 03D56D1D2E3BDA82008092AA /* _config.yml */; };
+		03D56D202E3BDA82008092AA /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 03D56D1B2E3BDA82008092AA /* README.md */; };
+		03D56D212E3BDA82008092AA /* .gitattributes in Resources */ = {isa = PBXBuildFile; fileRef = 03D56D1E2E3BDA82008092AA /* .gitattributes */; };
+		03D56D222E3BDA82008092AA /* README_fr.md in Resources */ = {isa = PBXBuildFile; fileRef = 03D56D1C2E3BDA82008092AA /* README_fr.md */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		03D56D082E3BDA1A008092AA /* PegaseUIData.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PegaseUIData.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		03D56D1B2E3BDA82008092AA /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		03D56D1C2E3BDA82008092AA /* README_fr.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README_fr.md; sourceTree = "<group>"; };
+		03D56D1D2E3BDA82008092AA /* _config.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = _config.yml; sourceTree = "<group>"; };
+		03D56D1E2E3BDA82008092AA /* .gitattributes */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitattributes; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		03D56D0A2E3BDA1A008092AA /* PegaseUIData */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = PegaseUIData;
+			sourceTree = "<group>";
+		};
+		03D56D192E3BDA42008092AA /* docs */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = docs;
+			sourceTree = "<group>";
+		};
+		03D56D1A2E3BDA52008092AA /* Doc */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Doc;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -32,6 +53,12 @@
 		03D56CFF2E3BDA1A008092AA = {
 			isa = PBXGroup;
 			children = (
+				03D56D1B2E3BDA82008092AA /* README.md */,
+				03D56D1C2E3BDA82008092AA /* README_fr.md */,
+				03D56D1D2E3BDA82008092AA /* _config.yml */,
+				03D56D1E2E3BDA82008092AA /* .gitattributes */,
+				03D56D1A2E3BDA52008092AA /* Doc */,
+				03D56D192E3BDA42008092AA /* docs */,
 				03D56D0A2E3BDA1A008092AA /* PegaseUIData */,
 				03D56D092E3BDA1A008092AA /* Products */,
 			);
@@ -62,6 +89,8 @@
 			);
 			fileSystemSynchronizedGroups = (
 				03D56D0A2E3BDA1A008092AA /* PegaseUIData */,
+				03D56D192E3BDA42008092AA /* docs */,
+				03D56D1A2E3BDA52008092AA /* Doc */,
 			);
 			name = PegaseUIData;
 			packageProductDependencies = (
@@ -109,6 +138,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03D56D1F2E3BDA82008092AA /* _config.yml in Resources */,
+				03D56D202E3BDA82008092AA /* README.md in Resources */,
+				03D56D212E3BDA82008092AA /* .gitattributes in Resources */,
+				03D56D222E3BDA82008092AA /* README_fr.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
