@@ -24,6 +24,10 @@ struct TreasuryCurve: View {
     @State private var upperValue: Double = 0
     @State private var minDate: Date = Date()
     @State private var maxDate: Date = Date()
+    
+    @State private var lower: Double = 2
+    @State private var upper: Double = 10
+
 
 //    @State private var rotationAngle: Double = 0
     @AppStorage("enableSoundFeedback") private var enableSoundFeedback: Bool = true
@@ -60,15 +64,21 @@ struct TreasuryCurve: View {
                         Text("Selected period : \(dateFromOffset(lowerValue)) → \(dateFromOffset(upperValue))")
                             .font(.callout)
                             .foregroundColor(.secondary)
-
+                        
                         RangeSlider(
-                            minValue: .constant(0),
-                            maxValue: .constant(durationDays),
-                            lowerValue: $lowerValue,
-                            upperValue: $upperValue,
-                            referenceDate: minDate,
-                            transactionCount: filteredTransactions.count
-                        )
+                            lowerValue: $lower,
+                            upperValue: $upper,
+                            totalRange: 0...30,
+                            valueLabel: { value in
+                                let today = Date()
+                                let date = Calendar.current.date(byAdding: .day, value: Int(value), to: today)!
+                                let formatter = DateFormatter()
+                                formatter.dateStyle = .short
+                                return formatter.string(from: date)
+                            },
+                            thumbSize: 24,
+                            trackHeight: 6
+                    )
                         .frame(height: 50)
                         .onChange(of: lowerValue) { _, _ in applyFilter() }
                         .onChange(of: upperValue) { _, _ in applyFilter() }

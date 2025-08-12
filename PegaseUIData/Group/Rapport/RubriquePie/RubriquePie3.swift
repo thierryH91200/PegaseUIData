@@ -37,6 +37,10 @@ struct RubriquePie: View {
     @State private var selectedEnd: Double = 30
 
     @State private var updateWorkItem: DispatchWorkItem?
+    
+    @State private var lower: Double = 2
+    @State private var upper: Double = 10
+
 
     var body: some View {
         VStack {
@@ -60,12 +64,18 @@ struct RubriquePie: View {
                         .foregroundColor(.secondary)
 
                     RangeSlider(
-                        minValue: .constant(0),
-                        maxValue: .constant(durationDays),
-                        lowerValue: $lowerValue,
-                        upperValue: $upperValue,
-                        referenceDate: minDate,
-                        transactionCount: 5
+                        lowerValue: $lower,
+                        upperValue: $upper,
+                        totalRange: 0...30,
+                        valueLabel: { value in
+                            let today = Date()
+                            let date = Calendar.current.date(byAdding: .day, value: Int(value), to: today)!
+                            let formatter = DateFormatter()
+                            formatter.dateStyle = .short
+                            return formatter.string(from: date)
+                        },
+                        thumbSize: 24,
+                        trackHeight: 6
                     )
                         .frame(height: 30)
 

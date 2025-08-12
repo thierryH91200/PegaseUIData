@@ -232,11 +232,11 @@ struct TransactionFormViewModel: View {
             
                 selectedAccount = linkedAccount.first(where: { $0.uuid == selectedAccount?.uuid })
                 
-                printTag("selectedAccount.uuid = \(selectedAccount?.uuid.uuidString ?? "nil")")
-                printTag("linkedAccount UUIDs:")
-                linkedAccount.forEach {
-                    printTag("- \($0.uuid)")
-                }
+//                printTag("selectedAccount.uuid = \(selectedAccount?.uuid.uuidString ?? "nil")")
+//                printTag("linkedAccount UUIDs:")
+//                linkedAccount.forEach {
+//                    printTag("- \($0.uuid)")
+//                }
 
                 if selectedAccount == nil {
                     selectedAccount = nil // Pour que le Picker reconnaisse l'état initial

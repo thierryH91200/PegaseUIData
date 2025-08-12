@@ -8,6 +8,8 @@
 import SwiftUI
 import AppKit
 import SwiftData
+import Combine
+
 
 class ContentViewModel: ObservableObject {
     @Published var isInitialized = false
@@ -66,7 +68,6 @@ enum FormMode {
 }
 
 
-import Combine
 
 class TransactionSelectionManager: ObservableObject, Identifiable {
     @Published var selectedTransaction: EntityTransaction?

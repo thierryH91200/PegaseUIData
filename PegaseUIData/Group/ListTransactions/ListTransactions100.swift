@@ -50,7 +50,8 @@ struct ListTransactionsView100: View {
                 }
                 .onReceive(NotificationCenter.default.publisher(for: .resetDatabaseRequested)) { _ in
                     resetDatabase()
-                }        .onAppear {
+                }
+                .onAppear {
                     NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
                         guard event.modifierFlags.contains(.command), let characters = event.charactersIgnoringModifiers else {
                             return event

@@ -13,40 +13,40 @@ import UniformTypeIdentifiers
 @main
 struct PegaseUIDataApp: App {
     
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
+
     @StateObject private var windowSizeManager = WindowSizeManager()
     @Environment(\.modelContext) private var modelContext
     @Environment(\.undoManager) var undoManager
 
-    @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    
-    var container: ModelContainer
+    @StateObject private var appState = AppState()
+    @StateObject private var recentManager = RecentProjectsManager() // ← ici
+    @StateObject private var projectCreationManager = ProjectCreationManager()
+    @State private var dataController: DataController
+    var modelContainer: ModelContainer
 
-    let schema = Schema([
-        EntityAccount.self,
-        EntityBankStatement.self,
-        EntityBanqueInfo.self,
-        EntityCategory.self,
-        EntityCheckBook.self,
-        EntityFolderAccount.self,
-        EntityIdentity.self,
-        EntityInitAccount.self,
-        EntityPaymentMode.self,
-        EntityStatus.self,
-        EntityPreference.self,
-        EntityRubric.self,
-        EntitySchedule.self,
-        EntitySousOperation.self,
-        EntityTransaction.self
-    ])
+    let schema = AppGlobals.shared.schema
+    let folder = "PegaseUIDataBDD"
+    let file = "PegaseUIData.store"
 
     init() {
         ColorTransformer.register()
         
         do {
-            let storeURL = URL.documentsDirectory.appending(path: "PegaseUIData.store")
+            let documentsURL = URL.documentsDirectory
+            let directory = documentsURL.appendingPathComponent(folder)
+            if !FileManager.default.fileExists(atPath: directory.path) {
+                try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+            }
+
+            let storeURL = directory.appendingPathComponent(file)
             let config = ModelConfiguration(url: storeURL)
-            container = try ModelContainer(for: schema, configurations: config)
-            container.mainContext.undoManager = UndoManager()
+
+            modelContainer = try ModelContainer(for: schema, configurations: config)
+            modelContainer.mainContext.undoManager = UndoManager()
+            
+            // ⚠️ Initialisation de la propriété temporaire
+            dataController = DataController(url: storeURL)
 
         } catch {
             fatalError("Failed to configure SwiftData container.")
@@ -58,20 +58,46 @@ struct PegaseUIDataApp: App {
 
     var body: some Scene {
         
-        Window("Pegase", id: "main") {
-//        WindowGroup {
-            SplashScreenView( )
-                .onChange(of: loadDemoTrigger) { _, newValue in
-                    if newValue {
-                        NotificationCenter.default.post(name: .loadDemoRequested, object: nil)
-                        loadDemoTrigger = false
+//        Window("Pegase", id: "main") {
+        WindowGroup {
+            
+            if appState.isProjectOpen == true {
+                ContentView100()
+                    .frame(minWidth: 800, minHeight: 600) // Exemple de taille
+                    .environment(\.modelContext, dataController.modelContainer.mainContext)
+                    .environmentObject(appState)
+            } else {
+                
+                WelcomeWindowView(
+                    recentManager: recentManager, openHandler: { url in
+                        let project = RecentProject(name: url.lastPathComponent, url: url)
+                        recentManager.addProject(project)
+                        dataController = DataController(url: url)
+                    },
+                    onCreateProject: {
+                        createProject()
+                        appState.isProjectOpen = true
                     }
-                }
-                .onChange(of: resetTrigger) { _, newValue in
-                    if newValue {
-                        NotificationCenter.default.post(name: .resetDatabaseRequested, object: nil)
-                        resetTrigger = false
-                    }
+                )
+                .environment(\.modelContext, modelContainer.mainContext)
+                .environmentObject(appState)
+                .environmentObject(recentManager)
+                // Injection of projectCreationManager environment object
+                .environmentObject(projectCreationManager)
+
+
+//            SplashScreenView( )
+//                .onChange(of: loadDemoTrigger) { _, newValue in
+//                    if newValue {
+//                        NotificationCenter.default.post(name: .loadDemoRequested, object: nil)
+//                        loadDemoTrigger = false
+//                    }
+//                }
+//                .onChange(of: resetTrigger) { _, newValue in
+//                    if newValue {
+//                        NotificationCenter.default.post(name: .resetDatabaseRequested, object: nil)
+//                        resetTrigger = false
+//                    }
                 }
         }
         .commands {
@@ -128,7 +154,7 @@ struct PegaseUIDataApp: App {
                 .keyboardShortcut(",", modifiers: .command)
             }
         }
-        .modelContainer(container)
+        .modelContainer(modelContainer)
     }
     
     private func defaultStoreURL() -> URL {
@@ -138,11 +164,52 @@ struct PegaseUIDataApp: App {
         print(storeURL)
         return storeURL
     }
-}
+    
+    func createProject() {
+        // 1. Demander un nom à l’utilisateur
+        let alert = NSAlert()
+        alert.messageText = String(localized:"Project Name")
+        alert.informativeText = String(localized:"Enter the name of your new database :")
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: String(localized:"Cancel"))
+        alert.addButton(withTitle: String(localized:"OK"))
 
-extension ModelConfiguration {
-    static func defaultConfiguration(at url: URL) -> ModelConfiguration {
-        ModelConfiguration( url: url )
+        let textField = NSTextField(frame: NSRect(x: 0, y: 0, width: 200, height: 24))
+        textField.placeholderString = "MonProjet"
+        alert.accessoryView = textField
+
+        let response = alert.runModal()
+        guard response == .alertFirstButtonReturn else { return } // Annuler
+        let projectName = textField.stringValue.isEmpty ? "ProjetSansNom" : textField.stringValue
+
+        // 2. Construire l'URL avec le nom choisi
+        let documentsURL = URL.documentsDirectory
+        let newDirectory = documentsURL.appendingPathComponent(projectName)
+        do {
+            try FileManager.default.createDirectory(at: newDirectory, withIntermediateDirectories: true)
+        } catch {
+            print("❌ Erreur création dossier : \(error)")
+            return
+        }
+
+        let storeURL = newDirectory.appendingPathComponent("\(projectName).store")
+
+        // 3. Créer la base SwiftData avec ce nom
+        do {
+            let configuration = ModelConfiguration(url: storeURL)
+            let container = try ModelContainer(for: schema, configurations: configuration)
+
+            // Exemple d'insertion d’un élément de test
+            DataContext.shared.context = container.mainContext
+            InitManager.shared.initialize()
+
+            let project = RecentProject(name: storeURL.lastPathComponent, url: storeURL)
+            recentManager.addProject(project)
+            
+            print("✅ Base créée : \(storeURL.path)")
+        } catch {
+            print("❌ Erreur création base : \(error)")
+        }
     }
 }
 
@@ -150,7 +217,7 @@ class WindowSizeManager: NSObject, NSWindowDelegate, ObservableObject {
     func windowDidResize(_ notification: Notification) {
         if let window = notification.object as? NSWindow {
             let size = window.frame.size
-            UserDefaults.standard.set(size.width, forKey: "windowWidth")
+            UserDefaults.standard.set(size.width,  forKey: "windowWidth")
             UserDefaults.standard.set(size.height, forKey: "windowHeight")
         }
     }
@@ -185,35 +252,46 @@ struct PegaseUIDataVersionedSchema: VersionedSchema {
     ]
 }
 
-func localizeString(_ key: String, comment: String = "") -> String {
-    if #available(macOS 12, *) {
-        return String(localized: String.LocalizationValue(key))
-    } else {
-        return NSLocalizedString(key, comment: comment)
-    }
-}
 
+@Observable
+@MainActor
+final class DataController {
+    var modelContainer: ModelContainer
+    
+    let schema = AppGlobals.shared.schema
 
-class AppDelegate: NSObject, NSApplicationDelegate {
-    
-    func applicationWillFinishLaunching(_ notification: Notification) {
-    }
-    
-    func applicationDidFinishLaunching(_ notification: Notification) {
-        if let mainMenu = NSApp.mainMenu {
-            let appMenu = mainMenu.item(at: 0)?.submenu
-            let preferencesItem = NSMenuItem(title: "Préférences…", action: #selector(openPreferences), keyEquivalent: ",")
-            preferencesItem.target = self
-            appMenu?.insertItem(preferencesItem, at: 1)
+    init(url: URL) {
+        let config = ModelConfiguration(url: url)
+        do {
+            self.modelContainer = try ModelContainer(for: schema, configurations: config)
+            self.modelContainer.mainContext.undoManager = UndoManager()
+        } catch {
+            fatalError("❌ Failed to create model container: \(error)")
         }
-        // ✅ Demande de permission pour les notifications
-        NotificationManager.shared.requestPermission()
-    }
-    
-    @objc func openPreferences() {
-        PreferencesWindowController.shared.showWindow()
-    }
-    func applicationShouldTerminateAfterLastWindowClosed (_ sender: NSApplication) -> Bool {
-        return false
     }
 }
+
+final class AppGlobals {
+    static let shared = AppGlobals()
+    
+    let schema = Schema([
+        EntityAccount.self,
+        EntityBankStatement.self,
+        EntityBanqueInfo.self,
+        EntityCategory.self,
+        EntityCheckBook.self,
+        EntityFolderAccount.self,
+        EntityIdentity.self,
+        EntityInitAccount.self,
+        EntityPaymentMode.self,
+        EntityStatus.self,
+        EntityPreference.self,
+        EntityRubric.self,
+        EntitySchedule.self,
+        EntitySousOperation.self,
+        EntityTransaction.self
+    ])
+
+    private init() {}
+}
+

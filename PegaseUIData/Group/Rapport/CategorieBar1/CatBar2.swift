@@ -44,6 +44,10 @@ struct CategorieBar1View1: View {
     
     @State private var chartView: BarChartView?
     
+    @State private var lower: Double = 2
+    @State private var upper: Double = 10
+
+    
     var body: some View {
         VStack {
             Text("CategorieBar1View1")
@@ -97,8 +101,6 @@ struct CategorieBar1View1: View {
                 viewModel.updateAccount(minDate: minDate)
             }
 
-            
-
             GroupBox(label: Label("Filter by period", systemImage: "calendar")) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("From \(formattedDate(from: selectedStart)) to \(formattedDate(from: selectedEnd))")
@@ -106,12 +108,18 @@ struct CategorieBar1View1: View {
                         .foregroundColor(.secondary)
 
                     RangeSlider(
-                        minValue: .constant(0),
-                        maxValue: .constant(durationDays),
-                        lowerValue: $lowerValue,
-                        upperValue: $upperValue,
-                        referenceDate: minDate,
-                        transactionCount: filteredTransactions.count
+                        lowerValue: $lower,
+                        upperValue: $upper,
+                        totalRange: 0...30,
+                        valueLabel: { value in
+                            let today = Date()
+                            let date = Calendar.current.date(byAdding: .day, value: Int(value), to: today)!
+                            let formatter = DateFormatter()
+                            formatter.dateStyle = .short
+                            return formatter.string(from: date)
+                        },
+                        thumbSize: 24,
+                        trackHeight: 6
                     )
                         .frame(height: 50)
                 }

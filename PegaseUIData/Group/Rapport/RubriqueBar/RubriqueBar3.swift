@@ -43,6 +43,10 @@ struct RubriqueBar: View {
     @State private var chartViewRef: BarChartView?
 
     let currentAccount: EntityAccount? = nil
+    
+    @State private var lower: Double = 2
+    @State private var upper: Double = 10
+
 
     var body: some View {
         VStack {
@@ -62,13 +66,20 @@ struct RubriqueBar: View {
                         .font(.callout)
                         .foregroundColor(.secondary)
 
-                    RangeSlider(minValue: .constant(0),
-                                maxValue: .constant(durationDays),
-                                lowerValue: $selectedStart,
-                                upperValue: $selectedEnd,
-                                referenceDate: minDate,
-                                transactionCount: 5
-                        )
+                    RangeSlider(
+                        lowerValue: $lower,
+                        upperValue: $upper,
+                        totalRange: 0...30,
+                        valueLabel: { value in
+                            let today = Date()
+                            let date = Calendar.current.date(byAdding: .day, value: Int(value), to: today)!
+                            let formatter = DateFormatter()
+                            formatter.dateStyle = .short
+                            return formatter.string(from: date)
+                        },
+                        thumbSize: 24,
+                        trackHeight: 6
+                    )
                         .frame(height: 30)
                 }
                 .padding(.top, 4)
