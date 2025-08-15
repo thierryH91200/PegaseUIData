@@ -52,8 +52,7 @@ private struct LeftPanelView: View {
     
     @State private var showCreateSheet = false
     @State private var showResetAlert = false
-    
-    
+        
     var body: some View {
         VStack(spacing: 20) {
             Spacer()
@@ -64,7 +63,7 @@ private struct LeftPanelView: View {
                 .frame(width: 100, height: 100)
                 .foregroundColor(.accentColor)
             
-            Text("WelcomeTo")
+            Text("PegaseUIData")
                 .font(.largeTitle)
                 .bold()
             
@@ -98,15 +97,15 @@ private struct LeftPanelView: View {
                 }
                 .foregroundColor(.red)
                 .alert("Confirmer la réinitialisation ?", isPresented: $showResetAlert) {
-                    Button("Annuler", role: .cancel) {}
-                    Button("Réinitialiser", role: .destructive) {
+                    Button("Cancel", role: .cancel) {}
+                    Button("Reset", role: .destructive) {
                         if let appDomain = Bundle.main.bundleIdentifier {
                             UserDefaults.standard.removePersistentDomain(forName: appDomain)
                             UserDefaults.standard.synchronize()
                         }
                     }
                 } message: {
-                    Text("Cette opération supprimera toutes les préférences de l'application.")
+                    Text(String(localized: "Cette opération supprimera toutes les préférences de l'application."))
                 }
             }
             
@@ -222,7 +221,7 @@ struct CreateProjectView: View {
                     dismiss()
                 }
                 Button("Create") {
-                    let name = projectName.isEmpty ? "Project Without a Name" : projectName
+                    let name = projectName.isEmpty ? "Project untitled" : projectName
                     if let url = onCreate(name) {
                         recentManager.addProject(with: url)
                         UserDefaults.standard.set(0, forKey: Self.numberKey)

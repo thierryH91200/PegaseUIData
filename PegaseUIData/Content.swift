@@ -96,6 +96,8 @@ struct ContentView100: View {
     @AppStorage("windowWidth")  var windowWidth: Double = 800
     @AppStorage("windowHeight")  var windowHeight: Double = 600
     @AppStorage("choixCouleur") var choixCouleur: String = "Unie"
+    
+    @EnvironmentObject var appState: AppState
 
     @StateObject private var transactionManager = TransactionSelectionManager()
     @StateObject private var colorManager = ColorManager()
@@ -149,12 +151,11 @@ struct ContentView100: View {
             }
             .environmentObject(transactionManager)
             .environmentObject(currentAccountManager)
-            .navigationSplitViewStyle(.balanced)
+            .navigationSplitViewStyle(.automatic)
 
-            .onAppear {
-            }
-            
-            Spacer(minLength: 10)
+//            .onAppear {
+//            }
+//            Spacer(minLength: 10)
         }
         .onReceive(NotificationCenter.default.publisher(for: .importTransaction)) { _ in
             showCSVTransactionImporter = true
@@ -178,6 +179,15 @@ struct ContentView100: View {
         }
 
         .toolbar {
+            
+            ToolbarItem(placement: .navigation) {
+                Button {
+                    appState.isProjectOpen = false // Revenir à WelcomeWindowView
+                } label: {
+                    Label("Home", systemImage: "house")
+                }
+            }
+
             ToolbarItemGroup(placement: .navigation) {
                 Button(action: {
                     printTag("Nouvel élément ajouté")
@@ -281,9 +291,8 @@ struct ContentView100: View {
 }
 
 // Fonction d'action pour chaque choix de couleur
-
 private func changeSearchFieldItem(_ itemType: String) {
-    // Ajoutez ici la logique pour gérer la sélection du champ de recherche
+    // Ajoute la logique pour gérer la sélection du champ de recherche
     printTag("Champ de recherche sélectionné : \(itemType)")
 }
 
@@ -360,8 +369,7 @@ struct DetailContainer: View {
             }
         ]
     }
-    
-    
+
     var body: some View {
         VStack {
             if let detailView = localizedDetailView(for: selection2) {
@@ -390,8 +398,10 @@ struct Sidebar2A: View {
             ForEach(datas) { section in
                 Section(section.name) {
                     ForEach(section.children) { child in
-                        Label(child.name, systemImage: child.icon).tag(child.name)
+                        Label(child.name, systemImage: child.icon)
+                            .tag(child.name)
                             .font(.system(size: 12))
+                            .padding(.vertical, 0) // ↓ Réduit la hauteur
                     }
                 }
             }
@@ -401,3 +411,4 @@ struct Sidebar2A: View {
         .frame(maxHeight: .infinity) // Prend toute la place disponible
     }
 }
+

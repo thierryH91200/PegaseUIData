@@ -30,6 +30,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         PreferencesWindowController.shared.showWindow()
     }
     func applicationShouldTerminateAfterLastWindowClosed (_ sender: NSApplication) -> Bool {
-        return false
+        return true
     }
 }
+

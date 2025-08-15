@@ -67,12 +67,12 @@ final class EntityIdentity : Identifiable{
 }
 
 // ObservableObject
-final class IdentityManager  {
+final class IdentityManager: ObservableObject  {
     
     // Contexte pour les modifications
     static let shared = IdentityManager()
     
-    private var identities = [EntityIdentity]()
+    @Published var identities = [EntityIdentity]()
     
     var modelContext: ModelContext? {
         DataContext.shared.context

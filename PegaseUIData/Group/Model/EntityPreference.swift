@@ -130,7 +130,6 @@ final class PreferenceManager: PreferenceManaging {
     func saveContext() {
         do {
             try modelContext?.save()
-            printTag("Sauvegarde réussie.")
         } catch {
             if let path = getSQLiteFilePath() {
                 printTag("Erreur de sauvegarde. Base de données SQLite : \(path)")

@@ -135,7 +135,6 @@ final class StatusManager: StatusManaging {
         
         do {
             try modelContext?.save()
-            printTag("Sauvegarde réussie.")
         } catch {
             printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }

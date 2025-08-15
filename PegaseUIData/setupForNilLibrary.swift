@@ -159,7 +159,6 @@ final class InitManager {
         }
         do {
             try modelContext?.save()
-            printTag("Sauvegarde réussie.")
         } catch {
             printTag("Erreur : \(error.localizedDescription)")
         }

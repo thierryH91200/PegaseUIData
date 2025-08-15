@@ -8,20 +8,21 @@
 import SwiftUI
 import SwiftData
 import UniformTypeIdentifiers
-
+import AppKit
 
 @main
 struct PegaseUIDataApp: App {
     
     @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
 
-    @StateObject private var windowSizeManager = WindowSizeManager()
-    @Environment(\.modelContext) private var modelContext
-    @Environment(\.undoManager) var undoManager
-
     @StateObject private var appState = AppState()
     @StateObject private var recentManager = RecentProjectsManager() // ← ici
     @StateObject private var projectCreationManager = ProjectCreationManager()
+
+    // un manager pour chaque fenêtre
+    @StateObject private var welcomeWindowSizeManager = WindowSizeManager(windowID: "welcomeWindow")
+    @StateObject private var mainWindowSizeManager    = WindowSizeManager(windowID: "mainWindow")
+
     @State private var dataController: DataController
     var modelContainer: ModelContainer
 
@@ -57,49 +58,63 @@ struct PegaseUIDataApp: App {
     @State private var resetTrigger = false
 
     var body: some Scene {
-        
-//        Window("Pegase", id: "main") {
-        WindowGroup {
+        // Fenêtre d'accueil
+        Window("Welcome", id: "welcomeWindow") {
             
-            if appState.isProjectOpen == true {
-                ContentView100()
-                    .frame(minWidth: 800, minHeight: 600) // Exemple de taille
-                    .environment(\.modelContext, dataController.modelContainer.mainContext)
-                    .environmentObject(appState)
-            } else {
-                
-                WelcomeWindowView(
-                    recentManager: recentManager, openHandler: { url in
-                        let project = RecentProject(name: url.lastPathComponent, url: url)
-                        recentManager.addProject(project)
-                        dataController = DataController(url: url)
-                    },
-                    onCreateProject: {
-                        createProject()
-                        appState.isProjectOpen = true
+            let sizeManager = WindowSizeManager(windowID: "welcomeWindow")
+
+            WelcomeWindowView(
+                recentManager: recentManager,
+                openHandler: { url in
+                    let project = RecentProject(name: url.lastPathComponent, url: url)
+                    recentManager.addProject(project)
+                    dataController = DataController(url: url)
+                    appState.isProjectOpen = true   // ← déclenche la bascule
+                },
+                onCreateProject: {
+                    createProject()
+                    appState.isProjectOpen = true   // ← déclenche la bascule
+                }
+            )
+            .environment(\.modelContext, modelContainer.mainContext)
+            .environmentObject(appState)
+            .environmentObject(recentManager)
+            .environmentObject(projectCreationManager)
+            .background(WindowSwitcher(currentWindowID: "welcomeWindow").environmentObject(appState))
+            .background(
+                WindowAccessor { window in
+                    if let window = window {
+                        window.delegate = welcomeWindowSizeManager
+                        sizeManager.applySavedSize(to: window)
                     }
-                )
-                .environment(\.modelContext, modelContainer.mainContext)
+                }
+            )
+        }
+        .defaultSize(width: 800, height: 800)
+
+        // Fenêtre principale
+        Window("Main", id: "mainWindow") {
+            
+            let sizeManager = WindowSizeManager(windowID: "mainWindow")
+
+            ContentView100()
+                .environment(\.modelContext, dataController.modelContainer.mainContext)
                 .environmentObject(appState)
                 .environmentObject(recentManager)
-                // Injection of projectCreationManager environment object
                 .environmentObject(projectCreationManager)
+                .background(WindowSwitcher(currentWindowID: "mainWindow").environmentObject(appState))
+                .background(
+                    WindowAccessor { window in
+                        if let window = window {
+                            window.delegate = mainWindowSizeManager
+                            sizeManager.applySavedSize(to: window)
+                        }
+                    }
+                )
 
-
-//            SplashScreenView( )
-//                .onChange(of: loadDemoTrigger) { _, newValue in
-//                    if newValue {
-//                        NotificationCenter.default.post(name: .loadDemoRequested, object: nil)
-//                        loadDemoTrigger = false
-//                    }
-//                }
-//                .onChange(of: resetTrigger) { _, newValue in
-//                    if newValue {
-//                        NotificationCenter.default.post(name: .resetDatabaseRequested, object: nil)
-//                        resetTrigger = false
-//                    }
-                }
         }
+        .defaultSize(width: 1000, height: 600)
+
         .commands {
             DemoDataCommand(
                 loadDemoAction: { loadDemoTrigger = true },
@@ -175,7 +190,7 @@ struct PegaseUIDataApp: App {
         alert.addButton(withTitle: String(localized:"OK"))
 
         let textField = NSTextField(frame: NSRect(x: 0, y: 0, width: 200, height: 24))
-        textField.placeholderString = "MonProjet"
+        textField.placeholderString = String(localized:"My Project")
         alert.accessoryView = textField
 
         let response = alert.runModal()
@@ -213,15 +228,6 @@ struct PegaseUIDataApp: App {
     }
 }
 
-class WindowSizeManager: NSObject, NSWindowDelegate, ObservableObject {
-    func windowDidResize(_ notification: Notification) {
-        if let window = notification.object as? NSWindow {
-            let size = window.frame.size
-            UserDefaults.standard.set(size.width,  forKey: "windowWidth")
-            UserDefaults.standard.set(size.height, forKey: "windowHeight")
-        }
-    }
-}
 
 extension UTType {
     static var itemDocument: UTType {
@@ -248,7 +254,7 @@ struct PegaseUIDataVersionedSchema: VersionedSchema {
     static var versionIdentifier = Schema.Version(1, 0, 0)
     
     static var models: [any PersistentModel.Type] = [
-        EntityAccount.self,
+        EntityAccount.self
     ]
 }
 
