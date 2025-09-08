@@ -9,6 +9,9 @@
 import SwiftData
 import SwiftUI
 
+import Combine
+
+
 
 @Model
 final class EntityBankStatement: Identifiable {
@@ -35,6 +38,7 @@ final class EntityBankStatement: Identifiable {
     
     @Relationship var account: EntityAccount
     
+    @MainActor
     init(num       : Int  = 0,
          startDate : Date = Date(), startSolde : Double = 0.0,
          interDate : Date = Date(), interSolde : Double = 0.0,
@@ -93,6 +97,7 @@ protocol BankStatementManaging {
     func save () throws
 }
 
+@MainActor
 final class BankStatementManager : BankStatementManaging, ObservableObject {
     
     // Contexte pour les modifications
@@ -122,19 +127,6 @@ final class BankStatementManager : BankStatementManaging, ObservableObject {
     }
     
     // MARK: - Public Methods
-    // Supprimer une transaction
-    func delete(entity: EntityBankStatement, undoManager: UndoManager?) {
-        guard let context = modelContext else { return }
-
-        context.undoManager = undoManager
-
-        context.undoManager?.beginUndoGrouping()
-        context.undoManager?.setActionName("Delete BankStatement")
-        context.delete(entity)
-        context.undoManager?.endUndoGrouping()
-    }
-    
-    // MARK: - Public Methods
     func getAllData() -> [EntityBankStatement]? {
         
         guard let currentAccount = CurrentAccountManager.shared.getAccount() else {
@@ -143,7 +135,6 @@ final class BankStatementManager : BankStatementManaging, ObservableObject {
         }
         
         do {
-            
             let lhs = currentAccount.uuid
             let predicate = #Predicate<EntityBankStatement>{ entity in entity.account.uuid  ==  lhs }
             let sort = [SortDescriptor(\EntityBankStatement.num, order: .forward)]
@@ -159,6 +150,21 @@ final class BankStatementManager : BankStatementManaging, ObservableObject {
         }
         return statements
     }
+
+    
+    // MARK: - Public Methods
+    // Supprimer une transaction
+    func delete(entity: EntityBankStatement, undoManager: UndoManager?) {
+        guard let context = modelContext else { return }
+
+        context.undoManager = undoManager
+
+        context.undoManager?.beginUndoGrouping()
+        context.undoManager?.setActionName("Delete BankStatement")
+        context.delete(entity)
+        context.undoManager?.endUndoGrouping()
+    }
+    
     
     func save () throws {
         

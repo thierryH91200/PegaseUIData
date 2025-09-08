@@ -83,9 +83,10 @@ struct InitAccountView: View {
         .onDisappear {
             resetAccount()
         }
-        .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
+        .onChange(of: currentAccountManager.currentAccountID) { old, newValue in
             
-            if let account = newAccount {
+            if !newValue.isEmpty {
+                let account = CurrentAccountManager.shared.getAccount()!
                 dataManager.initAccount = nil
                 loadOrCreateIdentity(for: account)
             }

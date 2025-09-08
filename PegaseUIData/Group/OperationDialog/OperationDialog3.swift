@@ -68,7 +68,6 @@ struct TransactionFormViewModel: View {
             GridRow {
                 FormField(label: "Linked Account") {
                     
-
                     Picker("", selection: $selectedAccount) {
                         // Option "aucun compte sélectionné"
                         Text(String(localized: "(no account)"))
@@ -223,21 +222,8 @@ struct TransactionFormViewModel: View {
                 }
             }
             .onAppear {
-                
-//                if let selected = selectedAccount {
-//                    selectedAccount = linkedAccount.first(where: { $0.uuid == selected.uuid })
-//                } else {
-//                    selectedAccount = nil // 👈 force un état cohérent pour SwiftUI
-//                }
-            
+                            
                 selectedAccount = linkedAccount.first(where: { $0.uuid == selectedAccount?.uuid })
-                
-//                printTag("selectedAccount.uuid = \(selectedAccount?.uuid.uuidString ?? "nil")")
-//                printTag("linkedAccount UUIDs:")
-//                linkedAccount.forEach {
-//                    printTag("- \($0.uuid)")
-//                }
-
                 if selectedAccount == nil {
                     selectedAccount = nil // Pour que le Picker reconnaisse l'état initial
                 }
@@ -292,18 +278,6 @@ struct TransactionFormViewModel: View {
             }
         }
     }
-    
-    
-//    func load(from operation: EntityTransaction) {
-//        transactionDate = operation.dateOperation
-//        pointingDate    = operation.datePointage
-//        bankStatement   = operation.bankStatement
-//        checkNumber     = Int(operation.checkNumber)!
-//        amount          = String(operation.amount)
-//        selectedStatus  = operation.status
-//        selectedMode    = operation.paymentMode
-//        selectedAccount = operation.account
-//    }
 }
 
 struct FormField<Content: View>: View {

@@ -38,12 +38,11 @@ struct ModePaymentView: View {
         undoManager?.canRedo ?? false
     }
 
-    
     var body: some View {
         VStack(spacing: 10) {
             
             // Affiche le nom du compte courant s'il existe
-            if let account = currentAccountManager.currentAccount  {
+            if let account = currentAccountManager.getAccount()  {
                 Text("Account: \(account.name)")
                     .font(.headline)
             }
@@ -74,11 +73,17 @@ struct ModePaymentView: View {
            }
 
             // Recharge les données lorsqu'un nouveau compte est sélectionné
-            .onChange(of: currentAccountManager.currentAccount ) { old, newAccount in
-                if newAccount != nil {
+            .onChange(of: currentAccountManager.currentAccountID ) { old, newValue in
+                if !newValue.isEmpty {
+
                     dataManager.modePayments.removeAll()
                     selectedItem = nil
                     refreshData()
+
+                } else {
+                    // Cas aucun compte sélectionné si nécessaire
+                    dataManager.modePayments.removeAll()
+                    selectedItem = nil
                 }
             }
             
@@ -128,27 +133,25 @@ struct ModePaymentView: View {
                 }
                 .disabled(selectedItem == nil) // Désactive si aucune ligne n'est sélectionnée
                 
-//                Button(action: {
-//                    if let manager = undoManager, manager.canUndo {
-//                        selectedItem = nil
-//                        lastDeletedID = nil
-//                        
-//                        manager.undo()
-//                        
-//                        DispatchQueue.main.async {
-//                            refreshData()
-//                        }
-//                    }
-//                }) {
-//                    Label("Undo", systemImage: "arrow.uturn.backward")
-//                        .frame(minWidth: 100) // Largeur minimale utile
-//                        .padding()
-//                        .background(canUndo == false ? Color.gray : Color.green)
-//                        .opacity(canUndo == false  ? 0.6 : 1)
-//                        .foregroundColor(.white)
-//                        .cornerRadius(8)
-//                }
-//                .buttonStyle(.plain)
+                Button(action: {
+                    if let manager = undoManager, manager.canUndo {
+                        selectedItem = nil
+                        lastDeletedID = nil
+                        manager.undo()
+                        DispatchQueue.main.async {
+                            refreshData()
+                        }
+                    }
+                }) {
+                    Label("Undo", systemImage: "arrow.uturn.backward")
+                        .frame(minWidth: 100) // Largeur minimale utile
+                        .padding()
+                        .background(canUndo == false ? Color.gray : Color.green)
+                        .opacity(canUndo == false  ? 0.6 : 1)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                }
+                .buttonStyle(.plain)
 
             }
             .padding()
@@ -174,7 +177,7 @@ struct ModePaymentView: View {
         DataContext.shared.context = modelContext
         DataContext.shared.undoManager = undoManager
         
-        if currentAccountManager.currentAccount != nil {
+        if currentAccountManager.getAccount() != nil {
             if let allData = PaymentModeManager.shared.getAllData() {
                 dataManager.modePayments = allData
                 modePayments = allData
@@ -308,7 +311,8 @@ struct ModePaiementFormView: View {
             newItem = existing
         } else {
             let color = NSColor.fromSwiftUIColor(selectedColor)
-            newItem = EntityPaymentMode(name: name, color: color)
+            let account = CurrentAccountManager.shared.getAccount()!
+            newItem = EntityPaymentMode(account: account, name: name, color: color)
             modelContext.insert(newItem)
             modePaiementViewManager.modePayments.append(newItem)
         }

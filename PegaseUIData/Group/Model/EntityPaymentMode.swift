@@ -20,11 +20,7 @@ import SwiftData
     
     @Relationship var account: EntityAccount
     
-    init(name: String = "Test", color: NSColor = .black ) {
-        guard let account = CurrentAccountManager.shared.getAccount() else {
-            fatalError("Aucun compte disponible pour créer un mode de paiement")
-        }
-
+    init(account: EntityAccount, name: String = "Test", color: NSColor = .black ) {
         self.name = name
         self.color = color
         self.account = account
@@ -48,7 +44,7 @@ extension EntityPaymentMode: CustomStringConvertible {
 
 protocol PaymentModeManaging {
     
-    func create(account: EntityAccount?, name: String, color: NSColor) throws -> EntityPaymentMode?
+    func create(account: EntityAccount, name: String, color: NSColor) throws -> EntityPaymentMode?
     func update(entity: EntityPaymentMode, name: String, color: NSColor)
     func getAllData() -> [EntityPaymentMode]?
     func getAllNames(for account: EntityAccount) -> [String]
@@ -77,11 +73,10 @@ final class PaymentModeManager : PaymentModeManaging, ObservableObject {
 
     init() { }
     
-    func create(account: EntityAccount?, name: String, color: NSColor) throws -> EntityPaymentMode? {
-                
-        let mode = EntityPaymentMode(name: name, color: color)
+    func create(account: EntityAccount, name: String, color: NSColor) throws -> EntityPaymentMode? {
+        let mode = EntityPaymentMode(account: account, name: name, color: color)
         modelContext?.insert(mode)
-        try save()
+        try? modelContext?.save()
         return mode
     }
 
@@ -95,7 +90,7 @@ final class PaymentModeManager : PaymentModeManaging, ObservableObject {
         }
     }
 
-    func getAllData() -> [EntityPaymentMode]? {
+    @MainActor func getAllData() -> [EntityPaymentMode]? {
                 
         let account = CurrentAccountManager.shared.getAccount()
         guard account != nil else {
@@ -120,13 +115,13 @@ final class PaymentModeManager : PaymentModeManaging, ObservableObject {
     }
     
     // MARK: getAllNames ModePaiement
-    func getAllNames(for account: EntityAccount) -> [String] {
+    @MainActor func getAllNames(for account: EntityAccount) -> [String] {
         
          return getAllData()?.map { $0.name } ?? []
     }
 
     // MARK: findOrCreate ModePaiement
-   func findOrCreate(account: EntityAccount, name: String, color: Color, uuid: UUID) -> EntityPaymentMode {
+    @MainActor func findOrCreate(account: EntityAccount, name: String, color: Color, uuid: UUID) -> EntityPaymentMode {
         if let entity = find(account: account, name: name) {
             return entity
         } else {
@@ -135,6 +130,7 @@ final class PaymentModeManager : PaymentModeManaging, ObservableObject {
     }
     
     // MARK: find ModePaiement
+    @MainActor
     func find( account: EntityAccount? = nil, name: String) -> EntityPaymentMode? {
         
         guard let account = account ?? CurrentAccountManager.shared.getAccount() else {
@@ -224,7 +220,6 @@ final class PaymentModeManager : PaymentModeManaging, ObservableObject {
     
     // MARK: save ModePaiement
     func save () throws {
-        
         do {
             try modelContext?.save()
         } catch {

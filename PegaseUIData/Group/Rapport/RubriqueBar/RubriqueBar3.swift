@@ -13,12 +13,8 @@ import DGCharts
 struct RubriqueBar: View {
     
     @Environment(\.modelContext) private var modelContext
-
     @StateObject private var viewModel = RubriqueBarViewModel()
-
     let transactions: [EntityTransaction]
-
-    
 
     @Binding var lowerValue: Double
     @Binding var upperValue: Double

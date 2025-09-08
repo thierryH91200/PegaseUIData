@@ -9,6 +9,7 @@
 import SwiftUI
 import SwiftData
 import AppKit
+import Combine
 
 
 protocol ListManaging {

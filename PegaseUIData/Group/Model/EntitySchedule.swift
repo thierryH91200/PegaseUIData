@@ -9,6 +9,7 @@
 import Foundation
 import SwiftData
 import SwiftUI
+import Combine
 
 
 @Model
@@ -36,6 +37,7 @@ final class EntitySchedule : Identifiable{
     
     @Relationship var account    : EntityAccount
 
+    @MainActor
     public init() {
         self.account = CurrentAccountManager.shared.getAccount()!
     }
@@ -96,7 +98,7 @@ final class SchedulerManager: ScheduleManaging, ObservableObject  {
 
     init() { }
     
-    func create(account: EntityAccount?, name : String) throws -> EntitySchedule {
+    @MainActor func create(account: EntityAccount?, name : String) throws -> EntitySchedule {
         let entity = EntitySchedule()
         modelContext?.insert(entity)
         try save()
@@ -121,7 +123,7 @@ final class SchedulerManager: ScheduleManaging, ObservableObject  {
     }
     
     // Récupérer toutes les données filtrées par compte
-    func getAllData() -> [EntitySchedule]? {
+    @MainActor func getAllData() -> [EntitySchedule]? {
         
         guard let currentAccount = CurrentAccountManager.shared.getAccount() else {
             printTag("Erreur : aucun compte courant trouvé.")
@@ -230,7 +232,7 @@ final class SchedulerManager: ScheduleManaging, ObservableObject  {
     }
     
     // Créer une sous-opération
-    func createSousOperation(for schedule: EntitySchedule) -> EntitySousOperation {
+    @MainActor func createSousOperation(for schedule: EntitySchedule) -> EntitySousOperation {
         let sousOperation = EntitySousOperation()
         
         let rubricName = schedule.category?.rubric?.name ?? ""
@@ -255,7 +257,7 @@ final class SchedulerManager: ScheduleManaging, ObservableObject  {
         return sousOperation
     }
     
-    func createTransaction(for schedule: EntitySchedule, on dateValeur: Date) {
+    @MainActor func createTransaction(for schedule: EntitySchedule, on dateValeur: Date) {
         schedule.nextOccurrence += 1
         
         let transaction = EntityTransaction()

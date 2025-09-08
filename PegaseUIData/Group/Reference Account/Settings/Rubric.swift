@@ -46,7 +46,7 @@ struct RubricView: View {
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
-                if let account = currentAccountManager.currentAccount {
+                if let account = currentAccountManager.getAccount() {
                     Text("Account: \(account.name)")
                         .font(.headline)
                 }
@@ -62,8 +62,8 @@ struct RubricView: View {
                 .onChange(of: selectedCategory) { oldValue, newValue in
                 }
                 
-                .onChange(of: currentAccountManager.currentAccount ) { old, newAccount in
-                    if newAccount != nil {
+                .onChange(of: currentAccountManager.currentAccountID ) { old, newValue in
+                    if newValue.isEmpty {
                         dataManager.rubrics.removeAll()
                         selectedCategory = nil
                         selectedRubric = nil
@@ -123,7 +123,6 @@ struct RubricView: View {
                             .foregroundColor(.white)
                             .cornerRadius(8)
                             .fixedSize() // Ajuste automatiquement la taille au contenu
-
                     }
                     .disabled(selectedRubric == nil && selectedCategory == nil) // Désactive si aucune ligne n'est sélectionnée
                     

@@ -112,7 +112,7 @@ class TresuryLineViewModel: ObservableObject, TeeasuryManaging {
     
 //    func updateAccount(minDate: Date) {
     
-    func refresh(for account: EntityAccount?, minDate: Date)  {
+    @MainActor func refresh(for account: EntityAccount?, minDate: Date)  {
         guard account != nil else {
             self.listTransactions = []
             self.dataGraph = []
@@ -125,7 +125,7 @@ class TresuryLineViewModel: ObservableObject, TeeasuryManaging {
         self.updateChartData()
     }
     
-    func updateChartData() {
+    @MainActor func updateChartData() {
         var dataGraph: [DataTresorerie] = []
 
         guard !listTransactions.isEmpty else {

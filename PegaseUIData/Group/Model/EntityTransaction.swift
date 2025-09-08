@@ -8,7 +8,6 @@
 
 import Foundation
 import SwiftData
-import DGCharts
 
 @Model final class EntityTransaction {
 
@@ -65,6 +64,7 @@ import DGCharts
         return nil
     }
 
+    @MainActor
     public init() {
         
         self.createAt = Date().noon
@@ -111,12 +111,12 @@ extension EntityTransaction {
 
 }
 
-extension EntityTransaction {
-    func asChartEntry() -> ChartDataEntry {
-        ChartDataEntry(x: dateOperation.timeIntervalSince1970,
-                       y: amount)
-    }
-}
+//extension EntityTransaction {
+//    func asChartEntry() -> ChartDataEntry {
+//        ChartDataEntry(x: dateOperation.timeIntervalSince1970,
+//                       y: amount)
+//    }
+//}
 
 //extension EntityTransaction {
 //    func asChartEntry() -> (x: Double, y: Double) {

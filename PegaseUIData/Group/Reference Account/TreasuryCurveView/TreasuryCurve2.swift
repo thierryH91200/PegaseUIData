@@ -53,9 +53,9 @@ struct TreasuryCurve: View {
                     .frame(width: geometry.size.width, height: 400)
                     .padding()
                     .onAppear {
-                        refreshData(for: currentAccountManager.currentAccount)
+                        refreshData(for: currentAccountManager.getAccount())
                     }
-                    .onChange(of: currentAccountManager.currentAccount) { _, newAccount in
+                    .onChange(of: currentAccountManager.getAccount()) { _, newAccount in
                         refreshData(for: newAccount)
                     }
 

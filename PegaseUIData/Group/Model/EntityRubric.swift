@@ -43,8 +43,9 @@ final class RubricManager {
     
     static let shared = RubricManager()
     
+    @MainActor
     var currentAccount: EntityAccount {
-        CurrentAccountManager.shared.getAccount()!
+        CurrentAccountManager.shared.getAccount() ?? EntityAccount()
     }
 
     var entitiesRubric: [EntityRubric] = []
@@ -78,7 +79,7 @@ final class RubricManager {
         entitiesRubric.removeAll { $0.id == entity.id }
     }
     
-    @discardableResult
+    @MainActor @discardableResult
     func getAllData(account: EntityAccount? = nil) -> [EntityRubric] {
                
         let lhs = currentAccount.uuid
@@ -101,7 +102,7 @@ final class RubricManager {
         return entitiesRubric
     }
         
-    func importCSV(from fileURL: URL) {
+    @MainActor func importCSV(from fileURL: URL) {
         guard let content = try? String(contentsOf: fileURL, encoding: .utf8) else {
             printTag("Erreur de lecture du fichier")
             return
@@ -139,7 +140,7 @@ final class RubricManager {
         }
     }
     
-    func defaultRubric(for account: EntityAccount) {
+    @MainActor func defaultRubric(for account: EntityAccount) {
         guard let url = Bundle.main.url(forResource: "rubrique", withExtension: "csv") else {
             printTag("Error: File not found. ressources : rubrique.csv")
             return

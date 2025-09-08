@@ -60,33 +60,6 @@ struct FormTitleView: View {
     }
 }
 
-//// MARK:  4. Composant de formulaire principal
-//struct TransactionFormView: View {
-//    @EnvironmentObject var formState: TransactionFormState
-//
-//    var body: some View {
-//        TransactionFormViewModel(
-//            linkedAccount         : $formState.accounts,
-//            transactionDate       : $formState.transactionDate,
-//            pointingDate          : $formState.pointingDate,
-//            modes                 : $formState.paymentModes,
-//            status                : $formState.status,
-//            bankStatement         : $formState.bankStatement,
-//            checkNumber           : $formState.checkNumber,
-//            amount                : $formState.amount,
-//            selectedBankStatement : $formState.selectedBankStatement,
-//            selectedStatus        : $formState.selectedStatus,
-//            selectedMode          : $formState.selectedMode,
-//            selectedAccount       : $formState.selectedAccount
-//        )
-//        .accessibilityElement(children: .contain)
-//        .accessibilityLabel(String(localized: "Transaction form section"))
-//    }
-//}
-// TransactionFormUnifiedView.swift
-// PegaseUIData
-
-
 // ⚙️ Extension utilitaire pour extraire un élément unique
 extension Collection {
     var uniqueElement: Element? {

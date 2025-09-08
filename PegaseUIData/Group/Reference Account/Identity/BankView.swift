@@ -40,7 +40,7 @@ struct BankView: View {
     
     var body: some View {
         VStack(spacing: 30) {
-            if let account = CurrentAccountManager.shared.currentAccount {
+            if let account = CurrentAccountManager.shared.getAccount() {
                 Text("Account: \(account.name)")
                     .font(.headline)
             }
@@ -79,11 +79,11 @@ struct BankView: View {
             dataManager.banqueInfo = nil
         }
 
-        .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
+        .onChange(of: currentAccountManager.currentAccountID) { old, newValue in
     
-            if let account = newAccount {
+            if !newValue.isEmpty {
+                let account = currentAccountManager.getAccount()
                 dataManager.banqueInfo = nil
-                
                 loadOrCreate(for: account)
             }
         }
@@ -171,7 +171,6 @@ struct FieldView: View {
             printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
         }
     }
-
 }
 
 

@@ -5,9 +5,7 @@
 //  Created by thierryH24 on 10/08/2025.
 //
 
-
 import SwiftUI
-
 
 
 class AppDelegate: NSObject, NSApplicationDelegate {

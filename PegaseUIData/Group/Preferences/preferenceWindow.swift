@@ -137,8 +137,8 @@ struct GeneralSettingsView: View {
         deleteAllEntities(of: EntityAccount.self)
         deleteAllEntities(of: EntityPaymentMode.self)
 
-        // Recharge les données par ton preload habituel
-        Sidebar1A.preloadDataIfNeeded(modelContext: modelContext)
+        // Recharge les données par le preload habituel
+//        AccountFolderManager.shared.preloadDataIfNeeded(modelContext: modelContext)
     }
 
     private func deleteAllEntities<T: PersistentModel>(of type: T.Type) {

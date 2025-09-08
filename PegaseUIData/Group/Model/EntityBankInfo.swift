@@ -32,6 +32,7 @@ final class EntityBanqueInfo : Identifiable{
     init(account: EntityAccount)  {
         self.account = account
     }
+    @MainActor
     init() {
         self.account = CurrentAccountManager.shared.getAccount()!
     }
@@ -46,6 +47,7 @@ protocol BankManaging {
     func save() throws
 }
 
+@MainActor
 final class BankManager : BankManaging {
     
     static let shared = BankManager()
@@ -119,4 +121,3 @@ final class BankManager : BankManaging {
     }
 
 }
-

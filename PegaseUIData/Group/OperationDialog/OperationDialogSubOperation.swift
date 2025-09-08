@@ -322,7 +322,6 @@ struct SubOperationRow: View {
             guard subOperation.transaction != nil else {
                 return        }
             foregroundColor = colorManager.colorForTransaction(subOperation.transaction!)
-
         }
     }
 }

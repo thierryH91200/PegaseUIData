@@ -58,7 +58,7 @@ final class PreferenceManager: PreferenceManaging {
     private init() { }
     
     // MARK: - default
-    func defaultPref(account: EntityAccount) -> EntityPreference? {
+    @MainActor func defaultPref(account: EntityAccount) -> EntityPreference? {
         // Vérifie si une préférence existe déjà
         if let existingPreference = getAllData(for: account) {
             return existingPreference
@@ -138,7 +138,6 @@ final class PreferenceManager: PreferenceManaging {
         }
     }
 }
-
 
 func getSQLiteFilePath() -> String? {
     guard let _ = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).last else { return nil}

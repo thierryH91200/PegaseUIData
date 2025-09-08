@@ -9,6 +9,8 @@
 import Foundation
 import SwiftData
 import SwiftUI
+import Combine
+
 
 @Model public class EntityCheckBook {
     var name: String = ""
@@ -38,8 +40,10 @@ import SwiftUI
         self.account = account
     }
   
+    // Ensure main-actor isolation when touching CurrentAccountManager
+    @MainActor
     init() {
-        self.account = CurrentAccountManager.shared.getAccount()!
+        self.account = CurrentAccountManager.shared.getAccount()
     }
 }
 
@@ -73,7 +77,7 @@ final class ChequeBookManager : ObservableObject {
 
     init() {}
     
-    @discardableResult
+    @MainActor @discardableResult
     func create(name: String,
                 nbCheques: Int = 25,
                 numPremier: Int = 1,
@@ -97,11 +101,10 @@ final class ChequeBookManager : ObservableObject {
         
         // Sauvegardez le contexte
         save()
-        
         return entity
     }
 
-    func getAllData() -> [EntityCheckBook]? {
+    @MainActor func getAllData() -> [EntityCheckBook]? {
         
         guard let account = CurrentAccountManager.shared.getAccount() else {
             printTag("Erreur : aucun compte courant trouvé.")
@@ -141,15 +144,22 @@ final class ChequeBookManager : ObservableObject {
         modelContext.undoManager?.endUndoGrouping()
     }
     
-    private func defaultCarnetCheques() {
+    @MainActor private func defaultCarnetCheques() {
         guard checkBooks.isEmpty else { return }
         
-        let entityCarnetCheques = EntityCheckBook()
-        entityCarnetCheques.name = "Check"
-        entityCarnetCheques.prefix = "CH"
-        entityCarnetCheques.numPremier = 1
-        entityCarnetCheques.numSuivant = 15
-        entityCarnetCheques.nbCheques = 25
+        // Prefer injecting the account to avoid relying on a main-actor default init
+        guard let account = CurrentAccountManager.shared.getAccount() else {
+            printTag("Error creating default Carnet Cheques: no current account")
+            return
+        }
+        let entityCarnetCheques = EntityCheckBook(
+            name: "Check",
+            nbCheques: 25,
+            numPremier: 1,
+            numSuivant: 15,
+            prefix: "CH",
+            account: account
+        )
         entityCarnetCheques.uuid = UUID()
         modelContext?.insert(entityCarnetCheques)
         
@@ -169,4 +179,3 @@ final class ChequeBookManager : ObservableObject {
         }
     }
 }
-

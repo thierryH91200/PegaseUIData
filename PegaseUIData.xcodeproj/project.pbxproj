@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0312CB372E6B50A400EDCC1D /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = 0312CB362E6B50A400EDCC1D /* SwiftDate */; };
 		03D56D1F2E3BDA82008092AA /* _config.yml in Resources */ = {isa = PBXBuildFile; fileRef = 03D56D1D2E3BDA82008092AA /* _config.yml */; };
 		03D56D202E3BDA82008092AA /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 03D56D1B2E3BDA82008092AA /* README.md */; };
 		03D56D212E3BDA82008092AA /* .gitattributes in Resources */ = {isa = PBXBuildFile; fileRef = 03D56D1E2E3BDA82008092AA /* .gitattributes */; };
 		03D56D222E3BDA82008092AA /* README_fr.md in Resources */ = {isa = PBXBuildFile; fileRef = 03D56D1C2E3BDA82008092AA /* README_fr.md */; };
 		03D56E642E3BE403008092AA /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = 03D56E632E3BE403008092AA /* DGCharts */; };
-		03D56E672E3BE426008092AA /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = 03D56E662E3BE426008092AA /* SwiftDate */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,7 +46,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				03D56E672E3BE426008092AA /* SwiftDate in Frameworks */,
+				0312CB372E6B50A400EDCC1D /* SwiftDate in Frameworks */,
 				03D56E642E3BE403008092AA /* DGCharts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -99,7 +99,7 @@
 			name = PegaseUIData;
 			packageProductDependencies = (
 				03D56E632E3BE403008092AA /* DGCharts */,
-				03D56E662E3BE426008092AA /* SwiftDate */,
+				0312CB362E6B50A400EDCC1D /* SwiftDate */,
 			);
 			productName = PegaseUIData;
 			productReference = 03D56D082E3BDA1A008092AA /* PegaseUIData.app */;
@@ -135,7 +135,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				03D56E622E3BE403008092AA /* XCRemoteSwiftPackageReference "Charts" */,
-				03D56E652E3BE426008092AA /* XCRemoteSwiftPackageReference "SwiftDate" */,
+				0312CB352E6B50A400EDCC1D /* XCRemoteSwiftPackageReference "SwiftDate" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 03D56D092E3BDA1A008092AA /* Products */;
@@ -303,6 +303,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				AUTOMATION_APPLE_EVENTS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = PegaseUIData/PegaseUIData.entitlements;
 				CODE_SIGN_STYLE = Automatic;
@@ -310,10 +311,15 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 84WLNJ2YG4;
-				ENABLE_APP_SANDBOX = YES;
-				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -326,6 +332,12 @@
 				PRODUCT_BUNDLE_IDENTIFIER = thi.PegaseUIData;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
+				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
+				RUNTIME_EXCEPTION_ALLOW_JIT = NO;
+				RUNTIME_EXCEPTION_ALLOW_UNSIGNED_EXECUTABLE_MEMORY = NO;
+				RUNTIME_EXCEPTION_DEBUGGING_TOOL = NO;
+				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = NO;
+				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -337,6 +349,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				AUTOMATION_APPLE_EVENTS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = PegaseUIData/PegaseUIData.entitlements;
 				CODE_SIGN_STYLE = Automatic;
@@ -344,10 +357,15 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 84WLNJ2YG4;
-				ENABLE_APP_SANDBOX = YES;
-				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -360,6 +378,12 @@
 				PRODUCT_BUNDLE_IDENTIFIER = thi.PegaseUIData;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
+				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
+				RUNTIME_EXCEPTION_ALLOW_JIT = NO;
+				RUNTIME_EXCEPTION_ALLOW_UNSIGNED_EXECUTABLE_MEMORY = NO;
+				RUNTIME_EXCEPTION_DEBUGGING_TOOL = NO;
+				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = NO;
+				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};
@@ -389,6 +413,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		0312CB352E6B50A400EDCC1D /* XCRemoteSwiftPackageReference "SwiftDate" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/malcommac/SwiftDate";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.0.0;
+			};
+		};
 		03D56E622E3BE403008092AA /* XCRemoteSwiftPackageReference "Charts" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ChartsOrg/Charts";
@@ -397,26 +429,18 @@
 				minimumVersion = 5.1.0;
 			};
 		};
-		03D56E652E3BE426008092AA /* XCRemoteSwiftPackageReference "SwiftDate" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/malcommac/SwiftDate";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 7.0.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0312CB362E6B50A400EDCC1D /* SwiftDate */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0312CB352E6B50A400EDCC1D /* XCRemoteSwiftPackageReference "SwiftDate" */;
+			productName = SwiftDate;
+		};
 		03D56E632E3BE403008092AA /* DGCharts */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 03D56E622E3BE403008092AA /* XCRemoteSwiftPackageReference "Charts" */;
 			productName = DGCharts;
-		};
-		03D56E662E3BE426008092AA /* SwiftDate */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 03D56E652E3BE426008092AA /* XCRemoteSwiftPackageReference "SwiftDate" */;
-			productName = SwiftDate;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

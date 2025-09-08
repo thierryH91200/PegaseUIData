@@ -45,11 +45,11 @@ struct NotesView10: View {
         Text("NotesView")
             .font(.title)
         Text("\(compteCurrent?.name ?? String(localized:"No current account" ))")
-            .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
-                if newAccount != nil {
-                    refreshData()
-                }
-            }
+//            .onChange(of: currentAccountManager.getAccount()) { old, newAccount in
+//                if newAccount != "" {
+//                    refreshData()
+//                }
+//            }
     }
     private func refreshData() {
         DataContext.shared.context = modelContext

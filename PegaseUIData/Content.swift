@@ -14,50 +14,11 @@ import Combine
 class ContentViewModel: ObservableObject {
     @Published var isInitialized = false
 
+    @MainActor
     init(modelContext: ModelContext) {
         DataContext.shared.context = modelContext
         InitManager.shared.initialize()
         isInitialized = true // Marqueur pour indiquer la fin de l'initialisation
-    }
-}
-
-class ColorManager: ObservableObject {
-
-    private let key: String
-    @Published var colorChoix: String {
-        didSet {
-            UserDefaults.standard.set(colorChoix, forKey: key)
-        }
-    }
-
-    init( ) {
-        
-        let account = CurrentAccountManager.shared.getAccount()
-
-        let name = account?.identity?.name ?? " "
-        let surName = account?.identity?.surName ?? ""
-        let accccountName = name + surName
-        
-        self.key = "colorChoix_" + accccountName
-    
-        self.colorChoix = UserDefaults.standard.string(forKey: key) ?? "United"
-    }
-
-    func colorForTransaction(_ transaction: EntityTransaction) -> Color {
-        switch colorChoix {
-        case "United":
-            return .primary
-        case "Income/Expense":
-            return transaction.amount >= 0 ? .green : .red
-        case "Rubric":
-            return Color(transaction.sousOperations.first?.category?.rubric?.color ?? .black)
-        case "Payment Mode":
-            return Color(transaction.paymentMode?.color ?? .black)
-        case "Status":
-            return Color(transaction.status?.color ?? .gray)
-        default:
-            return .black
-        }
     }
 }
 
@@ -66,8 +27,6 @@ enum FormMode {
     case editSingle(EntityTransaction)
     case editMultiple([EntityTransaction])
 }
-
-
 
 class TransactionSelectionManager: ObservableObject, Identifiable {
     @Published var selectedTransaction: EntityTransaction?
@@ -93,15 +52,13 @@ class TransactionSelectionManager: ObservableObject, Identifiable {
 }
 struct ContentView100: View {
     
-    @AppStorage("windowWidth")  var windowWidth: Double = 800
-    @AppStorage("windowHeight")  var windowHeight: Double = 600
     @AppStorage("choixCouleur") var choixCouleur: String = "Unie"
     
-    @EnvironmentObject var appState: AppState
+//    @EnvironmentObject var appState: AppState
 
+    @StateObject private var currentAccountManager = CurrentAccountManager.shared
     @StateObject private var transactionManager = TransactionSelectionManager()
     @StateObject private var colorManager = ColorManager()
-    @StateObject private var currentAccountManager = CurrentAccountManager.shared
 
     @State private var selectedTransaction: EntityTransaction?
     @State private var isCreationMode : Bool = true
@@ -135,7 +92,6 @@ struct ContentView100: View {
             NavigationSplitView {
                 SidebarContainer(selection1: $selection1, selection2: $selection2)
                     .navigationSplitViewColumnWidth(min: 256, ideal: 256, max: 400)
-
             }
             content :
             {
@@ -152,10 +108,6 @@ struct ContentView100: View {
             .environmentObject(transactionManager)
             .environmentObject(currentAccountManager)
             .navigationSplitViewStyle(.automatic)
-
-//            .onAppear {
-//            }
-//            Spacer(minLength: 10)
         }
         .onReceive(NotificationCenter.default.publisher(for: .importTransaction)) { _ in
             showCSVTransactionImporter = true
@@ -180,13 +132,13 @@ struct ContentView100: View {
 
         .toolbar {
             
-            ToolbarItem(placement: .navigation) {
-                Button {
-                    appState.isProjectOpen = false // Revenir à WelcomeWindowView
-                } label: {
-                    Label("Home", systemImage: "house")
-                }
-            }
+//            ToolbarItem(placement: .navigation) {
+//                Button {
+//                    appState.isProjectOpen = false // Revenir à WelcomeWindowView
+//                } label: {
+//                    Label("Home", systemImage: "house")
+//                }
+//            }
 
             ToolbarItemGroup(placement: .navigation) {
                 Button(action: {
@@ -284,10 +236,10 @@ struct ContentView100: View {
         selectedColor = color
     }
 
-    private func saveWindowSize(width: CGFloat, height: CGFloat) {
-        windowWidth = width
-        windowHeight = height
-    }
+//    private func saveWindowSize(width: CGFloat, height: CGFloat) {
+//        windowWidth = width
+//        windowHeight = height
+//    }
 }
 
 // Fonction d'action pour chaque choix de couleur
@@ -386,29 +338,65 @@ struct DetailContainer: View {
     }
 }
 
-struct Sidebar2A: View {
+//struct Sidebar2A: View {
+//
+//    @Binding var selection2: String?
+//
+//    var body: some View {
+//
+//        let datas = Bundle.main.decode([Datas].self, from: "Feeds.plist" )
+//
+//        List(selection: $selection2) {
+//            ForEach(datas) { section in
+//                Section(section.name) {
+//                    ForEach(section.children) { child in
+//                        Label(child.name, systemImage: child.icon)
+//                            .tag(child.name)
+//                            .font(.system(size: 12))
+//                            .frame(minHeight: 12, maxHeight: 16)
+//                            .listRowInsets(EdgeInsets(top: 2, leading: 8, bottom: 2, trailing: 8))
+//                    }
+//                }
+//            }
+//        }
+//        .navigationTitle("Display")
+//        .listStyle(SidebarListStyle())
+//        .listRowSeparator(.hidden)
+//        .frame(maxHeight: .infinity) // Prend toute la place disponible
+//    }
+//}
 
+struct Sidebar2A: View {
     @Binding var selection2: String?
 
     var body: some View {
-
-        let datas = Bundle.main.decode([Datas].self, from: "Feeds.plist" )
+        let datas = Bundle.main.decode([Datas].self, from: "Feeds.plist")
 
         List(selection: $selection2) {
             ForEach(datas) { section in
                 Section(section.name) {
                     ForEach(section.children) { child in
-                        Label(child.name, systemImage: child.icon)
-                            .tag(child.name)
-                            .font(.system(size: 12))
-                            .padding(.vertical, 0) // ↓ Réduit la hauteur
+                        Label {
+                            Text(child.name)
+                                .font(.system(size: 11)) // plus petit
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
+                        } icon: {
+                            Image(systemName: child.icon)
+                                .font(.system(size: 13)) // icône plus petit
+                        }
+                        .tag(child.name)
+                        .frame(minHeight: 10, maxHeight: 14) // Hauteur réduite
+//                        .listRowInsets(EdgeInsets(top: 0, leading: 6, bottom: 0, trailing: 6)) // marges réduites
+                        .padding(.vertical, 0) // retire les espaces verticaux
                     }
                 }
             }
         }
         .navigationTitle("Display")
         .listStyle(SidebarListStyle())
-        .frame(maxHeight: .infinity) // Prend toute la place disponible
+        .listRowSeparator(.hidden)
+        .frame(maxHeight: .infinity)
+        .environment(\.defaultMinListRowHeight, 18) // hauteur min liste réduite
     }
 }
-

@@ -16,13 +16,19 @@ struct AccountFactory {
         account.nameIcon = icon
         account.uuid = UUID()
         
+        print(account.uuid.uuidString)
+        
         modelContext.insert(account)
+        save()
         return account
     }
+
+    @MainActor static func createOptionAccount(modelContext: ModelContext, account : EntityAccount, idName: String, idSurName: String, numAccount: String) -> EntityAccount {
         
-    static func createOptionAccount(modelContext: ModelContext, account : EntityAccount, idName: String, idSurName: String, numAccount: String) -> EntityAccount {
+        print(account.uuid.uuidString)
         
-        CurrentAccountManager.shared.setAccount(account )
+        let id = account.uuid.uuidString
+        CurrentAccountManager.shared.setAccount(id )
         
         let identity = EntityIdentity(name: idName, surName: idSurName, account: account)
         account.identity = identity
@@ -51,8 +57,28 @@ struct AccountFactory {
         account.preference = entityPreference
         
         modelContext.insert(account)
+        do {
+            try modelContext.save()
+        } catch {
+            // Log technique; tu peux remplacer par OSLog si tu préfères
+            print("❌ Error saving after create Person:", error)
+        }
+
         return account
     }
+    
+    static func save () {
+        var modelContext: ModelContext? {
+            DataContext.shared.context
+        }
+
+        do {
+            try modelContext?.save()
+        } catch {
+            printTag("Erreur lors de la sauvegarde de l'entité : \(error)")
+        }
+    }
+
 
     static func createHeader(modelContext: ModelContext, name: String) -> EntityFolderAccount {
         let header = EntityFolderAccount()
@@ -83,18 +109,30 @@ final class InitManager {
 
     private init() { }
 
-    func initialize() {
-        DataContext.shared.context = modelContext
-        let entities = AccountManager.shared.getRoot(modelContext: modelContext!)
-        guard entities.isEmpty == true else { return }
+    // Initialise la base si elle est vide
+    @MainActor func initialize() {
+        guard let ctx = modelContext else {
+            printTag("InitManager.initialize: ModelContext indisponible.")
+            return
+        }
+        // Déterminer si des dossiers existent déjà (critère: isRoot == false)
+        let entities = AccountFolderManager.shared.getRoot(modelContext: ctx)
+        guard entities.isEmpty == true else {
+            // Déjà initialisé
+            return
+        }
         setupDefaultLibrary()
     }
     
-    func setupDefaultLibrary() {
+    @MainActor func setupDefaultLibrary() {
+        guard let ctx = modelContext else {
+            printTag("InitManager.setupDefaultLibrary: ModelContext indisponible.")
+            return
+        }
         
-        // Création des comptes
-        let folder1 = AccountFactory.createHeader(modelContext: modelContext!, name: "Bank Account")
-        let folder2 = AccountFactory.createHeader(modelContext: modelContext!, name: "Save")
+        // Création des dossiers (folders)
+        let folder1 = AccountFactory.createHeader(modelContext: ctx, name: "Bank Account")
+        let folder2 = AccountFactory.createHeader(modelContext: ctx, name: "Save")
         
         let typeAccounts : [String] = [
             String(localized :"Current account1",table : "Account"),
@@ -113,52 +151,63 @@ final class InitManager {
             (typeAccounts[5], DefaultIcons.currentAccount, "Durand", "Sarah", "00045704J")
         ]
         
+        // Comptes rattachés au premier dossier
         for config in accountsConfig[0...3] {
             var account = AccountFactory.createAccount(
-                modelContext: modelContext!,
-                name: config.0,
-                icon: config.1 )
-            
-            account = AccountFactory.createOptionAccount(
-                modelContext: modelContext!,
-                account : account,
-                idName: config.2,
-                idSurName: config.3,
-                numAccount: config.4)
-            folder1.addChild(account)
-        }
-
-        for config in accountsConfig[4...5] {
-            var account = AccountFactory.createAccount(
-                modelContext: modelContext!,
+                modelContext: ctx,
                 name: config.0,
                 icon: config.1
             )
             account = AccountFactory.createOptionAccount(
-                modelContext: modelContext!,
+                modelContext: ctx,
                 account : account,
                 idName: config.2,
                 idSurName: config.3,
-                numAccount: config.4)
+                numAccount: config.4
+            )
+            folder1.addChild(account)
+            print("account ", account.id)
+        }
+
+        // Comptes rattachés au second dossier
+        for config in accountsConfig[4...5] {
+            var account = AccountFactory.createAccount(
+                modelContext: ctx,
+                name: config.0,
+                icon: config.1
+            )
+            account = AccountFactory.createOptionAccount(
+                modelContext: ctx,
+                account : account,
+                idName: config.2,
+                idSurName: config.3,
+                numAccount: config.4
+            )
             folder2.addChild(account)
+            print("account ", account.id)
         }
         
         // Enregistrer les dossiers
-        modelContext?.insert(folder1)
-        modelContext?.insert(folder2)
+        ctx.insert(folder1)
+        ctx.insert(folder2)
         
         // Enregistrement des modifications
         saveContext()
     }
     
     func saveContext() {
+        guard let ctx = modelContext else {
+            printTag("InitManager.saveContext: ModelContext indisponible.")
+            return
+        }
+
         if let path = getSQLiteFilePath() {
             printTag(path)
         } else {
             printTag("Erreur : chemin SQLite introuvable.")
         }
         do {
-            try modelContext?.save()
+            try ctx.save()
         } catch {
             printTag("Erreur : \(error.localizedDescription)")
         }

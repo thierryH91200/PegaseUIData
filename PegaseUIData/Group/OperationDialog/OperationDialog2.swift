@@ -68,8 +68,8 @@ struct OperationDialogView: View {
         .onChange(of: formState.subOperations) { oldValue, newValue in
             formState.subOperations = Array(newValue) // Force SwiftUI à détecter un changement
         }
-        .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
-            if newAccount != nil {
+        .onChange(of: currentAccountManager.currentAccountID) { old, newValue in
+            if !newValue.isEmpty  {
                 refreshData()
             }
         }

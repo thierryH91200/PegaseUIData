@@ -9,6 +9,8 @@
 import Foundation
 import SwiftData
 import SwiftUI
+import Combine
+
 
 @Model final class EntityCategory {
 
@@ -43,7 +45,7 @@ final class CategoryManager: ObservableObject {
 
     init() {}
    
-   func findOrCreate(account: EntityAccount,
+    @MainActor func findOrCreate(account: EntityAccount,
                       name: String,
                       objectif: Double,
                       rubric: EntityRubric ) -> EntityCategory {
@@ -87,7 +89,7 @@ final class CategoryManager: ObservableObject {
 //        }
 //    }
     
-    func find(name: String) -> EntityCategory? {
+    @MainActor func find(name: String) -> EntityCategory? {
         guard let modelContext = modelContext else { return nil }
 
         let account = CurrentAccountManager.shared.getAccount()!

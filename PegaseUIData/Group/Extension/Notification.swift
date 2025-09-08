@@ -8,6 +8,8 @@
 import Foundation
 import SwiftData
 import SwiftUI
+import UniformTypeIdentifiers
+
 
 extension Notification.Name {
     static let importTransaction = Notification.Name("importTransaction")
@@ -26,7 +28,6 @@ extension Notification.Name {
 }
 
 
-import UniformTypeIdentifiers
 
 extension UTType {
     static var ofx: UTType {

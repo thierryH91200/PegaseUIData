@@ -42,6 +42,7 @@ final class InitAccountManager {
     private var initAccount : EntityInitAccount?
 
     // Contexte pour les modifications
+    @MainActor
     var currentAccount: EntityAccount? {
         CurrentAccountManager.shared.getAccount()
     }
@@ -54,7 +55,7 @@ final class InitAccountManager {
     }
 
     // Utiliser un seul contexte pour la gestion des données
-    func getAllData() -> EntityInitAccount? {
+    @MainActor func getAllData() -> EntityInitAccount? {
         
         guard let account = CurrentAccountManager.shared.getAccount() else {
             printTag("Erreur : aucun compte courant trouvé.")
@@ -99,7 +100,7 @@ final class InitAccountManager {
         return entity
     }
     
-    func delete(entityInitAccount: EntityInitAccount) {
+    @MainActor func delete(entityInitAccount: EntityInitAccount) {
         
         modelContext?.delete( entityInitAccount)
         initAccount = nil

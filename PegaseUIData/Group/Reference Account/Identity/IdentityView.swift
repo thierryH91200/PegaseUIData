@@ -44,7 +44,7 @@ struct IdentityView: View {
                 .padding(.bottom, 10)
                 .accessibilityLabel("Identity title")
 
-            if let account = currentAccountManager.currentAccount {
+            if let account = currentAccountManager.getAccount() {
                 Text("Current Account: \(account.name)")
             } else {
                 Text("No account selected.")
@@ -81,7 +81,7 @@ struct IdentityView: View {
             dataManager.saveChanges()
             dataManager.identity = nil
         }
-        .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
+        .onChange(of: currentAccountManager.getAccount()) { old, newAccount in
             
             if let account = newAccount {
                 dataManager.identity = nil

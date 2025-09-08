@@ -6,8 +6,10 @@ import AppKit
 struct Sidebar1A: View {
     
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \EntityFolderAccount.name, animation: .bouncy) var folders: [EntityFolderAccount]
+//    @Query(sort: \EntityFolderAccount.name, animation: .bouncy) var folders: [EntityFolderAccount]
     
+    @State var folders: [EntityFolderAccount] = []
+
     @State private var modePayments : [EntityPaymentMode] = []
     
     @State private var selectedAccount: EntityAccount?
@@ -34,7 +36,7 @@ struct Sidebar1A: View {
         .onChange(of: selectedAccount) { oldAccount, newAccount in
             if let account = newAccount {
                 
-                CurrentAccountManager.shared.setAccount(account)
+                CurrentAccountManager.shared.setAccount(account.uuid.uuidString)
                 DataContext.shared.context = modelContext
 
                 // Exécute le code asynchrone dans une Task
@@ -56,7 +58,8 @@ struct Sidebar1A: View {
         }
         .onAppear {
             Task {
-                Sidebar1A.preloadDataIfNeeded(modelContext: modelContext)
+                folders = AccountFolderManager.shared.getAllData()
+                AccountFolderManager.shared.preloadDataIfNeeded(modelContext: modelContext)
                 await MainActor.run {
                     if selectedAccount == nil, let firstFolder = folders.first, let firstAccount = firstFolder.children.first {
                         selectedAccount = firstAccount
@@ -66,40 +69,6 @@ struct Sidebar1A: View {
             }
         }
         Bouton()
-    }
-    
-    static func preloadDataIfNeeded(modelContext: ModelContext) {
-        // Vérifie si des données existent déjà
-        let existingFolders = try? modelContext.fetch(FetchDescriptor<EntityFolderAccount>())
-        guard existingFolders?.isEmpty == true else { return }
-        
-        // Ajout de données d'exemple
-        let folder1 = EntityFolderAccount()
-        folder1.name = String(localized:"Bank Account")
-        
-        var account1 = AccountFactory.createAccount(modelContext: modelContext, name: String(localized:"Current account1"), icon: "dollarsign.circle")
-        account1 = AccountFactory.createOptionAccount(modelContext: modelContext, account: account1, idName: "Martin", idSurName: "Pierre", numAccount: "00045700E")
-        
-        var account2 = AccountFactory.createAccount(modelContext: modelContext, name: String(localized:"Current account2"), icon: "eurosign.circle")
-        account2 = AccountFactory.createOptionAccount(modelContext: modelContext, account: account2, idName: "Martin", idSurName: "Marie", numAccount: "00045701F")
-        
-        folder1.children = [
-            account1, account2 ]
-        
-        let folder2 = EntityFolderAccount()
-        folder2.name = String(localized:"Save")
-        
-        var account3 = AccountFactory.createAccount(modelContext: modelContext, name: String(localized:"Current account3"), icon: "calendar.circle")
-        account3 = AccountFactory.createOptionAccount(modelContext: modelContext, account: account3, idName: "Durand", idSurName: "Jean", numAccount: "00045703H")
-        
-        folder2.children = [
-            account3 ]
-        
-        // Enregistrer les dossiers
-        modelContext.insert(folder1)
-        modelContext.insert(folder2)
-        
-        try? modelContext.save()
     }
 }
 
@@ -194,7 +163,6 @@ struct AccountRow: View {
         .cornerRadius(6)
     }
 }
-
 
 struct Bouton: View {
     

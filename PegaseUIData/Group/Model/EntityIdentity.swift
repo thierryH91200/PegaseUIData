@@ -8,6 +8,8 @@
 
 import SwiftUI
 import SwiftData
+import Combine
+
 
 // MARK: - Identite
 
@@ -29,6 +31,7 @@ final class EntityIdentity : Identifiable{
     
     @Relationship var account    : EntityAccount
     
+    @MainActor
     public init(adress: String,
                 complement : String,
                 country: String,
@@ -61,12 +64,14 @@ final class EntityIdentity : Identifiable{
         self.account = account
     }
     
+    @MainActor
     init() {
         self.account = CurrentAccountManager.shared.getAccount()!
     }
 }
 
 // ObservableObject
+@MainActor
 final class IdentityManager: ObservableObject  {
     
     // Contexte pour les modifications
@@ -119,3 +124,4 @@ final class IdentityManager: ObservableObject  {
         return identities.first
     }
 }
+

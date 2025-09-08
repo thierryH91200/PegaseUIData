@@ -8,48 +8,8 @@
 import Foundation
 import SwiftData
 import SwiftUI
+import Combine
 
-@Model final class EntityFolderAccount: Identifiable  {
-    
-    var name: String = ""
-    var nameImage: String = "folder.fill"
-    var isRoot : Bool = false
-
-    @Attribute(.unique) var uuid: UUID = UUID()
-    public var id: UUID { uuid }
-    
-//    @Relationship(deleteRule: .cascade, inverse: \EntityAccount.folder)
-    var children: [EntityAccount] = []
-    
-    public init() {
-    }
-    
-    public init(name: String, isRoot: Bool, children: [EntityAccount]) {
-        self.name = name
-        self.children = children
-    }
-}
-
-extension EntityFolderAccount {
-    var childrenSorted: [EntityAccount] {
-        children.sorted { $0.name < $1.name }
-    }
-}
-
-extension EntityFolderAccount {
-    func addAccounts(_ accounts: [EntityAccount]) {
-        for account in accounts {
-            self.addChild(account)
-        }
-    }
-    
-    func addChild(_ child: EntityAccount) {
-        if children.isEmpty == true {
-            children = []
-        }
-        children.append(child)
-    }
-}
 
 @Model class EntityAccount: Identifiable {
 
@@ -96,8 +56,6 @@ extension EntityFolderAccount {
     
     @Relationship(deleteRule: .cascade, inverse: \EntityTransaction.account)
     var transactions: [EntityTransaction]?
-    
-    @Relationship(deleteRule: .nullify) var account: EntityTransaction?
 
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
@@ -111,19 +69,15 @@ extension EntityFolderAccount {
     }
 }
 
-extension EntityAccount: Equatable , Hashable {
+extension EntityAccount: Equatable {
     static func == (lhs: EntityAccount, rhs: EntityAccount) -> Bool {
         lhs.uuid == rhs.uuid
     }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(uuid)
-    }
-
 }
 
 extension EntityAccount {
     @Transient
+    @MainActor
     var solde: Double
     {
         guard isAccount == true else { return 0.0 }
@@ -150,7 +104,7 @@ final class AccountManager {
     init() { }
         
     // MARK: create account
-    func create(nameAccount: String,
+    @MainActor func create(nameAccount: String,
                 nameImage: String,
                 idName: String,
                 idPrenom: String,
@@ -180,7 +134,26 @@ final class AccountManager {
         
         // Ajoute le nouveau compte à la liste des entités
         modelContext?.insert(account)
+        save()
         return account
+    }
+    
+    func getAccount(id: UUID) -> EntityAccount? {
+        
+        var account : [EntityAccount] = []
+        
+        do {
+            let predicate = #Predicate<EntityAccount>{ entity in entity.uuid  ==  id }
+
+            let descriptor = FetchDescriptor<EntityAccount>(
+                predicate: predicate )
+            
+            account = try modelContext?.fetch(descriptor) ?? []
+        } catch {
+            printTag("Erreur lors de la récupération des données : \(error.localizedDescription)")
+            return nil
+        }
+        return account.first
     }
 
     func getAllData() -> [EntityAccount] {
@@ -188,17 +161,20 @@ final class AccountManager {
             // Exécution d'une requête manuelle si besoin de filtrer ou trier
             let request = FetchDescriptor<EntityAccount>()
             entities = try modelContext?.fetch(request) ?? []
+            for entity in entities {
+                printAccount(entityAccount: entity, description: "Account")
+            }
         } catch {
             printTag("Erreur lors de la récupération des données avec SwiftData")
         }
         return entities
     }
     
-    func getRoot(modelContext: ModelContext) -> [EntityFolderAccount] {
-        let request = FetchDescriptor<EntityFolderAccount>(predicate: #Predicate { $0.isRoot == false })
-        let entities = try? modelContext.fetch(request)
-        return entities!
-    }
+//    func getRoot(modelContext: ModelContext) -> [EntityFolderAccount] {
+//        let request = FetchDescriptor<EntityFolderAccount>(predicate: #Predicate { $0.isRoot == false })
+//        let entities = try? modelContext.fetch(request)
+//        return entities!
+//    }
     
     // Juste pour le debug
     func printAccount(entityAccount : EntityAccount, description : String) {
@@ -207,40 +183,82 @@ final class AccountManager {
         let idName   = identity?.name
         let idSurname = identity?.surName
         let idNumber = entityAccount.initAccount?.codeAccount
-        
-        printTag("\(description)       : \(name) \(idName ?? "") \(idSurname ?? "") \(idNumber ?? "")")
+        let id = entityAccount.uuid
+
+        printTag("\(description)       : \(id) \(name) \(idName ?? "") \(idSurname ?? "") \(idNumber ?? "")")
+    }
+    
+    func save() {
+        do {
+            try modelContext?.save()
+        } catch {
+            print(EnumError.saveFailed)
+        }
     }
 }
 
-final class CurrentAccountManager : ObservableObject {
+@MainActor
+final class CurrentAccountManager: ObservableObject {
     
     static let shared = CurrentAccountManager()
     
-    // Déclaration d'une variable globale pour toutes les fonctions
-    @Published var currentAccount: EntityAccount?
-    
+    // UUID stocké en String pour compatibilité avec AppStorage/UI
+    @Published var currentAccountID: String
+
+    private init() {
+        self.currentAccountID = ""
+    }
+
+    // Propriété calculée pratique pour accéder directement à l'objet
+    var currentAccount: EntityAccount? {
+        getAccount()
+    }
+
     // Affectation d'un compte à la variable globale
-    func setAccount(_ account: EntityAccount) {
-        currentAccount = account
-    }
-    
-    // Recupération d'un compte
-    func getAccount()->EntityAccount? {
-        return currentAccount
-    }
-    
-    func fetchDataForCurrentAccount() {
-        guard let account = currentAccount else {
-            printTag("No account selected.")
-            return
+    // Retourne true si l'ID est valide et correspond à un compte existant.
+    @discardableResult
+    func setAccount(_ id: String) -> Bool {
+        guard let uuid = UUID(uuidString: id) else {
+            printTag("setAccount: ID invalide \(id)")
+            return false
         }
-        printTag("Traitement des données pour le compte \(account.name)")
+
+        if let account = AccountManager.shared.getAccount(id: uuid) {
+            self.currentAccountID = account.uuid.uuidString
+            printTag("setAccount OK", category: account.uuid.uuidString)
+            return true
+        } else {
+            printTag("setAccount: aucun compte trouvé pour \(id)")
+            return false
+        }
     }
     
-    // Réinitialisation de la variable globale
-    func resetCurrentAccount() {
-        currentAccount = nil
+    // Réinitialiser le compte courant
+    func clearAccount() {
+        self.currentAccountID = ""
+        printTag("clearAccount")
+    }
+    
+    // Récupération d'un compte
+    func getAccount() -> EntityAccount? {
+        
+        _ = AccountManager.shared.getAllData()
+
+        guard let id = UUID(uuidString: currentAccountID) else {
+            return nil
+        }
+        guard let account = AccountManager.shared.getAccount(id: id) else {
+            return nil
+        }
+        printTag("getAccount", category: account.uuid.uuidString)
+        return account
     }
 }
 
+//extension EntityTransaction {
+//    func asChartEntry() -> ChartDataEntry {
+//        ChartDataEntry(x: dateOperation.timeIntervalSince1970,
+//                       y: amount)
+//    }
+//}
 

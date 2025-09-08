@@ -123,7 +123,7 @@ struct PreferenceTransactionView: View {
                 try await configureFormState()
                 DataContext.shared.context = modelContext
 
-                if let account = currentAccountManager.currentAccount {
+                if let account = currentAccountManager.getAccount() {
                     try await refreshData(for: account)
                 }
             }
@@ -140,7 +140,7 @@ struct PreferenceTransactionView: View {
             }
         }
         
-        .onChange(of: currentAccountManager.currentAccount) { _, newAccount in
+        .onChange(of: currentAccountManager.getAccount()) { _, newAccount in
             changeCounter += 1
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 Task {

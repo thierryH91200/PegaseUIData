@@ -101,7 +101,7 @@ struct BankStatementListView: View {
                     }
                 }
             
-                .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
+                .onChange(of: currentAccountManager.getAccount()) { old, newAccount in
                     
                     if newAccount != nil {
                         dataManager.statements.removeAll()
@@ -217,7 +217,7 @@ struct BankStatementListView: View {
         DataContext.shared.context = modelContext
         DataContext.shared.undoManager = undoManager
         
-        if currentAccountManager.currentAccount != nil {
+        if currentAccountManager.getAccount() != nil {
             dataManager.statements = BankStatementManager.shared.getAllData()!
         }
     }

@@ -77,7 +77,7 @@ struct Scheduler: View {
     
     var body: some View {
         VStack(spacing: 2) {
-            if let account = CurrentAccountManager.shared.currentAccount {
+            if let account = CurrentAccountManager.shared.getAccount() {
                 Text("Account: \(account.name)")
                     .font(.headline)
                     .padding(.bottom, 0)
@@ -117,12 +117,12 @@ struct Scheduler: View {
                     }
                 }
             
-                .onChange(of: CurrentAccountManager.shared.currentAccount) { old, newAccount in
+                .onChange(of: currentAccountManager.currentAccountID) { old, newValue in
                     
-                    if newAccount != nil {
+                    if newValue.isEmpty {
                         dataManager.schedulers.removeAll()
                         selectedItem = nil
-//                        lastDeletedID = nil
+//                      lastDeletedID = nil
 
                         refreshData()
                     }
@@ -255,7 +255,7 @@ struct Scheduler: View {
         DataContext.shared.context = modelContext
         DataContext.shared.undoManager = undoManager
         
-        if currentAccountManager.currentAccount != nil {
+        if currentAccountManager.getAccount() != nil {
             if let allData = SchedulerManager.shared.getAllData() {
                 dataManager.schedulers = allData
                 schedulers = allData

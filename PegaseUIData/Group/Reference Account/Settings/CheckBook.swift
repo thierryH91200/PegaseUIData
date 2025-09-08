@@ -41,7 +41,7 @@ struct CheckView: View {
     var body: some View {
         VStack(spacing: 10) {
             // Affiche le compte actuel
-            if let account = currentAccountManager.currentAccount {
+            if let account = currentAccountManager.getAccount() {
                 Text("Account: \(account.name)")
                     .font(.headline)
             }
@@ -59,7 +59,6 @@ struct CheckView: View {
                     refreshData()
                 }
 
-            
                 // Mise à jour de l'élément sélectionné
                 .onChange(of: selectedItem) { _, newValue in
                     if let selected = newValue {
@@ -68,7 +67,7 @@ struct CheckView: View {
                         selectedItem = nil
                     }
                 }
-                .onChange(of: currentAccountManager.currentAccount) { old, newAccount in
+                .onChange(of: currentAccountManager.getAccount()) { old, newAccount in
                     // Mise à jour de la liste en cas de changement de compte
                     dataManager.checkBooks.removeAll()
                     selectedItem = nil
@@ -195,7 +194,7 @@ struct CheckView: View {
         DataContext.shared.context = modelContext
         DataContext.shared.undoManager = undoManager
 
-        if currentAccountManager.currentAccount != nil {
+        if currentAccountManager.getAccount() != nil {
             if let allData = ChequeBookManager.shared.getAllData() {
                 dataManager.checkBooks = allData
                 checkBooks = allData
