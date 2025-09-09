@@ -37,6 +37,7 @@ import SwiftUI
     }
 }
 
+@MainActor
 protocol PreferenceManaging {
 
     func defaultPref(account: EntityAccount) -> EntityPreference?
@@ -45,6 +46,7 @@ protocol PreferenceManaging {
 }
 
 // MARK: preferenceManager
+@MainActor
 final class PreferenceManager: PreferenceManaging {
     
     static let shared = PreferenceManager()
@@ -82,7 +84,6 @@ final class PreferenceManager: PreferenceManaging {
         }
         
         // Configuration de status
-        DataContext.shared.context = modelContext
         newPreference.status = StatusManager.shared.getAllData(for: account)?.first
 
         newPreference.signe = true

@@ -228,7 +228,6 @@ struct TransactionFormViewModel: View {
                     selectedAccount = nil // Pour que le Picker reconnaisse l'état initial
                 }
 
-                DataContext.shared.context = modelContext
                 let account = CurrentAccountManager.shared.getAccount()
                 guard let account = account else { return }
                 if let oldSelected = selectedAccount {

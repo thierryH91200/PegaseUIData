@@ -78,8 +78,8 @@ final class AccountFolderManager {
 
         do {
             folderAccount = try modelContext?.fetch(fetchDescriptor) ?? []
-            return folderAccount
         } catch {
+            folderAccount = []
             printTag("Erreur lors de la récupération des données avec SwiftData")
         }
         return folderAccount
@@ -101,8 +101,8 @@ final class AccountFolderManager {
     
     @MainActor func preloadDataIfNeeded(modelContext: ModelContext) {
         // Vérifie si des données existent déjà
-        let existingFolders = try? modelContext.fetch(FetchDescriptor<EntityFolderAccount>())
-        guard existingFolders?.isEmpty == true else { return }
+        let existingFolders = getAllData()
+        guard existingFolders.isEmpty == true else { return }
         
         // Ajout de données d'exemple
         let folder1 = EntityFolderAccount()

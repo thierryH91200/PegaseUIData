@@ -72,18 +72,27 @@ struct ModePaymentView: View {
                refreshData()
            }
 
-            // Recharge les données lorsqu'un nouveau compte est sélectionné
+            // Recharge les données lorsqu'un nouvel ID de compte est sélectionné
             .onChange(of: currentAccountManager.currentAccountID ) { old, newValue in
+                printTag("ModePayment onChange(currentAccountID) old=\(old) new=\(newValue)")
                 if !newValue.isEmpty {
-
                     dataManager.modePayments.removeAll()
                     selectedItem = nil
                     refreshData()
-
                 } else {
                     // Cas aucun compte sélectionné si nécessaire
                     dataManager.modePayments.removeAll()
                     selectedItem = nil
+                }
+            }
+            
+            // Recharge aussi lorsqu'un nouveau compte résolu est détecté
+            .onChange(of: currentAccountManager.getAccount()) { _, newAccount in
+                printTag("ModePayment onChange(account) -> \(String(describing: newAccount?.uuid))")
+                dataManager.modePayments.removeAll()
+                selectedItem = nil
+                if newAccount != nil {
+                    refreshData()
                 }
             }
             
@@ -174,7 +183,6 @@ struct ModePaymentView: View {
     }
     
     private func setupDataManager() {
-        DataContext.shared.context = modelContext
         DataContext.shared.undoManager = undoManager
         
         if currentAccountManager.getAccount() != nil {

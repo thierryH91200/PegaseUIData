@@ -57,7 +57,7 @@ struct OperationDialogView: View {
             // Boutons d'action
             ActionButtonsView(
                 cancelAction: handleCancel,
-                saveAction: handleSave
+                saveAction  : handleSave
             )
         }
         .padding()
@@ -134,19 +134,15 @@ struct OperationDialogView: View {
     
     // Méthodes extraites et simplifiées
     private func configureDataManagers() {
-        DataContext.shared.context = modelContext
         formState.accounts = AccountManager.shared.getAllData()
     }
     
     private func refreshData() {
-        DataContext.shared.context = modelContext
         _ = ListTransactionsManager.shared.getAllData()
     }
     
     func configureFormState() async throws {
         
-        DataContext.shared.context = modelContext
-
         // Configuration des comptes
         formState.accounts = AccountManager.shared.getAllData()
         formState.selectedAccount = CurrentAccountManager.shared.getAccount()
@@ -276,7 +272,6 @@ struct OperationDialogView: View {
     
     func resetListTransactions() {
         
-        DataContext.shared.context = modelContext
         let account = CurrentAccountManager.shared.getAccount()
         let entityPreference = PreferenceManager.shared.getAllData(for: account)
 

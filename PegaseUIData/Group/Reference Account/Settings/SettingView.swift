@@ -89,7 +89,6 @@ struct SettingTab1: View {
 //}
 struct SettingTab: View {
     
-    
     @StateObject private var chequeViewManager       = ChequeBookManager()
     @StateObject private var modePaiementDataManager = PaymentModeManager()
     @StateObject private var rubricDataManager       = RubricDataManager()

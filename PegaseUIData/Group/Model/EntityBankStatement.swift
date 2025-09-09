@@ -89,6 +89,7 @@ extension EntityBankStatement {
     }
 }
 
+@MainActor
 protocol BankStatementManaging {
     func create(num: Int, startDate: Date, startSolde: Double) throws -> EntityBankStatement?
     func getAllData() -> [EntityBankStatement]?

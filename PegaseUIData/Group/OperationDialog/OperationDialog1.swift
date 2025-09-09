@@ -13,7 +13,6 @@ import SwiftData
 struct OperationDialog: View {
     
     @EnvironmentObject var transactionManager: TransactionSelectionManager
-
     @StateObject private var formState = TransactionFormState()
     
     var body: some View {

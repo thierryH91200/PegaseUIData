@@ -76,7 +76,6 @@ struct CheckView: View {
             
                 // Charge les données au démarrage de la vue
                 .onAppear {
-//                    DataContext.shared.context = modelContext
                     setupDataManager()
                 }
 
@@ -191,7 +190,6 @@ struct CheckView: View {
     
     // Configure le gestionnaire de données
     private func setupDataManager() {
-        DataContext.shared.context = modelContext
         DataContext.shared.undoManager = undoManager
 
         if currentAccountManager.getAccount() != nil {

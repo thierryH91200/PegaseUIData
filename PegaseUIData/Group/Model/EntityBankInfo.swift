@@ -39,6 +39,7 @@ final class EntityBanqueInfo : Identifiable{
 
 }
 
+@MainActor
 protocol BankManaging {
     func create(account: EntityAccount?) throws -> EntityBanqueInfo
     func delete(entity: EntityBanqueInfo)

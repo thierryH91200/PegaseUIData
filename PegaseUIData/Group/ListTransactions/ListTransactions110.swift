@@ -229,7 +229,6 @@ struct OperationRow: View {
         printTag("Importation de \(count) transactions CSV.")
         
         let account = CurrentAccountManager.shared.getAccount()!
-        DataContext.shared.context = modelContext
 
         let entityPreference = PreferenceManager.shared.getAllData(for: account)
 

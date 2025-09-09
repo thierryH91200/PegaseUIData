@@ -52,7 +52,7 @@ import Combine
     @Relationship(deleteRule: .cascade, inverse: \EntityCheckBook.account)
     var carnetCheques: [EntityCheckBook]?
 
-    var compteLie: EntitySchedule?
+    var compteLie: EntityTransaction?
     
     @Relationship(deleteRule: .cascade, inverse: \EntityTransaction.account)
     var transactions: [EntityTransaction]?
@@ -138,22 +138,28 @@ final class AccountManager {
         return account
     }
     
-    func getAccount(id: UUID) -> EntityAccount? {
-        
-        var account : [EntityAccount] = []
-        
+    //  6F9B6677-C4B6-4C8C-9228-67C80641D0DE
+    //  179E047F-1B09-4BA9-BCA1-A87858B4A08E
+    //  919D07FD-2D35-499E-8B21-1E99E00240E5
+    //  A8F3ADA5-B531-4263-9222-AF16E1C067BB    
+    @MainActor
+    func getAccount(uuid: UUID) -> EntityAccount? {
+        guard let ctx = modelContext else {
+            printTag("getAccount(uuid:): ModelContext indisponible")
+            return nil
+        }
+        getAllData()
+        let predicate = #Predicate<EntityAccount> { $0.uuid == uuid }
+        var descriptor = FetchDescriptor<EntityAccount>(predicate: predicate)
+        descriptor.fetchLimit = 1
         do {
-            let predicate = #Predicate<EntityAccount>{ entity in entity.uuid  ==  id }
-
-            let descriptor = FetchDescriptor<EntityAccount>(
-                predicate: predicate )
-            
-            account = try modelContext?.fetch(descriptor) ?? []
+            printTag(uuid.uuidString)
+            let entity = try ctx.fetch(descriptor).first
+            return entity
         } catch {
             printTag("Erreur lors de la récupération des données : \(error.localizedDescription)")
             return nil
         }
-        return account.first
     }
 
     func getAllData() -> [EntityAccount] {
@@ -162,7 +168,7 @@ final class AccountManager {
             let request = FetchDescriptor<EntityAccount>()
             entities = try modelContext?.fetch(request) ?? []
             for entity in entities {
-                printAccount(entityAccount: entity, description: "Account")
+                printAccount(entityAccount: entity, description: "Account \(entity.uuid.uuidString)")
             }
         } catch {
             printTag("Erreur lors de la récupération des données avec SwiftData")
@@ -205,13 +211,13 @@ final class CurrentAccountManager: ObservableObject {
     // UUID stocké en String pour compatibilité avec AppStorage/UI
     @Published var currentAccountID: String
 
-    private init() {
-        self.currentAccountID = ""
-    }
-
     // Propriété calculée pratique pour accéder directement à l'objet
     var currentAccount: EntityAccount? {
         getAccount()
+    }
+
+    private init() {
+        self.currentAccountID = ""
     }
 
     // Affectation d'un compte à la variable globale
@@ -222,15 +228,27 @@ final class CurrentAccountManager: ObservableObject {
             printTag("setAccount: ID invalide \(id)")
             return false
         }
-
-        if let account = AccountManager.shared.getAccount(id: uuid) {
+        if let account = AccountManager.shared.getAccount(uuid: uuid) {
             self.currentAccountID = account.uuid.uuidString
             printTag("setAccount OK", category: account.uuid.uuidString)
             return true
         } else {
+            let account = AccountManager.shared.getAllData()
             printTag("setAccount: aucun compte trouvé pour \(id)")
             return false
         }
+    }
+    
+    // Récupération d'un compte
+    func getAccount() -> EntityAccount? {
+        guard let uuid = UUID(uuidString: currentAccountID) else {
+            return nil
+        }
+        guard let account = AccountManager.shared.getAccount(uuid: uuid) else {
+            return nil
+        }
+        printTag("getAccount", category: account.uuid.uuidString)
+        return account
     }
     
     // Réinitialiser le compte courant
@@ -239,20 +257,7 @@ final class CurrentAccountManager: ObservableObject {
         printTag("clearAccount")
     }
     
-    // Récupération d'un compte
-    func getAccount() -> EntityAccount? {
-        
-        _ = AccountManager.shared.getAllData()
 
-        guard let id = UUID(uuidString: currentAccountID) else {
-            return nil
-        }
-        guard let account = AccountManager.shared.getAccount(id: id) else {
-            return nil
-        }
-        printTag("getAccount", category: account.uuid.uuidString)
-        return account
-    }
 }
 
 //extension EntityTransaction {

@@ -16,7 +16,6 @@ class ContentViewModel: ObservableObject {
 
     @MainActor
     init(modelContext: ModelContext) {
-        DataContext.shared.context = modelContext
         InitManager.shared.initialize()
         isInitialized = true // Marqueur pour indiquer la fin de l'initialisation
     }

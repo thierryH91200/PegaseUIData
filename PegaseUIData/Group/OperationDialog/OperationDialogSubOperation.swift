@@ -200,7 +200,6 @@ struct SubOperationDialog: View {
     }
     
     func configureManagers() async throws {
-        DataContext.shared.context = modelContext
     }
     
     func configureForm() {

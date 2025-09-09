@@ -33,9 +33,14 @@ final class EntitySchedule : Identifiable{
     
     var category                 : EntityCategory?
     var paymentMode              : EntityPaymentMode?
-    @Relationship(inverse        : \EntityAccount.compteLie) var linkedAccount : EntityAccount?
     
-    @Relationship var account    : EntityAccount
+    // Do NOT declare inverse here; the inverse is declared on EntityAccount.compteLie
+    @Relationship
+    var linkedAccount : EntityAccount?
+    
+    // Do NOT declare inverse here; the inverse is declared on EntityAccount.echeanciers
+    @Relationship
+    var account    : EntityAccount
 
     @MainActor
     public init() {
@@ -80,12 +85,14 @@ extension EntitySchedule {
     }
 }
 
+@MainActor
 protocol ScheduleManaging {
     func create(account: EntityAccount?, name : String) throws -> EntitySchedule
     func getAllData() -> [EntitySchedule]?
     func save () throws
 }
 
+@MainActor
 final class SchedulerManager: ScheduleManaging, ObservableObject  {
 
     @Published var schedulers = [EntitySchedule]()
@@ -189,46 +196,7 @@ final class SchedulerManager: ScheduleManaging, ObservableObject  {
     }
     
     func createComptelie() {
-        //            let entityTransactionsTransfert = NSEntityDescription.insertNewObject(forEntityName: "EntityTransactions", into: viewContext!) as! EntityTransactions
-        //
-        //            entityTransactionsTransfert.dateCree      = entityTransaction.dateCree
-        //            entityTransactionsTransfert.dateModifie   = entityTransaction.dateModifie
-        //            entityTransactionsTransfert.dateOperation = entityTransaction.dateOperation
-        //            entityTransactionsTransfert.datePointage  = entityTransaction.datePointage
-        //
-        //            let compteLie = entitySchedule.compteLie!
-        //            entityTransactionsTransfert.account        = compteLie
-        //
-        //            entityTransactionsTransfert.statut        = entityTransaction.statut
-        //            entityTransactionsTransfert.bankStatement = entityTransaction.bankStatement
-        //
-        //            // le modePaiement existe t il ??
-        //            var name = entityTransactionsTransfert.paymentMode?.name ?? "nil"
-        //            let color = entityTransactionsTransfert.paymentMode?.color as? NSColor ?? NSColor.black
-        //            let uuid = entityTransactionsTransfert.paymentMode?.uuid ?? UUID()
-        //            let entityModePaiement = PaymentMode.shared.findOrCreate(account: compteLie, name: name, color: color , uuid: uuid)
-        //            entityTransactionsTransfert.paymentMode  = entityModePaiement
-        //
-        //
-        //            let entitySousOperations = entityTransactionsTransfert.sousOperations
-        //            let entitySplitTransactions = entitySousOperations!.allObjects as! [EntitySousOperations]
-        //            let entitySplitTransaction = entitySplitTransactions.first
-        //
-        //            let entityRubric = Rubric.shared.findOrCreate(account: compteLie, name: name, color: color, uuid: uuid)
-        //
-        //            // la categorie existe t elle ?
-        //            name = entitySchedule.category?.name ?? "nil"
-        //            let objectif = entitySchedule.category?.objectif
-        //            let entityCategorie = Categories.shared.findOrCreate(account: compteLie, name: name, objectif: objectif!, uuid: uuid)
-        //
-        //            entitySplitTransaction?.category = entityCategorie
-        //            entitySplitTransaction?.category?.rubric = entityRubric
-        //            entitySplitTransaction?.amount       = -entitySchedule.amount
-        //
-        //            entityTransactionsTransfert.addToSousOperations(entitySousOperation)
-        //
-        //            entityTransactionsTransfert.uuid          = UUID()
-        
+        // (omitted legacy commented code)
     }
     
     // Créer une sous-opération
@@ -237,12 +205,10 @@ final class SchedulerManager: ScheduleManaging, ObservableObject  {
         
         let rubricName = schedule.category?.rubric?.name ?? ""
         let color = schedule.category?.rubric?.color ?? .black
-        //        let rubricUUID = schedule.category?.rubric?.uuid ?? UUID()
         let rubric = RubricManager.shared.findOrCreate(account: schedule.account, name: rubricName, color: color)
         
         let categoryName = schedule.category?.name ?? ""
         let objectif = schedule.category?.objectif ?? 0.0
-        //        let categoryUUID = schedule.category?.uuid ?? UUID()
         let category = CategoryManager.shared.findOrCreate(
             account: schedule.account,
             name: categoryName,
@@ -268,7 +234,6 @@ final class SchedulerManager: ScheduleManaging, ObservableObject  {
         transaction.datePointage = dateValeur
         transaction.account = schedule.account
         transaction.paymentMode = schedule.paymentMode
-        //        transaction.status = Date() >= dateValeur ? 2 : 1
         transaction.bankStatement = 0
         transaction.uuid = UUID()
         
@@ -312,10 +277,8 @@ final class SchedulerManager: ScheduleManaging, ObservableObject  {
             
             transferTransaction.sousOperations.append(transferSousOperation)
             transferTransaction.uuid = UUID()
-            modelContext?.insert(transferTransaction) // Ajout explicite dans le contexte
-            
+            modelContext?.insert(transferTransaction)
         }
-        // Sauvegarde explicite
         if modelContext?.hasChanges ?? false{
             do {
                 try modelContext?.save()
@@ -325,7 +288,6 @@ final class SchedulerManager: ScheduleManaging, ObservableObject  {
         }
     }
     func save () throws {
-        
         do {
             try modelContext?.save()
         } catch {
@@ -338,3 +300,4 @@ final class SchedulerManager: ScheduleManaging, ObservableObject  {
     }
     
 }
+

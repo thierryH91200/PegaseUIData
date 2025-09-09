@@ -12,6 +12,7 @@ import DGCharts
 
 
 
+@MainActor
 protocol TeeasuryManaging {
     func refresh(for account: EntityAccount?, minDate: Date)
     func updateChartData()

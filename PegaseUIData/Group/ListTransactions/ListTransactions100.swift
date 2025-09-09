@@ -215,7 +215,6 @@ struct ListTransactions200: View {
             .onReceive(NotificationCenter.default.publisher(for: .pasteSelectedTransactions)) { _ in
                 if let targetAccount = CurrentAccountManager.shared.getAccount() {
                     
-                    DataContext.shared.context = modelContext
                     
                     for transaction in clipboardTransactions {
                         
@@ -418,7 +417,6 @@ struct ListTransactions200: View {
     
     private func balanceCalculation() {
         // Récupère les données de l'init
-        DataContext.shared.context = modelContext
         
         guard let initCompte = InitAccountManager.shared.getAllData() else { return }
         

@@ -109,7 +109,6 @@ struct TreasuryCurve: View {
             return
         }
 
-        DataContext.shared.context = modelContext
         allTransactions = ListTransactionsManager.shared
             .getAllData()
             .filter { $0.account == account }

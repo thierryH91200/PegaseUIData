@@ -78,7 +78,6 @@ struct BankStatementListView: View {
             BankStatementTable(statements: dataManager.statements, selection: $selectedItem)
                 .frame(height: 300)
                 .onAppear {
-                    DataContext.shared.context = modelContext
                     setupDataManager()
                 }
                 .onReceive(NotificationCenter.default.publisher(for: .NSUndoManagerDidUndoChange)) { _ in
@@ -214,7 +213,6 @@ struct BankStatementListView: View {
     }
     
     private func setupDataManager() {
-        DataContext.shared.context = modelContext
         DataContext.shared.undoManager = undoManager
         
         if currentAccountManager.getAccount() != nil {

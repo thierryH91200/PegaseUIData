@@ -41,8 +41,6 @@ struct AccountFactory {
         initAccount.account = account
         account.initAccount = initAccount
         
-        DataContext.shared.context = modelContext
-
         PaymentModeManager.shared.createDefaultPaymentModes(for: account)
         account.paymentMode = PaymentModeManager.shared.modePayments
         
@@ -152,7 +150,7 @@ final class InitManager {
         ]
         
         // Comptes rattachés au premier dossier
-        for config in accountsConfig[0...3] {
+        for config in accountsConfig[0...2] {
             var account = AccountFactory.createAccount(
                 modelContext: ctx,
                 name: config.0,
@@ -166,11 +164,11 @@ final class InitManager {
                 numAccount: config.4
             )
             folder1.addChild(account)
-            print("account ", account.id)
+            print("account ", account.uuid)
         }
 
         // Comptes rattachés au second dossier
-        for config in accountsConfig[4...5] {
+        for config in accountsConfig[3...3] {
             var account = AccountFactory.createAccount(
                 modelContext: ctx,
                 name: config.0,
@@ -184,7 +182,7 @@ final class InitManager {
                 numAccount: config.4
             )
             folder2.addChild(account)
-            print("account ", account.id)
+            print("account ", account.uuid)
         }
         
         // Enregistrer les dossiers

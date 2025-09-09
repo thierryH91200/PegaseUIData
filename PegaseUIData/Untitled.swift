@@ -1,25 +1,7 @@
 
 //
-//final class AppGlobals {
-//    static let shared = AppGlobals()
-//    
-//    let schema = Schema([
-//        EntityAccount.self,
-//        EntityBankStatement.self,
-//        EntityBanqueInfo.self,
-//        EntityCategory.self,
-//        EntityCheckBook.self,
-//        EntityFolderAccount.self,
-//        EntityIdentity.self,
-//        EntityInitAccount.self,
-//        EntityPaymentMode.self,
-//        EntityStatus.self,
-//        EntityPreference.self,
-//        EntityRubric.self,
-//        EntitySchedule.self,
-//        EntitySousOperation.self,
-//        EntityTransaction.self
-//    ])
-//
-//    private init() {}
-//}
+
+//  6F9B6677-C4B6-4C8C-9228-67C80641D0DE
+//  179E047F-1B09-4BA9-BCA1-A87858B4A08E
+//  919D07FD-2D35-499E-8B21-1E99E00240E5
+//  A8F3ADA5-B531-4263-9222-AF16E1C067BB

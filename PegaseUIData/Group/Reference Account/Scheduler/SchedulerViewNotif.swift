@@ -118,7 +118,6 @@ struct UpcomingRemindersView: View {
                         }
                     }
                     .onAppear {
-                        DataContext.shared.context = modelContext
                         for entitySchedule in upcoming {
                             SchedulerManager.shared.createTransaction(entitySchedule: entitySchedule)
                             NotificationManager.shared.cancelReminder(for: entitySchedule)

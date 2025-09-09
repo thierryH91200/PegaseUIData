@@ -48,7 +48,7 @@ final class WindowControllerManager {
             forName: NSWindow.willCloseNotification,
             object: window,
             queue: .main
-        ) { [weak self] _ in
+        ) { _ in
             // Ne pas nil la fenêtre si tu veux la réutiliser; ici on la garde
             // Option: self?.helpWindow = nil pour forcer une recréation à chaque fois
         }

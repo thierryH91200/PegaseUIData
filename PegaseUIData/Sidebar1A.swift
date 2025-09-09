@@ -6,11 +6,8 @@ import AppKit
 struct Sidebar1A: View {
     
     @Environment(\.modelContext) private var modelContext
-//    @Query(sort: \EntityFolderAccount.name, animation: .bouncy) var folders: [EntityFolderAccount]
     
     @State var folders: [EntityFolderAccount] = []
-
-    @State private var modePayments : [EntityPaymentMode] = []
     
     @State private var selectedAccount: EntityAccount?
     @State private var selectedMode = "Check"
@@ -22,8 +19,8 @@ struct Sidebar1A: View {
             ForEach(folders) { folder in
                 Section(header: SectionHeader(section: folder)) {
                     
-                    ForEach(folder.childrenSorted, id: \.id) { child in
-                        AccountRow(account: child, isSelected: selectedAccount?.id == child.id)
+                    ForEach(folder.childrenSorted, id: \.uuid) { child in
+                        AccountRow(account: child, isSelected: selectedAccount?.uuid == child.uuid)
                             .tag(child)
                     }
                 }
@@ -36,26 +33,11 @@ struct Sidebar1A: View {
         .onChange(of: selectedAccount) { oldAccount, newAccount in
             if let account = newAccount {
                 
-                CurrentAccountManager.shared.setAccount(account.uuid.uuidString)
-                DataContext.shared.context = modelContext
-
-                // Exécute le code asynchrone dans une Task
-                Task {
-                    let modes = PaymentModeManager.shared.getAllData()
-                    
-                    // Mettez à jour les données sur le thread principal
-                    DispatchQueue.main.async {
-                        withAnimation {
-                            modePayments = modes!
-                        }
-                    }
-                }
-            } else {
-                withAnimation {
-                    modePayments = []
-                }
+                let uuidString = account.uuid.uuidString
+                CurrentAccountManager.shared.setAccount(uuidString)
             }
         }
+        Bouton()
         .onAppear {
             Task {
                 folders = AccountFolderManager.shared.getAllData()
@@ -68,7 +50,6 @@ struct Sidebar1A: View {
                 }
             }
         }
-        Bouton()
     }
 }
 
@@ -80,7 +61,8 @@ class BalanceManager: ObservableObject {
 struct SectionHeader: View {
     @ObservedObject var manager = BalanceManager()
     
-    @State var balance: Double = 0.0 //section.children.reduce(0) { $0 + $1.solde }
+    @State var balance: Double = 0.0
+    //section.children.reduce(0) { $0 + $1.solde }
     
     let section: EntityFolderAccount
     
@@ -104,17 +86,9 @@ struct SectionHeader: View {
                 .font(.headline)
                 .foregroundColor(manager.balance >= 0 ? .green : .red)
                 .frame(width: 80, alignment: .trailing) // Aligne à droite avec une largeur fixe
-            
-            // Boutons pour changer la balance (pour tester)
-//            HStack {
-//                Button("Increase") { manager.balance += 100 }
-//                Button("Decrease") { manager.balance -= 100 }
-//            }
-//            .padding()
         }
         .onAppear(){
             balance = section.children.reduce(0) { $0 + $1.solde }
-
         }
         .padding(.bottom, 5)
     }
@@ -146,7 +120,6 @@ struct AccountRow: View {
                 Text(account.initAccount!.codeAccount)
                     .font(.caption2)
                     .foregroundColor(isSelected ? .white : .primary)
-
             }
             Spacer()
             Text("\(account.solde, specifier: "%.2f") €")

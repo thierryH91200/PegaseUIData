@@ -70,13 +70,13 @@ final class RubricManager {
     }
 
     func find(account: EntityAccount, name: String) -> EntityRubric? {
-        let result = entitiesRubric.first { $0.account.id == account.id && $0.name == name }
+        let result = entitiesRubric.first { $0.account.uuid == account.uuid && $0.name == name }
         return result
     }
     
     func delete(entity: EntityRubric) {
         modelContext?.delete(entity)
-        entitiesRubric.removeAll { $0.id == entity.id }
+        entitiesRubric.removeAll { $0.uuid == entity.uuid }
     }
     
     @MainActor @discardableResult

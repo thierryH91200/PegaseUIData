@@ -49,6 +49,7 @@ extension EntityStatus: CustomStringConvertible {
     }
 }
 
+@MainActor
 protocol StatusManaging {
     func create(account: EntityAccount?, name: String, type: Int, color: NSColor) throws -> EntityStatus?
     func find( account: EntityAccount?, name: String) -> EntityStatus?
@@ -58,6 +59,7 @@ protocol StatusManaging {
 }
 
 //@Observable
+@MainActor
 final class StatusManager: StatusManaging {
     
     static let shared = StatusManager()
@@ -70,8 +72,7 @@ final class StatusManager: StatusManaging {
     
     private init() {}
     
-    @MainActor
-   func create(account: EntityAccount?, name: String, type: Int, color: NSColor) throws -> EntityStatus? {
+    func create(account: EntityAccount?, name: String, type: Int, color: NSColor) throws -> EntityStatus? {
         
         guard let statusType = StatusType(rawValue: type) else {
             throw EnumError.invalidStatusType
@@ -88,7 +89,6 @@ final class StatusManager: StatusManaging {
         return newStatus
     }
     
-    @MainActor
     func find( account: EntityAccount? = nil, name: String) -> EntityStatus? {
         
         guard let account = account ?? CurrentAccountManager.shared.getAccount() else { return nil }
@@ -200,4 +200,3 @@ enum StatusType: Int, CaseIterable, Identifiable {
         }
     }
 }
-

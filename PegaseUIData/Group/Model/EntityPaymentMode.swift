@@ -42,6 +42,7 @@ extension EntityPaymentMode: CustomStringConvertible {
     }
 }
 
+@MainActor
 protocol PaymentModeManaging {
     
     func create(account: EntityAccount, name: String, color: NSColor) throws -> EntityPaymentMode?
@@ -61,6 +62,7 @@ protocol PaymentModeManaging {
 //Contient la logique métier complexe
 //Est un singleton (shared)
 //Gère les données par défaut
+@MainActor
 final class PaymentModeManager : PaymentModeManaging, ObservableObject {
 
     static let shared = PaymentModeManager()

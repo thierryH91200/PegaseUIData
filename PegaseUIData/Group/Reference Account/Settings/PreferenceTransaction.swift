@@ -121,8 +121,6 @@ struct PreferenceTransactionView: View {
         .onAppear {
             Task {
                 try await configureFormState()
-                DataContext.shared.context = modelContext
-
                 if let account = currentAccountManager.getAccount() {
                     try await refreshData(for: account)
                 }
@@ -190,7 +188,6 @@ struct PreferenceTransactionView: View {
     
     // Configuration initiale du formulaire
     func configureFormState() async throws {
-        DataContext.shared.context = modelContext
 
         if /*let account = CurrentAccountManager.shared.getAccount(),*/
            let modes = PaymentModeManager.shared.getAllData() {
@@ -208,7 +205,6 @@ struct PreferenceTransactionView: View {
 
     // Rafraîchir les données du formulaire
     private func refreshData(for account: EntityAccount) async throws {
-        DataContext.shared.context = modelContext
 
         dataManager.preferenceTransaction = PreferenceManager.shared.getAllData(for: account)
         guard let entityPreference = dataManager.preferenceTransaction else { return }

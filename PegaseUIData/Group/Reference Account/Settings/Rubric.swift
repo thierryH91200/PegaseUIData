@@ -74,8 +74,6 @@ struct RubricView: View {
                 }
                 
                 .onAppear {
-                    DataContext.shared.context = modelContext
-
                     rubriques = RubricManager.shared.getAllData()
                     dataManager.rubrics = rubriques
                 }

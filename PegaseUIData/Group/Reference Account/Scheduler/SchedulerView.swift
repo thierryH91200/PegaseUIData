@@ -252,7 +252,7 @@ struct Scheduler: View {
     }
     
     private func setupDataManager() {
-        DataContext.shared.context = modelContext
+        
         DataContext.shared.undoManager = undoManager
         
         if currentAccountManager.getAccount() != nil {

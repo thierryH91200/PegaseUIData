@@ -61,7 +61,6 @@ struct BankView: View {
             // Créer un nouvel enregistrement si la base de données est vide
             if dataManager.banqueInfo == nil {
 
-                DataContext.shared.context = modelContext
                 let banqueInfo = BankManager.shared.getAllData()
                 dataManager.banqueInfo = banqueInfo
 
@@ -99,7 +98,6 @@ struct BankView: View {
     private func loadOrCreate(for account: EntityAccount?) {
         guard let account else { return }
 
-        DataContext.shared.context = modelContext
         dataManager.banqueInfo = BankManager.shared.getAllData() ?? {
             let entity = EntityBanqueInfo()
             entity.account = account
