@@ -213,7 +213,6 @@ struct BankStatementListView: View {
     }
     
     private func setupDataManager() {
-        DataContext.shared.undoManager = undoManager
         
         if currentAccountManager.getAccount() != nil {
             dataManager.statements = BankStatementManager.shared.getAllData()!

@@ -252,7 +252,7 @@ struct TransactionFormViewModel: View {
                 }
             }
             .onChange(of: selectedAccount) { old, newValue in
-                printTag("Selected Account: \(newValue?.name ?? "nil")")
+//                printTag("Selected Account: \(newValue?.name ?? "nil")")
             }
             .onChange(of: selectedMode) { old, newValue in
                 printTag("Selected Mode: \(newValue?.name ?? "nil")")
@@ -267,13 +267,10 @@ struct TransactionFormViewModel: View {
             .onChange(of: linkedAccount) { old, newValue in
                 if let oldSelected = selectedAccount {
                     selectedAccount = newValue.first(where: { $0.uuid == oldSelected.uuid })
-                }
-                
-                //                    selectedAccount = newValue.first
+                }                
                 return
             }
             .onChange(of: selectedAccount) { oldValue, newValue in
-                printTag("Compte sélectionné mis à jour : \(newValue?.name ?? "nil")")
             }
         }
     }

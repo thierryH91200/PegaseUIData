@@ -190,7 +190,6 @@ struct CheckView: View {
     
     // Configure le gestionnaire de données
     private func setupDataManager() {
-        DataContext.shared.undoManager = undoManager
 
         if currentAccountManager.getAccount() != nil {
             if let allData = ChequeBookManager.shared.getAllData() {

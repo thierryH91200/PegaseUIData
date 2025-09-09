@@ -138,22 +138,16 @@ final class AccountManager {
         return account
     }
     
-    //  6F9B6677-C4B6-4C8C-9228-67C80641D0DE
-    //  179E047F-1B09-4BA9-BCA1-A87858B4A08E
-    //  919D07FD-2D35-499E-8B21-1E99E00240E5
-    //  A8F3ADA5-B531-4263-9222-AF16E1C067BB    
     @MainActor
     func getAccount(uuid: UUID) -> EntityAccount? {
         guard let ctx = modelContext else {
             printTag("getAccount(uuid:): ModelContext indisponible")
             return nil
         }
-        getAllData()
         let predicate = #Predicate<EntityAccount> { $0.uuid == uuid }
         var descriptor = FetchDescriptor<EntityAccount>(predicate: predicate)
         descriptor.fetchLimit = 1
         do {
-            printTag(uuid.uuidString)
             let entity = try ctx.fetch(descriptor).first
             return entity
         } catch {
@@ -167,9 +161,6 @@ final class AccountManager {
             // Exécution d'une requête manuelle si besoin de filtrer ou trier
             let request = FetchDescriptor<EntityAccount>()
             entities = try modelContext?.fetch(request) ?? []
-            for entity in entities {
-                printAccount(entityAccount: entity, description: "Account \(entity.uuid.uuidString)")
-            }
         } catch {
             printTag("Erreur lors de la récupération des données avec SwiftData")
         }
@@ -230,10 +221,8 @@ final class CurrentAccountManager: ObservableObject {
         }
         if let account = AccountManager.shared.getAccount(uuid: uuid) {
             self.currentAccountID = account.uuid.uuidString
-            printTag("setAccount OK", category: account.uuid.uuidString)
             return true
         } else {
-            let account = AccountManager.shared.getAllData()
             printTag("setAccount: aucun compte trouvé pour \(id)")
             return false
         }
@@ -247,14 +236,12 @@ final class CurrentAccountManager: ObservableObject {
         guard let account = AccountManager.shared.getAccount(uuid: uuid) else {
             return nil
         }
-        printTag("getAccount", category: account.uuid.uuidString)
         return account
     }
     
     // Réinitialiser le compte courant
     func clearAccount() {
         self.currentAccountID = ""
-        printTag("clearAccount")
     }
     
 
