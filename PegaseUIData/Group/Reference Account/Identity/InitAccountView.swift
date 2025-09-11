@@ -36,7 +36,7 @@ struct InitAccountView: View {
     @EnvironmentObject var dataManager: InitAccountDataManager
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
 
-    @Query private var banqueInfos: [EntityInitAccount]
+//    @Query private var banqueInfos: [EntityInitAccount]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {

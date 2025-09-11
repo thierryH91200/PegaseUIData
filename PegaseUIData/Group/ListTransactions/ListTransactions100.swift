@@ -185,7 +185,7 @@ struct ListTransactions200: View {
             }
 
             .onChange(of: currentAccountManager.currentAccountID) { old, new in
-                printTag("Changement de compte détecté: \(String(describing: new))")
+                printTag("Chgt de compte détecté: \(String(describing: new))")
                 _ = ListTransactionsManager.shared.getAllData()
                 
                 withAnimation {

@@ -1,7 +1,175 @@
-
 //
 
-//  6F9B6677-C4B6-4C8C-9228-67C80641D0DE
-//  179E047F-1B09-4BA9-BCA1-A87858B4A08E
-//  919D07FD-2D35-499E-8B21-1E99E00240E5
-//  A8F3ADA5-B531-4263-9222-AF16E1C067BB
+//// Ajoute une personne de démonstration
+//InitManager.shared.initialize()
+////            PersonManager.shared.create(name: "Exemple", town: "Seoul", age: 25)
+//openDatabase(at: cleanURL)
+
+
+
+//struct ContentView: View {
+//    @EnvironmentObject var containerManager: ContainerManager
+//
+//    // Deux gestionnaires distincts pour mémoriser/restaurer des tailles différentes
+//    @StateObject private var splashSizeManager = WindowSizeManager(windowID: "SplashScreen")
+//    @StateObject private var mainSizeManager   = WindowSizeManager(windowID: "MainWindow")
+//
+//    // Référence à la NSWindow hébergeant cette vue
+//    @State private var hostingWindow: NSWindow?
+//
+//    var body: some View {
+//        Group {
+//            if containerManager.showingSplashScreen {
+//                SplashScreenView()
+//                    .onAppear { applyWindowProfile(isSplash: true, animated: true) }
+//            } else {
+//                ContentView100()
+//                    .onAppear { applyWindowProfile(isSplash: false, animated: true) }
+//            }
+//        }
+//        // Accéder à la NSWindow et appliquer le bon profil au premier rendu
+//        .background(
+//            WindowAccessor { window in
+//                guard let window else { return }
+//                hostingWindow = window
+//                applyWindowProfile(isSplash: containerManager.showingSplashScreen, animated: false)
+//            }
+//        )
+//        .animation(.easeInOut(duration: 0.25), value: containerManager.showingSplashScreen)
+//        .onChange(of: containerManager.showingSplashScreen) { _, isSplash in
+//            applyWindowProfile(isSplash: isSplash, animated: true)
+//        }
+//    }
+
+
+
+
+
+
+//ne pourrais tu pas me mixer ??
+
+//struct RootView: View {
+//    @EnvironmentObject var containerManager: ContainerManager
+//    @StateObject private var currentAccountManager = CurrentAccountManager.shared
+//
+//    var body: some View {
+//        if let container = containerManager.currentContainer,
+//           let account = currentAccountManager.currentAccount,
+//           containerManager.showingSplashScreen  == false {
+//            ContentView100(account: account)
+//                .environment(\.modelContext, container.mainContext)
+//        } else {
+//            SplashScreenView() // écran neutre qui n’accède pas à SwiftData
+//        }
+//    }
+//}
+
+import SwiftUI
+import SwiftData
+import Combine
+//
+//// MARK: - Vue racine
+struct ContentView: View {
+    @EnvironmentObject var containerManager: ContainerManager
+    @StateObject private var currentAccountManager = CurrentAccountManager.shared
+
+    // Deux gestionnaires distincts pour mémoriser/restaurer des tailles différentes
+    @StateObject private var splashSizeManager = WindowSizeManager(windowID: "SplashScreen")
+    @StateObject private var mainSizeManager   = WindowSizeManager(windowID: "MainWindow")
+    
+    // Référence à la NSWindow hébergeant cette vue
+    @State private var hostingWindow: NSWindow?
+    
+    var body: some View {
+        Group {
+            if containerManager.showingSplashScreen {
+                SplashScreenView()
+            } else {
+                if let container = containerManager.currentContainer{ //,
+//                   let account = currentAccountManager.currentAccount {
+                    ContentView100()
+                        .environment(\.modelContext, container.mainContext)
+                } else {
+//                    SplashScreenView()
+//                        .onAppear { applyWindowProfile(isSplash: true, animated: true) }
+                    EmptyView()
+                }
+            }
+        }
+        // Accéder à la NSWindow et appliquer le bon profil au premier rendu
+        .background(
+            WindowAccessor { window in
+                guard let window else { return }
+                hostingWindow = window
+                applyWindowProfile(isSplash: containerManager.showingSplashScreen, animated: false)
+            }
+        )
+        .animation(.easeInOut(duration: 0.25), value: containerManager.showingSplashScreen)
+        .onChange(of: containerManager.showingSplashScreen) { _, isSplash in
+            DispatchQueue.main.async {
+                applyWindowProfile(isSplash: isSplash, animated: true)
+            }
+        }
+    }
+    // Applique configuration, taille et contraintes selon l’écran affiché
+    private func applyWindowProfile(isSplash: Bool, animated: Bool) {
+        guard let window = hostingWindow else { return }
+
+        // Choisir le bon manager et ID
+        let manager = isSplash ? splashSizeManager : mainSizeManager
+        let id = isSplash ? "SplashScreen" : "MainWindow"
+
+        // Détacher l’ancien delegate et attacher le bon
+        window.delegate = nil
+        window.delegate = manager
+
+        // Définir des contraintes de taille différentes si souhaité
+        if isSplash {
+            window.contentMinSize = NSSize(width: 700, height: 500)
+            window.contentMaxSize = NSSize(width: 2000, height: 1400)
+        } else {
+            window.contentMinSize = NSSize(width: 900, height: 600)
+            window.contentMaxSize = NSSize(width: 3000, height: 2000)
+        }
+
+        // Taille par défaut si aucune sauvegarde
+        let defaultSize = isSplash
+            ? NSSize(width: 800, height: 600)   // Splash
+            : NSSize(width: 1200, height: 800)  // Main
+
+        // Savoir si on a déjà une taille sauvegardée
+        let hasSavedWidth = UserDefaults.standard.double(forKey: "\(id)_width") > 0
+
+        if hasSavedWidth {
+            // Restaurer la taille/position sauvegardée pour ce profil
+            manager.applySavedSize(to: window)
+        } else {
+            // Appliquer la taille par défaut, centrée
+            var frame = window.frame
+            frame.size = defaultSize
+            if let screenFrame = window.screen?.visibleFrame {
+                frame.origin.x = screenFrame.midX - defaultSize.width / 2
+                frame.origin.y = screenFrame.midY - defaultSize.height / 2
+            }
+            setWindowFrame(window, to: frame, animated: animated)
+        }
+
+        // Optionnel: changer le titre pour repérer l’état
+        window.title = isSplash ? "Welcome" :
+              containerManager.currentDatabaseName.isEmpty ? "Main" : containerManager.currentDatabaseName
+    }
+
+    // Anime (ou non) la mise à jour de la frame
+    private func setWindowFrame(_ window: NSWindow, to frame: NSRect, animated: Bool) {
+        if animated && window.styleMask.contains(.fullScreen) == false {
+            NSAnimationContext.runAnimationGroup { context in
+                context.duration = 0.22
+                context.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+                window.animator().setFrame(frame, display: true)
+            }
+        } else {
+            window.setFrame(frame, display: true)
+        }
+    }
+}
+

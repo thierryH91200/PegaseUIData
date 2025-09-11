@@ -76,7 +76,6 @@ import SwiftData
             fatalError("Impossible de récupérer le compte courant.")
         }
     }
-    
 }
 
 extension EntityTransaction {

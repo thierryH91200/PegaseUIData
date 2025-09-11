@@ -53,7 +53,8 @@ struct ContentView100: View {
     
     @AppStorage("choixCouleur") var choixCouleur: String = "Unie"
     
-//    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var containerManager: ContainerManager
+//    let account: EntityAccount 
 
     @StateObject private var currentAccountManager = CurrentAccountManager.shared
     @StateObject private var transactionManager = TransactionSelectionManager()
@@ -131,13 +132,13 @@ struct ContentView100: View {
 
         .toolbar {
             
-//            ToolbarItem(placement: .navigation) {
-//                Button {
-//                    appState.isProjectOpen = false // Revenir à WelcomeWindowView
-//                } label: {
-//                    Label("Home", systemImage: "house")
-//                }
-//            }
+            ToolbarItem(placement: .navigation) {
+                Button {
+                    containerManager.closeCurrentDatabase()
+                } label: {
+                    Label(String(localized: "Home",table: "MainApp"), systemImage: "house")
+                }
+            }
 
             ToolbarItemGroup(placement: .navigation) {
                 Button(action: {

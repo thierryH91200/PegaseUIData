@@ -10,7 +10,6 @@ import SwiftData
 import SwiftUI
 import Combine
 
-
 @Model class EntityAccount: Identifiable {
 
     var name: String = ""
@@ -166,13 +165,7 @@ final class AccountManager {
         }
         return entities
     }
-    
-//    func getRoot(modelContext: ModelContext) -> [EntityFolderAccount] {
-//        let request = FetchDescriptor<EntityFolderAccount>(predicate: #Predicate { $0.isRoot == false })
-//        let entities = try? modelContext.fetch(request)
-//        return entities!
-//    }
-    
+
     // Juste pour le debug
     func printAccount(entityAccount : EntityAccount, description : String) {
         let name     = entityAccount.name
@@ -194,6 +187,64 @@ final class AccountManager {
     }
 }
 
+//@MainActor
+//final class CurrentAccountManager: ObservableObject {
+//    
+//    static let shared = CurrentAccountManager()
+//    
+//    // UUID stocké en String pour compatibilité avec AppStorage/UI
+//    @Published var currentAccountID: String
+//
+//    // Propriété calculée pratique pour accéder directement à l'objet
+//    var currentAccount: EntityAccount? {
+//        getAccount()
+//    }
+//
+//    private init() {
+//        self.currentAccountID = ""
+//    }
+//
+//    // Affectation d'un compte à la variable globale
+//    // Retourne true si l'ID est valide et correspond à un compte existant.
+//    @discardableResult
+//    func setAccount(_ id: String) -> Bool {
+//        guard let uuid = UUID(uuidString: id) else {
+//            printTag("setAccount: ID invalide \(id)")
+//            return false
+//        }
+//        if let account = AccountManager.shared.getAccount(uuid: uuid) {
+//            self.currentAccountID = account.uuid.uuidString
+//            return true
+//        } else {
+//            printTag("setAccount: aucun compte trouvé pour \(id)")
+//            return false
+//        }
+//    }
+//    
+//    // Récupération d'un compte
+//    func getAccount() -> EntityAccount? {
+//        guard let uuid = UUID(uuidString: currentAccountID) else {
+//            return nil
+//        }
+//        guard let account = AccountManager.shared.getAccount(uuid: uuid) else {
+//            return nil
+//        }
+//        return account
+//    }
+//    
+//    // Réinitialiser le compte courant
+//    func clearAccount() {
+//        self.currentAccountID = ""
+//    }
+//}
+
+//extension EntityTransaction {
+//    func asChartEntry() -> ChartDataEntry {
+//        ChartDataEntry(x: dateOperation.timeIntervalSince1970,
+//                       y: amount)
+//    }
+//}
+
 @MainActor
 final class CurrentAccountManager: ObservableObject {
     
@@ -201,22 +252,46 @@ final class CurrentAccountManager: ObservableObject {
     
     // UUID stocké en String pour compatibilité avec AppStorage/UI
     @Published var currentAccountID: String
-
-    // Propriété calculée pratique pour accéder directement à l'objet
-    var currentAccount: EntityAccount? {
-        getAccount()
-    }
-
+        
     private init() {
         self.currentAccountID = ""
     }
-
+    
+    // Propriété calculée pratique pour accéder directement à l'objet
+    // Retourne nil si le contexte est absent ou si l’ID n’est pas valide.
+    var currentAccount: EntityAccount? {
+        guard let ctx = DataContext.shared.context else {
+            return nil
+        }
+        guard let uuid = UUID(uuidString: currentAccountID) else {
+            return nil
+        }
+        // Fetch sécurisé
+        let predicate = #Predicate<EntityAccount> { $0.uuid == uuid }
+        var descriptor = FetchDescriptor<EntityAccount>(predicate: predicate)
+        descriptor.fetchLimit = 1
+        do {
+            return try ctx.fetch(descriptor).first
+        } catch {
+            printTag("CurrentAccountManager.currentAccount fetch error: \(error.localizedDescription)")
+            return nil
+        }
+    }
+    
     // Affectation d'un compte à la variable globale
     // Retourne true si l'ID est valide et correspond à un compte existant.
     @discardableResult
     func setAccount(_ id: String) -> Bool {
         guard let uuid = UUID(uuidString: id) else {
             printTag("setAccount: ID invalide \(id)")
+            return false
+        }
+        // Ne pas faire de fetch si le contexte est absent
+        guard DataContext.shared.context != nil else {
+            // On enregistre quand même l’ID si vous voulez le restaurer plus tard,
+            // mais c’est plus sûr de refuser tant que le contexte est absent.
+            // Ici, on refuse pour éviter un état incohérent.
+            printTag("setAccount: contexte absent, impossible d'affecter l'ID \(id)")
             return false
         }
         if let account = AccountManager.shared.getAccount(uuid: uuid) {
@@ -228,29 +303,29 @@ final class CurrentAccountManager: ObservableObject {
         }
     }
     
-    // Récupération d'un compte
+    // Récupération d'un compte par ID en toute sécurité
     func getAccount() -> EntityAccount? {
+        guard let ctx = DataContext.shared.context else {
+            return nil
+        }
         guard let uuid = UUID(uuidString: currentAccountID) else {
             return nil
         }
-        guard let account = AccountManager.shared.getAccount(uuid: uuid) else {
+        let predicate = #Predicate<EntityAccount> { $0.uuid == uuid }
+        var descriptor = FetchDescriptor<EntityAccount>(predicate: predicate)
+        descriptor.fetchLimit = 1
+        do {
+            return try ctx.fetch(descriptor).first
+        } catch {
+            printTag("CurrentAccountManager.getAccount fetch error: \(error.localizedDescription)")
             return nil
         }
-        return account
     }
     
     // Réinitialiser le compte courant
     func clearAccount() {
         self.currentAccountID = ""
+        // Si vous avez un snapshot publié, mettez-le à nil ici.
+        // self.currentAccountSnapshot = nil
     }
-    
-
 }
-
-//extension EntityTransaction {
-//    func asChartEntry() -> ChartDataEntry {
-//        ChartDataEntry(x: dateOperation.timeIntervalSince1970,
-//                       y: amount)
-//    }
-//}
-

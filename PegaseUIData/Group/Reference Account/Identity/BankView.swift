@@ -36,7 +36,7 @@ struct BankView: View {
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
     @EnvironmentObject var dataManager: BankDataManager
 
-    @Query private var banqueInfos: [EntityBanqueInfo]
+//    @Query private var banqueInfos: [EntityBanqueInfo]
     
     var body: some View {
         VStack(spacing: 30) {

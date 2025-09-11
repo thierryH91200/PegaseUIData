@@ -35,7 +35,7 @@ struct IdentityView: View {
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
     @EnvironmentObject var dataManager: IdentityDataManager
     
-    @Query private var identityInfo: [EntityIdentity]
+//    @Query private var identityInfo: [EntityIdentity]
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {

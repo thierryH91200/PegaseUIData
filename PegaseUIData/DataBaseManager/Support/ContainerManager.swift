@@ -9,6 +9,12 @@ import SwiftUI
 import SwiftData
 import Combine
 
+private func logUI(_ message: String, pr: Bool = false) {
+    if !pr { return }
+    let ts = ISO8601DateFormatter().string(from: Date())
+    print("[UI] \(ts) - \(message)")
+}
+
 // MARK: - Container Manager avec gestion fichiers récents
 class ContainerManager: ObservableObject {
     @Published var currentContainer: ModelContainer?
@@ -21,9 +27,10 @@ class ContainerManager: ObservableObject {
     private let maxRecentFiles = 10
     
     let schema = AppSchema.shared.schema
-
+    
     init() {
         loadRecentFiles()
+        logUI("ContainerManager.init - showingSplashScreen=\(showingSplashScreen)")
     }
     
     // MARK: - Gestion des fichiers récents
@@ -32,7 +39,7 @@ class ContainerManager: ObservableObject {
            let files = try? JSONDecoder().decode([RecentFile].self, from: data) {
             // Filtrer les fichiers qui existent encore
             recentFiles = files.filter { FileManager.default.fileExists(atPath: $0.url.path) }
-                              .sorted { $0.lastAccessed > $1.lastAccessed }
+                .sorted { $0.lastAccessed > $1.lastAccessed }
         }
     }
     
@@ -74,6 +81,7 @@ class ContainerManager: ObservableObject {
     @MainActor
     func createNewDatabase(at url: URL) {
         let schema = AppSchema.shared.schema
+        logUI("createNewDatabase begin - url=\(url.path)")
         
         do {
             // Normaliser l’URL: nom de fichier nettoyé + extension .store
@@ -95,8 +103,6 @@ class ContainerManager: ObservableObject {
                 cleanURL = cleanURL.appendingPathExtension("store")
             }
             
-//            print("🔧 Création de la base à: \(cleanURL.path)")
-            
             // Configurer le container SwiftData
             let config = ModelConfiguration(
                 schema: schema,
@@ -113,9 +119,9 @@ class ContainerManager: ObservableObject {
             DataContext.shared.undoManager = globalUndo
             context.undoManager = globalUndo
             
-            // Ajoute une personne de démonstration
-            InitManager.shared.initialize()
-//            PersonManager.shared.create(name: "Exemple", town: "Seoul", age: 25)
+            initBDD()  // >--> Important
+            
+            logUI("createNewDatabase end - about to openDatabase at \(cleanURL.path)")
             openDatabase(at: cleanURL)
             
         } catch {
@@ -126,7 +132,17 @@ class ContainerManager: ObservableObject {
         }
     }
     
+    @MainActor func initBDD() {
+        // initialisation de la BDD
+        //une personne de démonstration
+        //        PersonManager.shared.create(name: "Exemple", town: "Seoul", age: 25)
+        
+        // Une BDD plus complexe
+        InitManager.shared.initialize()
+    }
+    
     @MainActor func openDatabase(at url: URL) {
+        logUI("openDatabase begin - url=\(url.path)")
         do {
             let config = ModelConfiguration(
                 schema: schema,
@@ -146,26 +162,54 @@ class ContainerManager: ObservableObject {
             currentDatabaseURL = url
             currentDatabaseName = url.deletingPathExtension().lastPathComponent
             
+            logUI("openDatabase state set - name=\(currentDatabaseName) url=\(currentDatabaseURL?.path ?? "nil")")
+            
             // Ajouter aux fichiers récents
             let recentFile = RecentFile(name: currentDatabaseName, url: url)
             addToRecentFiles(recentFile)
             
-            // Ferme le splash screen
-            showingSplashScreen = false
+            logUI("openDatabase about to hide splash - showingSplashScreen=\(showingSplashScreen)")
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                logUI("openDatabase hiding splash (async) - before=\(self.showingSplashScreen)")
+                self.showingSplashScreen = false
+                logUI("openDatabase did hide splash (async) - after=\(self.showingSplashScreen)")
+            }
             
+            logUI("openDatabase end")
         } catch {
             print("Erreur lors de l'ouverture : \(error)")
         }
     }
     
+    //    func closeCurrentDatabase() {
+    //
+    //        // Optionnel: réinitialiser le contexte global et l'undo manager
+    //        DataContext.shared.context = nil
+    //        DataContext.shared.undoManager = UndoManager()
+    //
+    //        currentDatabaseURL = nil
+    //        currentDatabaseName = ""
+    //        showingSplashScreen = true
+    //        DispatchQueue.main.async {
+    //            self.currentContainer = nil
+    //        }
+    //    }
+    
+    @MainActor
     func closeCurrentDatabase() {
-        currentContainer = nil
-        currentDatabaseURL = nil
-        currentDatabaseName = ""
-        showingSplashScreen = true
-        
-        // Optionnel: réinitialiser le contexte global et l'undo manager
+        CurrentAccountManager.shared.clearAccount()
         DataContext.shared.context = nil
         DataContext.shared.undoManager = UndoManager()
+        
+        self.currentDatabaseURL = nil
+        self.currentDatabaseName = ""
+        self.showingSplashScreen = true
+
+        Task { @MainActor in
+            // Laisse passer le cycle en cours (équivalent à différer)
+            await Task.yield()
+            self.currentContainer = nil
+        }
     }
 }

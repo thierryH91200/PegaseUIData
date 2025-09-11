@@ -107,26 +107,23 @@ struct SettingTab: View {
 
             ModePaymentView()
                 .environmentObject(modePaiementDataManager)
-
                 .tabItem {
                     Label("Payment method", systemImage: "eurosign.bank.building")
                 }
             
             PreferenceTransactionView()
                 .environmentObject(preferenceDataManager)
-            
                 .tabItem {
                     Label("Transaction", systemImage: "person")
                 }
             
             CheckView()
                 .environmentObject(chequeViewManager)
-
                 .tabItem {
                     Label("Check", systemImage: "person")
                 }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .layoutPriority(1) // Priorité élevée pour occuper tout l’espace disponible
+        .layoutPriority(1)
     }
 }
