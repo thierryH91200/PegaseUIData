@@ -105,6 +105,10 @@ final class SchedulerManager: ScheduleManaging, ObservableObject  {
 
     init() { }
     
+    func reset() {
+        schedulers.removeAll()
+    }
+
     @MainActor func create(account: EntityAccount?, name : String) throws -> EntitySchedule {
         let entity = EntitySchedule()
         modelContext?.insert(entity)

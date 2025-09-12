@@ -60,6 +60,10 @@ final class SubTransactionsManager {
     }
 
     private init() { }
+    
+    func reset() {
+        subOperation = nil
+    }
 
     @MainActor
     func createSubTransactions(

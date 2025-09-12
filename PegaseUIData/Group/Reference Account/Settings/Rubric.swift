@@ -189,7 +189,7 @@ struct RubricView: View {
     // Fonction séparée pour générer la liste des rubriques
     @ViewBuilder
     private func rubricList() -> some View {
-        ForEach(rubriques, id: \.name) { rubrique in
+        ForEach(rubriques, id: \.id) { rubrique in
             DisclosureGroup(
                 isExpanded: Binding(
                     get: { expandedRubriques[rubrique.name] ?? true },
@@ -197,7 +197,7 @@ struct RubricView: View {
                 )
             ) {
                 VStack(spacing: 0) {
-                    ForEach(rubrique.categorie, id: \.name) { category in
+                    ForEach(rubrique.categorie, id: \.id) { category in
                         categoryRow(category)
                     }
                 }

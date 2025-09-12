@@ -61,34 +61,6 @@ final class CategoryManager: ObservableObject {
         }
     }
     
-//    Explication :
-//
-//    On filtre d’abord sur category.name == name (simple, accepté par SwiftData).
-//    Ensuite, on refiltre en Swift pour rubric?.account.uuid == lhs.
-//    func find(name: String) -> EntityCategory? {
-//        guard let modelContext = modelContext else { return nil }
-//
-//        let account = CurrentAccountManager.shared.getAccount()!
-//        let lhs = account.uuid
-//
-//        let predicate: Predicate<EntityCategory> = #Predicate { category in
-//            category.name == name
-//        }
-//        let sort = [SortDescriptor(\EntityCategory.name, order: .forward)]
-//        let descriptor = FetchDescriptor<EntityCategory>(
-//            predicate: predicate,
-//            sortBy: sort
-//        )
-//
-//        do {
-//            let results = try modelContext.fetch(descriptor)
-//            return results.firstMatchingAccount(account)
-//        } catch {
-//            printTag("Erreur durant la récupération SwiftData: \(error)")
-//            return nil
-//        }
-//    }
-    
     @MainActor func find(name: String) -> EntityCategory? {
         guard let modelContext = modelContext else { return nil }
 

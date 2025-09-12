@@ -77,11 +77,13 @@ struct BankStatementListView: View {
             
             BankStatementTable(statements: dataManager.statements, selection: $selectedItem)
                 .frame(height: 300)
+                .background(Color(nsColor: .windowBackgroundColor))
+                .tableStyle(.bordered)
+
                 .onAppear {
                     setupDataManager()
                 }
                 .onReceive(NotificationCenter.default.publisher(for: .NSUndoManagerDidUndoChange)) { _ in
-                    printTag("Undo effectué, on recharge les données")
                     refreshData()
                 }
                 .onReceive(NotificationCenter.default.publisher(for: .NSUndoManagerDidRedoChange)) { _ in
@@ -130,11 +132,9 @@ struct BankStatementListView: View {
 
                 }) {
                     Label("Edit", systemImage: "pencil")
-                        .padding()
-                        .background(selectedStatement == nil ? Color.gray : Color.green) // Fond gris si désactivé
-                        .opacity(selectedStatement == nil ? 0.6 : 1) // Opacité réduite si désactivé
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
+                        .actionButtonStyle(
+                            isEnabled: selectedStatement != nil,
+                            activeColor: .green)
                 }
                 .disabled(selectedStatement == nil) // Désactive le bouton si aucun élément n'est sélectionné
                 
@@ -143,11 +143,9 @@ struct BankStatementListView: View {
                     delete()
                 }) {
                     Label("Delete", systemImage: "trash")
-                        .padding()
-                        .background(selectedStatement == nil ? Color.gray : Color.red) // Fond gris si désactivé
-                        .opacity(selectedStatement == nil ? 0.6 : 1) // Opacité réduite si désactivé
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
+                        .actionButtonStyle(
+                            isEnabled: selectedStatement != nil,
+                            activeColor: .red)
                 }
                 .disabled(selectedStatement == nil) // Désactive le bouton si aucun élément n'est sélectionné
                 
@@ -163,12 +161,9 @@ struct BankStatementListView: View {
                     }
                 }) {
                     Label("Undo", systemImage: "arrow.uturn.backward")
-                        .frame(minWidth: 100) // Largeur minimale utile
-                        .padding()
-                        .background(canUndo == false ? Color.gray : Color.green)
-                        .opacity(canUndo == false  ? 0.6 : 1)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
+                        .actionButtonStyle(
+                            isEnabled: canUndo == false,
+                            activeColor: .green)
                 }
                 .buttonStyle(.plain)
                 
@@ -179,12 +174,9 @@ struct BankStatementListView: View {
                     }
                 }) {
                     Label("Redo", systemImage: "arrow.uturn.forward")
-                        .frame(minWidth: 100) // Largeur minimale utile
-                        .padding()
-                        .background( canRedo == false ? Color.gray : Color.orange)
-                        .opacity( canRedo  == false ? 0.6 : 1)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
+                        .actionButtonStyle(
+                            isEnabled: canRedo == false,
+                            activeColor: .orange)
                 }
                 .buttonStyle(.plain)
 

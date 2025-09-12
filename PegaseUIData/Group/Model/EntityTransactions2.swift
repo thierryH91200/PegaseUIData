@@ -35,6 +35,11 @@ final class ListTransactionsManager: ListManaging {
 
     init() { }
     
+    func reset() {
+        listTransactions.removeAll()
+    }
+
+    
     @discardableResult
     func createTransactions(formState: TransactionFormState) -> EntityTransaction {
         // Create entityTransaction

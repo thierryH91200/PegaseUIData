@@ -68,6 +68,27 @@ class ContainerManager: ObservableObject {
         saveRecentFiles()
     }
     
+    // Main-actor isolated because it touches main-actor isolated singletons (e.g., CurrentAccountManager.shared)
+    @MainActor private func clearAllCaches() {
+        // Vider les caches des managers connus
+        
+        RubricManager.shared.entitiesRubric.removeAll()
+        BankManager.shared.reset()
+        BankStatementManager.shared.reset()
+        ChequeBookManager.shared.reset()
+        IdentityManager.shared.reset()
+        PaymentModeManager.shared.reset()
+        PreferenceManager.shared.reset()
+        SchedulerManager.shared.reset()
+        SubTransactionsManager.shared.reset()
+        StatusManager.shared.reset()
+        ListTransactionsManager.shared.reset()
+
+        CurrentAccountManager.shared.clearAccount()
+
+        // TODO: Ajouter ici d'autres nettoyages si vous avez d'autres managers qui gardent des entités
+    }
+    
     // MARK: - Helpers
     private func sanitizeFileName(_ name: String) -> String {
         name
@@ -181,35 +202,27 @@ class ContainerManager: ObservableObject {
             print("Erreur lors de l'ouverture : \(error)")
         }
     }
-    
-    //    func closeCurrentDatabase() {
-    //
-    //        // Optionnel: réinitialiser le contexte global et l'undo manager
-    //        DataContext.shared.context = nil
-    //        DataContext.shared.undoManager = UndoManager()
-    //
-    //        currentDatabaseURL = nil
-    //        currentDatabaseName = ""
-    //        showingSplashScreen = true
-    //        DispatchQueue.main.async {
-    //            self.currentContainer = nil
-    //        }
-    //    }
-    
+        
     @MainActor
     func closeCurrentDatabase() {
-        CurrentAccountManager.shared.clearAccount()
-        DataContext.shared.context = nil
-        DataContext.shared.undoManager = UndoManager()
-        
-        self.currentDatabaseURL = nil
-        self.currentDatabaseName = ""
-        self.showingSplashScreen = true
+        // 1) Prévenir l’UI qu’on ferme, pour qu’elle cesse d’accéder aux entités
+        showingSplashScreen = true
+        currentDatabaseURL = nil
+        currentDatabaseName = ""
 
+        // 2) Vider les caches applicatifs qui conservent des instances SwiftData
+        clearAllCaches()
+
+        // 3) Laisser l’UI appliquer ces changements avant de débrancher le contexte
         Task { @MainActor in
-            // Laisse passer le cycle en cours (équivalent à différer)
+            // Laisser passer au moins un cycle de runloop
             await Task.yield()
+
+            // 4) Débrancher le contexte et le container
+            DataContext.shared.context = nil
+            DataContext.shared.undoManager = UndoManager()
             self.currentContainer = nil
         }
     }
 }
+

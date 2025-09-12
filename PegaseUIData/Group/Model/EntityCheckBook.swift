@@ -77,6 +77,10 @@ final class ChequeBookManager : ObservableObject {
 
     init() {}
     
+    func reset() {
+        checkBooks.removeAll()
+    }
+
     @MainActor @discardableResult
     func create(name: String,
                 nbCheques: Int = 25,

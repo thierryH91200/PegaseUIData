@@ -112,6 +112,11 @@ final class BankStatementManager : BankStatementManaging, ObservableObject {
 
     init() { }
     
+    func reset() {
+        statements.removeAll()
+    }
+
+    
     func create(num: Int, startDate: Date, startSolde: Double) throws -> EntityBankStatement? {
         
         guard let currentAccount = CurrentAccountManager.shared.getAccount() else {

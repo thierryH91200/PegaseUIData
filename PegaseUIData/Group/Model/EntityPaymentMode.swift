@@ -75,6 +75,10 @@ final class PaymentModeManager : PaymentModeManaging, ObservableObject {
 
     init() { }
     
+    func reset() {
+        modePayments.removeAll()
+    }
+
     func create(account: EntityAccount, name: String, color: NSColor) throws -> EntityPaymentMode? {
         let mode = EntityPaymentMode(account: account, name: name, color: color)
         modelContext?.insert(mode)
@@ -83,8 +87,17 @@ final class PaymentModeManager : PaymentModeManaging, ObservableObject {
     }
 
     func update(entity: EntityPaymentMode, name: String, color: NSColor) {
-        entity.name = name
-        entity.color = color
+        guard let context = modelContext else { return }
+
+        // Re-resolve a live instance in the current context to avoid using a destroyed model
+        let id = entity.persistentModelID
+        guard let live = context.model(for: id) as? EntityPaymentMode else {
+            printTag("PaymentMode update skipped: unable to resolve live instance in current context")
+            return
+        }
+
+        live.name = name
+        live.color = color
         do {
             try save()
         } catch {
@@ -159,15 +172,21 @@ final class PaymentModeManager : PaymentModeManaging, ObservableObject {
     }
     
     // MARK: delete ModePaiement
-    func delete(entity: EntityPaymentMode, undoManager: UndoManager?)
-    {
-        guard let modelContext = modelContext else { return }
+    func delete(entity: EntityPaymentMode, undoManager: UndoManager?) {
+        guard let context = modelContext else { return }
 
-        modelContext.undoManager = undoManager
-        modelContext.undoManager?.beginUndoGrouping()
-        modelContext.undoManager?.setActionName("Delete the Payment methods")
-        modelContext.delete(entity)
-        modelContext.undoManager?.endUndoGrouping()
+        // Resolve live instance in current context
+        let id = entity.persistentModelID
+        guard let live = context.model(for: id) as? EntityPaymentMode else {
+            printTag("PaymentMode delete skipped: unable to resolve live instance in current context")
+            return
+        }
+
+        context.undoManager = undoManager
+        context.undoManager?.beginUndoGrouping()
+        context.undoManager?.setActionName("Delete the Payment methods")
+        context.delete(live)
+        context.undoManager?.endUndoGrouping()
     }
 
     // MARK: default ModePaiement
@@ -218,6 +237,13 @@ final class PaymentModeManager : PaymentModeManaging, ObservableObject {
         } catch {
             printTag("Erreur lors de la récupération des modes de paiement : \(error.localizedDescription)")
         }
+        // modePayments now contains fresh, live instances from the current context
+    }
+    
+    // Resolve a live instance for a potentially stale model reference
+    private func resolveLiveInstance(_ entity: EntityPaymentMode) -> EntityPaymentMode? {
+        guard let context = modelContext else { return nil }
+        return context.model(for: entity.persistentModelID) as? EntityPaymentMode
     }
     
     // MARK: save ModePaiement

@@ -97,10 +97,7 @@ struct CheckView: View {
                     isModeCreate = false
                 }) {
                     Label("Edit", systemImage: "pencil")
-                        .padding()
-                        .background(Color.green)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
+                        .actionButtonStyle(isEnabled: selectedItem != nil, activeColor: .green)
                 }
                 .disabled(selectedItem == nil)
                 
@@ -109,11 +106,7 @@ struct CheckView: View {
                     setupDataManager()
                 }) {
                     Label("Delete", systemImage: "trash")
-                        .padding()
-                        .background(selectedItem == nil ? Color.gray : Color.red) // Fond gris si désactivé
-                        .opacity(selectedItem == nil ? 0.6 : 1) // Opacité réduite si désactivé
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
+                        .actionButtonStyle(isEnabled: selectedItem != nil, activeColor: .red)
                 }
                 .buttonStyle(.bordered)
                 .disabled(selectedItem == nil)
@@ -132,17 +125,11 @@ struct CheckView: View {
                 }) {
                     Label("Undo", systemImage: "arrow.uturn.backward")
                         .frame(minWidth: 100) // Largeur minimale utile
-                        .padding()
-                        .background(canUndo == false ? Color.gray : Color.green)
-                        .opacity(canUndo == false  ? 0.6 : 1)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
+                        .actionButtonStyle(isEnabled: canUndo == true, activeColor: .green)
                 }
                 .buttonStyle(.plain)
 #endif // DEBUG
 #if DEBUG
-
-                
                 Button(action: {
                     if let manager = undoManager, manager.canRedo {
                         selectedItem = nil
@@ -157,11 +144,7 @@ struct CheckView: View {
                 }) {
                     Label("Redo", systemImage: "arrow.uturn.forward")
                         .frame(minWidth: 100) // Largeur minimale utile
-                        .padding()
-                        .background( canRedo == false ? Color.gray : Color.orange)
-                        .opacity( canRedo  == false ? 0.6 : 1)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
+                        .actionButtonStyle(isEnabled: canRedo == true, activeColor: .orange)
                 }
                 .buttonStyle(.plain)
 #endif
@@ -221,7 +204,7 @@ struct CheckView: View {
     
     // Rafraîchit la liste des carnets de chèques
     private func refreshData() {
-        dataManager.checkBooks = ChequeBookManager.shared.getAllData()!
+        dataManager.checkBooks = ChequeBookManager.shared.getAllData() ?? []
         checkBooks = dataManager.checkBooks
     }
 }
@@ -403,3 +386,4 @@ struct CheckBookFormView: View {
         item.prefix = prefix
     }
 }
+

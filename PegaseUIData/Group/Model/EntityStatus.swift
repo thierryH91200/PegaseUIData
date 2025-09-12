@@ -72,6 +72,10 @@ final class StatusManager: StatusManaging {
     
     private init() {}
     
+    func reset() {
+        status.removeAll()
+    }
+
     func create(account: EntityAccount?, name: String, type: Int, color: NSColor) throws -> EntityStatus? {
         
         guard let statusType = StatusType(rawValue: type) else {

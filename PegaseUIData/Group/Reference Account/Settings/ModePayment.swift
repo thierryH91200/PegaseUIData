@@ -118,11 +118,9 @@ struct ModePaymentView: View {
                     modeCreate = false
                 }) {
                     Label("Edit", systemImage: "pencil")
-                        .padding()
-                        .background(selectedItem == nil ? Color.gray : Color.green) // Fond gris si désactivé
-                        .opacity(selectedItem == nil ? 0.6 : 1) // Opacité réduite si désactivé
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
+                        .actionButtonStyle(
+                            isEnabled: selectedItem != nil,
+                            activeColor: .green)
                 }
                 .disabled(selectedItem == nil) // Désactive si aucune ligne n'est sélectionnée
                 
@@ -132,13 +130,12 @@ struct ModePaymentView: View {
                 })
                 {
                     Label("Delete", systemImage: "trash")
-                        .padding()
-                        .background(selectedItem == nil ? Color.gray : Color.red) // Fond gris si désactivé
-                        .opacity(selectedItem == nil ? 0.6 : 1) // Opacité réduite si désactivé
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
+                        .actionButtonStyle(
+                            isEnabled: selectedItem != nil,
+                            activeColor: .red)
                 }
-                .disabled(selectedItem == nil) // Désactive si aucune ligne n'est sélectionnée
+                .disabled(selectedItem == nil)
+                // Désactive si aucune ligne n'est sélectionnée
                 
                 Button(action: {
                     if let manager = undoManager, manager.canUndo {
@@ -151,13 +148,11 @@ struct ModePaymentView: View {
                     }
                 }) {
                     Label("Undo", systemImage: "arrow.uturn.backward")
-                        .frame(minWidth: 100) // Largeur minimale utile
-                        .padding()
-                        .background(canUndo == false ? Color.gray : Color.green)
-                        .opacity(canUndo == false  ? 0.6 : 1)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
+                        .actionButtonStyle(
+                            isEnabled: canUndo == false,
+                            activeColor: .green)
                 }
+                .disabled(canUndo == false)
                 .buttonStyle(.plain)
 
             }

@@ -60,6 +60,9 @@ final class BankManager : BankManaging {
 
     init () {
     }
+    func reset() {
+        entitiesBank.removeAll()
+    }
     
     func create(account: EntityAccount?) throws -> EntityBanqueInfo {
         guard let account = account else {

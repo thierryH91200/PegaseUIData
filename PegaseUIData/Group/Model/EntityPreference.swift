@@ -51,13 +51,15 @@ final class PreferenceManager: PreferenceManaging {
     
     static let shared = PreferenceManager()
     
-    var entityPreferences : [EntityPreference]?
-    
     var modelContext: ModelContext? {
         DataContext.shared.context
     }
 
     private init() { }
+    
+    func reset() {
+        // No in-memory cache to reset
+    }
     
     // MARK: - default
     @MainActor func defaultPref(account: EntityAccount) -> EntityPreference? {
@@ -90,7 +92,6 @@ final class PreferenceManager: PreferenceManaging {
         newPreference.account = account
         
         modelContext?.insert(newPreference)
-        entityPreferences?.append(newPreference) // Mise à jour du cache local
         
         saveContext()
         return newPreference
@@ -104,13 +105,13 @@ final class PreferenceManager: PreferenceManaging {
         let accountID = account.uuid
         let predicate = #Predicate<EntityPreference> { entity in entity.account.uuid == accountID }
         let fetchDescriptor = FetchDescriptor<EntityPreference>(predicate: predicate)
-        
         do {
-            entityPreferences = try modelContext?.fetch(fetchDescriptor) ?? []
+            let results = try modelContext?.fetch(fetchDescriptor) ?? []
+            return results.first
         } catch {
             printTag("Erreur lors de la récupération des données : \(error.localizedDescription)")
+            return nil
         }
-        return entityPreferences?.first
     }
     func update(status: EntityStatus,
                 mode: EntityPaymentMode,
@@ -118,12 +119,34 @@ final class PreferenceManager: PreferenceManaging {
                 category: EntityCategory,
                 preference: EntityPreference,
                 sign : Bool) async throws {
-        
-        preference.status = status
-        preference.paymentMode = mode
-        preference.category?.rubric = rubric
-        preference.category = category
-        preference.signe = sign
+        guard let context = modelContext else { return }
+
+        // Re-resolve live instances in the current context
+        // Note: persistentModelID is non-optional in recent SwiftData, so don't conditionally bind it.
+        let prefID = preference.persistentModelID
+        let statusID = status.persistentModelID
+        let modeID = mode.persistentModelID
+        let categoryID = category.persistentModelID
+        let rubricID = rubric.persistentModelID
+
+        guard
+            let livePreference = context.model(for: prefID) as? EntityPreference,
+            let liveStatus = context.model(for: statusID) as? EntityStatus,
+            let liveMode = context.model(for: modeID) as? EntityPaymentMode,
+            let liveCategory = context.model(for: categoryID) as? EntityCategory,
+            let liveRubric = context.model(for: rubricID) as? EntityRubric
+        else {
+            // If any model cannot be re-resolved in this context, skip update to avoid crashing
+            printTag("Preference update skipped: unable to resolve live instances in current context")
+            return
+        }
+
+        // Apply updates on live instances
+        livePreference.status = liveStatus
+        livePreference.paymentMode = liveMode
+        livePreference.category = liveCategory
+        livePreference.category?.rubric = liveRubric
+        livePreference.signe = sign
 
         saveContext()
     }
@@ -149,3 +172,4 @@ func getSQLiteFilePath() -> String? {
     }
     return nil
 }
+

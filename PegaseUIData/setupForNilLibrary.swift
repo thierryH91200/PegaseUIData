@@ -129,8 +129,10 @@ final class InitManager {
         }
         
         // Création des dossiers (folders)
-        let folder1 = AccountFactory.createHeader(modelContext: ctx, name: "Bank Account")
-        let folder2 = AccountFactory.createHeader(modelContext: ctx, name: "Save")
+        let folder1 = AccountFactory.createHeader(modelContext: ctx,
+                                                  name: String(localized :"Bank Account",table : "Account"))
+        let folder2 = AccountFactory.createHeader(modelContext: ctx,
+                                                  name: String(localized :"Save",table : "Account"))
         
         let typeAccounts : [String] = [
             String(localized :"Current account1",table : "Account"),

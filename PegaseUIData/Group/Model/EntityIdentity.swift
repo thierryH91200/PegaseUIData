@@ -86,6 +86,11 @@ final class IdentityManager: ObservableObject  {
     init() {
     }
     
+    func reset() {
+        identities.removeAll()
+    }
+
+    
     func create(name: String = "", surName: String = "") -> EntityIdentity {
 
         let currentAccount = CurrentAccountManager.shared.getAccount()!
