@@ -58,7 +58,7 @@ class RubriquePieViewModel: ObservableObject {
             listTransactions = try modelContext.fetch(descriptor)
             
         } catch {
-            printTag("Error fetching data from CoreData")
+            printTag("Error fetching data from CoreData", flag: true)
         }
         
         var dataArrayExpense = [DataGraph]()

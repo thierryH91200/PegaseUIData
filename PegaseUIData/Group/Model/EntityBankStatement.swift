@@ -120,7 +120,7 @@ final class BankStatementManager : BankStatementManaging, ObservableObject {
     func create(num: Int, startDate: Date, startSolde: Double) throws -> EntityBankStatement? {
         
         guard let currentAccount = CurrentAccountManager.shared.getAccount() else {
-            printTag("Erreur : aucun compte courant trouvé.")
+            print("[BankStatementManager] Erreur : aucun compte courant trouvé.")
             return nil
         }
         
@@ -136,7 +136,7 @@ final class BankStatementManager : BankStatementManaging, ObservableObject {
     func getAllData() -> [EntityBankStatement]? {
         
         guard let currentAccount = CurrentAccountManager.shared.getAccount() else {
-            printTag("Erreur : aucun compte courant trouvé.")
+            print("[BankStatementManager] Erreur : aucun compte courant trouvé.")
             return nil
         }
         
@@ -151,7 +151,7 @@ final class BankStatementManager : BankStatementManaging, ObservableObject {
             
             statements = try modelContext?.fetch(descriptor) ?? []
         } catch {
-            printTag("Erreur lors de la récupération des données : \(error.localizedDescription)")
+            print("[BankStatementManager] Erreur lors de la récupération des données : \(error.localizedDescription)")
             return []
         }
         return statements
@@ -181,3 +181,4 @@ final class BankStatementManager : BankStatementManaging, ObservableObject {
         }
     }
 }
+

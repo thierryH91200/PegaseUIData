@@ -9,11 +9,6 @@ import SwiftUI
 import SwiftData
 import Combine
 
-private func logUI(_ message: String, pr: Bool = false) {
-    if !pr { return }
-    let ts = ISO8601DateFormatter().string(from: Date())
-    print("[UI] \(ts) - \(message)")
-}
 
 // MARK: - Container Manager avec gestion fichiers récents
 class ContainerManager: ObservableObject {
@@ -79,13 +74,14 @@ class ContainerManager: ObservableObject {
         IdentityManager.shared.reset()
         PaymentModeManager.shared.reset()
         PreferenceManager.shared.reset()
+        RubricManager.shared.reset()
         SchedulerManager.shared.reset()
         SubTransactionsManager.shared.reset()
         StatusManager.shared.reset()
         ListTransactionsManager.shared.reset()
-
+        
         CurrentAccountManager.shared.clearAccount()
-
+        
         // TODO: Ajouter ici d'autres nettoyages si vous avez d'autres managers qui gardent des entités
     }
     
@@ -202,27 +198,53 @@ class ContainerManager: ObservableObject {
             print("Erreur lors de l'ouverture : \(error)")
         }
     }
-        
+    
     @MainActor
     func closeCurrentDatabase() {
         // 1) Prévenir l’UI qu’on ferme, pour qu’elle cesse d’accéder aux entités
-        showingSplashScreen = true
+//        showingSplashScreen = true
         currentDatabaseURL = nil
         currentDatabaseName = ""
-
+        
         // 2) Vider les caches applicatifs qui conservent des instances SwiftData
         clearAllCaches()
-
+        
+//        let context = DataContext.shared.context
+//        guard let context = context else { return }
+//        clearAll(in: context)
+        
         // 3) Laisser l’UI appliquer ces changements avant de débrancher le contexte
         Task { @MainActor in
             // Laisser passer au moins un cycle de runloop
             await Task.yield()
-
+            
             // 4) Débrancher le contexte et le container
             DataContext.shared.context = nil
             DataContext.shared.undoManager = UndoManager()
             self.currentContainer = nil
         }
+        showingSplashScreen = true
+
+    }
+    
+    func clearAll(in context: ModelContext) {
+        try? context.delete(model: EntityAccount.self)
+        try? context.delete(model: EntityBankStatement.self)
+        try? context.delete(model: EntityBanqueInfo.self)
+        try? context.delete(model: EntityCategory.self)
+        try? context.delete(model: EntityCheckBook.self)
+        try? context.delete(model: EntityFolderAccount.self)
+        try? context.delete(model: EntityIdentity.self)
+        try? context.delete(model: EntityInitAccount.self)
+        try? context.delete(model: EntityPaymentMode.self)
+        try? context.delete(model: EntityStatus.self)
+        try? context.delete(model: EntityPreference.self)
+        try? context.delete(model: EntityCategory.self)
+        try? context.delete(model: EntityRubric.self)
+        try? context.delete(model: EntitySchedule.self)
+        try? context.delete(model: EntitySousOperation.self)
+        try? context.delete(model: EntityTransaction.self)
     }
 }
+
 

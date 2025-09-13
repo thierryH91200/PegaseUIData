@@ -142,7 +142,7 @@ struct ContentView100: View {
 
             ToolbarItemGroup(placement: .navigation) {
                 Button(action: {
-                    printTag("Nouvel élément ajouté")
+                    printTag("Nouvel élément ajouté", flag: true)
                 }) {
                     Label("Add", systemImage: "plus")
                 }
@@ -169,7 +169,7 @@ struct ContentView100: View {
                 }
                 
                 Button(action: {
-                    printTag("Paramètres ouverts")
+                    printTag("Paramètres ouverts", flag: true)
                 }) {
                     Label("Settings", systemImage: "gear")
                 }
@@ -245,7 +245,7 @@ struct ContentView100: View {
 // Fonction d'action pour chaque choix de couleur
 private func changeSearchFieldItem(_ itemType: String) {
     // Ajoute la logique pour gérer la sélection du champ de recherche
-    printTag("Champ de recherche sélectionné : \(itemType)")
+    printTag("Champ de recherche sélectionné : \(itemType)", flag: true)
 }
 
 private func setAppearance(_ appearance: NSAppearance.Name) {

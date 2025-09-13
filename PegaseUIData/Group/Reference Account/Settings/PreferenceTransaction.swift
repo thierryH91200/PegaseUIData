@@ -20,7 +20,7 @@ final class PreferenceDataManager: ObservableObject {
         do {
             try context.save()
         } catch {
-            printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+            printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)", flag: true)
         }
     }
 }
@@ -71,6 +71,7 @@ struct PreferenceTransactionView: View {
             HStack(spacing: 30) {
                 VStack(alignment: .leading) {
                     Picker("Status", selection: $selectedStatusID) {
+//                        Text("Aucun statut").tag(nil as PersistentIdentifier?)
                         ForEach(entityStatus, id: \.self) { index in
                             Text(index.name).tag(index.persistentModelID as PersistentIdentifier?)
                         }
@@ -78,6 +79,7 @@ struct PreferenceTransactionView: View {
                     .pickerStyle(MenuPickerStyle())
                     
                     Picker("Mode", selection: $selectedModeID) {
+//                        Text("Aucun mode de paiement").tag(nil as PersistentIdentifier?)
                         ForEach(entityPaymentMode, id: \.self) {
                             Text($0.name).tag($0.persistentModelID as PersistentIdentifier?)
                         }
@@ -87,6 +89,7 @@ struct PreferenceTransactionView: View {
                 
                 VStack(alignment: .leading) {
                     Picker("Rubric", selection: $selectedRubricID) {
+//                        Text("Aucune rubrique").tag(nil as PersistentIdentifier?)
                         ForEach(entityRubric, id: \.self) {
                             Text($0.name).tag($0.persistentModelID as PersistentIdentifier?)
                         }
@@ -106,6 +109,7 @@ struct PreferenceTransactionView: View {
                     }
                     
                     Picker("Category", selection: $selectedCategoryID) {
+                        Text("Aucune catégorie").tag(nil as PersistentIdentifier?)
                         ForEach(entityCategorie, id: \.self) {
                             Text($0.name).tag($0.persistentModelID as PersistentIdentifier?)
                         }
@@ -146,6 +150,8 @@ struct PreferenceTransactionView: View {
         
         .onDisappear {
             Task { @MainActor in
+                guard let _ = dataManager.modelContext,
+                      currentAccountManager.getAccount() != nil else { return }
                 guard let status = resolveStatus(),
                       let mode = resolveMode(),
                       let rubric = resolveRubric(),
@@ -157,33 +163,50 @@ struct PreferenceTransactionView: View {
                                        category: category,
                                        preference: preference,
                                        sign: isExpanded)
+                entityRubric.removeAll()
+                entityCategorie.removeAll()
+                entityPaymentMode.removeAll()
+                entityStatus.removeAll()
             }
         }
         
         .onChange(of: currentAccountManager.getAccount()) { _, newAccount in
             changeCounter += 1
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                Task {
-                    guard dataManager.modelContext != nil else { return }
-                    guard let status = resolveStatus(),
-                          let mode = resolveMode(),
-                          let rubric = resolveRubric(),
-                          let category = resolveCategory(),
-                          let preference = dataManager.resolvePreference() else { return }
+            Task { @MainActor in
+//                guard let context = dataManager.modelContext else { return }
 
+                // Si le compte devient nil, vider l'état local et arrêter
+                guard let account = newAccount else {
+                    entityStatus = []
+                    entityPaymentMode = []
+                    entityRubric = []
+                    entityCategorie = []
+                    selectedStatusID = nil
+                    selectedModeID = nil
+                    selectedRubricID = nil
+                    selectedCategoryID = nil
+                    dataManager.preferencePreferenceID = nil
+                    return
+                }
+
+                // Tenter de sauvegarder l'état précédent si tout est résoluble
+                if let status = resolveStatus(),
+                   let mode = resolveMode(),
+                   let rubric = resolveRubric(),
+                   let category = resolveCategory(),
+                   let preference = dataManager.resolvePreference() {
                     await updatePreference(status: status,
                                            mode: mode,
                                            rubric: rubric,
                                            category: category,
                                            preference: preference,
                                            sign: isExpanded)
-
-                    if let account = newAccount {
-                        dataManager.preferencePreferenceID = nil
-                        dataManager.currentAccount = account
-                        try await refreshData(for: account)
-                    }
                 }
+
+                // Basculer sur le nouveau compte et recharger
+                dataManager.preferencePreferenceID = nil
+                dataManager.currentAccount = account
+                try await refreshData(for: account)
             }
         }
         .cornerRadius(10)
@@ -211,23 +234,39 @@ struct PreferenceTransactionView: View {
     
     // Configuration initiale du formulaire
     func configureFormState() async throws {
+        guard DataContext.shared.context != nil else { return }
 
-        if /*let account = CurrentAccountManager.shared.getAccount(),*/
-           let modes = PaymentModeManager.shared.getAllData() {
+        if let modes = PaymentModeManager.shared.getAllData() {
             entityPaymentMode = modes
         }
         if let account = CurrentAccountManager.shared.getAccount() {
-            if let status = StatusManager.shared.getAllData(for: account) {
+            let status = StatusManager.shared.getAllData(for: account)
                 entityStatus = status
-            }
+            
+        } else {
+            entityStatus = []
+            entityPaymentMode = []
         }
     }
 
     // Rafraîchir les données du formulaire
     private func refreshData(for account: EntityAccount) async throws {
+        guard DataContext.shared.context != nil else { return }
         let pref = PreferenceManager.shared.getAllData(for: account)
         dataManager.preferencePreferenceID = pref?.persistentModelID
-        guard let entityPreference = pref else { return }
+        guard let entityPreference = pref else { 
+            // Si pas de préférence, nettoyer les sélections
+            selectedStatusID = nil
+            selectedModeID = nil
+            selectedRubricID = nil
+            selectedCategoryID = nil
+            isExpanded = false
+            entityStatus = StatusManager.shared.getAllData(for: account)
+            entityPaymentMode = PaymentModeManager.shared.getAllData() ?? []
+            entityRubric = RubricManager.shared.getAllData()
+            entityCategorie = []
+            return 
+        }
         
         selectedStatusID = entityPreference.status?.persistentModelID
         selectedModeID = entityPreference.paymentMode?.persistentModelID
@@ -235,8 +274,8 @@ struct PreferenceTransactionView: View {
         selectedCategoryID = entityPreference.category?.persistentModelID
         isExpanded = entityPreference.signe
         
-        entityStatus = StatusManager.shared.getAllData(for: account) ?? []
-        entityPaymentMode = PaymentModeManager.shared.getAllData() ?? []
+        entityStatus = StatusManager.shared.getAllData(for: account)
+        entityPaymentMode = PaymentModeManager.shared.getAllData() ?? [ ]
         entityRubric = RubricManager.shared.getAllData()
         if let rubric = entityPreference.category?.rubric {
             entityCategorie = rubric.categorie

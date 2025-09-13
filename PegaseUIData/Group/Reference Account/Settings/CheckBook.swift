@@ -52,20 +52,11 @@ struct CheckView: View {
             
                 .onReceive(NotificationCenter.default.publisher(for: .NSUndoManagerDidUndoChange)) { _ in
                     printTag("Undo effectué, on recharge les données")
-                    refreshData()
+                    DispatchQueue.main.async { refreshData() }
                 }
                 .onReceive(NotificationCenter.default.publisher(for: .NSUndoManagerDidRedoChange)) { _ in
                     printTag("Redo effectué, on recharge les données")
-                    refreshData()
-                }
-
-                // Mise à jour de l'élément sélectionné
-                .onChange(of: selectedItem) { _, newValue in
-                    if let selected = newValue {
-                        selectedItem = selected
-                    } else {
-                        selectedItem = nil
-                    }
+                    DispatchQueue.main.async { refreshData() }
                 }
                 .onChange(of: currentAccountManager.getAccount()) { old, newAccount in
                     // Mise à jour de la liste en cas de changement de compte
@@ -77,6 +68,9 @@ struct CheckView: View {
                 // Charge les données au démarrage de la vue
                 .onAppear {
                     setupDataManager()
+                }
+                .onDisappear {
+                    checkBooks.removeAll()
                 }
 
             // Boutons d'action
@@ -181,6 +175,11 @@ struct CheckView: View {
             } else {
                 print("❗️Erreur : getAllData() a renvoyé nil")
             }
+        } else {
+            // Aucun compte courant — on vide la table pour éviter des crashs
+            dataManager.checkBooks = []
+            checkBooks = []
+            print("[ChequeBook] Aucun compte courant — table vidée.")
         }
     }
     
@@ -236,16 +235,16 @@ struct CheckBookTable: View {
                 Text(item.prefix)
             }
             
-            TableColumn( "Name") { item in
-                Text(item.account!.identity?.name ?? "")
+            TableColumn("Name") { item in
+                Text(item.account?.identity?.name ?? "")
             }
             
-            TableColumn( "Surname") { (item: EntityCheckBook) in
-                Text(item.account!.identity?.surName ?? "")
+            TableColumn("Surname") { (item: EntityCheckBook) in
+                Text(item.account?.identity?.surName ?? "")
             }
             
-            TableColumn( "Number") { item in
-                Text(item.account!.initAccount?.codeAccount ?? "")
+            TableColumn("Number") { item in
+                Text(item.account?.initAccount?.codeAccount ?? "")
             }
         }
         .tableStyle(.bordered)

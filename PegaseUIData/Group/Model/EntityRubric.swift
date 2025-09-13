@@ -9,8 +9,6 @@ import AppKit
 import SwiftData
 import SwiftUI
 
-
-
 @Model
 final class EntityRubric: Identifiable {
     
@@ -56,6 +54,29 @@ final class RubricManager {
     }
     
     private init() { }
+    
+    @MainActor func reset() {
+        entitiesRubric.removeAll()
+        refresh()
+    }
+
+    @MainActor
+    func refresh() {
+        let account = CurrentAccountManager.shared.getAccount()
+        guard let account else { return }
+        
+        let lhs = account.uuid
+        let predicate = #Predicate<EntityRubric> { $0.account.uuid == lhs }
+        let sort = [SortDescriptor(\EntityRubric.name, order: .forward)]
+        let fetchDescriptor = FetchDescriptor<EntityRubric>(predicate: predicate, sortBy: sort)
+        
+        do {
+            entitiesRubric = try modelContext?.fetch(fetchDescriptor) ?? []
+        } catch {
+            printTag("Erreur refresh: \(error)")
+            entitiesRubric = []
+        }
+    }
     
     func findOrCreate(account: EntityAccount, name: String, color: NSColor) -> EntityRubric {
         if let existingRubric = find(account: account, name: name) {

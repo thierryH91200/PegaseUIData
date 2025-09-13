@@ -86,7 +86,7 @@ final class PreferenceManager: PreferenceManaging {
         }
         
         // Configuration de status
-        newPreference.status = StatusManager.shared.getAllData(for: account)?.first
+        newPreference.status = StatusManager.shared.getAllData(for: account).first
 
         newPreference.signe = true
         newPreference.account = account

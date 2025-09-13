@@ -137,7 +137,7 @@ final class SchedulerManager: ScheduleManaging, ObservableObject  {
     @MainActor func getAllData() -> [EntitySchedule]? {
         
         guard let currentAccount = CurrentAccountManager.shared.getAccount() else {
-            printTag("Erreur : aucun compte courant trouvé.")
+            printTag("Erreur : aucun compte courant trouvé.", flag: true)
             return nil
         }
         
@@ -153,7 +153,7 @@ final class SchedulerManager: ScheduleManaging, ObservableObject  {
             // Récupérez les entités en utilisant le FetchDescriptor
             schedulers = try modelContext?.fetch( descriptor ) ?? []
         } catch {
-            printTag("Erreur lors de la récupération des données: \(error)")
+            print("Erreur lors de la récupération des données: \(error)")
             return [] // Retourne nil en cas d'erreur
         }
         return schedulers
@@ -287,7 +287,7 @@ final class SchedulerManager: ScheduleManaging, ObservableObject  {
             do {
                 try modelContext?.save()
             } catch {
-                printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+                printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)", flag: true)
             }
         }
     }

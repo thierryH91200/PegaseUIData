@@ -127,7 +127,7 @@ struct SwiftDataHelper {
         do {
             return try modelContext.fetch(descriptor).first
         } catch {
-            printTag("Erreur lors du fetch SwiftData : \(error)")
+            print("[SwiftDataHelper] Erreur lors du fetch SwiftData : \(error)")
             return nil
         }
     }
@@ -139,7 +139,7 @@ struct SwiftDataHelper {
         do {
             return try modelContext.fetch(descriptor)
         } catch {
-            printTag("Erreur lors du fetch SwiftData : \(error)")
+            print("[SwiftDataHelper] Erreur lors du fetch SwiftData : \(error)")
             return []
         }
     }

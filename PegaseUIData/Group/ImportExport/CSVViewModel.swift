@@ -41,7 +41,7 @@ class CSVViewModel: ObservableObject {
         switch result {
             case .success(let url):
                 readFile(url)
-            case .failure(let error): printTag("error loading file \(error)")
+            case .failure(let error): printTag("error loading file \(error)", flag: true)
         }
     }
     

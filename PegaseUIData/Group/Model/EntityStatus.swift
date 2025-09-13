@@ -53,7 +53,6 @@ extension EntityStatus: CustomStringConvertible {
 protocol StatusManaging {
     func create(account: EntityAccount?, name: String, type: Int, color: NSColor) throws -> EntityStatus?
     func find( account: EntityAccount?, name: String) -> EntityStatus?
-    func getAllData(for account: EntityAccount?) -> [EntityStatus]?
     func saveContext()
     func defaultStatus(account: EntityAccount)
 }
@@ -62,18 +61,37 @@ protocol StatusManaging {
 @MainActor
 final class StatusManager: StatusManaging {
     
+    
     static let shared = StatusManager()
     
-    var status = [EntityStatus]()
-    
+//    var status = [EntityStatus]()
+    @Published private(set) var statusIDs: [UUID] = []
+
     var modelContext: ModelContext? {
         DataContext.shared.context
     }
     
     private init() {}
     
-    func reset() {
-        status.removeAll()
+    @MainActor func reset() {
+        statusIDs.removeAll()
+    }
+    
+    /// Refetch des statuts valides pour un compte
+    func resolveStatuses(for account: EntityAccount) -> [EntityStatus] {
+        guard let context = modelContext else { return [] }
+        
+        var list: [EntityStatus] = []
+        let lhs = account.uuid
+
+        for id in statusIDs {
+            let predicate = #Predicate<EntityStatus> { $0.uuid == id && $0.account.uuid == lhs }
+            let fd = FetchDescriptor<EntityStatus>(predicate: predicate)
+            if let found = try? context.fetch(fd).first {
+                list.append(found)
+            }
+        }
+        return list
     }
 
     func create(account: EntityAccount?, name: String, type: Int, color: NSColor) throws -> EntityStatus? {
@@ -110,31 +128,29 @@ final class StatusManager: StatusManaging {
             let result = searchResults.isEmpty == false ? searchResults.first : nil
             return result
         } catch {
-            printTag("Error with request: \(error)")
+            printTag("Error with request: \(error)", flag: true)
             return nil
         }
     }
     
-    func getAllData(for account: EntityAccount?) -> [EntityStatus]? {
-        guard let account = account else {
-            printTag("Status : Erreur : Account est nil")
-            return nil
-        }
+    func getAllData(for account: EntityAccount? = nil) -> [EntityStatus] {
         
-        let accountID = account.uuid
-        let predicate = #Predicate<EntityStatus> { entity in entity.account.uuid == accountID }
-        let sort = [SortDescriptor(\EntityStatus.rawType, order: .forward)]
-        
-        let fetchDescriptor = FetchDescriptor<EntityStatus>(
-            predicate: predicate,
-            sortBy: sort )
-        
+        guard let account = account ?? CurrentAccountManager.shared.getAccount() else { return [] }
+        guard let context = modelContext else { return [] }
+
         do {
-            status = try modelContext?.fetch(fetchDescriptor) ?? []
+            let lhs = account.uuid
+            let predicate = #Predicate<EntityStatus> { $0.account.uuid == lhs }
+            let sort = [SortDescriptor(\EntityStatus.name, order: .forward)]
+            let fd = FetchDescriptor<EntityStatus>(predicate: predicate, sortBy: sort)
+            
+            let fetched = try context.fetch(fd)
+            statusIDs = fetched.map { $0.uuid }
+            return fetched
         } catch {
-            printTag("Erreur lors de la récupération des données : \(error.localizedDescription)")
+            printTag("❌ Erreur fetch Status: \(error)")
+            return []
         }
-        return status
     }
     
     func save () throws {
@@ -142,26 +158,26 @@ final class StatusManager: StatusManaging {
         do {
             try modelContext?.save()
         } catch {
-            printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+            printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)", flag: true)
         }
     }
     
     func saveContext() {
         if let path = getSQLiteFilePath() {
-            printTag("Base de données SQLite : \(path)")
+            printTag("Base de données SQLite : \(path)", flag: true)
         } else {
-            printTag("Erreur : Impossible de récupérer le chemin SQLite")
+            printTag("Erreur : Impossible de récupérer le chemin SQLite", flag: true)
         }
         
         do {
             try save()
         } catch {
-            printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+            printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)", flag: true)
         }
     }
     
     func defaultStatus(account: EntityAccount) {
-        status.removeAll()
+        statusIDs.removeAll()
         
         for type in StatusType.allCases {
             let status = EntityStatus(type: type, account: account)
@@ -171,9 +187,8 @@ final class StatusManager: StatusManaging {
         do {
             try modelContext?.save()
         } catch {
-            printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)")
+            printTag("Erreur lors de la sauvegarde : \(error.localizedDescription)", flag: true)
         }
-        
         _ = getAllData(for: account)
     }
 }

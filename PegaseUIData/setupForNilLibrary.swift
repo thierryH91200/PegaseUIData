@@ -45,7 +45,7 @@ struct AccountFactory {
         account.paymentMode = PaymentModeManager.shared.modePayments
         
         StatusManager.shared.defaultStatus(account: account)
-        account.status = StatusManager.shared.status
+        account.status = StatusManager.shared.resolveStatuses(for: account)
         
         RubricManager.shared.defaultRubric(for: account)
         let rubric = RubricManager.shared.getAllData(account: account)
@@ -73,7 +73,7 @@ struct AccountFactory {
         do {
             try modelContext?.save()
         } catch {
-            printTag("Erreur lors de la sauvegarde de l'entité : \(error)")
+            printTag("Erreur lors de la sauvegarde de l'entité : \(error)", flag: true)
         }
     }
 
@@ -110,7 +110,7 @@ final class InitManager {
     // Initialise la base si elle est vide
     @MainActor func initialize() {
         guard let ctx = modelContext else {
-            printTag("InitManager.initialize: ModelContext indisponible.")
+            printTag("InitManager.initialize: ModelContext indisponible.", flag: true)
             return
         }
         // Déterminer si des dossiers existent déjà (critère: isRoot == false)
@@ -124,7 +124,7 @@ final class InitManager {
     
     @MainActor func setupDefaultLibrary() {
         guard let ctx = modelContext else {
-            printTag("InitManager.setupDefaultLibrary: ModelContext indisponible.")
+            printTag("InitManager.setupDefaultLibrary: ModelContext indisponible.", flag: true)
             return
         }
         
@@ -197,19 +197,19 @@ final class InitManager {
     
     func saveContext() {
         guard let ctx = modelContext else {
-            printTag("InitManager.saveContext: ModelContext indisponible.")
+            printTag("InitManager.saveContext: ModelContext indisponible.", flag: true)
             return
         }
 
         if let path = getSQLiteFilePath() {
-            printTag(path)
+            printTag(path, flag: true)
         } else {
-            printTag("Erreur : chemin SQLite introuvable.")
+            printTag("Erreur : chemin SQLite introuvable.", flag: true)
         }
         do {
             try ctx.save()
         } catch {
-            printTag("Erreur : \(error.localizedDescription)")
+            printTag("Erreur : \(error.localizedDescription)", flag: true)
         }
     }
 }

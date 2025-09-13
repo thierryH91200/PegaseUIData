@@ -12,21 +12,19 @@ struct ModePaymentView: View {
     
     @Environment(\.modelContext) private var modelContext
     @Environment(\.undoManager) private var undoManager
-
+    
     @EnvironmentObject var currentAccountManager : CurrentAccountManager
     @EnvironmentObject var dataManager : PaymentModeManager
-    
-    @State private var modePayments : [EntityPaymentMode] = []
-
+       
     // Ajoutez un état pour suivre l'élément sélectionné
     @State private var selectedItem: EntityPaymentMode.ID?
     @State private var lastDeletedID: UUID?
     
     var selectedMode: EntityPaymentMode? {
         guard let id = selectedItem else { return nil }
-        return modePayments.first(where: { $0.id == id })
+        return dataManager.modePayments.first(where: { $0.id == id })
     }
-
+    
     @State private var isAddDialogPresented = false
     @State private var isEditDialogPresented = false
     @State private var modeCreate = false
@@ -37,7 +35,7 @@ struct ModePaymentView: View {
     var canRedo : Bool? {
         undoManager?.canRedo ?? false
     }
-
+    
     var body: some View {
         VStack(spacing: 10) {
             
@@ -46,15 +44,15 @@ struct ModePaymentView: View {
                 Text("Account: \(account.name)")
                     .font(.headline)
             }
-
+            
             // Affiche le tableau des modes de paiement
             ModePaiementTable(
                 modePayments: dataManager.modePayments,
                 selection: $selectedItem)
-                .frame(height: 300)
+            .frame(height: 300)
             
             // Mise à jour de l'élément sélectionné
-           .onChange(of: selectedItem) { _, newValue in
+            .onChange(of: selectedItem) { _, newValue in
                 
                 if let selected = newValue {
                     selectedItem = selected
@@ -62,16 +60,19 @@ struct ModePaymentView: View {
                     selectedItem = nil
                 }
             }
-            
-           .onReceive(NotificationCenter.default.publisher(for: .NSUndoManagerDidUndoChange)) { _ in
-               printTag("Undo effectué, on recharge les données")
-               refreshData()
-           }
-           .onReceive(NotificationCenter.default.publisher(for: .NSUndoManagerDidRedoChange)) { _ in
-               printTag("Redo effectué, on recharge les données")
-               refreshData()
-           }
+            .onDisappear {
+                dataManager.modePayments = []
+            }
 
+            .onReceive(NotificationCenter.default.publisher(for: .NSUndoManagerDidUndoChange)) { _ in
+                printTag("Undo effectué, on recharge les données")
+                refreshData()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .NSUndoManagerDidRedoChange)) { _ in
+                printTag("Redo effectué, on recharge les données")
+                refreshData()
+            }
+            
             // Recharge les données lorsqu'un nouvel ID de compte est sélectionné
             .onChange(of: currentAccountManager.currentAccountID ) { old, newValue in
                 if !newValue.isEmpty {
@@ -154,7 +155,7 @@ struct ModePaymentView: View {
                 }
                 .disabled(canUndo == false)
                 .buttonStyle(.plain)
-
+                
             }
             .padding()
             Spacer()
@@ -180,20 +181,18 @@ struct ModePaymentView: View {
         if currentAccountManager.getAccount() != nil {
             if let allData = PaymentModeManager.shared.getAllData() {
                 dataManager.modePayments = allData
-                modePayments = allData
+                //                dataManager.modePayments = allData
             } else {
                 print("❗️Erreur : getAllData() a renvoyé nil")
             }
         }
     }
-
+    
     private func delete()
     {
         if let id = selectedItem,
-           let modeToDelete = modePayments.first(where: { $0.id == id }) {
-
+           let modeToDelete = dataManager.modePayments.first(where: { $0.id == id }) {
             PaymentModeManager.shared.delete(entity: modeToDelete, undoManager: undoManager)
-            
             DispatchQueue.main.async {
                 selectedItem = nil
                 lastDeletedID = nil
@@ -203,9 +202,10 @@ struct ModePaymentView: View {
     }
     
     private func refreshData() {
-        dataManager.modePayments = PaymentModeManager.shared.getAllData()!
-        modePayments = dataManager.modePayments
-     }
+        if let allData = PaymentModeManager.shared.getAllData() {
+            dataManager.modePayments = allData
+        }
+    }
 }
 
 struct ModePaiementTable: View {

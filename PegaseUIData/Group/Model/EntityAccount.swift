@@ -101,6 +101,11 @@ final class AccountManager {
     }
     
     init() { }
+    
+    func reset() {
+        entities.removeAll()
+    }
+
         
     // MARK: create account
     @MainActor func create(nameAccount: String,

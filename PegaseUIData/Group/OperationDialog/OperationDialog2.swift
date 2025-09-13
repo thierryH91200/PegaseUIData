@@ -156,11 +156,10 @@ struct OperationDialogView: View {
 
         // Configuration des différents status
         if let account = CurrentAccountManager.shared.getAccount() {
-            if let status = StatusManager.shared.getAllData(for: account) {
-                formState.status = status
-                // Sélection sécurisée du premier status
-                formState.selectedStatus = status.first
-            }
+            let status = StatusManager.shared.getAllData(for: account)
+            formState.status = status
+            // Sélection sécurisée du premier status
+            formState.selectedStatus = status.first
         }
     }
     

@@ -93,7 +93,7 @@ final class BankManager : BankManaging {
     func getAllData() -> EntityBanqueInfo? {
         
         guard let account = CurrentAccountManager.shared.getAccount() else {
-            printTag("Erreur : aucun compte courant trouvé.")
+            print("Erreur : aucun compte courant trouvé.")
             return nil
         }
 
@@ -109,7 +109,7 @@ final class BankManager : BankManaging {
             entitiesBank = try modelContext?.fetch(fetchDescriptor) ?? []
 
         } catch {
-            printTag("Erreur lors de la récupération des données : \(error.localizedDescription)")
+            print("Erreur lors de la récupération des données : \(error.localizedDescription)")
             return nil
         }
         return entitiesBank.first

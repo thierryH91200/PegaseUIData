@@ -11,6 +11,9 @@ import SwiftData
 import SwiftUI
 import Combine
 
+private func logTag(_ message: String) {
+    print("[ChequeBook] \(message)")
+}
 
 @Model public class EntityCheckBook {
     var name: String = ""
@@ -89,7 +92,7 @@ final class ChequeBookManager : ObservableObject {
                 prefix: String = "CH") -> EntityCheckBook? {
         // Créez une instance de EntityCarnetCheques
         guard let account = CurrentAccountManager.shared.getAccount() else {
-            printTag("Aucun compte actif pour créer un carnet de chèques")
+            logTag("Aucun compte actif pour créer un carnet de chèques")
             return nil
         }
         
@@ -111,7 +114,7 @@ final class ChequeBookManager : ObservableObject {
     @MainActor func getAllData() -> [EntityCheckBook]? {
         
         guard let account = CurrentAccountManager.shared.getAccount() else {
-            printTag("Erreur : aucun compte courant trouvé.")
+            logTag("Erreur : aucun compte courant trouvé.")
             return nil
         }
 
@@ -126,7 +129,7 @@ final class ChequeBookManager : ObservableObject {
         do {
             checkBooks = try modelContext?.fetch(descriptor) ??   []
         } catch {
-            printTag("Error fetching data from SwiftData: \(error)")
+            logTag("Error fetching data from SwiftData: \(error)")
             return []
         }
         return checkBooks
@@ -153,7 +156,7 @@ final class ChequeBookManager : ObservableObject {
         
         // Prefer injecting the account to avoid relying on a main-actor default init
         guard let account = CurrentAccountManager.shared.getAccount() else {
-            printTag("Error creating default Carnet Cheques: no current account")
+            logTag("Error creating default Carnet Cheques: no current account")
             return
         }
         let entityCarnetCheques = EntityCheckBook(
@@ -171,7 +174,7 @@ final class ChequeBookManager : ObservableObject {
             try modelContext?.save()
             checkBooks.append(entityCarnetCheques)
         } catch {
-            printTag("Error saving default Carnet Cheques: \(error)")
+            logTag("Error saving default Carnet Cheques: \(error)")
         }
     }
     
@@ -179,7 +182,8 @@ final class ChequeBookManager : ObservableObject {
         do {
             try modelContext?.save()
         } catch {
-            printTag("Erreur lors de la sauvegarde de l'entité : \(error)")
+            logTag("Erreur lors de la sauvegarde de l'entité : \(error)")
         }
     }
 }
+

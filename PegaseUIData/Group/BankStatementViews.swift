@@ -444,7 +444,7 @@ struct PDFDropDelegate: DropDelegate {
                         self.pdfData = data
                     }
                 } catch {
-                    printTag("Erreur lors du chargement du PDF: \(error)")
+                    printTag("Erreur lors du chargement du PDF: \(error)", flag: true)
                 }
             }
         }
@@ -453,12 +453,6 @@ struct PDFDropDelegate: DropDelegate {
     }
 }
 
-func printTag( _ message: String, flag : Bool = true) {
-    if flag == true {
-        let tag = "[PegaseUIData]"
-        print("\(tag) \(message)")
-    }
-}
 
 struct StatementDetailView: View {
     let statement: EntityBankStatement
@@ -492,3 +486,4 @@ struct PDFKitView: NSViewRepresentable {
         }
     }
 }
+

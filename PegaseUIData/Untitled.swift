@@ -6,3 +6,9 @@
 //Message from debugger: killed
 
 
+
+//applique ces modifications dans:
+// RubricManager (EntityRubric.swift)
+
+
+//SwiftData/BackingData.swift:831: Fatal error: This model instance was destroyed by calling ModelContext.reset and is no longer usable. PersistentIdentifier(id: SwiftData.PersistentIdentifier.ID(backing: SwiftData.PersistentIdentifier.PersistentIdentifierBacking.managedObjectID(0x92dcb2d908d6f6c2 <x-coredata://A30C69D8-B2E9-4A71-96BA-35A0D4B6C6AE/EntityRubric/p118>)))

@@ -67,6 +67,11 @@ final class AccountFolderManager {
     
     init() { }
     
+    func reset() {
+        folderAccount.removeAll()
+    }
+
+    
     func getAllData() -> [EntityFolderAccount] {
         
         let predicate =  #Predicate<EntityFolderAccount>{ _ in true }

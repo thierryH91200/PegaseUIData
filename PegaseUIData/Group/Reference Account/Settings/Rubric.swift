@@ -77,6 +77,10 @@ struct RubricView: View {
                     rubriques = RubricManager.shared.getAllData()
                     dataManager.rubrics = rubriques
                 }
+                .onDisappear {
+                    dataManager.rubrics = []
+                    rubriques.removeAll()
+                }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 .background(Color.white)
                 .clipShape(RoundedRectangle(cornerRadius: 10))

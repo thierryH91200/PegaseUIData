@@ -77,8 +77,25 @@ final class PaymentModeManager : PaymentModeManaging, ObservableObject {
     
     func reset() {
         modePayments.removeAll()
+        refresh()
     }
 
+    func refresh() {
+        let account = CurrentAccountManager.shared.getAccount()
+        guard let account else { return }
+        
+        let lhs = account.uuid
+        let predicate = #Predicate<EntityPaymentMode> { $0.account.uuid == lhs }
+        let sort = [SortDescriptor(\EntityPaymentMode.name, order: .forward)]
+        let fetchDescriptor = FetchDescriptor<EntityPaymentMode>(predicate: predicate, sortBy: sort)
+        
+        do {
+            modePayments = try modelContext?.fetch(fetchDescriptor) ?? []
+        } catch {
+            printTag("Erreur refresh: \(error)")
+            modePayments = []
+        }
+    }
     func create(account: EntityAccount, name: String, color: NSColor) throws -> EntityPaymentMode? {
         let mode = EntityPaymentMode(account: account, name: name, color: color)
         modelContext?.insert(mode)
@@ -240,11 +257,11 @@ final class PaymentModeManager : PaymentModeManaging, ObservableObject {
         // modePayments now contains fresh, live instances from the current context
     }
     
-    // Resolve a live instance for a potentially stale model reference
-    private func resolveLiveInstance(_ entity: EntityPaymentMode) -> EntityPaymentMode? {
-        guard let context = modelContext else { return nil }
-        return context.model(for: entity.persistentModelID) as? EntityPaymentMode
-    }
+//    // Resolve a live instance for a potentially stale model reference
+//    private func resolveLiveInstance(_ entity: EntityPaymentMode) -> EntityPaymentMode? {
+//        guard let context = modelContext else { return nil }
+//        return context.model(for: entity.persistentModelID) as? EntityPaymentMode
+//    }
     
     // MARK: save ModePaiement
     func save () throws {
