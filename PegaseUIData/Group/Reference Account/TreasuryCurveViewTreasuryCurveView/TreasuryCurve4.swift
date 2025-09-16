@@ -131,16 +131,16 @@ struct DGLineChartRepresentable: NSViewRepresentable {
         nsView.xAxis.valueFormatter = DateValueFormatter(miniTime: firstDate, interval: hourSeconds)
 
         // MARK: Marker
-        let marker = RectMarker(
-            color: #colorLiteral(red: 0.921431005, green: 0.9214526415, blue: 0.9214410186, alpha: 1),
-            font: NSFont.systemFont(ofSize: 12.0),
-            insets: NSEdgeInsets(top: 8.0, left: 8.0, bottom: 20.0, right: 8.0)
-        )
-        marker.minimumSize = CGSize(width: 80.0, height: 40.0)
-        marker.chartView = nsView
-        nsView.marker = marker
-        marker.miniTime = firstDate
-        marker.interval = hourSeconds
+//        let marker = RectMarker(
+//            color: #colorLiteral(red: 0.921431005, green: 0.9214526415, blue: 0.9214410186, alpha: 1),
+//            font: NSFont.systemFont(ofSize: 12.0),
+//            insets: NSEdgeInsets(top: 8.0, left: 8.0, bottom: 20.0, right: 8.0)
+//        )
+//        marker.minimumSize = CGSize(width: 80.0, height: 40.0)
+//        marker.chartView = nsView
+//        nsView.marker = marker
+//        marker.miniTime = firstDate
+//        marker.interval = hourSeconds
 
         // MARK: Datasets
         

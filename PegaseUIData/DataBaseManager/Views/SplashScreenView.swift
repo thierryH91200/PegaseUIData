@@ -11,7 +11,6 @@ import SwiftData
 import Combine
 import UniformTypeIdentifiers
 
-
 // MARK: - Splash Screen
 struct SplashScreenView: View {
     @EnvironmentObject var containerManager: ContainerManager
@@ -88,7 +87,9 @@ private struct LeftPanelView: View {
                                      minWidth: 300,
                                      minHeight: 30,
                                      style: .borderedProminent) {
-                    showSavePanel()
+                    DispatchQueue.main.async {
+                        showSavePanel()
+                    }
                 }
                 
                 // 2
@@ -160,7 +161,9 @@ private struct LeftPanelView: View {
         .frame(width: 332) // 300 utile + 2*16 padding
     }
     private func showSavePanel() {
+        
         let panel = NSSavePanel()
+
         panel.allowedContentTypes = [.store]
         panel.nameFieldStringValue = "New Base"
         panel.canCreateDirectories = true

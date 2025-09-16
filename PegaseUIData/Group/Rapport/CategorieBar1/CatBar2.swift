@@ -8,6 +8,9 @@
 import SwiftUI
 import SwiftData
 import DGCharts
+import Combine
+import UniformTypeIdentifiers
+
 
 
 struct CategorieBar1View1: View {

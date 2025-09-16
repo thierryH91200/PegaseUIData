@@ -14,7 +14,7 @@ import AppKit
 import Combine
 
 
-open class RectMarker: MarkerImage
+open nonisolated class RectMarker: MarkerImage
 {
     open var color: NSUIColor?
     open var font: NSUIFont?
@@ -43,7 +43,7 @@ open class RectMarker: MarkerImage
         dateFormatter.timeZone = NSTimeZone(abbreviation: "GMT+0:00")! as TimeZone
     }
     
-    open override func offsetForDrawing(atPoint point: CGPoint) -> CGPoint
+    open nonisolated override func offsetForDrawing(atPoint point: CGPoint) -> CGPoint
     {
         var offset = CGPoint() //CGPoint(x: 10.0, y:10.0)
         let chart = self.chartView
@@ -80,7 +80,7 @@ open class RectMarker: MarkerImage
         return offset
     }
     
-    open override func draw(context: CGContext, point: CGPoint)
+    open nonisolated override func draw(context: CGContext, point: CGPoint)
     {
         guard let label = label else { return }
         let offset = self.offsetForDrawing(atPoint: point)
@@ -129,7 +129,7 @@ open class RectMarker: MarkerImage
         context?.drawPath(using: .fillStroke)
     }
 
-    open override func refreshContent(entry: ChartDataEntry, highlight: Highlight)
+    open nonisolated override func refreshContent(entry: ChartDataEntry, highlight: Highlight)
     {
         var str = ""
         let mutableString = NSMutableAttributedString( string: str )

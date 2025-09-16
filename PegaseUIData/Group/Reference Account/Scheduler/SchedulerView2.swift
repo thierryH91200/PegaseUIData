@@ -8,6 +8,7 @@
 import AppKit
 import SwiftUI
 import SwiftDate
+import SwiftData
 
 private enum UpdateTrigger {
     case dateDebut
