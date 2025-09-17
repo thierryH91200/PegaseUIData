@@ -19,11 +19,3 @@ extension UTType {
     }
 }
 
-extension UTType {
-    static var swiftDataStore: UTType {
-//        UTType(importedAs: "com.yourcompany.database-manager.store")
-        // Or:
-         UTType(filenameExtension: "store", conformingTo: .data) ?? .data
-    }
-}
-

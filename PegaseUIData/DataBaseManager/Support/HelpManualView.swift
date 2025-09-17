@@ -17,13 +17,13 @@ struct HelpManualView: View {
                 Group {
                     Text("Purpose of the App")
                         .font(.headline)
-                    Text("Purpose.Body")
+                    Text("Purpose Body")
                 }
 
                 Group {
                     Text("Getting Started")
                         .font(.headline)
-                    Text("Intro2 : On launch, the welcome screen appears.\nFrom this screen, you can:\n- Create a new database (Create a new file)\n- Open an existing database (Open existing document…)\n- Open a sample project (Open sample document Project…)\n- Open a recent file (Recent files)")
+                    Text(String(localized:"Intro2 : On launch, the welcome screen appears.\nFrom this screen, you can:\n- Create a new database (Create a new file)\n- Open an existing database (Open existing document…)\n- Open a sample project (Open sample document Project…)\n- Open a recent file (Recent files)",table: "Help"))
                 }
 
                 Group {

@@ -136,29 +136,61 @@ struct ContentView100: View {
                 Button {
                     containerManager.closeCurrentDatabase()
                 } label: {
-                    Label(String(localized: "Home",table: "MainApp"), systemImage: "house")
+                    Label {
+                        Text(String(localized: "Home", table: "MainApp"))
+                    } icon: {
+                        Image(systemName: "house")
+                            .foregroundStyle(.red)     // couleur rouge
+                            .font(.title2)       // taille un peu plus grande
+                    }
                 }
             }
 
             ToolbarItemGroup(placement: .navigation) {
-                Button(action: {
+                Button {
                     printTag("Nouvel élément ajouté", flag: true)
-                }) {
-                    Label("Add", systemImage: "plus")
+                }label: {
+                    Label {
+                        Text(String(localized: "Add", table: "MainApp"))
+                    } icon: {
+                        Image(systemName: "plus")
+                            .foregroundStyle(.red)     // couleur rouge
+                            .font(.title2)      // taille un peu plus grande
+                    }
+
                 }
             }
+            
+            ToolbarItemGroup(placement: .navigation) {
+                Button {
+                    viewModel.triggerImport()
+                }label: {
+                    Label {
+                        Text(String(localized: "Import", table: "MainApp"))
+                    } icon: {
+                        Image(systemName: "arrow.down.doc")
+                            .foregroundStyle(.red)     // couleur rouge
+                            .font(.title2)      // taille un peu plus grande
+                    }
+                    
+                }
+            }
+
             ToolbarItemGroup(placement: .automatic) {
                 Button {
                     inspectorIsShown.toggle()
                 } label: {
-                    Label("Show inspector", systemImage: "sidebar.right")
+                    Label {
+                        Text(String(localized: "Show inspector", table: "MainApp"))
+                    } icon: {
+                        Image(systemName: "sidebar.right")
+                            .foregroundStyle(.red)     // couleur rouge
+                            .font(.title2)      // taille un peu plus grande
+                    }
                 }
-                Menu {
-                    Button("Light") { setAppearance(.aqua) }
-                    Button("Dark") { setAppearance(.darkAqua) }
-                } label: {
-                    Label("Appearance", systemImage: "paintbrush")
-                }
+                
+                AppearancePopoverButton()
+                
                 Menu {
                     Button(action: { changeSearchFieldItem("All") }) { Text("All") }
                     Button(action: { changeSearchFieldItem("Comment") }) { Text("Comment") }
@@ -172,14 +204,6 @@ struct ContentView100: View {
                     printTag("Paramètres ouverts", flag: true)
                 }) {
                     Label("Settings", systemImage: "gear")
-                }
-            }
-            
-            ToolbarItemGroup(placement: .navigation) {
-                Button(action: {
-                    viewModel.triggerImport()
-                }) {
-                    Label("Import", systemImage: "arrow.down.doc")
                 }
             }
             
@@ -235,6 +259,23 @@ struct ContentView100: View {
         colorManager.colorChoix = color
         selectedColor = color
     }
+    
+    func tintedSystemImage(named: String, tint: NSColor, size: CGSize = CGSize(width: 18, height: 18)) -> NSImage? {
+        guard let base = NSImage(systemSymbolName: named, accessibilityDescription: nil) else { return nil }
+        let img = base.copy() as! NSImage
+        img.size = size
+
+        // Dessiner la couleur par dessus (méthode simple qui fonctionne pour les symboles template)
+        img.lockFocus()
+        tint.set()
+        let imageRect = NSRect(origin: .zero, size: size)
+        imageRect.fill(using: .sourceAtop)
+        img.unlockFocus()
+
+        return img
+    }
+    
+
 
 //    private func saveWindowSize(width: CGFloat, height: CGFloat) {
 //        windowWidth = width
@@ -255,6 +296,62 @@ private func setAppearance(_ appearance: NSAppearance.Name) {
     if let window = NSApplication.shared.windows.first {
         window.appearance = NSAppearance(named: appearance)
     }
+}
+
+
+// Helper : crée une NSImage colorée à partir d'un SF Symbol
+
+struct AppearancePopoverButton: View {
+    @State private var showing = false
+
+    var body: some View {
+        Button {
+            showing.toggle()
+        } label: {
+            HStack(spacing: 8) {
+                if let ns = coloredSystemImage(named: "paintbrush", tint: .systemRed, size: CGSize(width: 18, height: 18)) {
+                    Image(nsImage: ns)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 18, height: 18)
+                } else {
+                    // fallback
+                    Image(systemName: "paintbrush")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 18, height: 18)
+                        .foregroundColor(.red)
+                }
+                Text(String(localized: "", table: "MainApp"))
+            }
+        }
+        .buttonStyle(PlainButtonStyle()) // empêche le système d'imposer un style
+        .popover(isPresented: $showing, arrowEdge: .bottom) {
+            VStack(alignment: .leading, spacing: 6) {
+                Button("Light")  { NSApp.appearance = NSAppearance(named: .aqua); showing = false }
+                Button("Dark")   { NSApp.appearance = NSAppearance(named: .darkAqua); showing = false }
+                Button("System") { NSApp.appearance = nil; showing = false }
+            }
+            .padding()
+            .frame(width: 150)
+        }
+    }
+    func coloredSystemImage(named: String, tint: NSColor, size: CGSize = CGSize(width: 18, height: 18)) -> NSImage? {
+        guard let symbol = NSImage(systemSymbolName: named, accessibilityDescription: nil) else { return nil }
+        // Nouvelle image de la bonne taille
+        let result = NSImage(size: size)
+        result.lockFocus()
+        // dessine le symbole dans le rect
+        let rect = NSRect(origin: .zero, size: size)
+        symbol.draw(in: rect, from: .zero, operation: .sourceOver, fraction: 1.0)
+        // applique la couleur en mode sourceAtop (teinte)
+        tint.setFill()
+        rect.fill(using: .sourceAtop)
+        result.unlockFocus()
+        result.isTemplate = false
+        return result
+    }
+
 }
 
 struct SidebarContainer: View {

@@ -110,8 +110,8 @@ struct PreferenceTransactionView: View {
                         }
                     }
                     
-                    Picker("Category", selection: $selectedCategoryID) {
-                        Text("Aucune catégorie").tag(nil as PersistentIdentifier?)
+                    Picker("No category", selection: $selectedCategoryID) {
+                        Text("No category").tag(nil as PersistentIdentifier?)
                         ForEach(entityCategorie, id: \.self) {
                             Text($0.name).tag($0.persistentModelID as PersistentIdentifier?)
                         }
