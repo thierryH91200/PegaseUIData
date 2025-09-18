@@ -22,6 +22,10 @@ struct TransactionLigne: View {
     @State var showTransactionInfo: Bool = false
     @GestureState private var isShiftPressed = false
     @GestureState private var isCmdPressed = false
+
+    @State private var showPopover = false
+    @State private var inputText = ""
+
     
     @State private var backgroundColor = Color.clear
     
@@ -31,7 +35,6 @@ struct TransactionLigne: View {
     
     var body: some View {
         let isSelected = selectedTransactions.contains(transaction.id)
-        var backgroundColor = isSelected ? Color.blue.opacity(0.5) : Color.clear
         let textColor = isSelected ? Color.white : colorManager.colorForTransaction(transaction)
         
         HStack(spacing: 0) {
@@ -76,7 +79,7 @@ struct TransactionLigne: View {
         .padding(.vertical, 6)
         .background(
             RoundedRectangle(cornerRadius: 8)
-                .fill(backgroundColor)
+                .fill(isSelected ? Color.blue.opacity(0.5) : backgroundColor)
         )
         .shadow(color: Color.black.opacity(0.05), radius: 1, x: 0, y: 1)
         .padding(.horizontal, 4)
@@ -121,14 +124,60 @@ struct TransactionLigne: View {
             }
             .disabled(selectedTransactions.isEmpty)
             
+            let namesPayements = PaymentModeManager.shared.getAllNames()
+            Menu {
+                ForEach(namesPayements, id: \.self) { mode in
+                    Button(mode) {
+                        mettreAJourModePourSelection(nouveauMode: mode)
+                    }
+                }
+            } label: {
+                Label("Change Payment Mode", systemImage: "square.and.pencil")
+            }
+            .disabled(selectedTransactions.isEmpty)
+            
+            Menu {
+                Button("Nouveau relevé…") {
+                    showPopover = true
+                }
+            } label: {
+                Label("Relevé bancaire", systemImage: "square.and.pencil")
+            }
+            
             Button(role: .destructive, action: {
                 supprimerTransactionsSelectionnees()
             }) {
                 Label("Remove", systemImage: "trash")
             }
             .disabled(selectedTransactions.isEmpty)
-            .padding()
         }
+        
+        .popover(isPresented: $showPopover, arrowEdge: .trailing) {
+            VStack(spacing: 12) {
+                Text("Créer un relevé")
+                    .font(.headline)
+
+                TextField("Statement number", text: $inputText)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding(.horizontal)
+
+                HStack {
+                    Button("Annuler") {
+                        showPopover = false
+                    }
+                    Button("OK") {
+                        print("Relevé saisi: \(inputText)")
+                        mettreAJourRelevePourSelection(nouveauReleve: inputText)
+                        showPopover = false
+                    }
+                    .keyboardShortcut(.defaultAction)
+                }
+                .padding(.top, 8)
+            }
+            .padding()
+            .frame(width: 250)
+        }
+
         .popover(isPresented: $showTransactionInfo, arrowEdge: .top) {
             if let index = ListTransactionsManager.shared.listTransactions.firstIndex(where: { $0.id == transaction.id }) {
                 TransactionDetailView(currentSectionIndex: index, selectedTransaction: $selectedTransactions)
@@ -141,7 +190,7 @@ struct TransactionLigne: View {
         }
         // Keyboard shortcut: Cmd+A to select all transactions, Escape to deselect all
         .onAppear {
-            backgroundColor = isSelected ? Color.accentColor.opacity(0.2) : Color(NSColor.controlBackgroundColor)
+            backgroundColor = isSelected ? Color.accentColor.opacity(0.2) : Color.clear
             NSEvent.addLocalMonitorForEvents(matching: [.keyDown]) { event in
                 if event.modifierFlags.contains(.command), event.charactersIgnoringModifiers == "a" {
                     // Tout sélectionner
@@ -159,6 +208,16 @@ struct TransactionLigne: View {
                     transactionManager.selectedTransactions = []
                     return nil
                 }
+                // Undo: Cmd+Z
+                if event.modifierFlags.contains(.command), event.charactersIgnoringModifiers == "z" {
+                    ListTransactionsManager.shared.undo()
+                    return nil
+                }
+                // Redo: Shift+Cmd+Z
+                if event.modifierFlags.contains([.command, .shift]), event.charactersIgnoringModifiers == "Z" {
+                    ListTransactionsManager.shared.redo()
+                    return nil
+                }
                 return event
             }
         }
@@ -172,10 +231,7 @@ struct TransactionLigne: View {
             .padding(.horizontal, 2)
     }
     
-    private func transaction(for id: UUID) -> EntityTransaction? {
-        _ = selectedTransactions.compactMap { id in
-            transaction(for: id)
-        }
+    private func transactionByID(_ id: UUID) -> EntityTransaction? {
         return ListTransactionsManager.shared.listTransactions.first { $0.id == id }
     }
     
@@ -222,28 +278,142 @@ struct TransactionLigne: View {
     
     private func supprimerTransactionsSelectionnees() {
         withAnimation {
-            // Copie locale des éléments à supprimer
+            // 1) Capture les indices ordonnés des éléments sélectionnés dans la liste visible
+            let selectedIDs = Array(selectedTransactions)
+            let orderedSelectedIndices: [Int] = visibleTransactions.enumerated()
+                .filter { selectedIDs.contains($0.element.id) }
+                .map { $0.offset }
+                .sorted()
+
+            // 2) Déterminer une cible de re-sélection (index voisin)
+            let targetIndexAfter: Int? = orderedSelectedIndices.last.map { $0 + 1 }
+            let targetIndexBefore: Int? = orderedSelectedIndices.first.map { $0 - 1 }
+
+            // 3) Supprimer du contexte si non déjà supprimé
             let transactionsToDelete = ListTransactionsManager.shared.listTransactions.filter { selectedTransactions.contains($0.id) }
-            
-            // Supprime du contexte si non déjà supprimé
-            for transaction in transactionsToDelete {
-                if !transaction.isDeleted {
-                    ListTransactionsManager.shared.delete(entity: transaction)
-                }
+            for transaction in transactionsToDelete where !transaction.isDeleted {
+                ListTransactionsManager.shared.delete(entity: transaction)
             }
-            
-            // Vide la sélection
-            selectedTransactions.removeAll()
+
+            // 4) Rafraîchir les données
             _ = ListTransactionsManager.shared.getAllData(ascending: false)
+
+            // 5) Reconstituer la liste visible après suppression
+            //    Ici, on part de visibleTransactions passé en paramètre de la vue. Si ta source change
+            //    (filtre/tri), assure-toi que la vue parent le réévalue. On se contente de l'état courant.
+            let newVisible = visibleTransactions
+
+            // 6) Choisir une nouvelle sélection (l'élément après, sinon l'élément avant)
+            var newSelectedID: UUID? = nil
+            if let idx = targetIndexAfter, idx >= 0, idx < newVisible.count {
+                newSelectedID = newVisible[idx].id
+            } else if let idx = targetIndexBefore, idx >= 0, idx < newVisible.count {
+                newSelectedID = newVisible[idx].id
+            }
+
+            // 7) Appliquer la nouvelle sélection et synchroniser le TransactionSelectionManager
+            selectedTransactions.removeAll()
+            if let id = newSelectedID {
+                selectedTransactions.insert(id)
+                transactionManager.selectedTransaction = ListTransactionsManager.shared.listTransactions.first { $0.id == id }
+                transactionManager.selectedTransactions = ListTransactionsManager.shared.listTransactions.filter { selectedTransactions.contains($0.id) }
+            } else {
+                transactionManager.selectedTransaction = nil
+                transactionManager.selectedTransactions = []
+            }
+            transactionManager.isCreationMode = false
         }
     }
+    private func mettreAJourRelevePourSelection(nouveauReleve: String) {
+        withAnimation {
+            guard let undo = ListTransactionsManager.shared.modelContext?.undoManager else {
+                // Fallback sans undo manager
+                let selected = ListTransactionsManager.shared.listTransactions.filter { selectedTransactions.contains($0.id) }
+                for transaction in selected {
+                    transaction.bankStatement = Double(nouveauReleve) ?? 0.0
+                }
+                
+                return
+            }
+
+            undo.beginUndoGrouping()
+            undo.setActionName("Change status")
+
+            let selected = ListTransactionsManager.shared.listTransactions.filter { selectedTransactions.contains($0.id) }
+            for transaction in selected {
+                transaction.bankStatement = Double(nouveauReleve) ?? 0.0
+            }
+            
+
+            do {
+                try ListTransactionsManager.shared.modelContext?.save()
+            } catch {
+                print("Error saving context after status change: \(error)")
+            }
+            undo.endUndoGrouping()
+        }
+    }
+
     private func mettreAJourStatusPourSelection(nouveauStatus: String) {
         withAnimation {
-            let selected = ListTransactionsManager.shared.listTransactions.filter { selectedTransactions.contains($0.id) }
-            let status = StatusManager.shared.find(name: nouveauStatus)!
-            for transaction in selected {
-                transaction.status = status
+            guard let undo = ListTransactionsManager.shared.modelContext?.undoManager else {
+                // Fallback sans undo manager
+                let selected = ListTransactionsManager.shared.listTransactions.filter { selectedTransactions.contains($0.id) }
+                if let status = StatusManager.shared.find(name: nouveauStatus) {
+                    for transaction in selected {
+                        transaction.status = status
+                    }
+                }
+                return
             }
+
+            undo.beginUndoGrouping()
+            undo.setActionName("Change status")
+
+            let selected = ListTransactionsManager.shared.listTransactions.filter { selectedTransactions.contains($0.id) }
+            if let status = StatusManager.shared.find(name: nouveauStatus) {
+                for transaction in selected {
+                    transaction.status = status
+                }
+            }
+
+            do {
+                try ListTransactionsManager.shared.modelContext?.save()
+            } catch {
+                print("Error saving context after status change: \(error)")
+            }
+            undo.endUndoGrouping()
+        }
+    }
+    private func mettreAJourModePourSelection(nouveauMode: String) {
+        withAnimation {
+            guard let undo = ListTransactionsManager.shared.modelContext?.undoManager else {
+                // Fallback sans undo manager
+                let selected = ListTransactionsManager.shared.listTransactions.filter { selectedTransactions.contains($0.id) }
+                if let mode = PaymentModeManager.shared.find(name: nouveauMode) {
+                    for transaction in selected {
+                        transaction.paymentMode = mode
+                    }
+                }
+                return
+            }
+
+            undo.beginUndoGrouping()
+            undo.setActionName("Change payment mode")
+
+            let selected = ListTransactionsManager.shared.listTransactions.filter { selectedTransactions.contains($0.id) }
+            if let mode = PaymentModeManager.shared.find(name: nouveauMode) {
+                for transaction in selected {
+                    transaction.paymentMode = mode
+                }
+            }
+
+            do {
+                try ListTransactionsManager.shared.modelContext?.save()
+            } catch {
+                print("Error saving context after status change: \(error)")
+            }
+            undo.endUndoGrouping()
         }
     }
 }

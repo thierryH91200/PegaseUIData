@@ -58,14 +58,12 @@ class Transaction : NSObject {
     let id               : String
     let entityTransaction : EntityTransaction
     
-    init( year: String, id: String, entityTransaction: EntityTransaction) {
+    init(year: String, id: String, entityTransaction: EntityTransaction) {
         self.year = year
         self.id = id
         self.entityTransaction = entityTransaction
         self.isCb = false
-//        let mode = self.entityTransaction.paymentMode?.name
-//        self.cb = mode == PaymentMethod.Bank_Card ? true : false
+        // let mode = self.entityTransaction.paymentMode?.name
+        // self.cb = mode == PaymentMethod.Bank_Card ? true : false
     }
 }
-
-

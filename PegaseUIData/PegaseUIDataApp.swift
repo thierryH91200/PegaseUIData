@@ -46,6 +46,7 @@ struct DatabaseManagerApp: App {
             CommandGroup(replacing: .undoRedo) {
                 Button(String(localized: "Undo")) {
                     DataContext.shared.undoManager?.undo()
+                    ListTransactionsManager.shared.undo()
                 }
                 .keyboardShortcut("z")
                 .disabled(!(DataContext.shared.undoManager?.canUndo ?? false))

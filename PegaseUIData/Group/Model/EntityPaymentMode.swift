@@ -49,7 +49,7 @@ protocol PaymentModeManaging {
     func create(account: EntityAccount, name: String, color: NSColor) throws -> EntityPaymentMode?
     func update(entity: EntityPaymentMode, name: String, color: NSColor)
     func getAllData() -> [EntityPaymentMode]?
-    func getAllNames(for account: EntityAccount) -> [String]
+    func getAllNames() -> [String]
     func findOrCreate(account: EntityAccount, name: String, color: Color, uuid: UUID) -> EntityPaymentMode
     func find( account: EntityAccount?, name: String) -> EntityPaymentMode?
     func delete(entity: EntityPaymentMode, undoManager: UndoManager?)
@@ -148,7 +148,7 @@ final class PaymentModeManager : PaymentModeManaging, ObservableObject {
     }
     
     // MARK: getAllNames ModePaiement
-    @MainActor func getAllNames(for account: EntityAccount) -> [String] {
+    @MainActor func getAllNames() -> [String] {
         
          return getAllData()?.map { $0.name } ?? []
     }

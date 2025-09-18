@@ -130,7 +130,10 @@ extension EntityTransaction {
     var dateOperationString: String {
         return dateOperation.formatted()
     }
-    
+    var dateTransactionString: String {
+        return dateOperation.formatted()
+    }
+
     var datePointageString: String {
         return datePointage.formatted()
     }

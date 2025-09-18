@@ -32,6 +32,9 @@ final class ListTransactionsManager: ListManaging {
     var modelContext: ModelContext? {
         DataContext.shared.context
     }
+    var undoManager: UndoManager? {
+        DataContext.shared.context?.undoManager
+    }
 
     init() { }
     
@@ -155,11 +158,12 @@ final class ListTransactionsManager: ListManaging {
             printTag("Container invalide.", flag: true)
             return
         }
+        modelContext.undoManager = undoManager
         modelContext.undoManager?.beginUndoGrouping()
-        modelContext.undoManager?.setActionName("Delete the transaction")
+        modelContext.undoManager?.setActionName(String(localized: "Delete Person"))
         modelContext.delete(entity)
         modelContext.undoManager?.endUndoGrouping()
-        
+
         do {
             try modelContext.save()
             printTag("✅ L'entité a été supprimée avec succès.", flag: true)
@@ -196,15 +200,66 @@ final class ListTransactionsManager: ListManaging {
         currentAccount.isDemo = false
     }
     
-//    func clearCache(for account: EntityAccount) async {
-//        await cache.invalidate(key: account.uuid)
+    
+    @MainActor
+    func undo() {
+        assert(Thread.isMainThread)
+        guard let context = modelContext else { return }
+        guard let undoManager = context.undoManager else { return }
+        printTag("Undo stack canUndo: \(undoManager.canUndo), isUndoing: \(undoManager.isUndoing), isRedoing: \(undoManager.isRedoing)", flag: false)
+        if undoManager.canUndo {
+            undoManager.undo()
+            printTag("Undo executed. Re-fetching...", flag: false)
+            let refreshed = getAllData(ascending: ascending)
+            printTag("Refetch count: \(refreshed.count)", flag: false)
+        }
+    }
+//    func undo() {
+//        guard let context = modelContext else {
+//            assertionFailure("ModelContext is nil in undo()")
+//            return
+//        }
+//        guard let undoManager = context.undoManager else {
+//            printTag("UndoManager is nil. No undo available.", flag: true)
+//            return
+//        }
+//
+//        // Sécurité: éviter undo pendant une édition/animation critique
+//        if undoManager.isUndoing || undoManager.isRedoing {
+//            printTag("Undo/Redo already in progress.", flag: true)
+//            return
+//        }
+//
+//        // Exécuter l'undo
+//        if undoManager.canUndo {
+//            undoManager.undo()
+//            _ = getAllData(ascending: ascending)
+//        }
 //    }
-//    
-//    func clearAllCache() async {
-//        await cache.invalidateAll()
-//    }
+
+    func redo() {
+        guard let context = modelContext else {
+            assertionFailure("ModelContext is nil in redo()")
+            return
+        }
+        guard let undoManager = context.undoManager else {
+            printTag("UndoManager is nil. No redo available.", flag: true)
+            return
+        }
+        if undoManager.isUndoing || undoManager.isRedoing {
+            printTag("Undo/Redo already in progress.", flag: true)
+            return
+        }
+
+        undoManager.redo()
+        _ = getAllData(ascending: ascending)
+    }
+
+    
 }
 
+extension ListTransactionsManager {
+}
 class ListTransactionsViewModel: ObservableObject {
     @Published var account: EntityAccount
     @Published var listTransactions: [EntityTransaction]
