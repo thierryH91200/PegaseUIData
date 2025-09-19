@@ -10,8 +10,6 @@
 //import DGCharts
 //import Combine
 //
-//
-//
 //struct SinglePieChartView: NSViewRepresentable {
 //    let entries: [PieChartDataEntry]
 //    let title: String

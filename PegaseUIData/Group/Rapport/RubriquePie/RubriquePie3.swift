@@ -10,9 +10,6 @@ import SwiftData
 import DGCharts
 import Combine
 
-
-
-
 struct RubriquePie: View {
     @Environment(\.modelContext) private var modelContext
     @StateObject private var viewModel = RubriquePieViewModel()

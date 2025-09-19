@@ -30,13 +30,19 @@ struct ModePaiementPieView: View {
             maxDate: $maxDate
         )
         .task {
+            await performFalseTask()
             await loadTransactions()
         }
     }
 
+    private func performFalseTask() async {
+        // Exécuter une tâche asynchrone (par exemple, un délai)
+        try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 seconde de délai
+        isVisible = false
+    }
+
     private func loadTransactions() async {
-        
         transactions = ListTransactionsManager.shared.getAllData()
-        printTag("[Pie] Transactions chargées: \(transactions.count)")
+        printTag("[Mode Pie] Transactions chargées: \(transactions.count)")
     }
 }

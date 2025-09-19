@@ -21,7 +21,6 @@ import Combine
 struct ModePaiementView: View {
 
     @Environment(\.modelContext) private var modelContext
-    
     @StateObject private var viewModel = ModePaymentPieViewModel()
 
     let transactions: [EntityTransaction]
@@ -49,7 +48,7 @@ struct ModePaiementView: View {
 
     @State private var selectedStart: Double = 0
     @State private var selectedEnd: Double = 30
-    @State private var chartViewRef: PieChartView?
+//    @State private var chartViewRef: PieChartView?
     @State private var updateWorkItem: DispatchWorkItem?
     
     var body: some View {
@@ -95,8 +94,8 @@ struct ModePaiementView: View {
                         .foregroundColor(.secondary)
 
                     RangeSlider(
-                        lowerValue: $lowerValue,
-                        upperValue: $upperValue,
+                        lowerValue: $selectedStart,
+                        upperValue: $selectedEnd,
                         totalRange: 0...Double(totalDays),
                         valueLabel: { value in
                             let date = Calendar.current.date(byAdding: .day, value: Int(value), to: minDate)!
