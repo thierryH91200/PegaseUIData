@@ -274,13 +274,6 @@ struct ContentView100: View {
 
         return img
     }
-    
-
-
-//    private func saveWindowSize(width: CGFloat, height: CGFloat) {
-//        windowWidth = width
-//        windowHeight = height
-//    }
 }
 
 // Fonction d'action pour chaque choix de couleur
@@ -435,33 +428,6 @@ struct DetailContainer: View {
     }
 }
 
-//struct Sidebar2A: View {
-//
-//    @Binding var selection2: String?
-//
-//    var body: some View {
-//
-//        let datas = Bundle.main.decode([Datas].self, from: "Feeds.plist" )
-//
-//        List(selection: $selection2) {
-//            ForEach(datas) { section in
-//                Section(section.name) {
-//                    ForEach(section.children) { child in
-//                        Label(child.name, systemImage: child.icon)
-//                            .tag(child.name)
-//                            .font(.system(size: 12))
-//                            .frame(minHeight: 12, maxHeight: 16)
-//                            .listRowInsets(EdgeInsets(top: 2, leading: 8, bottom: 2, trailing: 8))
-//                    }
-//                }
-//            }
-//        }
-//        .navigationTitle("Display")
-//        .listStyle(SidebarListStyle())
-//        .listRowSeparator(.hidden)
-//        .frame(maxHeight: .infinity) // Prend toute la place disponible
-//    }
-//}
 
 struct Sidebar2A: View {
     @Binding var selection2: String?
