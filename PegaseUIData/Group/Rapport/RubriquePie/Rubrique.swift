@@ -1,25 +1,12 @@
 //
-//  Recette.swift
+//  Rubrique.swift
 //  PegaseUIData
 //
-//  Created by thierryH24 on 19/09/2025.
+//  Created by thierryH24 on 20/09/2025.
 //
 
 //
-//  RecetteDepensePie1.swift
-//  PegaseUIData
-//
-//  Created by Thierry hentic on 17/04/2025.
-//
-
-import SwiftUI
-import SwiftData
-import DGCharts
-import Combine
-
-
-//
-//  RecetteDepensePie2.swift
+//  Untitled 2.swift
 //  PegaseUIData
 //
 //  Created by Thierry hentic on 17/04/2025.
@@ -31,52 +18,84 @@ import DGCharts
 import Combine
 
 
-struct RecetteDepensePieView: View {
+struct RubriquePieView: View {
+    
     @Binding var isVisible: Bool
     
     @State private var transactions: [EntityTransaction] = []
     @State private var lowerValue: Double = 0
-    @State private var upperValue: Double = 180
-    @State private var minDate: Date = Calendar.current.date(byAdding: .day, value: -180, to: Date())!
+    @State private var upperValue: Double = 0
+    @State private var minDate: Date = Date()
     @State private var maxDate: Date = Date()
-
+    
+    private let oneDay = 3600.0 * 24.0 // one day
 
     var body: some View {
-        RecetteDepensePie(
+        RubriquePie(
             transactions: transactions,
             lowerValue: $lowerValue,
             upperValue: $upperValue,
             minDate: $minDate,
             maxDate: $maxDate
         )
-            .task {
-                await performFalseTask()
+        .task {
+            await performFalseTask()
+        }
+        .onAppear {
+            Task {
                 await loadTransactions()
+                minDate = transactions.first?.dateOperation ?? Date()
+                lowerValue = 0
+                maxDate = transactions.last?.dateOperation ?? Date()
+                upperValue = maxDate.timeIntervalSince(minDate) / oneDay
             }
+        }
     }
-
+    
     private func performFalseTask() async {
-        try? await Task.sleep(nanoseconds: 1_000_000_000)
+        // Exécuter une tâche asynchrone (par exemple, un délai)
+        try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 seconde de délai
         isVisible = false
     }
     private func loadTransactions() async {
         transactions = ListTransactionsManager.shared.getAllData()
-        printTag("[Recette Depense Pie] Transactions chargées: \(transactions.count)")
+        printTag("[Rubrique Pie] Transactions chargées: \(transactions.count)")
     }
 
 }
 
-class RecetteDepensePieViewModel: ObservableObject {
-    @Published var recetteArray: [DataGraph] = []
+
+//
+//  Untitled.swift
+//  PegaseUIData
+//
+//  Created by Thierry hentic on 17/04/2025.
+//
+
+import SwiftUI
+import SwiftData
+import Combine
+import DGCharts
+
+class RubriquePieViewModel: ObservableObject {
     @Published var depenseArray: [DataGraph] = []
+    @Published var recetteArray: [DataGraph] = []
     
     @Published var dataEntriesDepense: [PieChartDataEntry] = []
     @Published var dataEntriesRecette: [PieChartDataEntry] = []
 
     @Published var currencyCode: String = Locale.current.currency?.identifier ?? "EUR"
-
+    @Published var selectedCategories: Set<String> = []
+    
     var listTransactions: [EntityTransaction] = []
+    
+    var totalValueD: Double {
+        depenseArray.map { $0.value }.reduce(0, +)
+    }
 
+    var labels: [String] {
+        depenseArray.map { $0.name }
+    }
 
     let formatterPrice: NumberFormatter = {
         let _formatter = NumberFormatter()
@@ -85,35 +104,62 @@ class RecetteDepensePieViewModel: ObservableObject {
         return _formatter
     }()
 
-    func updateChartData(modelContext: ModelContext, currentAccount: EntityAccount?, startDate: Date, endDate: Date) {
+    func updateChartData(  startDate: Date, endDate: Date) {
         
-//        listTransactions = ListTransactionsManager.shared.getAllData(from:startDate, to:endDate)
-        listTransactions = ListTransactionsManager.shared.getAllData()
-        printTag("[Recette Depense Pie] Transactions chargées: \(listTransactions.count)")
-
+        listTransactions = ListTransactionsManager.shared.getAllData(from:startDate, to:endDate)
+        printTag("[Rubrique Pie] Transactions chargées: \(listTransactions.count)")
+        
         var dataArrayExpense = [DataGraph]()
-        var dataArrayIncome = [DataGraph]()
+        var dataArrayIncome  = [DataGraph]()
 
-        for listTransaction in listTransactions {
-            let name = listTransaction.paymentMode?.name ?? "Inconnu"
-            let color = listTransaction.paymentMode?.color ?? .gray
+        var rubrique = ""
+        var value = 0.0
+        var color = NSColor.blue
+        let section = ""
+        
+        for listeOperation in listTransactions {
             
-            let data = DataGraph(name: name, value: listTransaction.amount, color: color)
-
-            if data.value < 0 {
-                dataArrayExpense.append(data)
-            } else {
-                dataArrayIncome.append(data)
+            let sousOperations = listeOperation.sousOperations
+            for sousOperation in sousOperations {
+                
+                value = sousOperation.amount
+                rubrique = (sousOperation.category?.rubric!.name)!
+                color = (sousOperation.category?.rubric!.color)!
+                
+                if value < 0 {
+                    dataArrayExpense.append( DataGraph( name: rubrique, value: value, color: color))
+                    
+                } else {
+                    dataArrayIncome.append( DataGraph(section: section, name: rubrique, value: value, color: color))
+                }
             }
         }
-
+        
+        self.depenseArray.removeAll()
+        let allKeys = Set<String>(dataArrayExpense.map { $0.name })
+        for key in allKeys {
+            let data = dataArrayExpense.filter({ $0.name == key })
+            let sum = data.map({ $0.value }).reduce(0, +)
+            self.depenseArray.append(DataGraph(name: key, value: sum, color: data[0].color))
+        }
+        self.depenseArray = self.depenseArray.sorted(by: { $0.name < $1.name })
+        
+        recetteArray.removeAll()
+        let allKeysR = Set<String>(dataArrayIncome.map { $0.name })
+        for key in allKeysR {
+            let data = dataArrayIncome.filter({ $0.name == key })
+            let sum = data.map({ $0.value }).reduce(0, +)
+            self.recetteArray.append(DataGraph(name: key, value: sum, color: data[0].color))
+        }
+        recetteArray = recetteArray.sorted(by: { $0.name < $1.name })
+        
         self.depenseArray = summarizeData(from: dataArrayExpense, maxCategories: 6)
         self.recetteArray = summarizeData(from: dataArrayIncome, maxCategories: 6)
         
         self.dataEntriesDepense = pieChartEntries(from: depenseArray)
         self.dataEntriesRecette = pieChartEntries(from: recetteArray)
     }
-
+    
     private func summarizeData(from array: [DataGraph], maxCategories: Int = 6) -> [DataGraph] {
         let grouped = Dictionary(grouping: array, by: { $0.name })
         
@@ -145,9 +191,8 @@ class RecetteDepensePieViewModel: ObservableObject {
     }
 }
 
-
 //
-//  Untitled.swift
+//  Untitled 3.swift
 //  PegaseUIData
 //
 //  Created by Thierry hentic on 17/04/2025.
@@ -158,12 +203,10 @@ import SwiftData
 import DGCharts
 import Combine
 
+struct RubriquePie: View {
 
-
-struct RecetteDepensePie: View {
-    @Environment(\.modelContext) private var modelContext
-    @StateObject private var viewModel = RecetteDepensePieViewModel()
-
+    @StateObject private var viewModel = RubriquePieViewModel()
+    
     let transactions: [EntityTransaction]
 
     @Binding var lowerValue: Double
@@ -182,43 +225,52 @@ struct RecetteDepensePie: View {
     private var durationDays: Double {
         lastDate.timeIntervalSince(firstDate) / 86400
     }
-
+    
+    private var totalDaysRange: ClosedRange<Double> {
+        let cal = Calendar.current
+        let start = cal.startOfDay(for: minDate)
+        let end = cal.startOfDay(for: maxDate)
+        let days = cal.dateComponents([.day], from: start, to: end).day ?? 0
+        return 0...Double(max(0, days))
+    }
+    
     @State private var selectedStart: Double = 0
     @State private var selectedEnd: Double = 30
 
     @State private var updateWorkItem: DispatchWorkItem?
     
+    @State private var lower: Double = 2
+    @State private var upper: Double = 10
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(String(localized:"Recette Dépense Pie"))
+        VStack {
+            Text(String(localized:"Rubrique pie"))
                 .font(.headline)
                 .padding()
-
+            
             HStack {
                 SinglePieChartView(entries: viewModel.dataEntriesDepense, title: "Dépenses")
                     .frame(width: 600, height: 400)
                     .padding()
 
-                SinglePieChartView(entries: viewModel.dataEntriesRecette, title: "Recettes")
+                SinglePieChartView(entries: viewModel.dataEntriesRecette, title: String(localized:"Recettes"))
                     .frame(width: 600, height: 400)
                     .padding()
             }
-
             GroupBox(label: Label("Filter by period", systemImage: "calendar")) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("From \(formattedDate(from: selectedStart)) to \(formattedDate(from: selectedEnd))")
                         .font(.callout)
                         .foregroundColor(.secondary)
-                    let totalDays = lastDate.timeIntervalSince(firstDate) / 86400
 
                     RangeSlider(
                         lowerValue: $selectedStart,
                         upperValue: $selectedEnd,
-                        totalRange: 0...30,
+                        totalRange: totalDaysRange,
                         valueLabel: { value in
-                            let today = Date()
-                            let date = Calendar.current.date(byAdding: .day, value: Int(value), to: today)!
+                            let cal = Calendar.current
+                            let base = cal.startOfDay(for: minDate)
+                            let date = cal.date(byAdding: .day, value: Int(value), to: base) ?? base
                             let formatter = DateFormatter()
                             formatter.dateStyle = .short
                             return formatter.string(from: date)
@@ -226,7 +278,7 @@ struct RecetteDepensePie: View {
                         thumbSize: 24,
                         trackHeight: 6
                     )
-                    .frame(height: 30)
+                        .frame(height: 30)
 
                     Spacer()
                 }
@@ -235,36 +287,56 @@ struct RecetteDepensePie: View {
             }
         }
         .onAppear {
-            updateChart()
+            // Initialize slider bounds based on available data
+            selectedStart = 0
+            selectedEnd = totalDaysRange.upperBound
+            updatePieData()
         }
-        .onChange(of: selectedStart) { _, _ in updateChartDebounced() }
-        .onChange(of: selectedEnd)   { _, _ in updateChartDebounced() }
+        .onChange(of: minDate) { _, _ in
+            selectedStart = 0
+            updatePieData()
+        }
+        .onChange(of: maxDate) { _, _ in
+            selectedEnd = totalDaysRange.upperBound
+            updatePieData()
+        }
+        .onChange(of: selectedStart) { _, _ in
+            updatePieData()
+        }
+        .onChange(of: selectedEnd) { _, _ in
+            updatePieData()
+        }
     }
+    
+    private func updatePieData() {
+        // Ensure prerequisites are valid
+        guard selectedStart <= selectedEnd else { return }
+        guard minDate <= maxDate else { return }
 
-    func updateChartDebounced() {
-        updateWorkItem?.cancel()
-        let workItem = DispatchWorkItem { self.updateChart() }
-        updateWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: workItem)
+        let calendar = Calendar.current
+        let startOfMin = calendar.startOfDay(for: minDate)
+
+        guard let start = calendar.date(byAdding: .day, value: Int(selectedStart), to: startOfMin),
+              let endRaw = calendar.date(byAdding: .day, value: Int(selectedEnd), to: startOfMin) else {
+            return
+        }
+
+        // Clamp to maxDate then extend to end-of-day for inclusive range
+        let endClamped = min(endRaw, maxDate)
+        let endOfDay = calendar.date(byAdding: DateComponents(day: 1, second: -1), to: calendar.startOfDay(for: endClamped)) ?? endClamped
+
+        viewModel.updateChartData( startDate: start, endDate: endOfDay)
     }
-
-    private func updateChart() {
-        let start = Calendar.current.date(byAdding: .day,
-                                          value: Int(selectedStart),
-                                          to: firstDate)!
-        let end = Calendar.current.date(byAdding: .day,
-                                        value: Int(selectedEnd),
-                                        to: firstDate)!
-        let currentAccount = CurrentAccountManager.shared.getAccount()!
-        viewModel.updateChartData(modelContext: modelContext, currentAccount: currentAccount, startDate: start, endDate: end)
-    }
-
+    
     func formattedDate(from dayOffset: Double) -> String {
-        let date = Calendar.current.date(byAdding: .day, value: Int(dayOffset), to: minDate)!
+        let cal = Calendar.current
+        let base = cal.startOfDay(for: minDate)
+        let date = cal.date(byAdding: .day, value: Int(dayOffset), to: base) ?? base
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         return formatter.string(from: date)
     }
+
 }
 
 

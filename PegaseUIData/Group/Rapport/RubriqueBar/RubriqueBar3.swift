@@ -13,7 +13,6 @@ import Combine
 
 struct RubriqueBar: View {
     
-    @Environment(\.modelContext) private var modelContext
     @StateObject private var viewModel = RubriqueBarViewModel()
     let transactions: [EntityTransaction]
 
@@ -64,8 +63,8 @@ struct RubriqueBar: View {
                         .foregroundColor(.secondary)
 
                     RangeSlider(
-                        lowerValue: $lower,
-                        upperValue: $upper,
+                        lowerValue: $selectedStart,
+                        upperValue: $selectedEnd,
                         totalRange: 0...30,
                         valueLabel: { value in
                             let today = Date()
@@ -96,8 +95,7 @@ struct RubriqueBar: View {
         
         let start = Calendar.current.date(byAdding: .day, value: Int(selectedStart), to: minDate)!
         let end = Calendar.current.date(byAdding: .day, value: Int(selectedEnd), to: minDate)!
-        let currentAccount = CurrentAccountManager.shared.getAccount()!
-        viewModel.updateChartData(modelContext: modelContext, currentAccount: currentAccount, startDate: start, endDate: end)
+        viewModel.updateChartData( startDate: start, endDate: end)
     }
 
     func formattedDate(from dayOffset: Double) -> String {

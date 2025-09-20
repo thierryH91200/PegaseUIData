@@ -61,12 +61,8 @@ struct CategorieBar1View: View {
     }
 }
 
-
-//
-
 struct CategorieBar1View1: View {
     
-    @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
     @StateObject private var viewModel = CategorieBar1ViewModel()
     
@@ -163,7 +159,7 @@ struct CategorieBar1View1: View {
                     RangeSlider(
                         lowerValue: $lower,
                         upperValue: $upper,
-                        totalRange: 0...30,
+                        totalRange: lower...upper,
                         valueLabel: { value in
                             let today = Date()
                             let date = Calendar.current.date(byAdding: .day, value: Int(value), to: today)!
@@ -227,7 +223,7 @@ struct CategorieBar1View1: View {
 
 
         let currentAccount = CurrentAccountManager.shared.getAccount()!
-        viewModel.updateChartData(modelContext: modelContext, currentAccount: currentAccount, startDate: start, endDate: end)
+        viewModel.updateChartData( startDate: start, endDate: end)
     }
     
     func formattedDate(from dayOffset: Double) -> String {
@@ -262,7 +258,6 @@ struct CategorieBar1View1: View {
         }
         return nil
     }
-
 }
 
 class CategorieBar1ViewModel: ObservableObject {
@@ -320,14 +315,13 @@ class CategorieBar1ViewModel: ObservableObject {
         }
     }
 
-    func updateChartData(modelContext: ModelContext, currentAccount: EntityAccount?, startDate: Date, endDate: Date) {
+    func updateChartData( startDate: Date, endDate: Date) {
         // Configure the transaction manager with context if needed
 
         // Fetch transactions in the requested range
-        let list = ListTransactionsManager.shared.getAllData(from: startDate, to: endDate)
-        self.listTransactions = list
+        self.listTransactions = ListTransactionsManager.shared.getAllData(from: startDate, to: endDate)
 
-        guard !list.isEmpty else {
+        guard !listTransactions.isEmpty else {
             self.resultArray = []
             self.dataEntries = []
             return
@@ -335,7 +329,7 @@ class CategorieBar1ViewModel: ObservableObject {
 
         // Build flat data from sousOperations
         var dataArray: [DataGraph] = []
-        for transaction in list {
+        for transaction in listTransactions {
             let sousOperations = transaction.sousOperations
             for sousOperation in sousOperations {
                 if let rubric = sousOperation.category?.rubric {

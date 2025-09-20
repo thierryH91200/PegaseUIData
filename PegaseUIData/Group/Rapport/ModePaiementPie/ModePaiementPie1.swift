@@ -35,9 +35,11 @@ class ModePaymentPieViewModel: ObservableObject {
         return _formatter
     }()
 
-    func updateChartData(modelContext: ModelContext, currentAccount: EntityAccount?, startDate: Date, endDate: Date) {
+    func updateChartData( startDate: Date, endDate: Date) {
         
-        listTransactions = ListTransactionsManager.shared.getAllData(from:startDate, to:endDate)
+//        listTransactions = ListTransactionsManager.shared.getAllData(from:startDate, to:endDate)
+        listTransactions = ListTransactionsManager.shared.getAllData()
+
 
         var dataArrayExpense = [DataGraph]()
         var dataArrayIncome = [DataGraph]()

@@ -22,9 +22,7 @@ struct RubricColor : Hashable {
 }
 
 struct CategorieBar2View2: View {
-    
-    @Environment(\.modelContext) private var modelContext
-    
+        
     @StateObject private var viewModel = CategorieBar2ViewModel()
 
     let transactions: [EntityTransaction]
@@ -48,13 +46,13 @@ struct CategorieBar2View2: View {
 
     @State private var selectedStart: Double = 0
     @State private var selectedEnd: Double = 30
-    @State private var chartViewRef: BarChartView?
+    
+    @State private var chartView: BarChartView?
     @State private var updateWorkItem: DispatchWorkItem?
     
     @State private var lower: Double = 2
     @State private var upper: Double = 10
 
-    
     var body: some View {
         VStack {
             Text("CategorieBar2View2")
@@ -63,7 +61,7 @@ struct CategorieBar2View2: View {
             
             DGBarChart2Representable(entries: viewModel.dataEntries,
                            labels: viewModel.labels,
-                           chartViewRef: $chartViewRef)
+                           chartViewRef: $chartView)
                 .frame(width: 600, height: 400)
                 .padding()
             GroupBox(label: Label("Filter by period", systemImage: "calendar")) {
@@ -75,7 +73,7 @@ struct CategorieBar2View2: View {
                     RangeSlider(
                         lowerValue: $lower,
                         upperValue: $upper,
-                        totalRange: 0...30,
+                        totalRange: lower...upper,
                         valueLabel: { value in
                             let today = Date()
                             let date = Calendar.current.date(byAdding: .day, value: Int(value), to: today)!
@@ -96,10 +94,16 @@ struct CategorieBar2View2: View {
             Spacer()
         }
         .onAppear {
-            let start = Calendar.current.date(byAdding: .day, value: Int(selectedStart), to: minDate)!
-            let end = Calendar.current.date(byAdding: .day, value: Int(selectedEnd), to: minDate)!
+            let listTransactions = ListTransactionsManager.shared.getAllData()
+            minDate = listTransactions.first!.dateOperation
+            maxDate = listTransactions.last!.dateOperation
             let currentAccount = CurrentAccountManager.shared.getAccount()!
-            viewModel.updateChartData(modelContext: modelContext, currentAccount: currentAccount, startDate: start, endDate: end)
+            viewModel.updateChartData(startDate: minDate, endDate: maxDate)
+            chartView = BarChartView()
+            if let chartView = chartView {
+                CategorieBar2ViewModel.shared.configure(with: chartView)
+            }
+
         }
         .onChange(of: selectedStart) { _, newValue in
             updateChartDebounced()

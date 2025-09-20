@@ -13,8 +13,6 @@ import Combine
 
 struct RecetteDepenseView: View {
     
-    @Environment(\.modelContext) private var modelContext
-
     @StateObject private var viewModel = RecetteDepenseBarViewModel()
 
     let transactions: [EntityTransaction]

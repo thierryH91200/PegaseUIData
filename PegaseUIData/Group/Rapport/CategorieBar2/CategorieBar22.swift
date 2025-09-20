@@ -12,6 +12,13 @@ import Combine
 
 
 class CategorieBar2ViewModel: ObservableObject {
+    
+    static let shared = CategorieBar2ViewModel()
+    
+    var chartView : BarChartView?
+    
+    var listTransactions : [EntityTransaction] = []
+
     @Published var resultArray: [DataGraph] = []
     @Published var dataEntries: [BarChartDataEntry] = []
     @Published var currencyCode: String = Locale.current.currency?.identifier ?? "EUR"
@@ -23,34 +30,19 @@ class CategorieBar2ViewModel: ObservableObject {
     var labels: [String] {
         resultArray.map { $0.name }
     }
-
-    func updateChartData(modelContext: ModelContext, currentAccount: EntityAccount?, startDate: Date, endDate: Date)
+    
+    func configure(with chartView: BarChartView)
     {
-        guard let currentAccount else { return }
-        self.currencyCode = currentAccount.currencyCode
+        self.chartView = chartView
+    }
+
+
+    func updateChartData( startDate: Date, endDate: Date)
+    {
         var arrayUniqueRubriques   = [RubricColor]()
 
-//        (startDate, endDate) = (sliderViewController?.calcStartEndDate())!
-        
-        let sort = [SortDescriptor(\EntityTransaction.dateOperation, order: .reverse)]
-        let lhs = currentAccount.uuid
-        
-        let descriptor = FetchDescriptor<EntityTransaction>(
-            predicate: #Predicate { transaction in
-                transaction.account.uuid == lhs &&
-                transaction.dateOperation >= startDate &&
-                transaction.dateOperation <= endDate
-            },
-            sortBy: sort
-        )
-        
-        var listTransactions: [EntityTransaction] = []
-        do {
-            listTransactions = try modelContext.fetch(descriptor)
-        } catch {
-            print("Erreur lors de la récupération des transactions :", error)
-            return
-        }
+        // Fetch transactions in the requested range
+        self.listTransactions = ListTransactionsManager.shared.getAllData(from: startDate, to: endDate)
 
         // Récupere le nom de toutes les rubriques
         // Récupere les datas pour la période choisie

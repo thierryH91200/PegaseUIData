@@ -12,14 +12,16 @@ import Combine
 
 
 struct ModePaiementPieView: View {
-    @Environment(\.modelContext) private var modelContext
+
     @Binding var isVisible: Bool
 
     @State private var transactions: [EntityTransaction] = []
     @State private var lowerValue: Double = 0
-    @State private var upperValue: Double = 180
-    @State private var minDate: Date = Calendar.current.date(byAdding: .day, value: -180, to: Date())!
+    @State private var upperValue: Double = 0
+    @State private var minDate: Date = Date()
     @State private var maxDate: Date = Date()
+    
+    private let oneDay = 3600.0 * 24.0 // one day
 
     var body: some View {
         ModePaiementView(
@@ -31,7 +33,15 @@ struct ModePaiementPieView: View {
         )
         .task {
             await performFalseTask()
-            await loadTransactions()
+        }
+        .onAppear {
+            Task {
+                await loadTransactions()
+                minDate = transactions.first?.dateOperation ?? Date()
+                lowerValue = 0
+                maxDate = transactions.last?.dateOperation ?? Date()
+                upperValue = maxDate.timeIntervalSince(minDate) / oneDay
+            }
         }
     }
 

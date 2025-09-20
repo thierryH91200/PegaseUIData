@@ -137,11 +137,11 @@ struct TransactionLigne: View {
             .disabled(selectedTransactions.isEmpty)
             
             Menu {
-                Button("Nouveau relevé…") {
+                Button("New statement…") {
                     showPopover = true
                 }
             } label: {
-                Label("Relevé bancaire", systemImage: "square.and.pencil")
+                Label("Bank statement", systemImage: "square.and.pencil")
             }
             
             Button(role: .destructive, action: {
@@ -154,7 +154,7 @@ struct TransactionLigne: View {
         
         .popover(isPresented: $showPopover, arrowEdge: .trailing) {
             VStack(spacing: 12) {
-                Text("Créer un relevé")
+                Text("Create a statement")
                     .font(.headline)
 
                 TextField("Statement number", text: $inputText)
@@ -162,7 +162,7 @@ struct TransactionLigne: View {
                     .padding(.horizontal)
 
                 HStack {
-                    Button("Annuler") {
+                    Button("Cancel") {
                         showPopover = false
                     }
                     Button("OK") {

@@ -19,6 +19,8 @@ class RubriqueBarViewModel: ObservableObject {
     @Published var nameRubrique: String = ""
     @Published var currencyCode: String = Locale.current.currency?.identifier ?? "EUR"
     @Published var selectedCategories: Set<String> = []
+
+    var listTransactions: [EntityTransaction] = []
     
     var totalValue: Double {
         resultArray.map { $0.value }.reduce(0, +)
@@ -35,34 +37,16 @@ class RubriqueBarViewModel: ObservableObject {
         return _formatter
     }()
     
-    func updateChartData(modelContext: ModelContext, currentAccount: EntityAccount?, startDate: Date, endDate: Date) {
+    func updateChartData( startDate: Date, endDate: Date) {
         
         dataArray.removeAll()
         guard nameRubrique != "" else { return }
         
         
-        guard let currentAccount else { return }
-        self.currencyCode = currentAccount.currencyCode
+        //        listTransactions = ListTransactionsManager.shared.getAllData(from:startDate, to:endDate)
+        listTransactions = ListTransactionsManager.shared.getAllData()
+        printTag("[Rubrique Bar] Transactions chargées: \(listTransactions.count)")
 
-        let sort = [SortDescriptor(\EntityTransaction.dateOperation, order: .reverse)]
-        let lhs = currentAccount.uuid
-
-        let descriptor = FetchDescriptor<EntityTransaction>(
-            predicate: #Predicate { transaction in
-                transaction.account.uuid == lhs &&
-                transaction.dateOperation >= startDate &&
-                transaction.dateOperation <= endDate
-            },
-            sortBy: sort
-        )
-        var listTransactions: [EntityTransaction] = []
-
-        do {
-            listTransactions = try modelContext.fetch(descriptor)
-        } catch {
-            printTag("Error fetching data from CoreData", flag: true)
-        }
-        
 //        delegate?.updateListeTransactions( listTransactions)
         
         // grouped by month/year

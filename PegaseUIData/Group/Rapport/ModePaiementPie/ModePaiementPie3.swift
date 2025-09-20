@@ -20,7 +20,6 @@ import Combine
 
 struct ModePaiementView: View {
 
-    @Environment(\.modelContext) private var modelContext
     @StateObject private var viewModel = ModePaymentPieViewModel()
 
     let transactions: [EntityTransaction]
@@ -45,6 +44,16 @@ struct ModePaiementView: View {
     private var totalDays: Int {
         max(0, Calendar.current.dateComponents([.day], from: minDate, to: maxDate).day ?? 0)
     }
+    
+    
+    private var totalDaysRange: ClosedRange<Double> {
+        let cal = Calendar.current
+        let start = cal.startOfDay(for: minDate)
+        let end = cal.startOfDay(for: maxDate)
+        let days = cal.dateComponents([.day], from: start, to: end).day ?? 0
+        return 0...Double(max(0, days))
+    }
+
 
     @State private var selectedStart: Double = 0
     @State private var selectedEnd: Double = 30
@@ -61,13 +70,13 @@ struct ModePaiementView: View {
                 if viewModel.dataEntriesDepense.isEmpty {
                     ZStack {
                         RoundedRectangle(cornerRadius: 12).fill(Color.secondary.opacity(0.2))
-                        Text("Aucune dépense sur la période")
+                        Text("No expenses over the period")
                             .foregroundStyle(.secondary)
                     }
                     .frame(width: 600, height: 400)
                     .padding()
                 } else {
-                    SinglePieChartView(entries: viewModel.dataEntriesDepense, title: "Dépenses")
+                    SinglePieChartView(entries: viewModel.dataEntriesDepense, title: "Expenses")
                         .frame(width: 600, height: 400)
                         .padding()
                 }
@@ -75,13 +84,13 @@ struct ModePaiementView: View {
                 if viewModel.dataEntriesRecette.isEmpty {
                     ZStack {
                         RoundedRectangle(cornerRadius: 12).fill(Color.secondary.opacity(0.2))
-                        Text("Aucune recette sur la période")
+                        Text("No receipts for the period")
                             .foregroundStyle(.secondary)
                     }
                     .frame(width: 600, height: 400)
                     .padding()
                 } else {
-                    SinglePieChartView(entries: viewModel.dataEntriesRecette, title: "Recettes")
+                    SinglePieChartView(entries: viewModel.dataEntriesRecette, title: "Receipts")
                         .frame(width: 600, height: 400)
                         .padding()
                 }
@@ -96,9 +105,11 @@ struct ModePaiementView: View {
                     RangeSlider(
                         lowerValue: $selectedStart,
                         upperValue: $selectedEnd,
-                        totalRange: 0...Double(totalDays),
+                        totalRange: totalDaysRange,
                         valueLabel: { value in
-                            let date = Calendar.current.date(byAdding: .day, value: Int(value), to: minDate)!
+                            let cal = Calendar.current
+                            let base = cal.startOfDay(for: minDate)
+                            let date = cal.date(byAdding: .day, value: Int(value), to: base) ?? base
                             let formatter = DateFormatter()
                             formatter.dateStyle = .short
                             return formatter.string(from: date)
@@ -153,7 +164,7 @@ struct ModePaiementView: View {
         let end = Calendar.current.date(bySettingHour: 23, minute: 59, second: 59, of: rawEnd) ?? rawEnd
         guard let currentAccount = CurrentAccountManager.shared.getAccount() else { return }
         print("[Pie] refreshData start:", start, "end:", end)
-        viewModel.updateChartData(modelContext: modelContext, currentAccount: currentAccount, startDate: start, endDate: end)
+        viewModel.updateChartData( startDate: start, endDate: end)
     }
 
 }
