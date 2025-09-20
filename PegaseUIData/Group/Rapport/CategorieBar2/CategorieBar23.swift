@@ -97,7 +97,6 @@ struct CategorieBar2View2: View {
             let listTransactions = ListTransactionsManager.shared.getAllData()
             minDate = listTransactions.first!.dateOperation
             maxDate = listTransactions.last!.dateOperation
-            let currentAccount = CurrentAccountManager.shared.getAccount()!
             viewModel.updateChartData(startDate: minDate, endDate: maxDate)
             chartView = BarChartView()
             if let chartView = chartView {

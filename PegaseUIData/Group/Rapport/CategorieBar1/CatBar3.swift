@@ -5,134 +5,209 @@
 ////  Created by Thierry hentic on 16/04/2025.
 ////
 //
-//import SwiftUI
-//import SwiftData
-//import DGCharts
-//import Combine
-//
-//
-//class CategorieBar1ViewModel: ObservableObject {
-//    
-//    @Published var listTransactions : [EntityTransaction] = []
-//    
-//    @Published var resultArray: [DataGraph] = []
-//    @Published var dataEntries: [BarChartDataEntry] = []
-//    @Published var currencyCode: String = Locale.current.currency?.identifier ?? "EUR"
-//    
-//    @Published var selectedCategories: Set<String> = []
-//    
-//    @Published var firstDate: TimeInterval = 0.0
-//    @Published var lastDate: TimeInterval = 0.0
-//    
-//    @Published var selectedStart: Double = 0
-//    @Published var selectedEnd: Double = 30
-//    
-//    @State var chartView : BarChartView?
-//    var rangeSlider : RangeSlider?
-//
-//    static let shared = CategorieBar1ViewModel()
-//    
-//    var totalValue: Double {
-//        resultArray.map { $0.value }.reduce(0, +)
-//    }
-//
-//    var labels: [String] {
-//        resultArray.map { $0.name }
-//    }
-//
-//    let formatterPrice: NumberFormatter = {
-//        let _formatter = NumberFormatter()
-//        _formatter.locale = Locale.current
-//        _formatter.numberStyle = .currency
-//        return _formatter
-//    }()
-//    
-//    func configure(with chartView: BarChartView)
-//    {
-//        self.chartView = chartView
-//    }
-//
-//    
-//    func updateAccount(minDate: Date) {
-//        let transactions = ListTransactionsManager.shared.getAllData()
-//
-//        DispatchQueue.main.async {
-//            self.listTransactions = transactions
-//            if let first = transactions.first?.dateOperation.timeIntervalSince1970,
-//               let last = transactions.last?.dateOperation.timeIntervalSince1970 {
-//                self.firstDate = first
-//                self.lastDate = last
-//            }
-//        }
-//    }
-//
-//
-////    func updateChartData(modelContext: ModelContext, currentAccount: EntityAccount?, startDate: Date, endDate: Date) {
-////        
-////        ListTransactionsManager.shared.configure(with: modelContext)
-////        listTransactions = ListTransactionsManager.shared.getAllData(from: startDate, to: endDate)
-////
-////        guard listTransactions.isEmpty == false else { return }
-////
-////        
-//////        guard let currentAccount else { return }
-//////        self.currencyCode = currentAccount.currencyCode
-//////
-//////        let sort = [SortDescriptor(\EntityTransactions.dateOperation, order: .reverse)]
-//////        let lhs = currentAccount.uuid
-//////
-//////        let descriptor = FetchDescriptor<EntityTransactions>(
-//////            predicate: #Predicate { transaction in
-//////                transaction.account.uuid == lhs &&
-//////                transaction.dateOperation >= startDate &&
-//////                transaction.dateOperation <= endDate
-//////            },
-//////            sortBy: sort
-//////        )
-//////
-//////        var listTransactions: [EntityTransactions] = []
-//////        do {
-//////            listTransactions = try modelContext.fetch(descriptor)
-//////        } catch {
-//////            printTag("Erreur lors de la récupération des transactions :", error)
-//////            return
-//////        }
-////
-////        var dataArray: [DataGraph] = []
-////
-////        for transaction in listTransactions {
-////            let sousOperations = transaction.sousOperations
-////
-////            for sousOperation in sousOperations {
-////                if let rubric = sousOperation.category?.rubric {
-////                    let name = rubric.name
-////                    let value = sousOperation.amount
-////                    let color = rubric.color
-////                    dataArray.append(DataGraph(name: name, value: value, color: color))
-////                }
-////            }
-////        }
-////
-////        let allKeys = Set(dataArray.map { $0.name })
-////        var results: [DataGraph] = []
-////        for key in allKeys {
-////            let data = dataArray.filter { $0.name == key }
-////            let sum = data.map { $0.value }.reduce(0, +)
-////            if let color = data.first?.color {
-////                results.append(DataGraph(name: key, value: sum, color: color))
-////            }
-////        }
-////
-////        var filteredResults = results
-////        if !selectedCategories.isEmpty {
-////            filteredResults = results.filter { selectedCategories.contains($0.name) }
-////        }
-////        self.resultArray = filteredResults.sorted { $0.name < $1.name }
-////
-////        var entries: [BarChartDataEntry] = []
-////        for (i, item) in self.resultArray.enumerated() {
-////            entries.append(BarChartDataEntry(x: Double(i), y: item.value))
-////        }
-////        self.dataEntries = entries
-////    }
-//}
+import SwiftUI
+import SwiftData
+import DGCharts
+import Combine
+import UniformTypeIdentifiers
+import AppKit
+
+
+struct CategorieBar1View1: View {
+    
+    @EnvironmentObject var currentAccountManager: CurrentAccountManager
+    @StateObject private var viewModel = CategorieBar1ViewModel()
+    
+//    let transactions: [EntityTransaction]
+    
+    let transactions: [EntityTransaction]
+    @State var filteredTransactions: [EntityTransaction] = []
+    
+    @Binding var lowerValue: Double
+    @Binding var upperValue: Double
+    @Binding var minDate: Date
+    @Binding var maxDate: Date
+    
+    private var firstDate: Date {
+        transactions.first?.dateOperation ?? Date()
+    }
+    
+    private var lastDate: Date {
+        transactions.last?.dateOperation ?? Date()
+    }
+    
+    private var durationDays: Double {
+        lastDate.timeIntervalSince(firstDate) / 86400
+    }
+    
+    @State private var selectedStart: Double = 0
+    @State private var selectedEnd: Double = 30
+    private let oneDay = 3600.0 * 24.0 // one day
+    
+    @State private var chartView: BarChartView?
+    
+    @State private var lower: Double = 2
+    @State private var upper: Double = 10
+
+    var body: some View {
+        VStack {
+            Text("CategorieBar1View1")
+                .font(.headline)
+                .padding()
+            
+            Text("Total: \(viewModel.totalValue, format: .currency(code: viewModel.currencyCode))")
+                .font(.title3)
+                .bold()
+                .padding(.bottom, 4)
+            
+            if !viewModel.labels.isEmpty {
+                DisclosureGroup("Visible categories") {
+                    Button(viewModel.selectedCategories.count < viewModel.labels.count ? "All select" : "Deselect all") {
+                        if viewModel.selectedCategories.count < viewModel.labels.count {
+                            viewModel.selectedCategories = Set(viewModel.labels)
+                        } else {
+                            viewModel.selectedCategories.removeAll()
+                        }
+                        updateChart()
+                    }
+                    .font(.caption)
+                    .padding(.bottom, 4)
+                    
+                    ForEach(viewModel.labels, id: \.self) { label in
+                        Toggle(label, isOn: Binding(
+                            get: { viewModel.selectedCategories.isEmpty || viewModel.selectedCategories.contains(label) },
+                            set: { newValue in
+                                if newValue {
+                                    viewModel.selectedCategories.insert(label)
+                                } else {
+                                    viewModel.selectedCategories.remove(label)
+                                }
+                                updateChart()
+                            }
+                        ))
+                    }
+                }
+                .padding()
+            }
+            Button("Export to PNG") {
+                exportChartAsImage()
+            }
+            .padding(.bottom, 8)
+            
+            DGBarChart1Representable(viewModel: viewModel,
+                                     entries: viewModel.dataEntries)
+            .frame(width: 600, height: 400)
+            .padding()
+            .onAppear {
+                viewModel.updateAccount(minDate: minDate)
+            }
+
+            GroupBox(label: Label("Filter by period", systemImage: "calendar")) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("From \(formattedDate(from: selectedStart)) to \(formattedDate(from: selectedEnd))")
+                        .font(.callout)
+                        .foregroundColor(.secondary)
+
+                    RangeSlider(
+                        lowerValue: $lower,
+                        upperValue: $upper,
+                        totalRange: lower...upper,
+                        valueLabel: { value in
+                            let today = Date()
+                            let date = Calendar.current.date(byAdding: .day, value: Int(value), to: today)!
+                            let formatter = DateFormatter()
+                            formatter.dateStyle = .short
+                            return formatter.string(from: date)
+                        },
+                        thumbSize: 24,
+                        trackHeight: 6
+                    )
+                        .frame(height: 50)
+                }
+                .padding(.top, 4)
+                .padding(.horizontal)
+            }
+            .padding()
+            Spacer()
+        }
+        .onAppear {
+            
+            let listTransactions = ListTransactionsManager.shared.getAllData()
+            minDate = listTransactions.first!.dateOperation
+            maxDate = listTransactions.last!.dateOperation
+            selectedEnd = maxDate.timeIntervalSince(minDate) / oneDay
+
+            chartView = BarChartView()
+            if let chartView = chartView {
+                CategorieBar1ViewModel.shared.configure(with: chartView)
+            }
+            updateChart()
+        }
+        
+        .onChange(of: selectedStart) { _, newStart in
+            viewModel.selectedStart = newStart
+            updateChart()
+        }
+        .onChange(of: selectedEnd) { _, newEnd in
+            viewModel.selectedEnd = newEnd
+            updateChart()
+        }
+    }
+    
+    func applyFilter() {
+        guard !transactions.isEmpty else {
+            filteredTransactions = []
+            return
+        }
+        
+        let startDate = Calendar.current.date(byAdding: .day, value: Int(lowerValue), to: minDate) ?? minDate
+        let endDate = Calendar.current.date(byAdding: .day, value: Int(upperValue), to: minDate) ?? maxDate
+        
+        filteredTransactions = transactions.filter {
+            $0.dateOperation >= startDate && $0.dateOperation <= endDate
+        }
+    }
+
+
+    private func updateChart() {
+        let start = Calendar.current.date(byAdding: .day, value: Int(selectedStart), to: minDate)!
+        let end = Calendar.current.date(byAdding: .day, value: Int(selectedEnd), to: minDate)!
+
+
+        let currentAccount = CurrentAccountManager.shared.getAccount()!
+        viewModel.updateChartData( startDate: start, endDate: end)
+    }
+    
+    func formattedDate(from dayOffset: Double) -> String {
+        let date = Calendar.current.date(byAdding: .day, value: Int(dayOffset), to: minDate)!
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter.string(from: date)
+    }
+    
+    private func exportChartAsImage() {
+        guard let chartView = chartView else { return }
+
+        let panel = NSSavePanel()
+        panel.allowedContentTypes = [.png]
+        panel.nameFieldStringValue = "Graphique.png"
+        panel.begin { result in
+            guard result == .OK, let url = panel.url else { return }
+            if let image = chartView.getChartImage(transparent: false),
+               let rep = NSBitmapImageRep(data: image.tiffRepresentation!),
+               let pngData = rep.representation(using: .png, properties: [:]) {
+                try? pngData.write(to: url)
+            }
+        }
+    }
+
+    private func findChartView(in window: NSWindow?) -> BarChartView? {
+        guard let views = window?.contentView?.subviews else { return nil }
+        for view in views {
+            if let chart = view.subviews.compactMap({ $0 as? BarChartView }).first {
+                return chart
+            }
+        }
+        return nil
+    }
+}

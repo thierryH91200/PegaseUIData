@@ -39,8 +39,12 @@ struct RangeSlider: View {
     var body: some View {
         GeometryReader { geometry in
             let availableWidth = geometry.size.width - thumbSize
-            let lowerPos = position(for: lowerValue, in: availableWidth)
-            let upperPos = position(for: upperValue, in: availableWidth)
+            let safeAvailable = max(1, availableWidth)
+            let clamp: (CGFloat) -> CGFloat = { min(max(0, $0), safeAvailable) }
+            let lowerPosRaw = position(for: lowerValue, in: safeAvailable)
+            let upperPosRaw = position(for: upperValue, in: safeAvailable)
+            let lowerPos = clamp(lowerPosRaw.isFinite ? lowerPosRaw : 0)
+            let upperPos = clamp(upperPosRaw.isFinite ? upperPosRaw : 0)
             let overlap = abs(upperPos - lowerPos) < thumbSize
 
             ZStack(alignment: .topLeading) {
@@ -72,13 +76,13 @@ struct RangeSlider: View {
 
                         Capsule()
                             .fill(Color.accentColor)
-                            .frame(width: upperPos - lowerPos, height: trackHeight)
+                            .frame(width: max(0, upperPos - lowerPos), height: trackHeight)
                             .padding(.leading, lowerPos + thumbSize / 2)
-                            .padding(.trailing, availableWidth - upperPos + thumbSize / 2)
+                            .padding(.trailing, max(0, safeAvailable - upperPos) + thumbSize / 2)
 
                         thumb(isLeft: true, offset: lowerPos, overlap: overlap) {
                             DragGesture().onChanged { value in
-                                let percent = clampedPercent(from: value.location.x, width: availableWidth)
+                                let percent = clampedPercent(from: value.location.x, width: safeAvailable)
                                 let newValue = round(valueFrom(percent: percent))
                                 if newValue <= upperValue {
                                     lowerValue = newValue
@@ -88,7 +92,7 @@ struct RangeSlider: View {
 
                         thumb(isLeft: false, offset: upperPos, overlap: false) {
                             DragGesture().onChanged { value in
-                                let percent = clampedPercent(from: value.location.x, width: availableWidth)
+                                let percent = clampedPercent(from: value.location.x, width: safeAvailable)
                                 let newValue = round(valueFrom(percent: percent))
                                 if newValue >= lowerValue {
                                     upperValue = newValue
@@ -119,4 +123,3 @@ struct RangeSlider: View {
             .accessibilityLabel(isLeft ? "Start" : "End")
     }
 }
-

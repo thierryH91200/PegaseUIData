@@ -162,10 +162,8 @@ struct ModePaiementView: View {
         let start = Calendar.current.date(byAdding: .day, value: Int(lowerValue), to: minDate)!
         let rawEnd = Calendar.current.date(byAdding: .day, value: Int(upperValue), to: minDate)!
         let end = Calendar.current.date(bySettingHour: 23, minute: 59, second: 59, of: rawEnd) ?? rawEnd
-        guard let currentAccount = CurrentAccountManager.shared.getAccount() else { return }
         print("[Pie] refreshData start:", start, "end:", end)
         viewModel.updateChartData( startDate: start, endDate: end)
     }
-
 }
 

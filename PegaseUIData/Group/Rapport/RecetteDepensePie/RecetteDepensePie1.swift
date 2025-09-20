@@ -33,7 +33,6 @@ class RecetteDepensePieViewModel: ObservableObject {
     func updateChartData(startDate: Date, endDate: Date) {
         
         listTransactions = ListTransactionsManager.shared.getAllData(from:startDate, to:endDate)
-//        listTransactions = ListTransactionsManager.shared.getAllData()
         printTag("[Recette Depense Pie] Transactions chargées: \(listTransactions.count)")
 
         var dataArrayExpense = [DataGraph]()
