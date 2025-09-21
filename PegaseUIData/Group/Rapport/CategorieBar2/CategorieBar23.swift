@@ -1,15 +1,14 @@
+////
+////  CategorieBar23.swift
+////  PegaseUIData
+////
+////  Created by Thierry hentic on 17/04/2025.
+////
 //
-//  CategorieBar23.swift
-//  PegaseUIData
-//
-//  Created by Thierry hentic on 17/04/2025.
-//
-
 import SwiftUI
 import SwiftData
 import DGCharts
 import Combine
-
 
 struct RubricColor : Hashable {
     var name: String
@@ -43,16 +42,21 @@ struct CategorieBar2View2: View {
     private var durationDays: Double {
         lastDate.timeIntervalSince(firstDate) / 86400
     }
+    
+    private var totalDaysRange: ClosedRange<Double> {
+        let cal = Calendar.current
+        let start = cal.startOfDay(for: minDate)
+        let end = cal.startOfDay(for: maxDate)
+        let days = cal.dateComponents([.day], from: start, to: end).day ?? 0
+        return 0...Double(max(0, days))
+    }
 
     @State private var selectedStart: Double = 0
     @State private var selectedEnd: Double = 30
+    private let oneDay = 3600.0 * 24.0 // one day
     
     @State private var chartView: BarChartView?
-    @State private var updateWorkItem: DispatchWorkItem?
     
-    @State private var lower: Double = 2
-    @State private var upper: Double = 10
-
     var body: some View {
         VStack {
             Text("CategorieBar2View2")
@@ -71,15 +75,17 @@ struct CategorieBar2View2: View {
                         .foregroundColor(.secondary)
 
                     RangeSlider(
-                        lowerValue: $lower,
-                        upperValue: $upper,
-                        totalRange: lower...upper,
+                        lowerValue: $selectedStart,
+                        upperValue: $selectedEnd,
+                        totalRange: totalDaysRange,
                         valueLabel: { value in
-                            let today = Date()
-                            let date = Calendar.current.date(byAdding: .day, value: Int(value), to: today)!
+                            let cal = Calendar.current
+                            let base = cal.startOfDay(for: minDate)
+                            let date = cal.date(byAdding: .day, value: Int(value), to: base) ?? base
                             let formatter = DateFormatter()
                             formatter.dateStyle = .short
-                            return formatter.string(from: date)
+                            let date1 = formatter.string(from: date)
+                            return date1
                         },
                         thumbSize: 24,
                         trackHeight: 6
@@ -94,38 +100,35 @@ struct CategorieBar2View2: View {
             Spacer()
         }
         .onAppear {
-            let listTransactions = ListTransactionsManager.shared.getAllData()
-            minDate = listTransactions.first!.dateOperation
-            maxDate = listTransactions.last!.dateOperation
-            viewModel.updateChartData(startDate: minDate, endDate: maxDate)
-            chartView = BarChartView()
-            if let chartView = chartView {
-                CategorieBar2ViewModel.shared.configure(with: chartView)
-            }
-
+            // Initialize slider bounds based on available data
+            selectedStart = 0
+            selectedEnd = totalDaysRange.upperBound
+            updateChart()
         }
-        .onChange(of: selectedStart) { _, newValue in
-            updateChartDebounced()
+        .onChange(of: minDate) { _, _ in
+            selectedStart = 0
+            updateChart()
         }
-        .onChange(of: selectedEnd) { _, newValue in
-            updateChartDebounced()
+        .onChange(of: maxDate) { _, _ in
+            selectedEnd = totalDaysRange.upperBound
+            updateChart()
         }
-    }
-    
-    func updateChartDebounced() {
-        updateWorkItem?.cancel()
-        let workItem = DispatchWorkItem { self.updateChart() }
-        updateWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: workItem)
+        .onChange(of: selectedStart) { _, newStart in
+            viewModel.selectedStart = newStart
+            updateChart()
+        }
+        .onChange(of: selectedEnd) { _, newEnd in
+            viewModel.selectedEnd = newEnd
+            updateChart()
+        }
     }
     
     private func updateChart() {
-//        let listTransactions = viewModel.listTransactions
-//        firstDate = viewModel.firstDate
-//        lastDate = viewModel.lastDate
-//        guard let currentAccount = CurrentAccountManager.shared.getAccount() else { return }
-//
-//        viewModel.updateChartData(modelContext: modelContext, currentAccount: currentAccount, startDate: firstDate, endDate: lastDate)
+        guard minDate <= maxDate else { return }
+        let start = Calendar.current.date(byAdding: .day, value: Int(selectedStart), to: minDate)!
+        let end = Calendar.current.date(byAdding: .day, value: Int(selectedEnd), to: minDate)!
+        guard start <= end else { return }
+        viewModel.updateChartData(startDate: start, endDate: end)
     }
     
     func formattedDate(from dayOffset: Double) -> String {
@@ -136,3 +139,5 @@ struct CategorieBar2View2: View {
     }
 
 }
+
+

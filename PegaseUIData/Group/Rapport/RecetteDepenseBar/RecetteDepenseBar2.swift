@@ -1,10 +1,9 @@
-//
-//  RecetteDepenseBar2.swift
-//  PegaseUIData
-//
-//  Created by Thierry hentic on 17/04/2025.
-//
-
+////
+////  RecetteDepenseBar2.swift
+////  PegaseUIData
+////
+////  Created by Thierry hentic on 17/04/2025.
+////
 import SwiftUI
 import SwiftData
 import DGCharts
@@ -35,8 +34,15 @@ struct RecetteDepenseBarView: View {
             .onAppear {
                 Task {
                     await loadTransactions()
-                    minDate = transactions.first?.dateOperation ?? Date()
-                    maxDate = transactions.last?.dateOperation ?? Date()
+                    transactions.sort { $0.dateOperation < $1.dateOperation }
+                    if let first = transactions.first?.dateOperation, let last = transactions.last?.dateOperation {
+                        minDate = first
+                        maxDate = last
+                    } else {
+                        let now = Date()
+                        minDate = now
+                        maxDate = now
+                    }
                 }
             }
     }
@@ -46,10 +52,9 @@ struct RecetteDepenseBarView: View {
         try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 seconde de délai
         isVisible = false
     }
+    
     private func loadTransactions() async {
         transactions = ListTransactionsManager.shared.getAllData()
-        printTag("[Recette Pie] Transactions chargées: \(transactions.count)")
+        print("transactions.count ", transactions.count)
     }
-
-
 }

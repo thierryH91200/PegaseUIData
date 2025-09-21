@@ -1,27 +1,14 @@
-//////
-//////  ModePaiementPie3.swift
-//////  PegaseUIData
-//////
-//////  Created by Thierry hentic on 17/04/2025.
-//////
-////
-////
-////  ModePaiementPie3.swift
-////  PegaseUIData
-////
-////  Created by Thierry hentic on 17/04/2025.
-////
 //
-//import SwiftUI
-//import SwiftData
-//import DGCharts
-//import Combine
+//  ModePaiementPie3.swift
+//  PegaseUIData
 //
+//  Created by Thierry hentic on 17/04/2025.
+//
+
 import SwiftUI
 import SwiftData
 import DGCharts
 import Combine
-
 
 struct ModePaiementView: View {
 
@@ -50,7 +37,6 @@ struct ModePaiementView: View {
         max(0, Calendar.current.dateComponents([.day], from: minDate, to: maxDate).day ?? 0)
     }
     
-    
     private var totalDaysRange: ClosedRange<Double> {
         let cal = Calendar.current
         let start = cal.startOfDay(for: minDate)
@@ -59,11 +45,8 @@ struct ModePaiementView: View {
         return 0...Double(max(0, days))
     }
 
-
     @State private var selectedStart: Double = 0
     @State private var selectedEnd: Double = 30
-//    @State private var chartViewRef: PieChartView?
-    @State private var updateWorkItem: DispatchWorkItem?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -119,7 +102,8 @@ struct ModePaiementView: View {
                             let date = cal.date(byAdding: .day, value: Int(value), to: base) ?? base
                             let formatter = DateFormatter()
                             formatter.dateStyle = .short
-                            return formatter.string(from: date)
+                            let date1 = formatter.string(from: date)
+                            return date1
                         },
                         thumbSize: 24,
                         trackHeight: 6
@@ -131,7 +115,6 @@ struct ModePaiementView: View {
                 .padding(.top, 4)
                 .padding(.horizontal)
             }
-
         }
         .onAppear {
             // Initialize slider bounds based on available data

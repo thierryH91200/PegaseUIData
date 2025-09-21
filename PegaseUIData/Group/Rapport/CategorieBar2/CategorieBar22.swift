@@ -11,12 +11,16 @@ import DGCharts
 import Combine
 
 
+import SwiftUI
+import SwiftData
+import DGCharts
+import Combine
+
+
 class CategorieBar2ViewModel: ObservableObject {
     
     static let shared = CategorieBar2ViewModel()
-    
-    var chartView : BarChartView?
-    
+        
     var listTransactions : [EntityTransaction] = []
 
     @Published var resultArray: [DataGraph] = []
@@ -24,8 +28,13 @@ class CategorieBar2ViewModel: ObservableObject {
     @Published var currencyCode: String = Locale.current.currency?.identifier ?? "EUR"
     @Published var selectedCategories: Set<String> = []
     
-    var firstDate: TimeInterval = 0.0
-    var lastDate: TimeInterval = 0.0
+    @Published var firstDate: TimeInterval = 0.0
+    @Published var lastDate: TimeInterval = 0.0
+
+    @Published var selectedStart: Double = 0
+    @Published var selectedEnd: Double = 30
+    
+    var chartView : BarChartView?
 
     var labels: [String] {
         resultArray.map { $0.name }
@@ -35,7 +44,6 @@ class CategorieBar2ViewModel: ObservableObject {
     {
         self.chartView = chartView
     }
-
 
     func updateChartData( startDate: Date, endDate: Date)
     {
@@ -94,3 +102,4 @@ class CategorieBar2ViewModel: ObservableObject {
         self.dataEntries = entries
     }
 }
+

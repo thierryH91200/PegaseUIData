@@ -33,6 +33,15 @@ struct RubriqueBar: View {
         lastDate.timeIntervalSince(firstDate) / 86400
     }
     
+    private var totalDaysRange: ClosedRange<Double> {
+        let cal = Calendar.current
+        let start = cal.startOfDay(for: minDate)
+        let end = cal.startOfDay(for: maxDate)
+        let days = cal.dateComponents([.day], from: start, to: end).day ?? 0
+        return 0...Double(max(0, days))
+    }
+
+    
     @State private var selectedStart: Double = 0
     @State private var selectedEnd: Double = 30
     
@@ -65,13 +74,15 @@ struct RubriqueBar: View {
                     RangeSlider(
                         lowerValue: $selectedStart,
                         upperValue: $selectedEnd,
-                        totalRange: 0...30,
+                        totalRange: totalDaysRange,
                         valueLabel: { value in
-                            let today = Date()
-                            let date = Calendar.current.date(byAdding: .day, value: Int(value), to: today)!
+                            let cal = Calendar.current
+                            let base = cal.startOfDay(for: minDate)
+                            let date = cal.date(byAdding: .day, value: Int(value), to: base) ?? base
                             let formatter = DateFormatter()
                             formatter.dateStyle = .short
-                            return formatter.string(from: date)
+                            let date1 = formatter.string(from: date)
+                            return date1
                         },
                         thumbSize: 24,
                         trackHeight: 6
@@ -86,18 +97,37 @@ struct RubriqueBar: View {
             Spacer()
         }
         .onAppear {
-            updatePieData()
+            // Initialize slider bounds based on available data
+            selectedStart = 0
+            selectedEnd = totalDaysRange.upperBound
+            updateChart()
         }
-
+        .onChange(of: minDate) { _, _ in
+            selectedStart = 0
+            updateChart()
+        }
+        .onChange(of: maxDate) { _, _ in
+            selectedEnd = totalDaysRange.upperBound
+            updateChart()
+        }
+        .onChange(of: selectedStart) { _, newStart in
+            viewModel.selectedStart = newStart
+            updateChart()
+        }
+        .onChange(of: selectedEnd) { _, newEnd in
+            viewModel.selectedEnd = newEnd
+            updateChart()
+        }
     }
-    
-    private func updatePieData() {
-        
+
+    private func updateChart() {
+        guard minDate <= maxDate else { return }
         let start = Calendar.current.date(byAdding: .day, value: Int(selectedStart), to: minDate)!
         let end = Calendar.current.date(byAdding: .day, value: Int(selectedEnd), to: minDate)!
-        viewModel.updateChartData( startDate: start, endDate: end)
+        guard start <= end else { return }
+        viewModel.updateChartData(startDate: start, endDate: end)
     }
-
+    
     func formattedDate(from dayOffset: Double) -> String {
         let date = Calendar.current.date(byAdding: .day, value: Int(dayOffset), to: minDate)!
         let formatter = DateFormatter()

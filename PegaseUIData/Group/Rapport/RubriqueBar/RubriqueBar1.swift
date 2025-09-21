@@ -10,7 +10,6 @@ import SwiftData
 import DGCharts
 import Combine
 
-
 class RubriqueBarViewModel: ObservableObject {
     @Published var resultArray: [DataGraph] = []
     @Published var dataArray: [DataGraph] = []
@@ -21,6 +20,10 @@ class RubriqueBarViewModel: ObservableObject {
     @Published var selectedCategories: Set<String> = []
 
     var listTransactions: [EntityTransaction] = []
+    
+    @Published var selectedStart: Double = 0
+    @Published var selectedEnd: Double = 30
+
     
     var totalValue: Double {
         resultArray.map { $0.value }.reduce(0, +)
@@ -43,9 +46,7 @@ class RubriqueBarViewModel: ObservableObject {
         guard nameRubrique != "" else { return }
         
         
-        //        listTransactions = ListTransactionsManager.shared.getAllData(from:startDate, to:endDate)
-        listTransactions = ListTransactionsManager.shared.getAllData()
-        printTag("[Rubrique Bar] Transactions chargées: \(listTransactions.count)")
+        listTransactions = ListTransactionsManager.shared.getAllData(from:startDate, to:endDate)
 
 //        delegate?.updateListeTransactions( listTransactions)
         

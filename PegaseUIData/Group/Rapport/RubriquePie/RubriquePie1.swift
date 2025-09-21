@@ -40,7 +40,6 @@ class RubriquePieViewModel: ObservableObject {
     func updateChartData(  startDate: Date, endDate: Date) {
         
         listTransactions = ListTransactionsManager.shared.getAllData(from:startDate, to:endDate)
-        printTag("[Rubrique Pie] Transactions chargées: \(listTransactions.count)")
         
         var dataArrayExpense = [DataGraph]()
         var dataArrayIncome  = [DataGraph]()

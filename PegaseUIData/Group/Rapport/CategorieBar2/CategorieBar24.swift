@@ -57,8 +57,16 @@ struct DGBarChart2Representable: NSViewRepresentable {
     }
     
     func updateNSView(_ nsView: BarChartView, context: Context) {
-        nsView.data?.notifyDataChanged()
-        nsView.notifyDataSetChanged()
+        if let data = nsView.data, let set = data.dataSets.first as? BarChartDataSet {
+            set.replaceEntries(entries)
+            data.notifyDataChanged()
+            nsView.notifyDataSetChanged()
+        } else {
+            let dataSet = BarChartDataSet(entries: entries, label: "Categorie Bar1")
+            dataSet.colors = ChartColorTemplates.colorful()
+            nsView.data = BarChartData(dataSet: dataSet)
+            nsView.notifyDataSetChanged()
+        }
     }
     
     private func initChart() {
@@ -113,15 +121,15 @@ struct DGBarChart2Representable: NSViewRepresentable {
     }
     
     func initializeLegend(_ legend: Legend) {
-        legend.horizontalAlignment           = .left
-        legend.verticalAlignment             = .bottom
-        legend.orientation                   = .vertical
-        legend.drawInside                    = false
-        legend.form                          = .square
-        legend.formSize                      = 9.0
-        legend.font                          = NSFont.systemFont(ofSize: CGFloat(11.0))
-        legend.xEntrySpace                   = 4.0
-        legend.textColor = NSColor.labelColor
+        
+        legend.horizontalAlignment = .right
+        legend.verticalAlignment   = .top
+        legend.orientation         = .vertical
+        legend.drawInside          = true
+        legend.font                = NSFont.systemFont(ofSize : CGFloat(11.0))
+        legend.xOffset             = 10.0
+        legend.yEntrySpace         = 0.0
+        legend.textColor           = NSColor.labelColor
         legend.enabled = true
         
     }

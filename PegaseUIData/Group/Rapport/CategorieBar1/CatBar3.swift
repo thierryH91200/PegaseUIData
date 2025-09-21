@@ -17,9 +17,7 @@ struct CategorieBar1View1: View {
     
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
     @StateObject private var viewModel = CategorieBar1ViewModel()
-    
-//    let transactions: [EntityTransaction]
-    
+        
     let transactions: [EntityTransaction]
     @State var filteredTransactions: [EntityTransaction] = []
     
@@ -40,15 +38,21 @@ struct CategorieBar1View1: View {
         lastDate.timeIntervalSince(firstDate) / 86400
     }
     
+    private var totalDaysRange: ClosedRange<Double> {
+        let cal = Calendar.current
+        let start = cal.startOfDay(for: minDate)
+        let end = cal.startOfDay(for: maxDate)
+        let days = cal.dateComponents([.day], from: start, to: end).day ?? 0
+        return 0...Double(max(0, days))
+    }
+
+    
     @State private var selectedStart: Double = 0
     @State private var selectedEnd: Double = 30
     private let oneDay = 3600.0 * 24.0 // one day
     
     @State private var chartView: BarChartView?
     
-    @State private var lower: Double = 2
-    @State private var upper: Double = 10
-
     var body: some View {
         VStack {
             Text("CategorieBar1View1")
@@ -109,15 +113,23 @@ struct CategorieBar1View1: View {
                         .foregroundColor(.secondary)
 
                     RangeSlider(
-                        lowerValue: $lower,
-                        upperValue: $upper,
-                        totalRange: lower...upper,
+                        lowerValue: $selectedStart,
+                        upperValue: $selectedEnd,
+                        totalRange: totalDaysRange,
                         valueLabel: { value in
-                            let today = Date()
-                            let date = Calendar.current.date(byAdding: .day, value: Int(value), to: today)!
+                            let cal = Calendar.current
+                            let base = cal.startOfDay(for: minDate)
+                            let date = cal.date(byAdding: .day, value: Int(value), to: base) ?? base
                             let formatter = DateFormatter()
                             formatter.dateStyle = .short
+                            let date1 = formatter.string(from: date)
                             return formatter.string(from: date)
+
+//                            let today = Date()
+//                            let date = Calendar.current.date(byAdding: .day, value: Int(value), to: today)!
+//                            let formatter = DateFormatter()
+//                            formatter.dateStyle = .short
+//                            return formatter.string(from: date)
                         },
                         thumbSize: 24,
                         trackHeight: 6
@@ -173,8 +185,6 @@ struct CategorieBar1View1: View {
         let start = Calendar.current.date(byAdding: .day, value: Int(selectedStart), to: minDate)!
         let end = Calendar.current.date(byAdding: .day, value: Int(selectedEnd), to: minDate)!
 
-
-        let currentAccount = CurrentAccountManager.shared.getAccount()!
         viewModel.updateChartData( startDate: start, endDate: end)
     }
     

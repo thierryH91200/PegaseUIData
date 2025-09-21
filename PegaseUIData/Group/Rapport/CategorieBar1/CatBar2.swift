@@ -11,8 +11,6 @@ import DGCharts
 import Combine
 import UniformTypeIdentifiers
 
-
-
 class CategorieBar1ViewModel: ObservableObject {
     
     @Published var listTransactions : [EntityTransaction] = []
@@ -30,7 +28,6 @@ class CategorieBar1ViewModel: ObservableObject {
     @Published var selectedEnd: Double = 30
     
     var chartView : BarChartView?
-    var rangeSlider : RangeSlider?
 
     static let shared = CategorieBar1ViewModel()
     
@@ -54,7 +51,6 @@ class CategorieBar1ViewModel: ObservableObject {
         self.chartView = chartView
     }
 
-    
     func updateAccount(minDate: Date) {
         let transactions = ListTransactionsManager.shared.getAllData()
 

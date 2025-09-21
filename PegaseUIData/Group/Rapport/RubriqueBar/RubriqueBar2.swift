@@ -48,7 +48,6 @@ struct RubriqueBarView: View {
     }
     private func loadTransactions() async {
         transactions = ListTransactionsManager.shared.getAllData()
-        printTag("[Recette Depense Pie] Transactions chargées: \(transactions.count)")
     }
 
 }

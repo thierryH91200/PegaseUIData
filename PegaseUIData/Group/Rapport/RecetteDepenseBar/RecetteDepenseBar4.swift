@@ -1,10 +1,9 @@
-//
-//  RecetteDepenseBar4.swift
-//  PegaseUIData
-//
-//  Created by Thierry hentic on 17/04/2025.
-//
-
+////
+////  RecetteDepenseBar4.swift
+////  PegaseUIData
+////
+////  Created by Thierry hentic on 17/04/2025.
+////
 import SwiftUI
 import SwiftData
 import DGCharts
@@ -15,6 +14,7 @@ struct DGBarChart4Representable: NSViewRepresentable {
     
     let entries: [BarChartDataEntry]
     let title: String
+    let labels: [String]
     
     func makeNSView(context: Context) -> BarChartView {
         let chartView = BarChartView()
@@ -28,14 +28,31 @@ struct DGBarChart4Representable: NSViewRepresentable {
         
         // Personnalisation du graphique
         chartView.xAxis.labelPosition = .bottom
+        chartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: labels)
+        chartView.xAxis.labelCount = labels.count
         chartView.xAxis.granularity = 1
+        chartView.xAxis.drawGridLinesEnabled = false
         chartView.animate(yAxisDuration: 1.5)
         
         return chartView
     }
     
     func updateNSView(_ nsView: BarChartView, context: Context) {
-        nsView.data?.notifyDataChanged()
-        nsView.notifyDataSetChanged()
+        nsView.xAxis.valueFormatter = IndexAxisValueFormatter(values: labels)
+        nsView.xAxis.labelCount = labels.count
+        nsView.xAxis.granularity = 1
+        nsView.xAxis.drawGridLinesEnabled = false
+        
+        if let data = nsView.data, let set = data.dataSets.first as? BarChartDataSet {
+            set.replaceEntries(entries)
+            data.notifyDataChanged()
+            nsView.notifyDataSetChanged()
+        } else {
+            let dataSet = BarChartDataSet(entries: entries, label: "Recette Depense Bar")
+            dataSet.colors = ChartColorTemplates.colorful()
+            nsView.data = BarChartData(dataSet: dataSet)
+            nsView.notifyDataSetChanged()
+        }
     }
 }
+

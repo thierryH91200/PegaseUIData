@@ -20,7 +20,7 @@ struct RangeSlider: View {
     let trackHeight: CGFloat
 
     var selectedDays: Int {
-        Int(upperValue - lowerValue)
+        Int(upperValue - lowerValue) + 1
     }
 
     private func position(for value: Double, in width: CGFloat) -> CGFloat {

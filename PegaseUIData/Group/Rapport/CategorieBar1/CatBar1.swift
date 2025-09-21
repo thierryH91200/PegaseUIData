@@ -26,7 +26,6 @@ struct CategorieBar1View: View {
     
     private let oneDay = 3600.0 * 24.0 // one day
     
-    
     var body: some View {
         
         SummaryView(
@@ -63,7 +62,5 @@ struct CategorieBar1View: View {
     }
     private func loadTransactions() async {
         transactions = ListTransactionsManager.shared.getAllData()
-        printTag("[Mode Pie] Transactions chargées: \(transactions.count)")
     }
-    
 }

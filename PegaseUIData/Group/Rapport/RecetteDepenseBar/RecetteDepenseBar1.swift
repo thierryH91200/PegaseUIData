@@ -1,14 +1,13 @@
+////
+////  RecetteDepenseBar1.swift
+////  PegaseUIData
+////
+////  Created by Thierry hentic on 17/04/2025.
+////
 //
-//  RecetteDepenseBar1.swift
-//  PegaseUIData
-//
-//  Created by Thierry hentic on 17/04/2025.
-//
-
 import SwiftUI
 import SwiftData
 import DGCharts
-import Combine
 import Combine
 
 
@@ -22,6 +21,13 @@ class RecetteDepenseBarViewModel: ObservableObject {
     @Published var currencyCode: String = Locale.current.currency?.identifier ?? "EUR"
     
     @Published var selectedCategories: Set<String> = []
+    
+    @Published var selectedStart: Double = 0
+    @Published var selectedEnd: Double = 30
+
+    var chartView : BarChartView?
+
+    var listTransactions: [EntityTransaction] = []
     
     var totalValue: Double {
         recetteArray.map { $0.value }.reduce(0, +)
@@ -38,32 +44,10 @@ class RecetteDepenseBarViewModel: ObservableObject {
         return _formatter
     }()
 
-    func updateChartData(modelContext: ModelContext, currentAccount: EntityAccount?, startDate: Date, endDate: Date) {
+    func updateChartData( startDate: Date, endDate: Date) {
         
-        guard let currentAccount else { return }
-        self.currencyCode = currentAccount.currencyCode
+        listTransactions = ListTransactionsManager.shared.getAllData(from:startDate, to:endDate)
 
-        let sort = [SortDescriptor(\EntityTransaction.dateOperation, order: .reverse)]
-        let lhs = currentAccount.uuid
-
-        let descriptor = FetchDescriptor<EntityTransaction>(
-            predicate: #Predicate { transaction in
-                transaction.account.uuid == lhs &&
-                transaction.dateOperation >= startDate &&
-                transaction.dateOperation <= endDate
-            },
-            sortBy: sort
-        )
-        
-        var listTransactions: [EntityTransaction] = []
-
-        do {
-            listTransactions = try modelContext.fetch(descriptor)
-            
-        } catch {
-            printTag("Error fetching data from CoreData", flag: true)
-        }
-        
         // grouped and sum
         self.recetteArray.removeAll()
         self.depenseArray.removeAll()
@@ -91,5 +75,16 @@ class RecetteDepenseBarViewModel: ObservableObject {
         
         self.depenseArray = depenseArray.sorted(by: { $0.name < $1.name })
         self.recetteArray = recetteArray.sorted(by: { $0.name < $1.name })
+        
+        let depenseEntries = depenseArray.enumerated().map { (idx, item) in
+            BarChartDataEntry(x: Double(idx), y: item.value)
+        }
+        let recetteEntries = recetteArray.enumerated().map { (idx, item) in
+            BarChartDataEntry(x: Double(idx), y: item.value)
+        }
+        DispatchQueue.main.async {
+            self.dataEntriesDepense = depenseEntries
+            self.dataEntriesRecette = recetteEntries
+        }
     }
 }

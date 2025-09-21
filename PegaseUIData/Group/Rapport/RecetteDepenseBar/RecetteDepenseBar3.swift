@@ -1,15 +1,14 @@
-//
-//  RecetteDepenseBar3.swift
-//  PegaseUIData
-//
-//  Created by Thierry hentic on 17/04/2025.
+////
+////  RecetteDepenseBar3.swift
+////  PegaseUIData
+////
+////  Created by Thierry hentic on 17/04/2025.
 //
 
 import SwiftUI
 import SwiftData
 import DGCharts
 import Combine
-
 
 struct RecetteDepenseView: View {
     
@@ -21,10 +20,21 @@ struct RecetteDepenseView: View {
     @Binding var upperValue: Double
     @Binding var minDate: Date
     @Binding var maxDate: Date
+    
+    private var totalDaysRange: ClosedRange<Double> {
+        let cal = Calendar.current
+        let start = cal.startOfDay(for: minDate)
+        let end = cal.startOfDay(for: maxDate)
+        let days = cal.dateComponents([.day], from: start, to: end).day ?? 0
+        return 0...Double(max(0, days))
+    }
 
     @State private var selectedStart: Double = 0
     @State private var selectedEnd: Double = 30
+    private let oneDay = 3600.0 * 24.0 // one day
     
+    @State private var chartView: BarChartView?
+
     private var firstDate: Date {
         transactions.first?.dateOperation ?? Date()
     }
@@ -37,11 +47,6 @@ struct RecetteDepenseView: View {
         lastDate.timeIntervalSince(firstDate) / 86400
     }
     
-    @State private var lower: Double = 2
-    @State private var upper: Double = 10
-
-
-
     var body: some View {
         
         VStack {
@@ -50,11 +55,11 @@ struct RecetteDepenseView: View {
                 .padding()
             
             HStack {
-                DGBarChart4Representable(entries: viewModel.dataEntriesDepense, title: "Dépenses")
+                DGBarChart4Representable(entries: viewModel.dataEntriesDepense, title: "Dépenses", labels: viewModel.depenseArray.map { $0.name })
                     .frame(width: 600, height: 400)
                     .padding()
                 
-                DGBarChart4Representable(entries: viewModel.dataEntriesRecette, title: "Recettes")
+                DGBarChart4Representable(entries: viewModel.dataEntriesRecette, title: "Recettes", labels: viewModel.recetteArray.map { $0.name })
                     .frame(width: 600, height: 400)
                     .padding()
             }
@@ -65,15 +70,17 @@ struct RecetteDepenseView: View {
                         .foregroundColor(.secondary)
                     
                     RangeSlider(
-                        lowerValue: $lower,
-                        upperValue: $upper,
-                        totalRange: 0...30,
+                        lowerValue: $selectedStart,
+                        upperValue: $selectedEnd,
+                        totalRange: totalDaysRange,
                         valueLabel: { value in
-                            let today = Date()
-                            let date = Calendar.current.date(byAdding: .day, value: Int(value), to: today)!
+                            let cal = Calendar.current
+                            let base = cal.startOfDay(for: minDate)
+                            let date = cal.date(byAdding: .day, value: Int(value), to: base) ?? base
                             let formatter = DateFormatter()
                             formatter.dateStyle = .short
-                            return formatter.string(from: date)
+                            let date1 = formatter.string(from: date)
+                            return date1
                         },
                         thumbSize: 24,
                         trackHeight: 6
@@ -87,18 +94,49 @@ struct RecetteDepenseView: View {
             }
         }
         .onAppear {
-            updatePieData()
+            let listTransactions = ListTransactionsManager.shared.getAllData()
+            if let first = listTransactions.first?.dateOperation, let last = listTransactions.last?.dateOperation {
+                minDate = first
+                maxDate = last
+                selectedStart = 0
+                selectedEnd = max(0, maxDate.timeIntervalSince(minDate) / oneDay)
+            } else {
+                let now = Date()
+                minDate = now
+                maxDate = now
+                selectedStart = 0
+                selectedEnd = 0
+            }
+            chartView = BarChartView()
+            if let chartView = chartView {
+                CategorieBar1ViewModel.shared.configure(with: chartView)
+            }
+            updateChart()
+        }
+        .onChange(of: minDate) { _, _ in
+            selectedStart = 0
+            updateChart()
+        }
+        .onChange(of: maxDate) { _, _ in
+            selectedEnd = totalDaysRange.upperBound
+            updateChart()
+        }
+        .onChange(of: selectedStart) { _, newStart in
+            viewModel.selectedStart = newStart
+            updateChart()
+        }
+        .onChange(of: selectedEnd) { _, newEnd in
+            viewModel.selectedEnd = newEnd
+            updateChart()
         }
 
     }
-    private func updatePieData() {
-        
-//        let listTransactions = $viewModel.listTransactions
-//        firstDate = viewModel.firstDate
-//        lastDate = viewModel.lastDate
-//        guard let currentAccount = CurrentAccountManager.shared.getAccount() else { return }
-//
-//        viewModel.updateChartData(modelContext: modelContext, currentAccount: currentAccount, startDate: start, endDate: end)
+    private func updateChart() {
+        guard minDate <= maxDate else { return }
+        let start = Calendar.current.date(byAdding: .day, value: Int(selectedStart), to: minDate)!
+        let end = Calendar.current.date(byAdding: .day, value: Int(selectedEnd), to: minDate)!
+        guard start <= end else { return }
+        viewModel.updateChartData(startDate: start, endDate: end)
     }
 
     func formattedDate(from dayOffset: Double) -> String {
@@ -108,5 +146,4 @@ struct RecetteDepenseView: View {
         return formatter.string(from: date)
     }
 }
-
 

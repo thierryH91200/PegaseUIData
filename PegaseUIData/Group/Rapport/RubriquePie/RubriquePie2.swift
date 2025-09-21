@@ -52,7 +52,6 @@ struct RubriquePieView: View {
     }
     private func loadTransactions() async {
         transactions = ListTransactionsManager.shared.getAllData()
-        printTag("[Rubrique Pie] Transactions chargées: \(transactions.count)")
     }
 
 }

@@ -82,7 +82,8 @@ struct RecetteDepensePie: View {
                             let date = cal.date(byAdding: .day, value: Int(value), to: base) ?? base
                             let formatter = DateFormatter()
                             formatter.dateStyle = .short
-                            return formatter.string(from: date)
+                            let date1 = formatter.string(from: date)
+                            return date1
                         },
                         thumbSize: 24,
                         trackHeight: 6

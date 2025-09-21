@@ -10,6 +10,7 @@ import SwiftData
 import DGCharts
 import Combine
 
+
 struct CategorieBar2View: View {
     
     @Binding var isVisible: Bool
@@ -48,7 +49,7 @@ struct CategorieBar2View: View {
     }
     private func loadTransactions() async {
         transactions = ListTransactionsManager.shared.getAllData()
-        printTag("[Mode Pie] Transactions chargées: \(transactions.count)")
     }
 
 }
+
