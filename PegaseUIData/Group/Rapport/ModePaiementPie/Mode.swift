@@ -1,14 +1,12 @@
-////
-////  ModePaiementPie1.swift
-////  PegaseUIData
-////
-////  Created by Thierry hentic on 17/04/2025.
-////
 //
-import SwiftUI
-import SwiftData
-import DGCharts
-import Combine
+//  Untitled.swift
+//  PegaseUIData
+//
+//  Created by thierryH24 on 21/09/2025.
+//
+
+
+//
 
 class ModePaymentPieViewModel: ObservableObject {
     @Published var recetteArray: [DataGraph] = []
@@ -112,3 +110,25 @@ class ModePaymentPieViewModel: ObservableObject {
         }
     }
 }
+
+////
+////  ModePaiementPie3.swift
+////  PegaseUIData
+////
+////  Created by Thierry hentic on 17/04/2025.
+////
+//
+//
+//  ModePaiementPie3.swift
+//  PegaseUIData
+//
+//  Created by Thierry hentic on 17/04/2025.
+//
+
+//
+//  SinglePieChartView.swift
+//  PegaseUIData
+//
+//  Created by thierryH24 on 29/07/2025.
+//
+

@@ -1,3 +1,10 @@
+//////
+//////  ModePaiementPie3.swift
+//////  PegaseUIData
+//////
+//////  Created by Thierry hentic on 17/04/2025.
+//////
+////
 ////
 ////  ModePaiementPie3.swift
 ////  PegaseUIData
@@ -5,13 +12,11 @@
 ////  Created by Thierry hentic on 17/04/2025.
 ////
 //
+//import SwiftUI
+//import SwiftData
+//import DGCharts
+//import Combine
 //
-//  ModePaiementPie3.swift
-//  PegaseUIData
-//
-//  Created by Thierry hentic on 17/04/2025.
-//
-
 import SwiftUI
 import SwiftData
 import DGCharts
@@ -76,7 +81,8 @@ struct ModePaiementView: View {
                     .frame(width: 600, height: 400)
                     .padding()
                 } else {
-                    SinglePieChartView(entries: viewModel.dataEntriesDepense, title: "Expenses")
+                    SinglePieChartView(entries: viewModel.dataEntriesDepense,
+                                       title: String(localized : "Expenses"))
                         .frame(width: 600, height: 400)
                         .padding()
                 }
@@ -90,7 +96,8 @@ struct ModePaiementView: View {
                     .frame(width: 600, height: 400)
                     .padding()
                 } else {
-                    SinglePieChartView(entries: viewModel.dataEntriesRecette, title: "Receipts")
+                    SinglePieChartView(entries: viewModel.dataEntriesRecette,
+                                       title: String(localized : "Receipts"))
                         .frame(width: 600, height: 400)
                         .padding()
                 }
@@ -98,7 +105,7 @@ struct ModePaiementView: View {
             
             GroupBox(label: Label("Filter by period", systemImage: "calendar")) {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("From \(formattedDate(from: lowerValue)) to \(formattedDate(from: upperValue))")
+                    Text("From \(formattedDate(from: selectedStart)) to \(formattedDate(from: selectedEnd))")
                         .font(.callout)
                         .foregroundColor(.secondary)
 
@@ -127,27 +134,24 @@ struct ModePaiementView: View {
 
         }
         .onAppear {
-            upperValue = Double(totalDays)
-            refreshData()
-        }
-        .onChange(of: lowerValue) { _, _ in
-            if lowerValue > upperValue { upperValue = lowerValue }
-            refreshData()
-        }
-        .onChange(of: upperValue) { _, _ in
-            if upperValue < lowerValue { lowerValue = upperValue }
-            refreshData()
+            // Initialize slider bounds based on available data
+            selectedStart = 0
+            selectedEnd = totalDaysRange.upperBound
+            updatePieData()
         }
         .onChange(of: minDate) { _, _ in
-            // Recompute totalDays implicitly via computed property and clamp values
-            lowerValue = max(0, min(lowerValue, Double(totalDays)))
-            upperValue = max(lowerValue, min(upperValue, Double(totalDays)))
-            refreshData()
+            selectedStart = 0
+            updatePieData()
         }
         .onChange(of: maxDate) { _, _ in
-            lowerValue = max(0, min(lowerValue, Double(totalDays)))
-            upperValue = max(lowerValue, min(upperValue, Double(totalDays)))
-            refreshData()
+            selectedEnd = totalDaysRange.upperBound
+            updatePieData()
+        }
+        .onChange(of: selectedStart) { _, _ in
+            updatePieData()
+        }
+        .onChange(of: selectedEnd) { _, _ in
+            updatePieData()
         }
     }
     
@@ -158,12 +162,25 @@ struct ModePaiementView: View {
         return formatter.string(from: date)
     }
     
-    private func refreshData() {
-        let start = Calendar.current.date(byAdding: .day, value: Int(lowerValue), to: minDate)!
-        let rawEnd = Calendar.current.date(byAdding: .day, value: Int(upperValue), to: minDate)!
-        let end = Calendar.current.date(bySettingHour: 23, minute: 59, second: 59, of: rawEnd) ?? rawEnd
-        print("[Pie] refreshData start:", start, "end:", end)
-        viewModel.updateChartData( startDate: start, endDate: end)
+    private func updatePieData() {
+        // Ensure prerequisites are valid
+        guard selectedStart <= selectedEnd else { return }
+        guard minDate <= maxDate else { return }
+
+        let calendar = Calendar.current
+        let startOfMin = calendar.startOfDay(for: minDate)
+
+        guard let start = calendar.date(byAdding: .day, value: Int(selectedStart), to: startOfMin),
+              let endRaw = calendar.date(byAdding: .day, value: Int(selectedEnd), to: startOfMin) else {
+            return
+        }
+
+        // Clamp to maxDate then extend to end-of-day for inclusive range
+        let endClamped = min(endRaw, maxDate)
+        let endOfDay = calendar.date(byAdding: DateComponents(day: 1, second: -1), to: calendar.startOfDay(for: endClamped)) ?? endClamped
+
+        viewModel.updateChartData( startDate: start, endDate: endOfDay)
     }
+    
 }
 

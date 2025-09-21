@@ -28,8 +28,6 @@ struct TreasuryCurve: View {
     @State private var lower: Double = 2
     @State private var upper: Double = 10
 
-
-//    @State private var rotationAngle: Double = 0
     @AppStorage("enableSoundFeedback") private var enableSoundFeedback: Bool = true
 
     private var durationDays: Double {

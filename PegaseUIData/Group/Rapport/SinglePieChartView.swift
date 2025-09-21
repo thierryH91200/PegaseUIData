@@ -1,9 +1,10 @@
 //
-//  SinglePieChartView.swift
+//  SinglePieChartView 2.swift
 //  PegaseUIData
 //
-//  Created by thierryH24 on 29/07/2025.
+//  Created by thierryH24 on 21/09/2025.
 //
+
 
 import SwiftUI
 import SwiftData
@@ -25,7 +26,7 @@ struct SinglePieChartView: NSViewRepresentable {
     func makeNSView(context: Context) -> PieChartView {
         let chartView = PieChartView()
         chartView.noDataText = String(localized: "No chart data available.")
-        chartView.usePercentValuesEnabled = true
+        chartView.usePercentValuesEnabled = false
         chartView.drawHoleEnabled = true
         chartView.holeRadiusPercent = 0.4
         chartView.transparentCircleRadiusPercent = 0.45
@@ -61,4 +62,5 @@ struct SinglePieChartView: NSViewRepresentable {
         nsView.notifyDataSetChanged()
     }
 }
+
 

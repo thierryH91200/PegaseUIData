@@ -55,11 +55,13 @@ struct RecetteDepensePie: View {
                 .padding()
 
             HStack {
-                SinglePieChartView(entries: viewModel.dataEntriesDepense, title: "Dépenses")
+                SinglePieChartView(entries: viewModel.dataEntriesDepense,
+                                   title: String(localized : "Expenses"))
                     .frame(width: 600, height: 400)
                     .padding()
 
-                SinglePieChartView(entries: viewModel.dataEntriesRecette, title: "Recettes")
+                SinglePieChartView(entries: viewModel.dataEntriesRecette,
+                                   title: String(localized : "Receipts"))
                     .frame(width: 600, height: 400)
                     .padding()
             }
