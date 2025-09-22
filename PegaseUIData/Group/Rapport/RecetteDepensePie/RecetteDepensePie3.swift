@@ -17,22 +17,8 @@ struct RecetteDepensePie: View {
 
     let transactions: [EntityTransaction]
 
-    @Binding var lowerValue: Double
-    @Binding var upperValue: Double
     @Binding var minDate: Date
     @Binding var maxDate: Date
-
-    private var firstDate: Date {
-        transactions.first?.dateOperation ?? Date()
-    }
-
-    private var lastDate: Date {
-        transactions.last?.dateOperation ?? Date()
-    }
-
-    private var durationDays: Double {
-        lastDate.timeIntervalSince(firstDate) / 86400
-    }
 
     @State private var selectedStart: Double = 0
     @State private var selectedEnd: Double = 30
@@ -44,9 +30,6 @@ struct RecetteDepensePie: View {
         let days = cal.dateComponents([.day], from: start, to: end).day ?? 0
         return 0...Double(max(0, days))
     }
-
-
-    @State private var updateWorkItem: DispatchWorkItem?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -138,20 +121,13 @@ struct RecetteDepensePie: View {
         viewModel.updateChartData( startDate: start, endDate: endOfDay)
     }
     
-    func updateChartDebounced() {
-        updateWorkItem?.cancel()
-        let workItem = DispatchWorkItem { self.updateChart() }
-        updateWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: workItem)
-    }
-
     private func updateChart() {
         let start = Calendar.current.date(byAdding: .day,
                                           value: Int(selectedStart),
-                                          to: firstDate)!
+                                          to: minDate)!
         let end = Calendar.current.date(byAdding: .day,
                                         value: Int(selectedEnd),
-                                        to: firstDate)!
+                                        to: minDate)!
         viewModel.updateChartData( startDate: start, endDate: end)
     }
 

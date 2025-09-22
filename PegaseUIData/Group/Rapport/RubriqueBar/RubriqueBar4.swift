@@ -57,4 +57,3 @@ struct DGBarChart5Representable: NSViewRepresentable {
     }
 }
 
-

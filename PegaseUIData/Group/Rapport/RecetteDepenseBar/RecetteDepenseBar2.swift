@@ -15,16 +15,13 @@ struct RecetteDepenseBarView: View {
     @Binding var isVisible: Bool
     
     @State private var transactions: [EntityTransaction] = []
-    @State private var lowerValue: Double = 0
-    @State private var upperValue: Double = 180
+
     @State private var minDate: Date = Date()
     @State private var maxDate: Date = Date()
 
     var body: some View {
         RecetteDepenseView(
             transactions: transactions,
-            lowerValue: $lowerValue,
-            upperValue: $upperValue,
             minDate: $minDate,
             maxDate: $maxDate
         )

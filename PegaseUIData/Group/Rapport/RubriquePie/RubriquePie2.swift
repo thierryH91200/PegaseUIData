@@ -16,8 +16,8 @@ struct RubriquePieView: View {
     @Binding var isVisible: Bool
     
     @State private var transactions: [EntityTransaction] = []
-    @State private var lowerValue: Double = 0
-    @State private var upperValue: Double = 0
+//    @State private var lowerValue: Double = 0
+//    @State private var upperValue: Double = 0
     @State private var minDate: Date = Date()
     @State private var maxDate: Date = Date()
     
@@ -26,8 +26,6 @@ struct RubriquePieView: View {
     var body: some View {
         RubriquePie(
             transactions: transactions,
-            lowerValue: $lowerValue,
-            upperValue: $upperValue,
             minDate: $minDate,
             maxDate: $maxDate
         )
@@ -38,9 +36,7 @@ struct RubriquePieView: View {
             Task {
                 await loadTransactions()
                 minDate = transactions.first?.dateOperation ?? Date()
-                lowerValue = 0
                 maxDate = transactions.last?.dateOperation ?? Date()
-                upperValue = maxDate.timeIntervalSince(minDate) / oneDay
             }
         }
     }

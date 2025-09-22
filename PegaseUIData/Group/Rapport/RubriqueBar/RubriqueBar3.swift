@@ -1,4 +1,12 @@
 //
+//  RubriqueBar.swift
+//  PegaseUIData
+//
+//  Created by thierryH24 on 22/09/2025.
+//
+
+
+//
 //  Untitled 3.swift
 //  PegaseUIData
 //
@@ -14,25 +22,16 @@ import Combine
 struct RubriqueBar: View {
     
     @StateObject private var viewModel = RubriqueBarViewModel()
-    let transactions: [EntityTransaction]
 
-    @Binding var lowerValue: Double
-    @Binding var upperValue: Double
+    let transactions: [EntityTransaction]   
     @Binding var minDate: Date
     @Binding var maxDate: Date
-
-    private var firstDate: Date {
-        transactions.first?.dateOperation ?? Date()
-    }
-
-    private var lastDate: Date {
-        transactions.last?.dateOperation ?? Date()
-    }
-
-    private var durationDays: Double {
-        lastDate.timeIntervalSince(firstDate) / 86400
-    }
     
+    @AppStorage("RubriqueBar.selectedRubrique") private var storedRubrique: String = ""
+    
+    @State private var selectedStart: Double = 0
+    @State private var selectedEnd: Double = 30
+        
     private var totalDaysRange: ClosedRange<Double> {
         let cal = Calendar.current
         let start = cal.startOfDay(for: minDate)
@@ -40,39 +39,42 @@ struct RubriqueBar: View {
         let days = cal.dateComponents([.day], from: start, to: end).day ?? 0
         return 0...Double(max(0, days))
     }
-
     
-    @State private var selectedStart: Double = 0
-    @State private var selectedEnd: Double = 30
-    
-    @State private var chartViewRef: BarChartView?
-
-    let currentAccount: EntityAccount? = nil
-    
-    @State private var lower: Double = 2
-    @State private var upper: Double = 10
-
-
     var body: some View {
         VStack {
             Text("Rubrique Bar")
                 .font(.headline)
                 .padding()
             
+            HStack(spacing: 12) {
+                Text("Rubrique:")
+                Picker("Rubrique", selection: $viewModel.nameRubrique) {
+                    ForEach(viewModel.availableRubrics, id: \.self) { rub in
+                        Text(rub.isEmpty ? String(localized: "(Toutes)") : rub).tag(rub)
+                    }
+                }
+                .frame(maxWidth: 260)
+            }
+            .padding(.horizontal)
+            .onChange(of: viewModel.nameRubrique) { _, newValue in
+                storedRubrique = newValue
+                updateChart()
+            }
+            
             DGBarChart5Representable(
                 entries: viewModel.dataEntries,
                 title: String(localized: "Rubriqc Bar Chart"),
                 labels: viewModel.labels
             )
-                .frame(width: 600, height: 400)
-                .padding()
+            .frame(width: 600, height: 400)
+            .padding()
             
             GroupBox(label: Label("Filter by period", systemImage: "calendar")) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("From \(formattedDate(from: selectedStart)) to \(formattedDate(from: selectedEnd))")
                         .font(.callout)
                         .foregroundColor(.secondary)
-
+                    
                     RangeSlider(
                         lowerValue: $selectedStart,
                         upperValue: $selectedEnd,
@@ -89,7 +91,7 @@ struct RubriqueBar: View {
                         thumbSize: 24,
                         trackHeight: 6
                     )
-                        .frame(height: 30)
+                    .frame(height: 30)
                 }
                 .padding(.top, 4)
                 .padding(.horizontal)
@@ -103,6 +105,7 @@ struct RubriqueBar: View {
             selectedStart = 0
             selectedEnd = totalDaysRange.upperBound
             updateChart()
+            viewModel.nameRubrique = storedRubrique
         }
         .onChange(of: minDate) { _, _ in
             selectedStart = 0
@@ -121,7 +124,7 @@ struct RubriqueBar: View {
             updateChart()
         }
     }
-
+    
     private func updateChart() {
         guard minDate <= maxDate else { return }
         let start = Calendar.current.date(byAdding: .day, value: Int(selectedStart), to: minDate)!

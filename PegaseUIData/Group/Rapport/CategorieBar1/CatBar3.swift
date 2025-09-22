@@ -123,7 +123,7 @@ struct CategorieBar1View1: View {
                             let formatter = DateFormatter()
                             formatter.dateStyle = .short
                             let date1 = formatter.string(from: date)
-                            return formatter.string(from: date)
+                            return date1
 
 //                            let today = Date()
 //                            let date = Calendar.current.date(byAdding: .day, value: Int(value), to: today)!

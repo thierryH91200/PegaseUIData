@@ -20,6 +20,11 @@ struct DGBarChart1Representable: NSViewRepresentable {
 
         let chartView = BarChartView()
         initChart(on: chartView)
+
+        chartView.chartDescription.enabled = false
+        initializeLegend(chartView.legend)
+        chartView.legend.enabled = true
+
         return chartView
     }
 
@@ -101,8 +106,8 @@ struct DGBarChart1Representable: NSViewRepresentable {
         setUpAxis(chartView: chartView)
         
         // MARK: Legend
-        initializeLegend(chartView.legend)
-        chartView.legend.enabled = false
+//        initializeLegend(chartView.legend)
+//        chartView.legend.enabled = false
         
         // MARK: Description
         let bounds                           = chartView.bounds
@@ -115,14 +120,21 @@ struct DGBarChart1Representable: NSViewRepresentable {
     
     func initializeLegend(_ legend: Legend) {
         
-        legend.horizontalAlignment           = .left
-        legend.verticalAlignment             = .top
-        legend.orientation                   = .vertical
-        legend.drawInside                    = true
-        legend.form                          = .square
-        legend.formSize                      = 9.0
-        legend.font                          = NSFont.systemFont(ofSize: CGFloat(11.0))
-        legend.xEntrySpace                   = 4.0
+        legend.horizontalAlignment = .left
+        legend.verticalAlignment = .top
+        legend.orientation = .vertical
+        legend.font = NSFont(name: "HelveticaNeue-Light", size: CGFloat(14.0))!
+        legend.textColor = NSColor.labelColor
+
+        
+//        legend.horizontalAlignment           = .left
+//        legend.verticalAlignment             = .top
+//        legend.orientation                   = .vertical
+//        legend.drawInside                    = true
+//        legend.form                          = .square
+//        legend.formSize                      = 9.0
+//        legend.font                          = NSFont.systemFont(ofSize: CGFloat(11.0))
+//        legend.xEntrySpace                   = 4.0
     }
     
     func setUpAxis(chartView: BarChartView) {

@@ -16,8 +16,6 @@ struct ModePaiementView: View {
 
     let transactions: [EntityTransaction]
 
-    @Binding var lowerValue: Double
-    @Binding var upperValue: Double
     @Binding var minDate: Date
     @Binding var maxDate: Date
 

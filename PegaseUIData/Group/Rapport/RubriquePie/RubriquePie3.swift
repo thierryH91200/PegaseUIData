@@ -16,22 +16,8 @@ struct RubriquePie: View {
     
     let transactions: [EntityTransaction]
 
-    @Binding var lowerValue: Double
-    @Binding var upperValue: Double
     @Binding var minDate: Date
     @Binding var maxDate: Date
-
-    private var firstDate: Date {
-        transactions.first?.dateOperation ?? Date()
-    }
-
-    private var lastDate: Date {
-        transactions.last?.dateOperation ?? Date()
-    }
-
-    private var durationDays: Double {
-        lastDate.timeIntervalSince(firstDate) / 86400
-    }
     
     private var totalDaysRange: ClosedRange<Double> {
         let cal = Calendar.current
@@ -43,12 +29,7 @@ struct RubriquePie: View {
     
     @State private var selectedStart: Double = 0
     @State private var selectedEnd: Double = 30
-
-    @State private var updateWorkItem: DispatchWorkItem?
     
-    @State private var lower: Double = 2
-    @State private var upper: Double = 10
-
     var body: some View {
         VStack {
             Text(String(localized:"Rubrique pie"))

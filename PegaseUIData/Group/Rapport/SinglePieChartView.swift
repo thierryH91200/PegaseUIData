@@ -38,8 +38,6 @@ struct SinglePieChartView: NSViewRepresentable {
         ], range: NSRange(location: 0, length: centerText.length))
         chartView.centerAttributedText = centerText
 
-        chartView.chartDescription.enabled = false
-        chartView.legend.enabled = true
         chartView.animate(xAxisDuration: 1.0, yAxisDuration: 1.0)
 
         return chartView
@@ -61,6 +59,15 @@ struct SinglePieChartView: NSViewRepresentable {
         nsView.data = data
         nsView.notifyDataSetChanged()
     }
+    
+    func initializeLegend(_ legend: Legend) {
+        legend.horizontalAlignment = .left
+        legend.verticalAlignment = .top
+        legend.orientation = .vertical
+        legend.font = NSFont(name: "HelveticaNeue-Light", size: CGFloat(14.0))!
+        legend.textColor = NSColor.labelColor
+    }
+
 }
 
 
