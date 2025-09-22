@@ -60,14 +60,24 @@ struct RubriqueBar: View {
                 storedRubrique = newValue
                 updateChart()
             }
-            
-            DGBarChart5Representable(
-                entries: viewModel.dataEntries,
-                title: String(localized: "Rubriqc Bar Chart"),
-                labels: viewModel.labels
-            )
-            .frame(width: 600, height: 400)
-            .padding()
+            if viewModel.dataEntries.isEmpty {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12).fill(Color.secondary.opacity(0.2))
+                    Text("No expenses over the period")
+                        .foregroundStyle(.secondary)
+                }
+                .frame(width: 600, height: 400)
+                .padding()
+            } else {
+                
+                DGBarChart5Representable(
+                    entries: viewModel.dataEntries,
+                    title: String(localized: "Rubriqc Bar Chart"),
+                    labels: viewModel.labels
+                )
+                .frame(width: 600, height: 400)
+                .padding()
+            }
             
             GroupBox(label: Label("Filter by period", systemImage: "calendar")) {
                 VStack(alignment: .leading, spacing: 8) {

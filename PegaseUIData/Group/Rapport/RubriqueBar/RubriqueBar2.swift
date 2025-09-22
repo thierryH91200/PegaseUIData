@@ -10,11 +10,15 @@ import Combine
 
 
 struct RubriqueBarView: View {
-    @Binding var isVisible: Bool
     
+    @EnvironmentObject private var currentAccountManager : CurrentAccountManager
+
+    @Binding var isVisible: Bool
     @State private var transactions: [EntityTransaction] = []
     @State private var minDate: Date = Date()
     @State private var maxDate: Date = Date()
+    
+    @State private var refresh = false
     
     var body: some View {
         RubriqueBar(
@@ -22,26 +26,38 @@ struct RubriqueBarView: View {
             minDate: $minDate,
             maxDate: $maxDate
         )
+        .id(refresh)
+
         .task {
             await performFalseTask()
         }
         .onAppear {
-            Task {
+            Task { @MainActor in
                 await loadTransactions()
-                transactions.sort { $0.dateOperation < $1.dateOperation }
-                minDate = transactions.first?.dateOperation ?? Date()
-                maxDate = transactions.last?.dateOperation ?? Date()
             }
         }
+        .onChange(of: currentAccountManager.currentAccountID) { old, new in
+            printTag("Chgt de compte détecté: \(String(describing: new))")
+            Task { @MainActor in
+                await loadTransactions()
+                withAnimation {
+                    refresh.toggle()
+                }
+            }
+        }
+
     }
     
     private func performFalseTask() async {
-        // Exécute une tâche asynchrone (par exemple, un délai)
+        // Exécuter une tâche asynchrone (par exemple, un délai)
         try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 seconde de délai
         isVisible = false
     }
+    
+    @MainActor
     private func loadTransactions() async {
         transactions = ListTransactionsManager.shared.getAllData()
+        minDate = transactions.first?.dateOperation ?? Date()
+        maxDate = transactions.last?.dateOperation ?? Date()
     }
-    
 }

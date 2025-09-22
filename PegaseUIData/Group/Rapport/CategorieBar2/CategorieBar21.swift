@@ -13,29 +13,42 @@ import Combine
 
 struct CategorieBar2View: View {
     
-    @Binding var isVisible: Bool
+    @EnvironmentObject private var currentAccountManager : CurrentAccountManager
+
     
+    @Binding var isVisible: Bool
     @State private var transactions: [EntityTransaction] = []
     @State private var minDate: Date = Date()
     @State private var maxDate: Date = Date()
-
     
+    @State private var refresh = false
+
     var body: some View {
         CategorieBar2View2(
             transactions: transactions,
             minDate: $minDate,
             maxDate: $maxDate
         )
+        .id(refresh)
+
         .task {
             await performFalseTask()
         }
         .onAppear {
             Task {
                 await loadTransactions()
-                minDate = transactions.first?.dateOperation ?? Date()
-                maxDate = transactions.last?.dateOperation ?? Date()
             }
         }
+        .onChange(of: currentAccountManager.currentAccountID) { old, new in
+            printTag("Chgt de compte détecté: \(String(describing: new))")
+            Task { @MainActor in
+                await loadTransactions()
+                withAnimation {
+                    refresh.toggle()
+                }
+            }
+        }
+
     }
     
     private func performFalseTask() async {
@@ -45,6 +58,8 @@ struct CategorieBar2View: View {
     }
     private func loadTransactions() async {
         transactions = ListTransactionsManager.shared.getAllData()
+        minDate = transactions.first?.dateOperation ?? Date()
+        maxDate = transactions.last?.dateOperation ?? Date()
     }
 
 }

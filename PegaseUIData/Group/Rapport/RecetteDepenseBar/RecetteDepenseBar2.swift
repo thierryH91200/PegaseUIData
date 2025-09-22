@@ -1,56 +1,90 @@
 ////
-////  RecetteDepenseBar2.swift
+////  RecetteDepenseBar1.swift
 ////  PegaseUIData
 ////
 ////  Created by Thierry hentic on 17/04/2025.
 ////
+//
 import SwiftUI
 import SwiftData
 import DGCharts
 import Combine
 
 
-struct RecetteDepenseBarView: View {
+class RecetteDepenseBarViewModel: ObservableObject {
+    @Published var recetteArray: [DataGraph] = []
+    @Published var depenseArray: [DataGraph] = []
     
-    @Binding var isVisible: Bool
+    @Published var dataEntriesDepense: [BarChartDataEntry] = []
+    @Published var dataEntriesRecette: [BarChartDataEntry] = []
     
-    @State private var transactions: [EntityTransaction] = []
+    @Published var currencyCode: String = Locale.current.currency?.identifier ?? "EUR"
+    
+    @Published var selectedCategories: Set<String> = []
+    
+    @Published var selectedStart: Double = 0
+    @Published var selectedEnd: Double = 30
 
-    @State private var minDate: Date = Date()
-    @State private var maxDate: Date = Date()
+    var chartView : BarChartView?
 
-    var body: some View {
-        RecetteDepenseView(
-            transactions: transactions,
-            minDate: $minDate,
-            maxDate: $maxDate
-        )
-            .task {
-                await performFalseTask()
-            }
-            .onAppear {
-                Task {
-                    await loadTransactions()
-                    transactions.sort { $0.dateOperation < $1.dateOperation }
-                    if let first = transactions.first?.dateOperation, let last = transactions.last?.dateOperation {
-                        minDate = first
-                        maxDate = last
-                    } else {
-                        let now = Date()
-                        minDate = now
-                        maxDate = now
-                    }
-                }
-            }
+    var listTransactions: [EntityTransaction] = []
+    
+    var totalValue: Double {
+        recetteArray.map { $0.value }.reduce(0, +)
     }
 
-    private func performFalseTask() async {
-        // Exécuter une tâche asynchrone (par exemple, un délai)
-        try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 seconde de délai
-        isVisible = false
+    var labels: [String] {
+        recetteArray.map { $0.name }
     }
-    
-    private func loadTransactions() async {
-        transactions = ListTransactionsManager.shared.getAllData()
+
+    let formatterPrice: NumberFormatter = {
+        let _formatter = NumberFormatter()
+        _formatter.locale = Locale.current
+        _formatter.numberStyle = .currency
+        return _formatter
+    }()
+
+    func updateChartData( startDate: Date, endDate: Date) {
+        
+        listTransactions = ListTransactionsManager.shared.getAllData(from:startDate, to:endDate)
+
+        // grouped and sum
+        self.recetteArray.removeAll()
+        self.depenseArray.removeAll()
+        var dataArray = [DataGraph]()
+        
+        for listTransaction in listTransactions {
+            
+            let value = listTransaction.amount
+            let id   = listTransaction.sectionIdentifier!
+            
+            let data  = DataGraph(name: id, value: value)
+            dataArray.append(data)
+        }
+        
+        let allKeys = Set<String>(dataArray.map { $0.name })
+        for key in allKeys {
+            var data = dataArray.filter({ $0.name == key && $0.value < 0 })
+            var sum = data.map({ $0.value }).reduce(0, +)
+            self.recetteArray.append(DataGraph(name: key, value: sum))
+            
+            data = dataArray.filter({ $0.name == key && $0.value >= 0 })
+            sum = data.map({ $0.value }).reduce(0, +)
+            self.depenseArray.append(DataGraph(name: key, value: sum))
+        }
+        
+        self.depenseArray = depenseArray.sorted(by: { $0.name < $1.name })
+        self.recetteArray = recetteArray.sorted(by: { $0.name < $1.name })
+        
+        let depenseEntries = depenseArray.enumerated().map { (idx, item) in
+            BarChartDataEntry(x: Double(idx), y: item.value)
+        }
+        let recetteEntries = recetteArray.enumerated().map { (idx, item) in
+            BarChartDataEntry(x: Double(idx), y: item.value)
+        }
+        DispatchQueue.main.async {
+            self.dataEntriesDepense = depenseEntries
+            self.dataEntriesRecette = recetteEntries
+        }
     }
 }

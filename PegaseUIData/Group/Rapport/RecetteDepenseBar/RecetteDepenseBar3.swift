@@ -33,17 +33,6 @@ struct RecetteDepenseView: View {
     
     @State private var chartView: BarChartView?
 
-    private var firstDate: Date {
-        transactions.first?.dateOperation ?? Date()
-    }
-
-    private var lastDate: Date {
-        transactions.last?.dateOperation ?? Date()
-    }
-
-    private var durationDays: Double {
-        lastDate.timeIntervalSince(firstDate) / 86400
-    }
     
     var body: some View {
         
@@ -53,21 +42,42 @@ struct RecetteDepenseView: View {
                 .padding()
             
             HStack {
-                DGBarChart4Representable(
-                    entries: viewModel.dataEntriesDepense,
-                    title: "Dépenses",
-                    labels: viewModel.depenseArray.map { $0.name }
-                )
+                if viewModel.dataEntriesDepense.isEmpty {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 12).fill(Color.secondary.opacity(0.2))
+                        Text("No expenses over the period")
+                            .foregroundStyle(.secondary)
+                    }
                     .frame(width: 600, height: 400)
                     .padding()
-                
-                DGBarChart4Representable(
-                    entries: viewModel.dataEntriesRecette,
-                    title: "Recettes",
-                    labels: viewModel.recetteArray.map { $0.name }
-                )
+                } else {
+                    
+                    DGBarChart4Representable(
+                        entries: viewModel.dataEntriesDepense,
+                        title: "Dépenses",
+                        labels: viewModel.depenseArray.map { $0.name }
+                    )
                     .frame(width: 600, height: 400)
                     .padding()
+                }
+                if viewModel.dataEntriesRecette.isEmpty {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 12).fill(Color.secondary.opacity(0.2))
+                        Text("No receipts over the period")
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(width: 600, height: 400)
+                    .padding()
+                } else {
+                    
+                    DGBarChart4Representable(
+                        entries: viewModel.dataEntriesRecette,
+                        title: "Recettes",
+                        labels: viewModel.recetteArray.map {$0.name}
+                    )
+                    .frame(width: 600, height: 400)
+                    .padding()
+                }
             }
             GroupBox(label: Label("Filter by period", systemImage: "calendar")) {
                 VStack(alignment: .leading, spacing: 8) {

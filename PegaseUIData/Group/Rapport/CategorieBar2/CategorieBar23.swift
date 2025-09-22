@@ -29,17 +29,6 @@ struct CategorieBar2View2: View {
     @Binding var minDate: Date
     @Binding var maxDate: Date
 
-    private var firstDate: Date {
-        transactions.first?.dateOperation ?? Date()
-    }
-
-    private var lastDate: Date {
-        transactions.last?.dateOperation ?? Date()
-    }
-
-    private var durationDays: Double {
-        lastDate.timeIntervalSince(firstDate) / 86400
-    }
     
     private var totalDaysRange: ClosedRange<Double> {
         let cal = Calendar.current
@@ -61,11 +50,24 @@ struct CategorieBar2View2: View {
                 .font(.headline)
                 .padding()
             
-            DGBarChart2Representable(entries: viewModel.dataEntries,
-                           labels: viewModel.labels,
-                           chartViewRef: $chartView)
-                .frame(width: 600, height: 400)
-                .padding()
+            HStack {
+                if viewModel.dataEntries.isEmpty {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 12).fill(Color.secondary.opacity(0.2))
+                        Text("No entries over the period")
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(width: 600, height: 400)
+                    .padding()
+                } else {
+                    DGBarChart2Representable(
+                        entries: viewModel.dataEntries,
+                        labels: viewModel.labels,
+                        chartViewRef: $chartView)
+                    .frame(width: 600, height: 400)
+                    .padding()
+                }
+            }
             GroupBox(label: Label("Filter by period", systemImage: "calendar")) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("From \(formattedDate(from: selectedStart)) to \(formattedDate(from: selectedEnd))")

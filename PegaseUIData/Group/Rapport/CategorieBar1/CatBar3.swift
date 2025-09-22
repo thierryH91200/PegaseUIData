@@ -15,28 +15,12 @@ import AppKit
 
 struct CategorieBar1View1: View {
     
-    @EnvironmentObject var currentAccountManager: CurrentAccountManager
     @StateObject private var viewModel = CategorieBar1ViewModel()
         
     let transactions: [EntityTransaction]
-    @State var filteredTransactions: [EntityTransaction] = []
     
-    @Binding var lowerValue: Double
-    @Binding var upperValue: Double
     @Binding var minDate: Date
     @Binding var maxDate: Date
-    
-    private var firstDate: Date {
-        transactions.first?.dateOperation ?? Date()
-    }
-    
-    private var lastDate: Date {
-        transactions.last?.dateOperation ?? Date()
-    }
-    
-    private var durationDays: Double {
-        lastDate.timeIntervalSince(firstDate) / 86400
-    }
     
     private var totalDaysRange: ClosedRange<Double> {
         let cal = Calendar.current
@@ -46,7 +30,6 @@ struct CategorieBar1View1: View {
         return 0...Double(max(0, days))
     }
 
-    
     @State private var selectedStart: Double = 0
     @State private var selectedEnd: Double = 30
     private let oneDay = 3600.0 * 24.0 // one day
@@ -98,8 +81,9 @@ struct CategorieBar1View1: View {
             }
             .padding(.bottom, 8)
             
-            DGBarChart1Representable(viewModel: viewModel,
-                                     entries: viewModel.dataEntries)
+            DGBarChart1Representable(
+                viewModel: viewModel,
+                entries: viewModel.dataEntries)
             .frame(width: 600, height: 400)
             .padding()
             .onAppear {
@@ -124,12 +108,6 @@ struct CategorieBar1View1: View {
                             formatter.dateStyle = .short
                             let date1 = formatter.string(from: date)
                             return date1
-
-//                            let today = Date()
-//                            let date = Calendar.current.date(byAdding: .day, value: Int(value), to: today)!
-//                            let formatter = DateFormatter()
-//                            formatter.dateStyle = .short
-//                            return formatter.string(from: date)
                         },
                         thumbSize: 24,
                         trackHeight: 6
@@ -145,8 +123,8 @@ struct CategorieBar1View1: View {
         .onAppear {
             
             let listTransactions = ListTransactionsManager.shared.getAllData()
-            minDate = listTransactions.first!.dateOperation
-            maxDate = listTransactions.last!.dateOperation
+            minDate = listTransactions.first?.dateOperation ?? Date()
+            maxDate = listTransactions.last?.dateOperation ?? Date()
             selectedEnd = maxDate.timeIntervalSince(minDate) / oneDay
 
             chartView = BarChartView()
@@ -166,21 +144,6 @@ struct CategorieBar1View1: View {
         }
     }
     
-    func applyFilter() {
-        guard !transactions.isEmpty else {
-            filteredTransactions = []
-            return
-        }
-        
-        let startDate = Calendar.current.date(byAdding: .day, value: Int(lowerValue), to: minDate) ?? minDate
-        let endDate = Calendar.current.date(byAdding: .day, value: Int(upperValue), to: minDate) ?? maxDate
-        
-        filteredTransactions = transactions.filter {
-            $0.dateOperation >= startDate && $0.dateOperation <= endDate
-        }
-    }
-
-
     private func updateChart() {
         let start = Calendar.current.date(byAdding: .day, value: Int(selectedStart), to: minDate)!
         let end = Calendar.current.date(byAdding: .day, value: Int(selectedEnd), to: minDate)!

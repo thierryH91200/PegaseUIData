@@ -12,14 +12,14 @@ import Combine
 
 
 struct RecetteDepensePie: View {
-
+    
     @StateObject private var viewModel = RecetteDepensePieViewModel()
-
+    
     let transactions: [EntityTransaction]
-
+    
     @Binding var minDate: Date
     @Binding var maxDate: Date
-
+    
     @State private var selectedStart: Double = 0
     @State private var selectedEnd: Double = 30
     
@@ -36,25 +36,47 @@ struct RecetteDepensePie: View {
             Text(String(localized:"Recette Dépense Pie"))
                 .font(.headline)
                 .padding()
-
+            
             HStack {
-                SinglePieChartView(entries: viewModel.dataEntriesDepense,
-                                   title: String(localized : "Expenses"))
+                if viewModel.dataEntriesDepense.isEmpty {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 12).fill(Color.secondary.opacity(0.2))
+                        Text("No expenses over the period")
+                            .foregroundStyle(.secondary)
+                    }
                     .frame(width: 600, height: 400)
                     .padding()
-
-                SinglePieChartView(entries: viewModel.dataEntriesRecette,
-                                   title: String(localized : "Receipts"))
+                } else {
+                    
+                    SinglePieChartView(entries: viewModel.dataEntriesDepense,
+                                       title: String(localized : "Expenses"))
                     .frame(width: 600, height: 400)
                     .padding()
+                }
+                if viewModel.dataEntriesRecette.isEmpty {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 12).fill(Color.secondary.opacity(0.2))
+                        Text("No receipts over the period")
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(width: 600, height: 400)
+                    .padding()
+                } else {
+                    
+                    SinglePieChartView(entries: viewModel.dataEntriesRecette,
+                                       title: String(localized : "Receipts"))
+                    .frame(width: 600, height: 400)
+                    .padding()
+                }
+                
             }
-
+            
             GroupBox(label: Label("Filter by period", systemImage: "calendar")) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("From \(formattedDate(from: selectedStart)) to \(formattedDate(from: selectedEnd))")
                         .font(.callout)
                         .foregroundColor(.secondary)
-
+                    
                     RangeSlider(
                         lowerValue: $selectedStart,
                         upperValue: $selectedEnd,
@@ -72,7 +94,7 @@ struct RecetteDepensePie: View {
                         trackHeight: 6
                     )
                     .frame(height: 30)
-
+                    
                     Spacer()
                 }
                 .padding(.top, 4)
@@ -105,19 +127,19 @@ struct RecetteDepensePie: View {
         // Ensure prerequisites are valid
         guard selectedStart <= selectedEnd else { return }
         guard minDate <= maxDate else { return }
-
+        
         let calendar = Calendar.current
         let startOfMin = calendar.startOfDay(for: minDate)
-
+        
         guard let start = calendar.date(byAdding: .day, value: Int(selectedStart), to: startOfMin),
               let endRaw = calendar.date(byAdding: .day, value: Int(selectedEnd), to: startOfMin) else {
             return
         }
-
+        
         // Clamp to maxDate then extend to end-of-day for inclusive range
         let endClamped = min(endRaw, maxDate)
         let endOfDay = calendar.date(byAdding: DateComponents(day: 1, second: -1), to: calendar.startOfDay(for: endClamped)) ?? endClamped
-
+        
         viewModel.updateChartData( startDate: start, endDate: endOfDay)
     }
     
@@ -130,7 +152,7 @@ struct RecetteDepensePie: View {
                                         to: minDate)!
         viewModel.updateChartData( startDate: start, endDate: end)
     }
-
+    
     func formattedDate(from dayOffset: Double) -> String {
         let date = Calendar.current.date(byAdding: .day, value: Int(dayOffset), to: minDate)!
         let formatter = DateFormatter()

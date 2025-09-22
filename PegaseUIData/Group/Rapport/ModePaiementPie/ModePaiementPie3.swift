@@ -19,22 +19,6 @@ struct ModePaiementView: View {
     @Binding var minDate: Date
     @Binding var maxDate: Date
 
-    private var firstDate: Date {
-        transactions.first?.dateOperation ?? Date()
-    }
-
-    private var lastDate: Date {
-        transactions.last?.dateOperation ?? Date()
-    }
-
-    private var durationDays: Double {
-        lastDate.timeIntervalSince(firstDate) / 86400
-    }
-    
-    private var totalDays: Int {
-        max(0, Calendar.current.dateComponents([.day], from: minDate, to: maxDate).day ?? 0)
-    }
-    
     private var totalDaysRange: ClosedRange<Double> {
         let cal = Calendar.current
         let start = cal.startOfDay(for: minDate)
