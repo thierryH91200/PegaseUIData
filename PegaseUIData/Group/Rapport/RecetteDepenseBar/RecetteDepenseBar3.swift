@@ -55,11 +55,19 @@ struct RecetteDepenseView: View {
                 .padding()
             
             HStack {
-                DGBarChart4Representable(entries: viewModel.dataEntriesDepense, title: "Dépenses", labels: viewModel.depenseArray.map { $0.name })
+                DGBarChart4Representable(
+                    entries: viewModel.dataEntriesDepense,
+                    title: "Dépenses",
+                    labels: viewModel.depenseArray.map { $0.name }
+                )
                     .frame(width: 600, height: 400)
                     .padding()
                 
-                DGBarChart4Representable(entries: viewModel.dataEntriesRecette, title: "Recettes", labels: viewModel.recetteArray.map { $0.name })
+                DGBarChart4Representable(
+                    entries: viewModel.dataEntriesRecette,
+                    title: "Recettes",
+                    labels: viewModel.recetteArray.map { $0.name }
+                )
                     .frame(width: 600, height: 400)
                     .padding()
             }

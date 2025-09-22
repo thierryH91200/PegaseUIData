@@ -59,15 +59,9 @@ class ModePaymentPieViewModel: ObservableObject {
 
         self.depenseArray = summarizeData(from: dataArrayExpense, maxCategories: 6)
         self.recetteArray = summarizeData(from: dataArrayIncome, maxCategories: 6)
-
-        print("[Pie] depenseArray: \(depenseArray.count), recetteArray: \(recetteArray.count)")
         
         self.dataEntriesDepense = pieChartEntries(from: depenseArray)
         self.dataEntriesRecette = pieChartEntries(from: recetteArray)
-        print("[Pie] dataEntriesDepense: \(dataEntriesDepense.count), dataEntriesRecette: \(dataEntriesRecette.count)")
-        for data in dataEntriesDepense {
-            print("[Pie] dataEntriesDepense: \(data)")
-        }
     }
     
     private func summarizeData(from array: [DataGraph], maxCategories: Int = 6) -> [DataGraph] {

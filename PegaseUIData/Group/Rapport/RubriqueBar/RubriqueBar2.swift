@@ -34,8 +34,9 @@ struct RubriqueBarView: View {
             Task {
                 await loadTransactions()
                 minDate = transactions.first?.dateOperation ?? Date()
-                lowerValue = minDate.timeIntervalSince1970
                 maxDate = transactions.last?.dateOperation ?? Date()
+
+                lowerValue = minDate.timeIntervalSince1970
                 upperValue = maxDate.timeIntervalSince1970
             }
         }

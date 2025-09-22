@@ -55,6 +55,5 @@ struct RecetteDepenseBarView: View {
     
     private func loadTransactions() async {
         transactions = ListTransactionsManager.shared.getAllData()
-        print("transactions.count ", transactions.count)
     }
 }
