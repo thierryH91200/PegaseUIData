@@ -11,7 +11,6 @@ import UniformTypeIdentifiers
 import PDFKit
 import Combine
 
-
 struct BankStatementView: View {
     
     @Binding var isVisible: Bool

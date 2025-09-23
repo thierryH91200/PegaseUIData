@@ -21,7 +21,6 @@ class RecetteDepensePieViewModel: ObservableObject {
 
     var listTransactions: [EntityTransaction] = []
 
-
     let formatterPrice: NumberFormatter = {
         let _formatter = NumberFormatter()
         _formatter.locale = Locale.current

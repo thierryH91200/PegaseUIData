@@ -29,6 +29,20 @@ PegaseUIData is a macOS application developed in **SwiftUI**, designed to **mana
 </p>
 </p>
 
+<p align="center">
+<img src="Doc/Capture8.png" alt="Charts">
+<p align="center">
+<em>Charts</em>
+</p>
+</p>
+
+<p align="center">
+<img src="Doc/Capture9.png" alt="Charts">
+<p align="center">
+<em>Charts</em>
+</p>
+</p>
+
 ## 🚀 Features
 
 - 📅 **Organizes transactions by year and month** with dynamic grouping.

@@ -28,7 +28,6 @@ struct RecetteDepenseBarView: View {
             maxDate: $maxDate
         )
         .id(refresh)
-        
         .task {
             await performFalseTask()
         }

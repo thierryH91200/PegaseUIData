@@ -15,7 +15,6 @@ struct CategorieBar2View: View {
     
     @EnvironmentObject private var currentAccountManager : CurrentAccountManager
 
-    
     @Binding var isVisible: Bool
     @State private var transactions: [EntityTransaction] = []
     @State private var minDate: Date = Date()
@@ -48,7 +47,6 @@ struct CategorieBar2View: View {
                 }
             }
         }
-
     }
     
     private func performFalseTask() async {
@@ -61,6 +59,5 @@ struct CategorieBar2View: View {
         minDate = transactions.first?.dateOperation ?? Date()
         maxDate = transactions.last?.dateOperation ?? Date()
     }
-
 }
 

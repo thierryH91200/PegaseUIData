@@ -61,8 +61,9 @@ struct ModePaiementView: View {
                     .frame(width: 600, height: 400)
                     .padding()
                 } else {
-                    SinglePieChartView(entries: viewModel.dataEntriesRecette,
-                                       title: String(localized : "Receipts"))
+                    SinglePieChartView(
+                        entries: viewModel.dataEntriesRecette,
+                        title: String(localized : "Receipts"))
                         .frame(width: 600, height: 400)
                         .padding()
                 }

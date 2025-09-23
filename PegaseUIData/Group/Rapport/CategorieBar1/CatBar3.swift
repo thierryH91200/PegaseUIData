@@ -81,13 +81,24 @@ struct CategorieBar1View1: View {
             }
             .padding(.bottom, 8)
             
-            DGBarChart1Representable(
-                viewModel: viewModel,
-                entries: viewModel.dataEntries)
-            .frame(width: 600, height: 400)
-            .padding()
-            .onAppear {
-                viewModel.updateAccount(minDate: minDate)
+            if viewModel.dataEntries.isEmpty {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12).fill(Color.secondary.opacity(0.2))
+                    Text("No entries over the period")
+                        .foregroundStyle(.secondary)
+                }
+                .frame(width: 600, height: 400)
+                .padding()
+            } else {
+                
+                DGBarChart1Representable(
+                    viewModel: viewModel,
+                    entries: viewModel.dataEntries)
+                .frame(width: 600, height: 400)
+                .padding()
+                .onAppear {
+                    viewModel.updateAccount(minDate: minDate)
+                }
             }
 
             GroupBox(label: Label("Filter by period", systemImage: "calendar")) {

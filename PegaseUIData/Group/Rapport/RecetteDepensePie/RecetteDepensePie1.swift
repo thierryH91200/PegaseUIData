@@ -28,7 +28,6 @@ struct RecetteDepensePieView: View {
             maxDate: $maxDate
         )
         .id(refresh)
-        
         .task {
             await performFalseTask()
         }
@@ -59,6 +58,5 @@ struct RecetteDepensePieView: View {
         minDate = transactions.first?.dateOperation ?? Date()
         maxDate = transactions.last?.dateOperation ?? Date()
     }
-    
 }
 
