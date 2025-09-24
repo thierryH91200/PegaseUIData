@@ -21,13 +21,6 @@ class ModePaymentPieViewModel: ObservableObject {
     
     var listTransactions: [EntityTransaction] = []
 
-    var labelsExpense: [String] {
-        depenseArray.map { $0.name }
-    }
-    var labelsIncome: [String] {
-        recetteArray.map { $0.name }
-    }
-
     let formatterPrice: NumberFormatter = {
         let _formatter = NumberFormatter()
         _formatter.locale = Locale.current

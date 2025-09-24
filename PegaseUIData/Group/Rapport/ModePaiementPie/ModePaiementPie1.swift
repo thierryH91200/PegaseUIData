@@ -49,7 +49,6 @@ struct ModePaiementPieView: View {
                 }
             }
         }
-        
     }
     
     private func performFalseTask() async {

@@ -26,14 +26,13 @@ struct RecetteDepenseView: View {
         let days = cal.dateComponents([.day], from: start, to: end).day ?? 0
         return 0...Double(max(0, days))
     }
-
+    @State private var data: BarChartData?
     @State private var selectedStart: Double = 0
     @State private var selectedEnd: Double = 30
     private let oneDay = 3600.0 * 24.0 // one day
     
     @State private var chartView: BarChartView?
 
-    
     var body: some View {
         
         VStack {
@@ -42,24 +41,27 @@ struct RecetteDepenseView: View {
                 .padding()
             
             HStack {
-                if viewModel.dataEntriesDepense.isEmpty {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 12).fill(Color.secondary.opacity(0.2))
-                        Text("No expenses over the period")
-                            .foregroundStyle(.secondary)
-                    }
-                    .frame(width: 600, height: 400)
-                    .padding()
-                } else {
-                    
-                    DGBarChart4Representable(
-                        entries: viewModel.dataEntriesDepense,
-                        title: "Dépenses",
-                        labels: viewModel.depenseArray.map { $0.name }
-                    )
-                    .frame(width: 600, height: 400)
-                    .padding()
-                }
+//                if viewModel.dataEntriesDepense.isEmpty {
+//                    ZStack {
+//                        RoundedRectangle(cornerRadius: 12).fill(Color.secondary.opacity(0.2))
+//                        Text("No expenses over the period")
+//                            .foregroundStyle(.secondary)
+//                    }
+//                    .frame(width: 600, height: 400)
+//                    .padding()
+//                } else {
+//                    
+//                    DGBarChart4Representable(
+//                        entries: viewModel.dataEntriesDepense,
+//                        title: "Dépenses",
+//                        labels: viewModel.depenseArray.map { $0.name },
+//                        data: data,
+//                        lowerValue: $selectedStart,
+//                        upperValue: $selectedEnd
+//                    )
+//                    .frame(width: 600, height: 400)
+//                    .padding()
+//                }
                 if viewModel.dataEntriesRecette.isEmpty {
                     ZStack {
                         RoundedRectangle(cornerRadius: 12).fill(Color.secondary.opacity(0.2))
@@ -73,7 +75,11 @@ struct RecetteDepenseView: View {
                     DGBarChart4Representable(
                         entries: viewModel.dataEntriesRecette,
                         title: "Recettes",
-                        labels: viewModel.recetteArray.map {$0.name}
+                        labels: viewModel.recetteArray.map {$0.name},
+                        data: data,
+                        lowerValue: $selectedStart,
+                        upperValue: $selectedEnd
+
                     )
                     .frame(width: 600, height: 400)
                     .padding()
@@ -102,6 +108,12 @@ struct RecetteDepenseView: View {
                         trackHeight: 6
                     )
                     .frame(height: 30)
+                    SummaryView(
+                        planned: 0,
+                        engaged: 0,
+                        executed: 0
+                    )
+
                     
                     Spacer()
                 }
@@ -145,14 +157,30 @@ struct RecetteDepenseView: View {
             viewModel.selectedEnd = newEnd
             updateChart()
         }
-
     }
+    
     private func updateChart() {
         guard minDate <= maxDate else { return }
         let start = Calendar.current.date(byAdding: .day, value: Int(selectedStart), to: minDate)!
         let end = Calendar.current.date(byAdding: .day, value: Int(selectedEnd), to: minDate)!
         guard start <= end else { return }
-        viewModel.updateChartData(startDate: start, endDate: end)
+        let result = viewModel.computeChartData(startDate: start, endDate: end)
+        viewModel.depenseArray = result.expense
+        viewModel.recetteArray = result.income
+        if let chartView = chartView {
+            data = viewModel.applyData(expense: result.expense, income: result.income, to: chartView)
+        }
+
+        let depenseEntries = result.expense.enumerated().map { (idx, item) in
+            BarChartDataEntry(x: Double(idx), y: item.value)
+        }
+        let recetteEntries = result.income.enumerated().map { (idx, item) in
+            BarChartDataEntry(x: Double(idx), y: item.value)
+        }
+        DispatchQueue.main.async {
+            viewModel.dataEntriesDepense = depenseEntries
+            viewModel.dataEntriesRecette = recetteEntries
+        }
     }
 
     func formattedDate(from dayOffset: Double) -> String {

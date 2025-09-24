@@ -94,7 +94,12 @@ struct RecetteDepensePie: View {
                         trackHeight: 6
                     )
                     .frame(height: 30)
-                    
+                    SummaryView(
+                        planned: 0,
+                        engaged: 0,
+                        executed: 0
+                    )
+
                     Spacer()
                 }
                 .padding(.top, 4)
