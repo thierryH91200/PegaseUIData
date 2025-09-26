@@ -64,7 +64,7 @@ struct CategorieBar2View2: View {
                         entries: viewModel.dataEntries,
                         labels: viewModel.labels,
                         chartViewRef: $chartView)
-                    .frame(width: 600, height: 400)
+                    .frame(maxWidth: .infinity,maxHeight: 400)
                     .padding()
                 }
             }

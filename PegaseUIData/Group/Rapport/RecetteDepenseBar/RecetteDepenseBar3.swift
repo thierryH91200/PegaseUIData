@@ -41,27 +41,6 @@ struct RecetteDepenseView: View {
                 .padding()
             
             HStack {
-//                if viewModel.dataEntriesDepense.isEmpty {
-//                    ZStack {
-//                        RoundedRectangle(cornerRadius: 12).fill(Color.secondary.opacity(0.2))
-//                        Text("No expenses over the period")
-//                            .foregroundStyle(.secondary)
-//                    }
-//                    .frame(width: 600, height: 400)
-//                    .padding()
-//                } else {
-//                    
-//                    DGBarChart4Representable(
-//                        entries: viewModel.dataEntriesDepense,
-//                        title: "Dépenses",
-//                        labels: viewModel.depenseArray.map { $0.name },
-//                        data: data,
-//                        lowerValue: $selectedStart,
-//                        upperValue: $selectedEnd
-//                    )
-//                    .frame(width: 600, height: 400)
-//                    .padding()
-//                }
                 if viewModel.dataEntriesRecette.isEmpty {
                     ZStack {
                         RoundedRectangle(cornerRadius: 12).fill(Color.secondary.opacity(0.2))
@@ -71,7 +50,6 @@ struct RecetteDepenseView: View {
                     .frame(width: 600, height: 400)
                     .padding()
                 } else {
-                    
                     DGBarChart4Representable(
                         entries: viewModel.dataEntriesRecette,
                         title: "Recettes",
@@ -79,9 +57,8 @@ struct RecetteDepenseView: View {
                         data: data,
                         lowerValue: $selectedStart,
                         upperValue: $selectedEnd
-
                     )
-                    .frame(width: 600, height: 400)
+                    .frame(maxWidth: .infinity,maxHeight: 400)
                     .padding()
                 }
             }
@@ -113,8 +90,6 @@ struct RecetteDepenseView: View {
                         engaged: 0,
                         executed: 0
                     )
-
-                    
                     Spacer()
                 }
                 .padding(.top, 4)

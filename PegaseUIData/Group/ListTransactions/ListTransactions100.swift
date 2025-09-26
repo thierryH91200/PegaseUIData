@@ -40,7 +40,9 @@ struct ListTransactionsView100: View {
             #endif
             
             Divider()
-            ListTransactions200(isVisible: $isVisible, selectedTransactions: $selectedTransactions)
+            ListTransactions200(
+                isVisible: $isVisible,
+                selectedTransactions: $selectedTransactions)
                 .padding()
                 .task {
                     await performFalseTask()
@@ -163,7 +165,6 @@ struct ListTransactions200: View {
     
     var body: some View {
         mainContent
-        
             .onChange(of: colorManager.colorChoix) { old, new in
             }
         

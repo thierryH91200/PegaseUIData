@@ -25,7 +25,7 @@ class RecetteDepenseBarViewModel: ObservableObject {
     @Published var selectedStart: Double = 0
     @Published var selectedEnd: Double = 30
 
-    var chartView : BarChartView?
+//    var chartView : BarChartView?
 
     var listTransactions: [EntityTransaction] = []
     
@@ -83,9 +83,9 @@ class RecetteDepenseBarViewModel: ObservableObject {
             return nil
         }
 
-        let groupSpace = 0.2
-        let barSpace = 0.00
-        let barWidth = 0.4
+        let groupSpace = 0.06
+        let barSpace = 0.02
+        let barWidth = 0.45
 
         // Build entries and dynamic labels from section identifiers
         var entriesExpense = [BarChartDataEntry]()
@@ -114,12 +114,12 @@ class RecetteDepenseBarViewModel: ObservableObject {
         var dataSet2: BarChartDataSet
 
         if chartView.data == nil || chartView.data?.dataSetCount != 2 {
-            var label = String(localized: "Expense")
+            var label = String(localized: "Expenses")
             dataSet1 = BarChartDataSet(entries: entriesExpense, label: label)
             dataSet1.colors = [#colorLiteral(red: 1, green: 0.1474981606, blue: 0, alpha: 1)]
             dataSet1.valueFormatter = DefaultValueFormatter(formatter: formatterPrice)
 
-            label = String(localized: "Income")
+            label = String(localized: "Incomes")
             dataSet2 = BarChartDataSet(entries: entriesIncome, label: label)
             dataSet2.colors = [#colorLiteral(red: 0.01680417731, green: 0.1983509958, blue: 1, alpha: 1)]
             dataSet2.valueFormatter = DefaultValueFormatter(formatter: formatterPrice)
@@ -143,14 +143,18 @@ class RecetteDepenseBarViewModel: ObservableObject {
         let startYear = 0
         let endYear = startYear + groupCount
 
-        chartView.xAxis.axisMinimum = Double(startYear)
-        chartView.xAxis.axisMaximum = Double(endYear)
-        chartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: xLabels)
-
+//        chartView.xAxis.axisMinimum = Double(startYear)
+//        chartView.xAxis.axisMaximum = Double(endYear)
+//        chartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: xLabels)
+        data.groupBars(fromX: Double(startYear), groupSpace: groupSpace, barSpace: barSpace)
+        
         chartView.data = data
+//        chartView.data.barWidth = barWidth
+        chartView.gridBackgroundColor = NSUIColor.white
+
         DispatchQueue.main.async {
-            data.notifyDataChanged()
-            chartView.notifyDataSetChanged()
+//            data.notifyDataChanged()
+//            chartView.notifyDataSetChanged()
         }
         return data
     }

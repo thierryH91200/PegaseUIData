@@ -8,13 +8,48 @@
 import SwiftUI
 import SwiftData
 import DGCharts
+import Combine
 
-struct DGBarChart1Representable: NSViewRepresentable {
+
+struct DGBarChart7Representable: NSViewRepresentable {
     
     @ObservedObject var viewModel: CategorieBar1ViewModel
     let entries: [BarChartDataEntry]
     
     let hourSeconds = 3600.0 * 24.0 // one day
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(parent: self)
+    }
+
+    final class Coordinator: NSObject, ChartViewDelegate {
+        var parent: DGBarChart7Representable
+        var isUpdating = false
+
+        init(parent: DGBarChart7Representable) {
+            self.parent = parent
+        }
+
+        public func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
+            let index = Int(highlight.x)
+            let entryX = entry.x
+            let dataSetIndex = Int(highlight.dataSetIndex)
+            
+            printTag("index: \(index), entryX: \(entryX), dataSetIndex: \(dataSetIndex) ")
+//            let firstDate = parent.lowerValue
+            
+            if parent.entries.indices.contains(index) {
+                print("Selected \(parent.entries[index])")
+            } else {
+                print("Selected index out of range: \(index)")
+            }
+        }
+        
+        public func chartValueNothingSelected(_ chartView: ChartViewBase)
+        {
+        }
+    }
+
 
     func makeNSView(context: Context) -> BarChartView {
 

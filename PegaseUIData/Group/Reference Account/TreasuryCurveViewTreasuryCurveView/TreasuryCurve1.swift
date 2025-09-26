@@ -34,7 +34,11 @@ struct TreasuryCurveView: View {
                 executed: executed
             )
             
-            TreasuryCurve(allTransactions: $allTransactions)
+            TreasuryCurve(isVisible: $isVisible,
+                          executed: $executed,
+                          planned: $planned,
+                          engaged: $engaged,
+                          allTransactions: $allTransactions)
                 .task {
                     await performFalseTask()
                 }

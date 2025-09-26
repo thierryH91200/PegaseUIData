@@ -91,10 +91,10 @@ struct CategorieBar1View1: View {
                 .padding()
             } else {
                 
-                DGBarChart1Representable(
+                DGBarChart7Representable(
                     viewModel: viewModel,
                     entries: viewModel.dataEntries)
-                .frame(width: 600, height: 400)
+                .frame(maxWidth: .infinity,maxHeight: 400)
                 .padding()
                 .onAppear {
                     viewModel.updateAccount(minDate: minDate)

@@ -28,6 +28,66 @@ struct DGLineChartRepresentable: NSViewRepresentable {
     @State var lastDate: TimeInterval = 0.0
     
     let hourSeconds = 3600.0 * 24.0 // one day
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(parent: self)
+    }
+
+    final class Coordinator: NSObject, ChartViewDelegate {
+        var parent: DGLineChartRepresentable
+        var isUpdating = false
+
+        init(parent: DGLineChartRepresentable) {
+            self.parent = parent
+        }
+
+        public func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
+            
+//            let x = highlight.x
+//            let intervalSince1970 = (x * hourSeconds) + firstDate
+//            let dateFormatter = DateFormatter()
+//            dateFormatter.dateStyle = .short
+//            dateFormatter.timeStyle = .none
+//            
+//            let date = Date(timeIntervalSince1970: intervalSince1970 )
+//            let datePointage = date.noon
+
+            
+            var startDate = Date()
+            var endDate = Date()
+            
+            let index = Int(highlight.x)
+            let entryX = entry.x
+            let dataSetIndex = Int(highlight.dataSetIndex)
+            
+            printTag("index: \(index), entryX: \(entryX), dataSetIndex: \(dataSetIndex) ")
+            let lowerValue = parent.lowerValue
+            
+            let transactions = ListTransactionsManager.shared.getAllData()
+            let minDate = transactions.first?.dateOperation ?? Date()
+            let maxDate = transactions.last?.dateOperation ?? Date()
+            
+            if let date = Calendar.current.date(byAdding: .day, value: Int(lowerValue), to: minDate) {
+                print(date) // ✅ Date obtenue
+                
+                startDate = date.startOfMonth()
+                endDate = date.endOfMonth()
+            }
+            
+            let transactions1 = ListTransactionsManager.shared.getAllData(from: startDate, to:endDate)
+            
+            if parent.entries.indices.contains(index) {
+                print("Selected \(parent.entries[index])")
+            } else {
+                print("Selected index out of range: \(index)")
+            }
+        }
+        
+        public func chartValueNothingSelected(_ chartView: ChartViewBase)
+        {
+        }
+    }
+
 
     func makeNSView(context: Context) -> LineChartView {
         let chartView = LineChartView()
@@ -245,7 +305,6 @@ struct DGLineChartRepresentable: NSViewRepresentable {
         
         guard !transactions.isEmpty else { return }
 
-//        var dataGraph : [DataTresorerie] = []
         var dataTresorerie = DataTresorerie()
         var dataGraph : [DataTresorerie] = []
 

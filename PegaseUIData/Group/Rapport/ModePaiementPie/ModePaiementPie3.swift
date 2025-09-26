@@ -46,7 +46,7 @@ struct ModePaiementView: View {
                     .frame(width: 600, height: 400)
                     .padding()
                 } else {
-                    SinglePieChartView(entries: viewModel.dataEntriesDepense,
+                    SinglePie1ChartView(entries: viewModel.dataEntriesDepense,
                                        title: String(localized : "Expenses"))
                         .frame(width: 600, height: 400)
                         .padding()
@@ -61,7 +61,7 @@ struct ModePaiementView: View {
                     .frame(width: 600, height: 400)
                     .padding()
                 } else {
-                    SinglePieChartView(
+                    SinglePie1ChartView(
                         entries: viewModel.dataEntriesRecette,
                         title: String(localized : "Receipts"))
                         .frame(width: 600, height: 400)

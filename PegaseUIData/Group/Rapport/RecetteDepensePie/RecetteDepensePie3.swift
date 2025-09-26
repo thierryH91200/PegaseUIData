@@ -48,7 +48,7 @@ struct RecetteDepensePie: View {
                     .padding()
                 } else {
                     
-                    SinglePieChartView(entries: viewModel.dataEntriesDepense,
+                    SinglePie2ChartView(entries: viewModel.dataEntriesDepense,
                                        title: String(localized : "Expenses"))
                     .frame(width: 600, height: 400)
                     .padding()
@@ -63,7 +63,7 @@ struct RecetteDepensePie: View {
                     .padding()
                 } else {
                     
-                    SinglePieChartView(entries: viewModel.dataEntriesRecette,
+                    SinglePie2ChartView(entries: viewModel.dataEntriesRecette,
                                        title: String(localized : "Receipts"))
                     .frame(width: 600, height: 400)
                     .padding()
@@ -99,7 +99,6 @@ struct RecetteDepensePie: View {
                         engaged: 0,
                         executed: 0
                     )
-
                     Spacer()
                 }
                 .padding(.top, 4)

@@ -12,6 +12,12 @@ import AppKit
 
 
 struct TreasuryCurve: View {
+    
+    @Binding var isVisible: Bool
+    @Binding var executed: Double
+    @Binding var planned: Double
+    @Binding var engaged: Double
+
 
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
@@ -22,8 +28,13 @@ struct TreasuryCurve: View {
 
     @State private var lowerValue: Double = 0
     @State private var upperValue: Double = 0
+    
     @State private var minDate: Date = Date()
     @State private var maxDate: Date = Date()
+    
+    @State private var selectedStart: Double = 0
+    @State private var selectedEnd: Double = 30
+
     
     @State private var lower: Double = 2
     @State private var upper: Double = 10
@@ -36,6 +47,13 @@ struct TreasuryCurve: View {
 
     private var totalAmount: Double {
         filteredTransactions.reduce(0) { $0 + $1.amount }
+    }
+    private var totalDaysRange: ClosedRange<Double> {
+        let cal = Calendar.current
+        let start = cal.startOfDay(for: minDate)
+        let end = cal.startOfDay(for: maxDate)
+        let days = cal.dateComponents([.day], from: start, to: end).day ?? 0
+        return 0...Double(max(0, days))
     }
 
     var body: some View {
@@ -64,20 +82,29 @@ struct TreasuryCurve: View {
                             .foregroundColor(.secondary)
                         
                         RangeSlider(
-                            lowerValue: $lower,
-                            upperValue: $upper,
-                            totalRange: 0...30,
+                            lowerValue: $selectedStart,
+                            upperValue: $selectedEnd,
+                            totalRange: totalDaysRange,
                             valueLabel: { value in
-                                let today = Date()
-                                let date = Calendar.current.date(byAdding: .day, value: Int(value), to: today)!
+                                let cal = Calendar.current
+                                let base = cal.startOfDay(for: minDate)
+                                let date = cal.date(byAdding: .day, value: Int(value), to: base) ?? base
                                 let formatter = DateFormatter()
                                 formatter.dateStyle = .short
-                                return formatter.string(from: date)
+                                let date1 = formatter.string(from: date)
+                                return date1
                             },
                             thumbSize: 24,
                             trackHeight: 6
                     )
                         .frame(height: 50)
+                        .onAppear {
+                            // Initialize slider bounds based on available data
+                            selectedStart = 0
+                            selectedEnd = totalDaysRange.upperBound
+                            updateChart()
+                        }
+
                         .onChange(of: lowerValue) { _, _ in applyFilter() }
                         .onChange(of: upperValue) { _, _ in applyFilter() }
 
@@ -85,11 +112,12 @@ struct TreasuryCurve: View {
                             .font(.footnote)
                             .foregroundColor(.secondary)
                             .padding(.top, 4)
-
-                        List(filteredTransactions, id: \.uuid) { transaction in
-                            Text(transaction.sousOperations.first?.libelle ?? "N/A")
-                        }
-                        .frame(height: 150)
+                        ListTransactionsView100(
+                            isVisible: $isVisible,
+                            executed: $executed,
+                            planned: $planned,
+                            engaged: $engaged)
+                        .frame(height: 4000)
                     }
                     .padding(.top, 4)
                     .padding(.horizontal)
@@ -99,6 +127,14 @@ struct TreasuryCurve: View {
     }
 
     // MARK: - Helpers
+    private func updateChart() {
+        guard minDate <= maxDate else { return }
+        let start = Calendar.current.date(byAdding: .day, value: Int(selectedStart), to: minDate)!
+        let end = Calendar.current.date(byAdding: .day, value: Int(selectedEnd), to: minDate)!
+        guard start <= end else { return }
+        viewModel.updateChartData()
+    }
+
 
     private func refreshData(for account: EntityAccount?) {
         guard let account = account else {

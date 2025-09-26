@@ -75,7 +75,7 @@ struct RubriqueBar: View {
                     title: String(localized: "Rubriqc Bar Chart"),
                     labels: viewModel.labels
                 )
-                .frame(width: 600, height: 400)
+                .frame(maxWidth: .infinity,maxHeight: 400)
                 .padding()
             }
             
