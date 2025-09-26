@@ -20,13 +20,22 @@ struct CategorieBar2View: View {
     @State private var minDate: Date = Date()
     @State private var maxDate: Date = Date()
     
+    @Binding var executed: Double
+    @Binding var planned: Double
+    @Binding var engaged: Double
+
+    
     @State private var refresh = false
 
     var body: some View {
         CategorieBar2View2(
             transactions: transactions,
             minDate: $minDate,
-            maxDate: $maxDate
+            maxDate: $maxDate,
+            isVisible: $isVisible,
+            executed: $executed,
+            planned: $planned,
+            engaged: $engaged
         )
         .id(refresh)
 

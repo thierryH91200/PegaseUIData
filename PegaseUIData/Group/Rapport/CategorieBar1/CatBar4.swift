@@ -17,6 +17,8 @@ struct DGBarChart7Representable: NSViewRepresentable {
     let entries: [BarChartDataEntry]
     
     let hourSeconds = 3600.0 * 24.0 // one day
+    let chartView = BarChartView()
+
     
     func makeCoordinator() -> Coordinator {
         Coordinator(parent: self)
@@ -52,8 +54,8 @@ struct DGBarChart7Representable: NSViewRepresentable {
 
 
     func makeNSView(context: Context) -> BarChartView {
-
-        let chartView = BarChartView()
+        
+        chartView.delegate = context.coordinator
         initChart(on: chartView)
 
         chartView.chartDescription.enabled = false

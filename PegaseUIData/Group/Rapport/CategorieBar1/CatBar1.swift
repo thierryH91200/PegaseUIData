@@ -25,16 +25,15 @@ struct CategorieBar1View: View {
     @State private var refresh = false
 
     var body: some View {
-        
-        SummaryView(
-            planned: planned,
-            engaged: engaged,
-            executed: executed
-        )
-        
-        CategorieBar1View1(transactions: transactions,
-                           minDate: $minDate,
-                           maxDate: $maxDate
+                
+        CategorieBar1View1(
+            transactions: transactions,
+            minDate: $minDate,
+            maxDate: $maxDate,
+            isVisible: $isVisible,
+            executed: $executed,
+            planned: $planned,
+            engaged: $engaged
         )
         .id(refresh)
 
@@ -71,3 +70,4 @@ struct CategorieBar1View: View {
         maxDate = transactions.last?.dateOperation ?? Date()
     }
 }
+

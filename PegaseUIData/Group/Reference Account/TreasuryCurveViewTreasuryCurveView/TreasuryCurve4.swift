@@ -61,7 +61,7 @@ struct DGLineChartRepresentable: NSViewRepresentable {
             let dataSetIndex = Int(highlight.dataSetIndex)
             
             printTag("index: \(index), entryX: \(entryX), dataSetIndex: \(dataSetIndex) ")
-            let lowerValue = parent.lowerValue
+            let lowerValue = parent.firstDate
             
             let transactions = ListTransactionsManager.shared.getAllData()
             let minDate = transactions.first?.dateOperation ?? Date()

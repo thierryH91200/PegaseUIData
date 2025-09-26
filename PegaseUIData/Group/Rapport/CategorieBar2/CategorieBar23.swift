@@ -28,8 +28,12 @@ struct CategorieBar2View2: View {
 
     @Binding var minDate: Date
     @Binding var maxDate: Date
-
     
+    @Binding var isVisible: Bool
+    @Binding var executed: Double
+    @Binding var planned: Double
+    @Binding var engaged: Double
+
     private var totalDaysRange: ClosedRange<Double> {
         let cal = Calendar.current
         let start = cal.startOfDay(for: minDate)
@@ -94,6 +98,12 @@ struct CategorieBar2View2: View {
                 }
                 .padding(.top, 4)
                 .padding(.horizontal)
+                ListTransactionsView100(
+                    isVisible: $isVisible,
+                    executed: $executed,
+                    planned: $planned,
+                    engaged: $engaged)
+
             }
             .padding()
 

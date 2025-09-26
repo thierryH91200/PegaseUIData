@@ -391,13 +391,19 @@ struct DetailContainer: View {
             String(localized: "Notes",table: "Menu")                    : { isVisible in AnyView(NotesView(isVisible                  : isVisible)) },
             
             // Rapport
-            String(localized: "Category Bar1",table: "Menu")            : { isVisible in
+            String(localized: "Category Bar1",table: "Menu")
+            : { isVisible in
                 AnyView(CategorieBar1View(isVisible : isVisible,
                                           executed  : $executed,
                                           planned   : $planned,
                                           engaged   : $engaged)) },
-
-            String(localized: "Category Bar2",table: "Menu")            : { isVisible in AnyView(CategorieBar2View(isVisible  : isVisible)) },
+            String(localized: "Category Bar2",table: "Menu")
+            : { isVisible in
+                AnyView(CategorieBar2View(isVisible : isVisible,
+                                          executed  : $executed,
+                                          planned   : $planned,
+                                          engaged   : $engaged)) },
+            
             String(localized: "Payment method" ,table: "Menu")          : { isVisible in AnyView(ModePaiementPieView(isVisible : isVisible)) },
             String(localized: "Recipe / Expense Bar",table: "Menu")     : { isVisible in AnyView(RecetteDepenseBarView(isVisible     : isVisible)) },
             String(localized: "Recipe / Expense Pie",table: "Menu")     : { isVisible in AnyView(RecetteDepensePieView(isVisible     : isVisible)) },

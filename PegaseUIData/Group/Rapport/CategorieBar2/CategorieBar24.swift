@@ -39,7 +39,38 @@ struct DGBarChart2Representable: NSViewRepresentable {
         return fmt
     }()
     
+    func makeCoordinator() -> Coordinator {
+        Coordinator(parent: self)
+    }
+
+    final class Coordinator: NSObject, ChartViewDelegate {
+        var parent: DGBarChart2Representable
+        var isUpdating = false
+        
+        init(parent: DGBarChart2Representable) {
+            self.parent = parent
+        }
+        
+        public func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
+            
+            let index = Int(highlight.x)
+            let entryX = entry.x
+            let dataSetIndex = Int(highlight.dataSetIndex)
+            
+            printTag("index: \(index), entryX: \(entryX), dataSetIndex: \(dataSetIndex) ")
+
+        }
+        
+        public func chartValueNothingSelected(_ chartView: ChartViewBase)
+        {
+        }
+
+    }
+
+    
     func makeNSView(context: Context) -> BarChartView {
+        
+        chartView.delegate = context.coordinator
         chartView.noDataText = String(localized:"No chart data available.")
         
         let dataSet = BarChartDataSet(entries: entries, label: "Categorie Bar1")
