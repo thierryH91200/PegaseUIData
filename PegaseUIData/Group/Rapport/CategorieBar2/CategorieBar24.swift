@@ -58,7 +58,6 @@ struct DGBarChart2Representable: NSViewRepresentable {
             let dataSetIndex = Int(highlight.dataSetIndex)
             
             printTag("index: \(index), entryX: \(entryX), dataSetIndex: \(dataSetIndex) ")
-
         }
         
         public func chartValueNothingSelected(_ chartView: ChartViewBase)

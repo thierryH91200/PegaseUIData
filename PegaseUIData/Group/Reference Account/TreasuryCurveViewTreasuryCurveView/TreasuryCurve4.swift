@@ -23,6 +23,9 @@ struct DGLineChartRepresentable: NSViewRepresentable {
 
     @State private var selectedType: String = "Tous"
     
+    let chartView = LineChartView()
+
+    
     @State var listTransactions : [EntityTransaction] = []
     @State var firstDate: TimeInterval = 0.0
     @State var lastDate: TimeInterval = 0.0
@@ -33,64 +36,8 @@ struct DGLineChartRepresentable: NSViewRepresentable {
         Coordinator(parent: self)
     }
 
-    final class Coordinator: NSObject, ChartViewDelegate {
-        var parent: DGLineChartRepresentable
-        var isUpdating = false
-
-        init(parent: DGLineChartRepresentable) {
-            self.parent = parent
-        }
-
-        public func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
-            
-//            let x = highlight.x
-//            let intervalSince1970 = (x * hourSeconds) + firstDate
-//            let dateFormatter = DateFormatter()
-//            dateFormatter.dateStyle = .short
-//            dateFormatter.timeStyle = .none
-//            
-//            let date = Date(timeIntervalSince1970: intervalSince1970 )
-//            let datePointage = date.noon
-
-            
-            var startDate = Date()
-            var endDate = Date()
-            
-            let index = Int(highlight.x)
-            let entryX = entry.x
-            let dataSetIndex = Int(highlight.dataSetIndex)
-            
-            printTag("index: \(index), entryX: \(entryX), dataSetIndex: \(dataSetIndex) ")
-            let lowerValue = parent.firstDate
-            
-            let transactions = ListTransactionsManager.shared.getAllData()
-            let minDate = transactions.first?.dateOperation ?? Date()
-            let maxDate = transactions.last?.dateOperation ?? Date()
-            
-            if let date = Calendar.current.date(byAdding: .day, value: Int(lowerValue), to: minDate) {
-                print(date) // ✅ Date obtenue
-                
-                startDate = date.startOfMonth()
-                endDate = date.endOfMonth()
-            }
-            
-            let transactions1 = ListTransactionsManager.shared.getAllData(from: startDate, to:endDate)
-            
-            if parent.entries.indices.contains(index) {
-                print("Selected \(parent.entries[index])")
-            } else {
-                print("Selected index out of range: \(index)")
-            }
-        }
-        
-        public func chartValueNothingSelected(_ chartView: ChartViewBase)
-        {
-        }
-    }
-
-
     func makeNSView(context: Context) -> LineChartView {
-        let chartView = LineChartView()
+        chartView.delegate = context.coordinator
         initGraph(on: chartView)
         return chartView
     }
@@ -108,33 +55,131 @@ struct DGLineChartRepresentable: NSViewRepresentable {
     
     func updateAccount () {
         // Charger toutes les transactions d'abord
-        let allTransactions = ListTransactionsManager.shared.getAllData()
+        var allTransactions = ListTransactionsManager.shared.getAllData()
 
+        // Si aucune transaction, vider les listes et sortir
         guard !allTransactions.isEmpty else {
             DispatchQueue.main.async {
                 self.listTransactions = []
+                self.viewModel.listTransactions = []
             }
             return
         }
 
-        let firstOpDate = Calendar.current.startOfDay(for: allTransactions.first!.dateOperation)
-        let lastOpDate = Calendar.current.startOfDay(for: allTransactions.last!.dateOperation)
+        // S'assurer d'un ordre chronologique cohérent (par datePointage)
+//        allTransactions.sort { $0.datePointage < $1.datePointage }
 
-        self.firstDate = firstOpDate.timeIntervalSince1970
-        self.lastDate = lastOpDate.timeIntervalSince1970
+        let calendar = Calendar.current
 
-        // Appliquer la plage sélectionnée
-        let startDate = Calendar.current.date(byAdding: .day, value: Int(self.viewModel.selectedStart), to: firstOpDate)!
-        let endDate = Calendar.current.date(byAdding: .day, value: Int(self.viewModel.selectedEnd), to: firstOpDate)!
+        // Base temporelle cohérente avec updateChartData (minuit du premier/dernier datePointage)
+        let firstPointageStart = calendar.startOfDay(for: allTransactions.first!.datePointage)
+        let lastPointageStart  = calendar.startOfDay(for: allTransactions.last!.datePointage)
 
-        let filteredTransactions = allTransactions.filter {
-            $0.dateOperation >= startDate && $0.dateOperation <= endDate
+        self.firstDate = firstPointageStart.timeIntervalSince1970
+        self.lastDate  = lastPointageStart.timeIntervalSince1970
+
+        // Nombre maximum de jours couverts par les données
+        let maxIndex = calendar.dateComponents([.day], from: firstPointageStart, to: lastPointageStart).day ?? 0
+
+        // Offsets demandés par l'UI, bornés pour rester dans la plage
+        let selectedStartOffset = max(0, Int(self.viewModel.selectedStart))
+        
+        let requestedEnd: Int
+        if self.viewModel.selectedEnd.isFinite {
+            let clamped = max(0, min(self.viewModel.selectedEnd, Double(maxIndex)))
+            requestedEnd = Int(clamped)
+        } else {
+            requestedEnd = maxIndex
+        }
+        
+        let selectedEndOffset = min(maxIndex, max(selectedStartOffset, requestedEnd))
+
+        // Calcul des bornes de dates (sans force unwrap)
+        guard let startDate = calendar.date(byAdding: .day, value: selectedStartOffset, to: firstPointageStart),
+              let endDate   = calendar.date(byAdding: .day, value: selectedEndOffset, to: firstPointageStart) else {
+            return
         }
 
+        // Filtrage sur datePointage (cohérent avec l'axe X)
+        let filteredTransactions = allTransactions.filter {
+            $0.datePointage >= startDate && $0.datePointage <= endDate
+        }
+
+        // Mise à jour des listes (locale + viewModel) sur le main thread
         DispatchQueue.main.async {
             self.listTransactions = filteredTransactions
+            self.viewModel.listTransactions = filteredTransactions
         }
     }
+    
+    final class Coordinator: NSObject, ChartViewDelegate {
+        var parent: DGLineChartRepresentable
+        var isUpdating = false
+        
+        init(parent: DGLineChartRepresentable) {
+            self.parent = parent
+        }
+
+        public func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
+            // Ensure we have transactions to reference
+            let transactions = parent.viewModel.listTransactions
+            guard !transactions.isEmpty else { return }
+
+            // Prevent re-entrant updates that can suppress UI refreshes
+            if isUpdating { return }
+            isUpdating = true
+            defer { isUpdating = false }
+
+            // Use the same base time as the chart (midnight of the first day shown)
+            let calendar = Calendar.current
+            let baseTime: TimeInterval
+            if parent.firstDate > 0 {
+                baseTime = parent.firstDate
+            } else {
+                // Fallback if not yet set (align with updateChartData logic: use datePointage)
+                let firstPointage = calendar.startOfDay(for: transactions.first!.datePointage)
+                baseTime = firstPointage.timeIntervalSince1970
+            }
+
+            // Convert the highlighted x (day offset) back to a concrete date
+            let selectedTime = baseTime + (Double(highlight.x) * parent.hourSeconds)
+            let selectedDate = Date(timeIntervalSince1970: selectedTime)
+
+            // Compute the full day range for the selected date
+            let startDate = selectedDate.yesterday
+            let endDate   = selectedDate.tomorrow
+
+            // Fetch filtered transactions for that day range
+            let selectTransactions = ListTransactionsManager.shared.getAllData(from: startDate, to: endDate)
+             print("selectTransactions :\(selectTransactions.count)")
+
+            // Apply model and chart updates on the main thread so SwiftUI refreshes the list
+            DispatchQueue.main.async {
+                // Update the model that drives SwiftUI
+                self.parent.viewModel.listTransactions = selectTransactions
+                // Keep the local mirror in sync for consistency
+                self.parent.listTransactions = selectTransactions
+
+                // Expand the visible range; updateChartData will clamp as needed
+                self.parent.viewModel.selectedStart = 0
+                self.parent.viewModel.selectedEnd = Double.greatestFiniteMagnitude
+
+                // Refresh the chart immediately
+                if let lineChart = chartView as? LineChartView {
+                    self.parent.updateChartData(for: lineChart)
+                    self.parent.setData(on: lineChart, with: self.parent.viewModel.dataGraph)
+                }
+            }
+
+            // Optional logging
+            // print("Selected x=\(highlight.x), date=\(selectedDate)")
+        }
+        
+        public func chartValueNothingSelected(_ chartView: ChartViewBase)
+        {
+        }
+    }
+
 
     func addLimit( on nsView: LineChartView, index: Double, x: Double) {
         
@@ -325,10 +370,24 @@ struct DGLineChartRepresentable: NSViewRepresentable {
 //        let minIndex = 0
         let maxIndex = Int((maxValue - minValue))
         
-        let grouped = Dictionary(grouping: transactions, by: { calendar.startOfDay(for: $0.datePointage) })
+        // Clamp selection safely to avoid Int overflow and keep within data bounds
+        let selectedStartOffset: Int = {
+            let s = viewModel.selectedStart
+            guard s.isFinite else { return 0 }
+            if s <= 0 { return 0 }
+            if s >= Double(maxIndex) { return maxIndex }
+            return Int(floor(s))
+        }()
 
-        let selectedStartOffset = Int(viewModel.selectedStart)
-        let selectedEndOffset = min(Int(viewModel.selectedEnd), maxIndex)
+        let selectedEndOffset: Int = {
+            let e = viewModel.selectedEnd
+            if !e.isFinite { return maxIndex }
+            if e <= Double(selectedStartOffset) { return selectedStartOffset }
+            if e >= Double(maxIndex) { return maxIndex }
+            return Int(floor(e))
+        }()
+
+        let grouped = Dictionary(grouping: transactions, by: { calendar.startOfDay(for: $0.datePointage) })
 
         for offset in selectedStartOffset...selectedEndOffset {
             let dayDate = Date(timeIntervalSince1970: firstDate + Double(offset) * hourSeconds)
@@ -353,7 +412,7 @@ struct DGLineChartRepresentable: NSViewRepresentable {
             prevu  = 0.0
             engage = 0.0
 
-            printTag("n°\(offset)    \(soldePrevu)  \(soldeEngage)  \(soldeRealise)", flag: true)
+//            printTag("n°\(offset)    \(soldePrevu)  \(soldeEngage)  \(soldeRealise)", flag: true)
             
             dataTresorerie = DataTresorerie(
                 x            : Double(offset),
@@ -392,3 +451,4 @@ struct DGLineChartRepresentable: NSViewRepresentable {
 //    }
 
 }
+

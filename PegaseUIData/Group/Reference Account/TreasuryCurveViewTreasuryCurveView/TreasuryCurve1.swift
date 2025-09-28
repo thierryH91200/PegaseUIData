@@ -12,11 +12,8 @@ import DGCharts
 
 struct TreasuryCurveView: View {
     
-    @Binding var isVisible: Bool
-    @Binding var executed: Double
-    @Binding var planned: Double
-    @Binding var engaged: Double
-    
+    @Binding var dashboard: DashboardState
+
     @State private var transactions: [EntityTransaction] = []
     @State private var allTransactions: [EntityTransaction] = []
 
@@ -29,15 +26,10 @@ struct TreasuryCurveView: View {
         VStack(spacing: 0) {
 
             SummaryView(
-                planned: planned,
-                engaged: engaged,
-                executed: executed
+                dashboard: $dashboard
             )
             
-            TreasuryCurve(isVisible: $isVisible,
-                          executed: $executed,
-                          planned: $planned,
-                          engaged: $engaged,
+            TreasuryCurve(dashboard: $dashboard,
                           allTransactions: $allTransactions)
                 .task {
                     await performFalseTask()
@@ -59,6 +51,6 @@ struct TreasuryCurveView: View {
     private func performFalseTask() async {
         // Exécuter une tâche asynchrone (par exemple, un délai)
         try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 seconde de délai
-        isVisible = false
+        dashboard.isVisible = false
     }
 }

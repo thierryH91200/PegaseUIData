@@ -1,4 +1,3 @@
-
 //
 //  Untitled 2.swift
 //  PegaseUIData
@@ -14,21 +13,18 @@ struct ListTransactionsView100: View {
     @Environment(\.modelContext) private var modelContext
     
     @State private var selectedTransactions: Set<UUID> = []
-    @Binding var isVisible: Bool
-    @Binding var executed: Double
-    @Binding var planned: Double
-    @Binding var engaged: Double
-    
+
+    @Binding var dashboard: DashboardState
+
     private var transactions: [EntityTransaction] { ListTransactionsManager.shared.listTransactions }
-    
+//    private var transactions: [EntityTransaction] { ListTransactionsViewModel.listTransactions }
+
     var body: some View {
         
         VStack(spacing: 0) {
             
             SummaryView(
-                planned: planned,
-                engaged: engaged,
-                executed: executed
+                dashboard: $dashboard
             )
             
             #if DEBUG
@@ -41,7 +37,8 @@ struct ListTransactionsView100: View {
             
             Divider()
             ListTransactions200(
-                isVisible: $isVisible,
+                dashboard: $dashboard,
+                isVisible: $dashboard.isVisible,
                 selectedTransactions: $selectedTransactions)
                 .padding()
                 .task {
@@ -80,9 +77,9 @@ struct ListTransactionsView100: View {
     }
     
     private func updateSummary() {
-        self.executed = calculateExecuted()
-        self.engaged  = self.executed + calculateEngaged()
-        self.planned  = self.engaged + self.calculatePlanned()
+        dashboard.executed = calculateExecuted()
+        dashboard.engaged  = dashboard.executed + calculateEngaged()
+        dashboard.planned  = dashboard.engaged + self.calculatePlanned()
     }
     
     @MainActor
@@ -98,7 +95,7 @@ struct ListTransactionsView100: View {
     private func performFalseTask() async {
         // Exécuter une tâche asynchrone (par exemple, un délai)
         try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 seconde de délai
-        isVisible = true
+        dashboard.isVisible = true
     }
     
     @MainActor
@@ -143,6 +140,7 @@ struct ListTransactions200: View {
     
     private var transactions: [EntityTransaction] { ListTransactionsManager.shared.listTransactions }
     
+    @Binding var dashboard: DashboardState
     @Binding var isVisible: Bool
     @Binding var selectedTransactions: Set<UUID>
     @State private var information: AttributedString = ""
@@ -216,7 +214,6 @@ struct ListTransactions200: View {
             .onReceive(NotificationCenter.default.publisher(for: .pasteSelectedTransactions)) { _ in
                 if let targetAccount = CurrentAccountManager.shared.getAccount() {
                     
-                    
                     for transaction in clipboardTransactions {
                         
                         let status = StatusManager.shared.find(name : transaction.status!.name)
@@ -274,7 +271,12 @@ struct ListTransactions200: View {
     }
     
     private var summaryViewSection: some View {
-        SummaryView( planned: soldeReel, engaged: soldeFinal, executed: soldeBanque )
+        dashboard.planned = soldeReel
+        dashboard.engaged = soldeFinal
+        dashboard.executed = soldeBanque
+        return SummaryView(
+            dashboard: $dashboard
+        )
             .frame(maxWidth: .infinity, maxHeight: 100)
     }
     
@@ -554,3 +556,4 @@ extension Notification.Name {
     static let cutSelectedTransactions = Notification.Name("cutSelectedTransactions")
     static let pasteSelectedTransactions = Notification.Name("pasteSelectedTransactions")
 }
+

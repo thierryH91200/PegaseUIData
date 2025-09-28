@@ -24,7 +24,6 @@ struct DGBarChart4Representable: NSViewRepresentable {
     
     @State var chartView : BarChartView = BarChartView()
 
-    
     let formatterPrice: NumberFormatter = {
         let _formatter = NumberFormatter()
         _formatter.locale = Locale.current
@@ -42,6 +41,49 @@ struct DGBarChart4Representable: NSViewRepresentable {
         Coordinator(parent: self)
     }
 
+    
+    func makeNSView(context: Context) -> BarChartView {
+        
+        chartView.delegate = context.coordinator
+        chartView.noDataText = String(localized:"No chart data available.")
+        
+        initChart()
+        let dataSet = BarChartDataSet(entries: entries, label: "Categorie Bar1")
+        dataSet.colors = ChartColorTemplates.colorful()
+        
+        let data = BarChartData(dataSet: dataSet)
+        chartView.data = data
+
+        return chartView
+    }
+    
+    func updateNSView(_ chartView: BarChartView, context: Context) {
+        context.coordinator.parent = self
+
+        // Keep axis config in sync
+        chartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: labels)
+        chartView.xAxis.labelCount = labels.count
+        chartView.xAxis.granularity = 1
+        chartView.xAxis.drawGridLinesEnabled = false
+
+        if entries.isEmpty {
+            chartView.data = nil
+            chartView.fitBars = true
+
+            DispatchQueue.main.async {
+                chartView.notifyDataSetChanged()
+            }
+            return
+        }
+
+        chartView.data = data
+        chartView.fitBars = true
+        DispatchQueue.main.async {
+            data?.notifyDataChanged()
+            chartView.notifyDataSetChanged()
+        }
+    }
+    
     final class Coordinator: NSObject, ChartViewDelegate {
         var parent: DGBarChart4Representable
         var isUpdating = false
@@ -88,48 +130,7 @@ struct DGBarChart4Representable: NSViewRepresentable {
         {
         }
     }
-    
-    func makeNSView(context: Context) -> BarChartView {
-        
-        chartView.delegate = context.coordinator
-        chartView.noDataText = String(localized:"No chart data available.")
-        
-        initChart()
-        let dataSet = BarChartDataSet(entries: entries, label: "Categorie Bar1")
-        dataSet.colors = ChartColorTemplates.colorful()
-        
-        let data = BarChartData(dataSet: dataSet)
-        chartView.data = data
 
-        return chartView
-    }
-    
-    func updateNSView(_ chartView: BarChartView, context: Context) {
-        context.coordinator.parent = self
-
-        // Keep axis config in sync
-        chartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: labels)
-        chartView.xAxis.labelCount = labels.count
-        chartView.xAxis.granularity = 1
-        chartView.xAxis.drawGridLinesEnabled = false
-
-        if entries.isEmpty {
-            chartView.data = nil
-            chartView.fitBars = true
-
-            DispatchQueue.main.async {
-                chartView.notifyDataSetChanged()
-            }
-            return
-        }
-
-        chartView.data = data
-        chartView.fitBars = true
-        DispatchQueue.main.async {
-            data?.notifyDataChanged()
-            chartView.notifyDataSetChanged()
-        }
-    }
         
     private func initChart() {
             

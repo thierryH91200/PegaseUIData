@@ -81,9 +81,11 @@ struct ContentView100: View {
 
     @State private var selectedColor: String? = "United"
 
-    @State private var executed: Double = 0.0
-    @State private var planned: Double = 0.0
-    @State private var engaged: Double = 0.0
+//    @State private var executed: Double = 0.0
+//    @State private var planned: Double = 0.0
+//    @State private var engaged: Double = 0.0
+//    
+    @State private var dashboard: DashboardState = DashboardState()
       
     var body: some View {
         HStack
@@ -94,12 +96,15 @@ struct ContentView100: View {
             }
             content :
             {
-                DetailContainer(selection2: $selection2, isVisible: $isVisible, selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode, executed: $executed, planned: $planned, engaged: $engaged)
+                DetailContainer(selection2: $selection2,
+                                selectedTransaction: $selectedTransaction,
+                                isCreationMode: $isCreationMode,
+                                dashboard: $dashboard)
                     .navigationSplitViewColumnWidth( min: 150, ideal: 800)
             }
             detail :
             {
-                if isVisible
+                if dashboard.isVisible
                 {
                     OperationDialog()
                 }
@@ -245,7 +250,7 @@ struct ContentView100: View {
                 } label: {
                     Label("Choose the color", systemImage: "paintpalette")
                 }
-                if isVisible == false {
+                if dashboard.isVisible == false {
 //                    ListTransactions(isVisible: $isVisible, selectedTransaction: $selectedTransaction, isCreationMode: $isCreationMode)
 //                        .environmentObject(colorManager)
                 }
@@ -360,29 +365,29 @@ struct SidebarContainer: View {
     }
 }
 
+struct DashboardState {
+    var isVisible: Bool = true
+    var executed: Double = 0
+    var planned: Double = 0
+    var engaged: Double = 0
+}
+
 struct DetailContainer: View {
     @Binding var selection2: String?
-    @Binding var isVisible: Bool
     @Binding var selectedTransaction: EntityTransaction?
     @Binding var isCreationMode: Bool
-    @Binding var executed: Double
-    @Binding var planned: Double
-    @Binding var engaged: Double
+
+    @Binding var dashboard: DashboardState
 
     var detailViews: [String: (Binding<Bool>) -> AnyView] {
         [
             String(localized: "List of transactions",table: "Menu")     : { isVisible in
                 AnyView(ListTransactionsView100(
-                    isVisible : isVisible,
-                    executed      : $executed,
-                    planned       : $planned,
-                    engaged       : $engaged)) },
+                    dashboard: $dashboard)) },
             
             String(localized: "Cash flow curve",table: "Menu")          : { isVisible in
-                AnyView(TreasuryCurveView(isVisible : isVisible,
-                                          executed  : $executed,
-                                          planned   : $planned,
-                                          engaged   : $engaged)) },
+                AnyView(TreasuryCurveView(
+                    dashboard: $dashboard)) },
 
             String(localized: "Bank website",table: "Menu")             : { isVisible in
                 AnyView(BankWebsiteView(isVisible            : isVisible,)) },
@@ -393,19 +398,14 @@ struct DetailContainer: View {
             // Rapport
             String(localized: "Category Bar1",table: "Menu")
             : { isVisible in
-                AnyView(CategorieBar1View(isVisible : isVisible,
-                                          executed  : $executed,
-                                          planned   : $planned,
-                                          engaged   : $engaged)) },
+                AnyView(CategorieBar1View(
+                    dashboard: $dashboard)) },
             String(localized: "Category Bar2",table: "Menu")
             : { isVisible in
-                AnyView(CategorieBar2View(isVisible : isVisible,
-                                          executed  : $executed,
-                                          planned   : $planned,
-                                          engaged   : $engaged)) },
-            
+                AnyView(CategorieBar2View(
+                    dashboard: $dashboard)) },
             String(localized: "Payment method" ,table: "Menu")          : { isVisible in AnyView(ModePaiementPieView(isVisible : isVisible)) },
-            String(localized: "Recipe / Expense Bar",table: "Menu")     : { isVisible in AnyView(RecetteDepenseBarView(isVisible     : isVisible)) },
+            String(localized: "Recipe / Expense Bar",table: "Menu")     : { isVisible in AnyView(RecetteDepenseBarView(isVisible: isVisible, dashboard: $dashboard)) },
             String(localized: "Recipe / Expense Pie",table: "Menu")     : { isVisible in AnyView(RecetteDepensePieView(isVisible     : isVisible)) },
             String(localized: "Rubric Bar",table: "Menu")               : { isVisible in AnyView(RubriqueBarView(isVisible           : isVisible)) },
             String(localized: "Rubric Pie" ,table: "Menu")              : { isVisible in AnyView(RubriquePieView(isVisible           : isVisible)) },
@@ -421,7 +421,7 @@ struct DetailContainer: View {
     var body: some View {
         VStack {
             if let detailView = localizedDetailView(for: selection2) {
-                detailView($isVisible)
+                detailView($dashboard.isVisible)
             } else {
                 Text("Content for Sidebar 2 \(selection2 ?? "")")
             }
@@ -469,3 +469,4 @@ struct Sidebar2A: View {
         .environment(\.defaultMinListRowHeight, 18) // hauteur min liste réduite
     }
 }
+

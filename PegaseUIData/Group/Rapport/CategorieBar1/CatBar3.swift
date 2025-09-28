@@ -22,10 +22,7 @@ struct CategorieBar1View1: View {
     @Binding var minDate: Date
     @Binding var maxDate: Date
     
-    @Binding var isVisible: Bool
-    @Binding var executed: Double
-    @Binding var planned: Double
-    @Binding var engaged: Double
+    @Binding var dashboard: DashboardState
 
     
     private var totalDaysRange: ClosedRange<Double> {
@@ -133,11 +130,7 @@ struct CategorieBar1View1: View {
                 }
                 .padding(.top, 4)
                 .padding(.horizontal)
-                ListTransactionsView100(
-                    isVisible: $isVisible,
-                    executed: $executed,
-                    planned: $planned,
-                    engaged: $engaged)
+                ListTransactionsView100(dashboard: $dashboard)
 
             }
             .padding()
@@ -207,3 +200,4 @@ struct CategorieBar1View1: View {
         return nil
     }
 }
+

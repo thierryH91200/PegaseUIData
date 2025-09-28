@@ -15,6 +15,7 @@ struct RecetteDepenseBarView: View {
     @EnvironmentObject private var currentAccountManager : CurrentAccountManager
 
     @Binding var isVisible: Bool
+    @Binding var dashboard: DashboardState
     @State private var transactions: [EntityTransaction] = []
     @State private var minDate: Date = Date()
     @State private var maxDate: Date = Date()
@@ -24,6 +25,7 @@ struct RecetteDepenseBarView: View {
     var body: some View {
         RecetteDepenseView(
             transactions: transactions,
+            dashboard: $dashboard,
             minDate: $minDate,
             maxDate: $maxDate
         )

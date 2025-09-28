@@ -15,15 +15,11 @@ struct CategorieBar2View: View {
     
     @EnvironmentObject private var currentAccountManager : CurrentAccountManager
 
-    @Binding var isVisible: Bool
+    @Binding var dashboard: DashboardState
+
     @State private var transactions: [EntityTransaction] = []
     @State private var minDate: Date = Date()
     @State private var maxDate: Date = Date()
-    
-    @Binding var executed: Double
-    @Binding var planned: Double
-    @Binding var engaged: Double
-
     
     @State private var refresh = false
 
@@ -32,11 +28,7 @@ struct CategorieBar2View: View {
             transactions: transactions,
             minDate: $minDate,
             maxDate: $maxDate,
-            isVisible: $isVisible,
-            executed: $executed,
-            planned: $planned,
-            engaged: $engaged
-        )
+            dashboard: $dashboard)
         .id(refresh)
 
         .task {
@@ -61,7 +53,7 @@ struct CategorieBar2View: View {
     private func performFalseTask() async {
         // Exécute une tâche asynchrone (par exemple, un délai)
         try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 seconde de délai
-        isVisible = false
+        dashboard.isVisible = false
     }
     private func loadTransactions() async {
         transactions = ListTransactionsManager.shared.getAllData()

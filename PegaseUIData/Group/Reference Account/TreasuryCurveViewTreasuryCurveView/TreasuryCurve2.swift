@@ -13,11 +13,7 @@ import AppKit
 
 struct TreasuryCurve: View {
     
-    @Binding var isVisible: Bool
-    @Binding var executed: Double
-    @Binding var planned: Double
-    @Binding var engaged: Double
-
+    @Binding var dashboard: DashboardState
 
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
@@ -113,10 +109,7 @@ struct TreasuryCurve: View {
                             .foregroundColor(.secondary)
                             .padding(.top, 4)
                         ListTransactionsView100(
-                            isVisible: $isVisible,
-                            executed: $executed,
-                            planned: $planned,
-                            engaged: $engaged)
+                            dashboard: $dashboard)
                         .frame(height: 4000)
                     }
                     .padding(.top, 4)

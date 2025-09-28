@@ -19,14 +19,14 @@ protocol ListManaging {
 
 }
 
-final class ListTransactionsManager: ListManaging {
+final class ListTransactionsManager: ListManaging, ObservableObject {
     
     @EnvironmentObject var formState: TransactionFormState
 
     static let shared = ListTransactionsManager()
     
-    var listTransactions : [EntityTransaction] = []
-    
+    @Published var listTransactions = [EntityTransaction]()
+
     var ascending = false
     
     var modelContext: ModelContext? {
@@ -42,7 +42,6 @@ final class ListTransactionsManager: ListManaging {
         listTransactions.removeAll()
     }
 
-    
     @discardableResult
     func createTransactions(formState: TransactionFormState) -> EntityTransaction {
         // Create entityTransaction
@@ -258,24 +257,22 @@ final class ListTransactionsManager: ListManaging {
     
 }
 
-extension ListTransactionsManager {
-}
-class ListTransactionsViewModel: ObservableObject {
-    @Published var account: EntityAccount
-    @Published var listTransactions: [EntityTransaction]
-    private let manager: ListTransactionsManager
-    
-    init(account: EntityAccount, manager: ListTransactionsManager) {
-        self.account = account
-        self.manager = manager
-        self.listTransactions = []
-        
-        loadInitialData()
-    }
-
-    private func loadInitialData() {
-        listTransactions = manager.getAllData()
-    }
-
-}
-
+//class ListTransactionsViewModel: ObservableObject {
+//    
+//    @Published var account: EntityAccount
+//    @Published var listTransactions: [EntityTransaction]
+//    private let manager: ListTransactionsManager
+//    
+//    init(account: EntityAccount, manager: ListTransactionsManager) {
+//        self.account = account
+//        self.manager = manager
+//        self.listTransactions = []
+//        
+//        loadInitialData()
+//    }
+//
+//    private func loadInitialData() {
+//        listTransactions = manager.getAllData()
+//    }
+//}
+//

@@ -15,6 +15,8 @@ struct RecetteDepenseView: View {
     @StateObject private var viewModel = RecetteDepenseBarViewModel()
 
     let transactions: [EntityTransaction]
+    @Binding var dashboard: DashboardState
+
 
     @Binding var minDate: Date
     @Binding var maxDate: Date
@@ -85,11 +87,7 @@ struct RecetteDepenseView: View {
                         trackHeight: 6
                     )
                     .frame(height: 30)
-                    SummaryView(
-                        planned: 0,
-                        engaged: 0,
-                        executed: 0
-                    )
+                    SummaryView(dashboard: $dashboard  )
                     Spacer()
                 }
                 .padding(.top, 4)

@@ -27,16 +27,14 @@ struct GradientText: View {
 // Lorsque le statut est Pointé, la date de pointage doit être celle indiquée sur le relevé et le montant n'est plus modifiable.
 
 struct SummaryView: View {
-    var planned: Double
-    var engaged: Double
-    var executed: Double
+    @Binding var dashboard: DashboardState
     
     var body: some View {
         HStack(spacing: 0) {
             
             VStack {
                 Text("Final balance")
-                Text(String(format: "%.2f €", planned))
+                Text(String(format: "%.2f €", dashboard.planned))
                     .font(.title)
                     .foregroundColor(.green)
             }
@@ -46,7 +44,7 @@ struct SummaryView: View {
 
             VStack {
                 Text("Actual balance")
-                Text(String(format: "%.2f €", engaged))
+                Text(String(format: "%.2f €", dashboard.engaged))
                     .font(.title)
                     .foregroundColor(.orange)
             }
@@ -56,7 +54,7 @@ struct SummaryView: View {
             
             VStack {
                 Text("Bank balance")
-                Text(String(format: "%.2f €", executed))
+                Text(String(format: "%.2f €", dashboard.executed))
                     .font(.title)
                     .foregroundColor(.blue)
             }
