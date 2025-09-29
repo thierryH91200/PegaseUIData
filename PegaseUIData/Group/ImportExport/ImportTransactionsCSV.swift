@@ -91,7 +91,12 @@ struct ImportTransactionFileView: View {
                     HStack(alignment: .top, spacing: 0) {
                         TableView(data: csvData)
                     }
-                    .frame(minWidth: CGFloat((csvData.first?.count ?? 1) * 200), alignment: .leading)
+                    .frame(minWidth: {
+                        let columns = max(1, csvData.first?.count ?? 1)
+                        let cellWidth: CGFloat = 120
+                        let computed = CGFloat(columns) * cellWidth
+                        return computed.isFinite ? min(computed, 20000) : cellWidth
+                    }(), alignment: .leading)
                     .background(Color.clear)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -359,3 +364,4 @@ extension DateFormatter {
         return df
     }()
 }
+

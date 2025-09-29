@@ -17,6 +17,10 @@ import SwiftData
 import DGCharts
 import Combine
 
+extension Notification.Name {
+    static let treasuryChartNeedsRefresh = Notification.Name("TreasuryChartNeedsRefresh")
+}
+
 struct DGLineChartRepresentable: NSViewRepresentable {
     @ObservedObject var viewModel: TresuryLineViewModel
     let entries: [ChartDataEntry]
@@ -25,8 +29,6 @@ struct DGLineChartRepresentable: NSViewRepresentable {
     
     let chartView = LineChartView()
 
-    
-    @State var listTransactions : [EntityTransaction] = []
     @State var firstDate: TimeInterval = 0.0
     @State var lastDate: TimeInterval = 0.0
     
@@ -44,6 +46,8 @@ struct DGLineChartRepresentable: NSViewRepresentable {
 
     func updateNSView(_ nsView: LineChartView, context: Context) {
         DispatchQueue.main.async {
+            // When a day is selected on the chart, avoid recomputing lists/graph
+            if self.viewModel.isDaySelectionActive { return }
             self.updateAccount()
             let oldGraph = self.viewModel.dataGraph
             self.updateChartData(for: nsView)
@@ -53,15 +57,48 @@ struct DGLineChartRepresentable: NSViewRepresentable {
         }
     }
     
+    static func dismantleNSView(_ nsView: LineChartView, coordinator: Coordinator) {
+        let parent = coordinator.parent
+        DispatchQueue.main.async {
+            // Restore full, unfiltered dataset when leaving the Treasury curve screen
+            let allTransactions = ListTransactionsManager.shared.getAllData(from: nil, to: nil, ascending: true)
+            var didChange = false
+            if ListTransactionsManager.shared.listTransactions != allTransactions {
+                ListTransactionsManager.shared.listTransactions = allTransactions
+                didChange = true
+            }
+            if parent.viewModel.listTransactions != allTransactions {
+                parent.viewModel.listTransactions = allTransactions
+                didChange = true
+            }
+            if didChange {
+                NotificationCenter.default.post(name: .transactionsSelectionChanged, object: nil)
+            }
+            // Clear selection locks and pending tasks
+            parent.viewModel.isDaySelectionActive = false
+            coordinator.lastSelectedDayStart = nil
+            coordinator.selectionUpdateWorkItem?.cancel()
+            coordinator.selectionUpdateWorkItem = nil
+            coordinator.deselectWorkItem?.cancel()
+            coordinator.deselectWorkItem = nil
+            coordinator.fullFilteredCache.removeAll()
+            // Force a chart refresh on the next appearance
+            parent.viewModel.dataGraph = []
+        }
+    }
+    
     func updateAccount () {
+        // If a day selection is active, do not override the current filtered list
+        if viewModel.isDaySelectionActive { return }
         // Charger toutes les transactions d'abord
-        var allTransactions = ListTransactionsManager.shared.getAllData()
+        let allTransactions = ListTransactionsManager.shared.getAllData(from: nil, to: nil, ascending: true)
 
         // Si aucune transaction, vider les listes et sortir
         guard !allTransactions.isEmpty else {
             DispatchQueue.main.async {
-                self.listTransactions = []
+                ListTransactionsManager.shared.listTransactions = []
                 self.viewModel.listTransactions = []
+                NotificationCenter.default.post(name: .transactionsSelectionChanged, object: nil)
             }
             return
         }
@@ -94,89 +131,206 @@ struct DGLineChartRepresentable: NSViewRepresentable {
         
         let selectedEndOffset = min(maxIndex, max(selectedStartOffset, requestedEnd))
 
-        // Calcul des bornes de dates (sans force unwrap)
+        // Calcul des bornes de dates (sans force unwrap) — intervalle [début, fin)
         guard let startDate = calendar.date(byAdding: .day, value: selectedStartOffset, to: firstPointageStart),
-              let endDate   = calendar.date(byAdding: .day, value: selectedEndOffset, to: firstPointageStart) else {
+              let endDateExclusive = calendar.date(byAdding: .day, value: selectedEndOffset + 1, to: firstPointageStart) else {
             return
         }
 
-        // Filtrage sur datePointage (cohérent avec l'axe X)
+        // Filtrage sur datePointage (cohérent avec l'axe X) — inclut tout le dernier jour
         let filteredTransactions = allTransactions.filter {
-            $0.datePointage >= startDate && $0.datePointage <= endDate
+            $0.datePointage >= startDate && $0.datePointage < endDateExclusive
         }
 
-        // Mise à jour des listes (locale + viewModel) sur le main thread
+        // Mise à jour des listes (manager + viewModel) sur le main thread
         DispatchQueue.main.async {
-            self.listTransactions = filteredTransactions
+            ListTransactionsManager.shared.listTransactions = filteredTransactions
             self.viewModel.listTransactions = filteredTransactions
+            NotificationCenter.default.post(name: .transactionsSelectionChanged, object: nil)
         }
     }
     
     final class Coordinator: NSObject, ChartViewDelegate {
         var parent: DGLineChartRepresentable
         var isUpdating = false
+        var refreshObserver: NSObjectProtocol?
+        var fullFilteredCache: [EntityTransaction] = []
+        var lastSelectedDayStart: Date? = nil
+        var selectionUpdateWorkItem: DispatchWorkItem?
+        let selectionDebounceInterval: TimeInterval = 0.35
+        var deselectWorkItem: DispatchWorkItem?
+        let deselectDebounceInterval: TimeInterval = 0.2
         
         init(parent: DGLineChartRepresentable) {
             self.parent = parent
+            super.init()
+            refreshObserver = NotificationCenter.default.addObserver(forName: .treasuryChartNeedsRefresh, object: nil, queue: .main) { [weak self] _ in
+                Task { @MainActor [weak self] in
+                    guard let self = self else { return }
+                    // Skip automatic refresh when a day is selected
+                    guard self.parent.viewModel.isDaySelectionActive == false else { return }
+                    let chartView = self.parent.chartView
+                    self.parent.updateAccount()
+                    self.parent.updateChartData(for: chartView)
+                    self.parent.setData(on: chartView, with: self.parent.viewModel.dataGraph)
+                    self.fullFilteredCache = self.parent.viewModel.listTransactions
+                }
+            }
+        }
+        
+        deinit {
+            if let token = refreshObserver {
+                NotificationCenter.default.removeObserver(token)
+            }
         }
 
         public func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
-            // Ensure we have transactions to reference
-            let transactions = parent.viewModel.listTransactions
-            guard !transactions.isEmpty else { return }
+            // Cancel any pending deselection if a new selection occurs quickly
+            self.deselectWorkItem?.cancel()
+            self.deselectWorkItem = nil
 
-            // Prevent re-entrant updates that can suppress UI refreshes
             if isUpdating { return }
             isUpdating = true
             defer { isUpdating = false }
 
-            // Use the same base time as the chart (midnight of the first day shown)
+            // Lock selection early to prevent updateNSView race
+            self.parent.viewModel.isDaySelectionActive = true
+
             let calendar = Calendar.current
-            let baseTime: TimeInterval
-            if parent.firstDate > 0 {
-                baseTime = parent.firstDate
-            } else {
-                // Fallback if not yet set (align with updateChartData logic: use datePointage)
-                let firstPointage = calendar.startOfDay(for: transactions.first!.datePointage)
-                baseTime = firstPointage.timeIntervalSince1970
+
+            // Build base list from the full dataset constrained to the current range selection
+            let allTransactions = ListTransactionsManager.shared.getAllData(from: nil, to: nil, ascending: true)
+            guard !allTransactions.isEmpty else { return }
+
+            let firstPointageStartAll = calendar.startOfDay(for: allTransactions.first!.datePointage)
+            let lastPointageStartAll  = calendar.startOfDay(for: allTransactions.last!.datePointage)
+            let maxIndexAll = calendar.dateComponents([.day], from: firstPointageStartAll, to: lastPointageStartAll).day ?? 0
+
+            let selectedStartOffsetAll = max(0, Int(self.parent.viewModel.selectedStart))
+            let requestedEndAll: Int = {
+                if self.parent.viewModel.selectedEnd.isFinite {
+                    let clamped = max(0, min(self.parent.viewModel.selectedEnd, Double(maxIndexAll)))
+                    return Int(clamped)
+                } else {
+                    return maxIndexAll
+                }
+            }()
+            let selectedEndOffsetAll = min(maxIndexAll, max(selectedStartOffsetAll, requestedEndAll))
+
+            guard let rangeStartDate = calendar.date(byAdding: .day, value: selectedStartOffsetAll, to: firstPointageStartAll),
+                  let rangeEndExclusive = calendar.date(byAdding: .day, value: selectedEndOffsetAll + 1, to: firstPointageStartAll) else {
+                return
             }
 
-            // Convert the highlighted x (day offset) back to a concrete date
-            let selectedTime = baseTime + (Double(highlight.x) * parent.hourSeconds)
+            let baseList = allTransactions.filter { tx in
+                tx.datePointage >= rangeStartDate && tx.datePointage < rangeEndExclusive
+            }
+
+            // Base time aligned to the beginning of the current range
+            let baseTime = rangeStartDate.timeIntervalSince1970
+
+            // Compute selected date (quantize to whole days to avoid jitter between two dates)
+            let dayIndex = Int(round(highlight.x))
+            let selectedTime = baseTime + (Double(dayIndex) * parent.hourSeconds)
             let selectedDate = Date(timeIntervalSince1970: selectedTime)
 
-            // Compute the full day range for the selected date
-            let startDate = selectedDate.yesterday
-            let endDate   = selectedDate.tomorrow
+            // Day bounds: full civil day [00:00, +1 day)
+            let dayStart = calendar.startOfDay(for: selectedDate)
+            guard let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart) else { return }
 
-            // Fetch filtered transactions for that day range
-            let selectTransactions = ListTransactionsManager.shared.getAllData(from: startDate, to: endDate)
-             print("selectTransactions :\(selectTransactions.count)")
+            // Ignore repeated callbacks within the same day while dragging
+            if let last = self.lastSelectedDayStart, last == dayStart {
+                return
+            }
+            self.lastSelectedDayStart = dayStart
 
-            // Apply model and chart updates on the main thread so SwiftUI refreshes the list
-            DispatchQueue.main.async {
-                // Update the model that drives SwiftUI
-                self.parent.viewModel.listTransactions = selectTransactions
-                // Keep the local mirror in sync for consistency
-                self.parent.listTransactions = selectTransactions
-
-                // Expand the visible range; updateChartData will clamp as needed
-                self.parent.viewModel.selectedStart = 0
-                self.parent.viewModel.selectedEnd = Double.greatestFiniteMagnitude
-
-                // Refresh the chart immediately
-                if let lineChart = chartView as? LineChartView {
-                    self.parent.updateChartData(for: lineChart)
-                    self.parent.setData(on: lineChart, with: self.parent.viewModel.dataGraph)
+            // Debounce updates to avoid continuous refresh while dragging between dates
+            self.selectionUpdateWorkItem?.cancel()
+            let work = DispatchWorkItem { [weak self] in
+                guard let self = self else { return }
+                let selectTransactions = baseList.filter { tx in
+                    tx.datePointage >= dayStart && tx.datePointage < dayEnd
+                }
+                print("selectTransactions (filtered day): \(selectTransactions.count)")
+                Task { @MainActor in
+                    var didChange = false
+                    if ListTransactionsManager.shared.listTransactions != selectTransactions {
+                        ListTransactionsManager.shared.listTransactions = selectTransactions
+                        didChange = true
+                    }
+                    if self.parent.viewModel.listTransactions != selectTransactions {
+                        self.parent.viewModel.listTransactions = selectTransactions
+                        didChange = true
+                    }
+                    if didChange {
+                        NotificationCenter.default.post(name: .transactionsSelectionChanged, object: nil)
+                    }
                 }
             }
-
-            // Optional logging
-            // print("Selected x=\(highlight.x), date=\(selectedDate)")
+            self.selectionUpdateWorkItem = work
+            DispatchQueue.main.asyncAfter(deadline: .now() + self.selectionDebounceInterval, execute: work)
         }
         
         public func chartValueNothingSelected(_ chartView: ChartViewBase)
         {
+            // Debounce deselection to avoid toggling to full list on quick double tap / drag jitter
+            self.deselectWorkItem?.cancel()
+            let work = DispatchWorkItem { [weak self] in
+                guard let self = self else { return }
+                // Reset last selected day to allow future updates
+                self.lastSelectedDayStart = nil
+                // Cancel any pending debounced selection update
+                self.selectionUpdateWorkItem?.cancel()
+                self.selectionUpdateWorkItem = nil
+
+                // Recompute the range-filtered transactions from the full dataset to avoid restoring all data
+                let calendar = Calendar.current
+                let allTransactions = ListTransactionsManager.shared.getAllData(from: nil, to: nil, ascending: true)
+                var restored: [EntityTransaction] = []
+                if let first = allTransactions.first, let last = allTransactions.last {
+                    let firstPointageStart = calendar.startOfDay(for: first.datePointage)
+                    let lastPointageStart  = calendar.startOfDay(for: last.datePointage)
+                    let maxIndex = calendar.dateComponents([.day], from: firstPointageStart, to: lastPointageStart).day ?? 0
+
+                    let selectedStartOffset = max(0, Int(self.parent.viewModel.selectedStart))
+                    let requestedEnd: Int = {
+                        if self.parent.viewModel.selectedEnd.isFinite {
+                            let clamped = max(0, min(self.parent.viewModel.selectedEnd, Double(maxIndex)))
+                            return Int(clamped)
+                        } else {
+                            return maxIndex
+                        }
+                    }()
+                    let selectedEndOffset = min(maxIndex, max(selectedStartOffset, requestedEnd))
+
+                    if let startDate = calendar.date(byAdding: .day, value: selectedStartOffset, to: firstPointageStart),
+                       let endDateExclusive = calendar.date(byAdding: .day, value: selectedEndOffset + 1, to: firstPointageStart) {
+                        restored = allTransactions.filter { tx in
+                            tx.datePointage >= startDate && tx.datePointage < endDateExclusive
+                        }
+                    }
+                }
+
+                Task { @MainActor in
+                    // Unlock selection so auto-refresh can resume
+                    self.parent.viewModel.isDaySelectionActive = false
+                    self.fullFilteredCache.removeAll()
+                    var didChange = false
+                    if ListTransactionsManager.shared.listTransactions != restored {
+                        ListTransactionsManager.shared.listTransactions = restored
+                        didChange = true
+                    }
+                    if self.parent.viewModel.listTransactions != restored {
+                        self.parent.viewModel.listTransactions = restored
+                        didChange = true
+                    }
+                    if didChange {
+                        NotificationCenter.default.post(name: .transactionsSelectionChanged, object: nil)
+                    }
+                }
+            }
+            self.deselectWorkItem = work
+            DispatchQueue.main.asyncAfter(deadline: .now() + self.deselectDebounceInterval, execute: work)
         }
     }
 
@@ -236,16 +390,16 @@ struct DGLineChartRepresentable: NSViewRepresentable {
         nsView.xAxis.valueFormatter = DateValueFormatter(miniTime: firstDate, interval: hourSeconds)
 
         // MARK: Marker
-//        let marker = RectMarker(
-//            color: #colorLiteral(red: 0.921431005, green: 0.9214526415, blue: 0.9214410186, alpha: 1),
-//            font: NSFont.systemFont(ofSize: 12.0),
-//            insets: NSEdgeInsets(top: 8.0, left: 8.0, bottom: 20.0, right: 8.0)
-//        )
-//        marker.minimumSize = CGSize(width: 80.0, height: 40.0)
-//        marker.chartView = nsView
-//        nsView.marker = marker
-//        marker.miniTime = firstDate
-//        marker.interval = hourSeconds
+        let marker = RectMarker(
+            color: #colorLiteral(red: 0.921431005, green: 0.9214526415, blue: 0.9214410186, alpha: 1),
+            font: NSFont.systemFont(ofSize: 12.0),
+            insets: NSEdgeInsets(top: 8.0, left: 8.0, bottom: 20.0, right: 8.0)
+        )
+        marker.minimumSize = CGSize(width: 80.0, height: 40.0)
+        marker.chartView = nsView
+        nsView.marker = marker
+        marker.miniTime = firstDate
+        marker.interval = hourSeconds
 
         // MARK: Datasets
         
@@ -292,21 +446,23 @@ struct DGLineChartRepresentable: NSViewRepresentable {
         return dataSet
     }
     
-    func initGraph(on nsView: LineChartView) {
+    func initGraph(on chartView: LineChartView) {
         
         // MARK: General
-        nsView.dragEnabled = false
-        nsView.setScaleEnabled(true)
-        nsView.pinchZoomEnabled = false
-        nsView.drawGridBackgroundEnabled = false
-        nsView.highlightPerDragEnabled = true
-        nsView.noDataText = String(localized:"No chart data available.")
+        chartView.dragEnabled = true
+        chartView.setScaleEnabled(false)
+        chartView.doubleTapToZoomEnabled = false
+        chartView.pinchZoomEnabled = false
+        chartView.drawGridBackgroundEnabled = false
+        chartView.highlightPerDragEnabled = true
+        chartView.highlightPerTapEnabled = true
+        chartView.noDataText = String(localized:"No chart data available.")
         
-        nsView.scaleYEnabled = false
-        nsView.scaleXEnabled = false
+        chartView.scaleYEnabled = false
+        chartView.scaleXEnabled = false
         
         // MARK: xAxis
-        let xAxis                             = nsView.xAxis
+        let xAxis                             = chartView.xAxis
         xAxis.labelPosition                   = .bottom
         xAxis.labelFont                       = NSFont(name : "HelveticaNeue-Light", size : CGFloat(10.0))!
         xAxis.drawAxisLineEnabled             = true
@@ -320,7 +476,7 @@ struct DGLineChartRepresentable: NSViewRepresentable {
         xAxis.labelTextColor                  = .labelColor
                 
         // MARK: leftAxis
-        let leftAxis                  = nsView.leftAxis
+        let leftAxis                  = chartView.leftAxis
         leftAxis.labelPosition        = .outsideChart
         leftAxis.labelFont            = NSFont(name : "HelveticaNeue-Light", size : CGFloat(12.0))!
         leftAxis.drawGridLinesEnabled = true
@@ -329,10 +485,10 @@ struct DGLineChartRepresentable: NSViewRepresentable {
         leftAxis.labelTextColor       = .labelColor
         
         // MARK: rightAxis
-        nsView.rightAxis.enabled = false
+        chartView.rightAxis.enabled = false
         
         // MARK: legend
-        let legend                 = nsView.legend
+        let legend                 = chartView.legend
         legend.enabled             = true
         legend.form                = .square
         legend.drawInside          = false
@@ -341,14 +497,18 @@ struct DGLineChartRepresentable: NSViewRepresentable {
         legend.horizontalAlignment = .left
         
         // MARK: description
-        nsView.chartDescription.enabled = false
+        chartView.chartDescription.enabled = false
     }
     
     func updateChartData(for nsView: LineChartView) {
         
         let transactions = viewModel.listTransactions
         
-        guard !transactions.isEmpty else { return }
+        guard !transactions.isEmpty else {
+            // Reset graph when no transactions
+            viewModel.dataGraph = []
+            return
+        }
 
         var dataTresorerie = DataTresorerie()
         var dataGraph : [DataTresorerie] = []

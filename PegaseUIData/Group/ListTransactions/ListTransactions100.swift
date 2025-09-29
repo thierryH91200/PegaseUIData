@@ -13,6 +13,7 @@ struct ListTransactionsView100: View {
     @Environment(\.modelContext) private var modelContext
     
     @State private var selectedTransactions: Set<UUID> = []
+    @State private var refresh = false
 
     @Binding var dashboard: DashboardState
 
@@ -39,40 +40,67 @@ struct ListTransactionsView100: View {
             ListTransactions200(
                 dashboard: $dashboard,
                 isVisible: $dashboard.isVisible,
-                selectedTransactions: $selectedTransactions)
-                .padding()
-                .task {
-                    await performFalseTask()
+                selectedTransactions: $selectedTransactions
+            )
+            .padding()
+            .id(refresh)
+            
+            .task {
+                await performFalseTask()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .loadDemoRequested)) { _ in
+                loadDemoData()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .resetDatabaseRequested)) { _ in
+                resetDatabase()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .transactionsAddEdit)) { _ in
+                printTag("transactionsAddEdit notification received")
+                
+                _ = ListTransactionsManager.shared.getAllData()
+                withAnimation {
+                    selectedTransactions.removeAll()
                 }
-                .onReceive(NotificationCenter.default.publisher(for: .loadDemoRequested)) { _ in
-                    loadDemoData()
+                updateSummary()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .transactionsImported)) { _ in
+                printTag("transactionsImported notification received")
+                
+                _ = ListTransactionsManager.shared.getAllData()
+                withAnimation {
+                    selectedTransactions.removeAll()
                 }
-                .onReceive(NotificationCenter.default.publisher(for: .resetDatabaseRequested)) { _ in
-                    resetDatabase()
+                updateSummary()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .transactionsSelectionChanged)) { _ in
+                withAnimation {
+                    refresh.toggle()
                 }
-                .onAppear {
-                    NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
-                        guard event.modifierFlags.contains(.command), let characters = event.charactersIgnoringModifiers else {
-                            return event
-                        }
-                        
-                        switch characters {
-                        case "c":
-                            NotificationCenter.default.post(name: .copySelectedTransactions, object: nil)
-                            return nil
-                        case "x":
-                            NotificationCenter.default.post(name: .cutSelectedTransactions, object: nil)
-                            return nil
-                        case "v":
-                            NotificationCenter.default.post(name: .pasteSelectedTransactions, object: nil)
-                            return nil
-                        default:
-                            return event
-                        }
+                updateSummary()
+            }
+            .onAppear {
+                NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+                    guard event.modifierFlags.contains(.command), let characters = event.charactersIgnoringModifiers else {
+                        return event
+                    }
+                    
+                    switch characters {
+                    case "c":
+                        NotificationCenter.default.post(name: .copySelectedTransactions, object: nil)
+                        return nil
+                    case "x":
+                        NotificationCenter.default.post(name: .cutSelectedTransactions, object: nil)
+                        return nil
+                    case "v":
+                        NotificationCenter.default.post(name: .pasteSelectedTransactions, object: nil)
+                        return nil
+                    default:
+                        return event
                     }
                 }
-                .onAppear(perform: updateSummary)
-                .onChange(of: transactions) { _, _ in updateSummary() }
+            }
+            .onAppear(perform: updateSummary)
+            .onChange(of: transactions) { _, _ in updateSummary() }
         }
     }
     
@@ -281,7 +309,7 @@ struct ListTransactions200: View {
     }
     
     private var headerViewSection: some View {
-        VStack {
+        HStack {
             Text("\(compteCurrent?.name ?? String(localized: "No checking account"))")
             Image(systemName: "info.circle")
                 .foregroundColor(.accentColor)
@@ -311,6 +339,7 @@ struct ListTransactions200: View {
                 }
                 .listStyle(.plain)
                 .frame(minWidth: 800, maxWidth: 1200)
+//                .frame(height: .infinity)
                 .id(refresh)
             }
             .background(Color.white)
@@ -555,5 +584,5 @@ extension Notification.Name {
     static let copySelectedTransactions = Notification.Name("copySelectedTransactions")
     static let cutSelectedTransactions = Notification.Name("cutSelectedTransactions")
     static let pasteSelectedTransactions = Notification.Name("pasteSelectedTransactions")
+    static let transactionsSelectionChanged = Notification.Name("transactionsSelectionChanged")
 }
-

@@ -49,7 +49,8 @@ struct TreasuryCurve: View {
         let start = cal.startOfDay(for: minDate)
         let end = cal.startOfDay(for: maxDate)
         let days = cal.dateComponents([.day], from: start, to: end).day ?? 0
-        return 0...Double(max(0, days))
+        let upper = max(1, days)
+        return 0...Double(upper)
     }
 
     var body: some View {
@@ -73,7 +74,7 @@ struct TreasuryCurve: View {
 
                 GroupBox(label: Label("Filter by period", systemImage: "calendar")) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Selected period : \(dateFromOffset(lowerValue)) → \(dateFromOffset(upperValue))")
+                        Text("Selected period : \(dateFromOffset(selectedStart)) → \(dateFromOffset(selectedEnd))")
                             .font(.callout)
                             .foregroundColor(.secondary)
                         
@@ -95,14 +96,19 @@ struct TreasuryCurve: View {
                     )
                         .frame(height: 50)
                         .onAppear {
+                            dashboard.isVisible = true
+
                             // Initialize slider bounds based on available data
                             selectedStart = 0
-                            selectedEnd = totalDaysRange.upperBound
+                            selectedEnd = max(1, totalDaysRange.upperBound)
+                            if selectedEnd <= selectedStart {
+                                selectedEnd = selectedStart + 1
+                            }
                             updateChart()
                         }
 
-                        .onChange(of: lowerValue) { _, _ in applyFilter() }
-                        .onChange(of: upperValue) { _, _ in applyFilter() }
+                        .onChange(of: selectedStart) { _, _ in applyFilter() }
+                        .onChange(of: selectedEnd) { _, _ in applyFilter() }
 
                         Text("\(selectedDays()) days — \(filteredTransactions.count) transaction\(filteredTransactions.count > 1 ? "s" : "") — Total: \(formattedAmount(totalAmount))")
                             .font(.footnote)
@@ -110,7 +116,7 @@ struct TreasuryCurve: View {
                             .padding(.top, 4)
                         ListTransactionsView100(
                             dashboard: $dashboard)
-                        .frame(height: 4000)
+                        .frame(height: 600)
                     }
                     .padding(.top, 4)
                     .padding(.horizontal)
@@ -148,32 +154,38 @@ struct TreasuryCurve: View {
 
         minDate = first
         maxDate = last
-        lowerValue = 0
-        upperValue = durationDays
+
+        selectedStart = 0
+        selectedEnd = max(1, durationDays)
 
         viewModel.listTransactions = allTransactions
-        viewModel.lowerValue = lowerValue
-        viewModel.upperValue = upperValue
+        viewModel.lowerValue = selectedStart
+        viewModel.upperValue = selectedEnd
         viewModel.updateChartData()
 
         applyFilter()
     }
 
     private func applyFilter() {
-        let startDate = Calendar.current.date(byAdding: .day, value: Int(lowerValue), to: minDate) ?? minDate
-        let endDate = Calendar.current.date(byAdding: .day, value: Int(upperValue), to: minDate) ?? maxDate
+        // Clamp offsets to a valid, non-zero range
+        let safeUpperBound = max(totalDaysRange.upperBound, 1)
+        let startOffset = max(0, min(selectedStart, safeUpperBound - 1))
+        let endOffset = max(startOffset + 1, min(selectedEnd, safeUpperBound))
+
+        let startDate = Calendar.current.date(byAdding: .day, value: Int(startOffset), to: minDate) ?? minDate
+        let endDate = Calendar.current.date(byAdding: .day, value: Int(endOffset), to: minDate) ?? maxDate
 
         filteredTransactions = allTransactions.filter {
             $0.dateOperation >= startDate && $0.dateOperation <= endDate
         }
 
-        viewModel.lowerValue = lowerValue
-        viewModel.upperValue = upperValue
+        viewModel.lowerValue = startOffset
+        viewModel.upperValue = endOffset
         viewModel.updateChartData()
     }
 
     private func selectedDays() -> Int {
-        Int(upperValue - lowerValue + 1)
+        Int(selectedEnd - selectedStart + 1)
     }
 
     private func dateFromOffset(_ offset: Double) -> String {

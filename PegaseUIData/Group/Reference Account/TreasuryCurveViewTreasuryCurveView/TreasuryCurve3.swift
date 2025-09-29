@@ -22,6 +22,8 @@ protocol TeeasuryManaging {
 class TresuryLineViewModel: ObservableObject, TeeasuryManaging {
     
     @Published var listTransactions: [EntityTransaction] = []
+    // Transactions of the currently selected day in the chart (for detail UI)
+    @Published var selectedDayTransactions: [EntityTransaction] = []
     @Published var dataGraph: [DataTresorerie] = []
     @Published var dataEntries: [ChartDataEntry] = []
 
@@ -33,6 +35,7 @@ class TresuryLineViewModel: ObservableObject, TeeasuryManaging {
     
     @Published var lowerValue: Double = 0
     @Published var upperValue: Double = 0
+    @Published var isDaySelectionActive: Bool = false
 
     let hourSeconds = 3600.0 * 24.0 // one day
     
@@ -55,6 +58,8 @@ class TresuryLineViewModel: ObservableObject, TeeasuryManaging {
     }
     
     @MainActor func updateChartData() {
+        // Do not recompute the series while a day selection is active
+        if isDaySelectionActive { return }
         var dataGraph: [DataTresorerie] = []
 
         guard !listTransactions.isEmpty else {
@@ -102,3 +107,4 @@ class TresuryLineViewModel: ObservableObject, TeeasuryManaging {
         }
     }
 }
+

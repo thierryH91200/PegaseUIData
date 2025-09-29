@@ -36,6 +36,7 @@ struct TreasuryCurveView: View {
                 }
         }
         .onAppear {
+            dashboard.isVisible = true
             transactions = ListTransactionsManager.shared.getAllData().sorted(by: { $0.dateOperation < $1.dateOperation })
 
             // init des valeurs
