@@ -14,6 +14,8 @@ import UniformTypeIdentifiers
 class CategorieBar1ViewModel: ObservableObject {
     
     @Published var listTransactions : [EntityTransaction] = []
+    @Published var isBarSelectionActive: Bool = false
+    @Published var isMonthSelectionActive: Bool = false
     
     @Published var resultArray: [DataGraph] = []
     @Published var dataEntries: [BarChartDataEntry] = []
@@ -26,6 +28,7 @@ class CategorieBar1ViewModel: ObservableObject {
     
     @Published var selectedStart: Double = 0
     @Published var selectedEnd: Double = 30
+    private var fullFilteredCache: [EntityTransaction] = []
     
     var chartView : BarChartView?
 
@@ -118,5 +121,44 @@ class CategorieBar1ViewModel: ObservableObject {
         }
         self.dataEntries = entries
     }
-}
+    
+    func handleBarSelection(rubricName: String) {
+        if fullFilteredCache.isEmpty {
+            fullFilteredCache = listTransactions
+        }
+        let filtered = fullFilteredCache.filter { tx in
+            tx.sousOperations.contains { $0.category?.rubric?.name == rubricName }
+        }
+        var didChange = false
+        if ListTransactionsManager.shared.listTransactions != filtered {
+            ListTransactionsManager.shared.listTransactions = filtered
+            didChange = true
+        }
+        if self.listTransactions != filtered {
+            self.listTransactions = filtered
+            didChange = true
+        }
+        if didChange {
+            NotificationCenter.default.post(name: .transactionsSelectionChanged, object: nil)
+        }
+        self.isBarSelectionActive = true
+    }
 
+    func clearBarSelection() {
+        let restored = self.fullFilteredCache
+        self.fullFilteredCache.removeAll()
+        var didChange = false
+        if ListTransactionsManager.shared.listTransactions != restored {
+            ListTransactionsManager.shared.listTransactions = restored
+            didChange = true
+        }
+        if self.listTransactions != restored {
+            self.listTransactions = restored
+            didChange = true
+        }
+        if didChange {
+            NotificationCenter.default.post(name: .transactionsSelectionChanged, object: nil)
+        }
+        self.isBarSelectionActive = false
+    }
+}

@@ -18,7 +18,6 @@ import SwiftData
 import DGCharts
 import Combine
 
-
 struct RubriqueBar: View {
     
     @StateObject private var viewModel = RubriqueBarViewModel()
@@ -71,6 +70,7 @@ struct RubriqueBar: View {
             } else {
                 
                 DGBarChart5Representable(
+                    viewModel: viewModel,
                     entries: viewModel.dataEntries,
                     title: String(localized: "Rubriqc Bar Chart"),
                     labels: viewModel.labels

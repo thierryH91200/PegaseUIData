@@ -27,11 +27,8 @@ struct DGLineChartRepresentable: NSViewRepresentable {
 
     @State private var selectedType: String = "Tous"
     
-    let chartView = LineChartView()
-
     @State var firstDate: TimeInterval = 0.0
     @State var lastDate: TimeInterval = 0.0
-    
     let hourSeconds = 3600.0 * 24.0 // one day
     
     func makeCoordinator() -> Coordinator {
@@ -39,7 +36,9 @@ struct DGLineChartRepresentable: NSViewRepresentable {
     }
 
     func makeNSView(context: Context) -> LineChartView {
+        let chartView = LineChartView()
         chartView.delegate = context.coordinator
+        context.coordinator.chartView = chartView
         initGraph(on: chartView)
         return chartView
     }
@@ -82,6 +81,7 @@ struct DGLineChartRepresentable: NSViewRepresentable {
             coordinator.deselectWorkItem?.cancel()
             coordinator.deselectWorkItem = nil
             coordinator.fullFilteredCache.removeAll()
+            coordinator.chartView = nil
             // Force a chart refresh on the next appearance
             parent.viewModel.dataGraph = []
         }
@@ -153,6 +153,7 @@ struct DGLineChartRepresentable: NSViewRepresentable {
     final class Coordinator: NSObject, ChartViewDelegate {
         var parent: DGLineChartRepresentable
         var isUpdating = false
+        weak var chartView: LineChartView?
         var refreshObserver: NSObjectProtocol?
         var fullFilteredCache: [EntityTransaction] = []
         var lastSelectedDayStart: Date? = nil
@@ -169,7 +170,7 @@ struct DGLineChartRepresentable: NSViewRepresentable {
                     guard let self = self else { return }
                     // Skip automatic refresh when a day is selected
                     guard self.parent.viewModel.isDaySelectionActive == false else { return }
-                    let chartView = self.parent.chartView
+                    guard let chartView = self.chartView else { return }
                     self.parent.updateAccount()
                     self.parent.updateChartData(for: chartView)
                     self.parent.setData(on: chartView, with: self.parent.viewModel.dataGraph)
@@ -199,7 +200,7 @@ struct DGLineChartRepresentable: NSViewRepresentable {
             let calendar = Calendar.current
 
             // Build base list from the full dataset constrained to the current range selection
-            let allTransactions = ListTransactionsManager.shared.getAllData(from: nil, to: nil, ascending: true)
+            let allTransactions = ListTransactionsManager.shared.getAllData()
             guard !allTransactions.isEmpty else { return }
 
             let firstPointageStartAll = calendar.startOfDay(for: allTransactions.first!.datePointage)
@@ -244,7 +245,7 @@ struct DGLineChartRepresentable: NSViewRepresentable {
             }
             self.lastSelectedDayStart = dayStart
 
-            // Debounce updates to avoid continuous refresh while dragging between dates
+            // Debounce updates to avoid continuous refresh while dragging
             self.selectionUpdateWorkItem?.cancel()
             let work = DispatchWorkItem { [weak self] in
                 guard let self = self else { return }

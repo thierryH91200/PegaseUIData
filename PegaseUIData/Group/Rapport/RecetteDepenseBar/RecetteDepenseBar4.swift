@@ -22,8 +22,6 @@ struct DGBarChart4Representable: NSViewRepresentable {
     @Binding var lowerValue: Double
     @Binding var upperValue: Double
     
-    @State var chartView : BarChartView = BarChartView()
-
     let formatterPrice: NumberFormatter = {
         let _formatter = NumberFormatter()
         _formatter.locale = Locale.current
@@ -41,13 +39,14 @@ struct DGBarChart4Representable: NSViewRepresentable {
         Coordinator(parent: self)
     }
 
-    
     func makeNSView(context: Context) -> BarChartView {
         
+        let chartView = BarChartView()
+
         chartView.delegate = context.coordinator
         chartView.noDataText = String(localized:"No chart data available.")
         
-        initChart()
+        configure(chartView)
         let dataSet = BarChartDataSet(entries: entries, label: "Categorie Bar1")
         dataSet.colors = ChartColorTemplates.colorful()
         
@@ -87,52 +86,85 @@ struct DGBarChart4Representable: NSViewRepresentable {
     final class Coordinator: NSObject, ChartViewDelegate {
         var parent: DGBarChart4Representable
         var isUpdating = false
+        var fullFilteredCache: [EntityTransaction] = []
 
         init(parent: DGBarChart4Representable) {
             self.parent = parent
         }
 
         public func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
+            let index = Int(round(highlight.x))
+            guard index >= 0, index < parent.labels.count else { return }
             
-            var startDate = Date()
-            var endDate = Date()
-            
-            let index = Int(highlight.x)
             let entryX = entry.x
             let dataSetIndex = Int(highlight.dataSetIndex)
-            
+
             printTag("index: \(index), entryX: \(entryX), dataSetIndex: \(dataSetIndex) ")
-            let lowerValue = parent.lowerValue
-            
-            let transactions = ListTransactionsManager.shared.getAllData()
-            let minDate = transactions.first?.dateOperation ?? Date()
-//            let maxDate = transactions.last?.dateOperation ?? Date()
-            
 
 
-            if let date = Calendar.current.date(byAdding: .day, value: Int(lowerValue), to: minDate) {
-                print(date) // ✅ Date obtenue
-                
-                startDate = date.startOfMonth()
-                endDate = date.endOfMonth()
+            // Compute the current range window based on lower/upper values (in days) from the dataset min date
+            let all = ListTransactionsManager.shared.getAllData(ascending: true)
+            guard let globalMin = all.first?.dateOperation else { return }
+            let cal = Calendar.current
+            let rangeStart = cal.date(byAdding: .day, value: Int(parent.lowerValue), to: globalMin) ?? globalMin
+            let rangeEndExclusive = cal.date(byAdding: .day, value: Int(parent.upperValue + 1), to: globalMin) ?? globalMin
+
+            // Cache the current range-filtered list once
+            if self.fullFilteredCache.isEmpty {
+                self.fullFilteredCache = all.filter { tx in
+                    tx.dateOperation >= rangeStart && tx.dateOperation < rangeEndExclusive
+                }
             }
-            
-            let transactions1 = ListTransactionsManager.shared.getAllData(from: startDate, to:endDate)
-            
-            if parent.entries.indices.contains(index) {
-                print("Selected \(parent.entries[index])")
+
+            // Derive the selected month interval from the label if possible, else fall back to offset from rangeStart
+            var monthStart: Date
+            var monthEndExclusive: Date
+            let label = parent.labels[index]
+            if let parsed = parent.formatterDate.date(from: label) {
+                monthStart = parsed.startOfMonth()
+                monthEndExclusive = parsed.endOfMonth()
             } else {
-                print("Selected index out of range: \(index)")
+                let baseMonthStart = rangeStart.startOfMonth()
+                let derived = cal.date(byAdding: .month, value: index, to: baseMonthStart) ?? baseMonthStart
+                monthStart = derived.startOfMonth()
+                monthEndExclusive = derived.endOfMonth()
+            }
+
+            let filtered = self.fullFilteredCache.filter { tx in
+                tx.dateOperation >= monthStart && tx.dateOperation <= monthEndExclusive
+            }
+
+            // Publish the filtered list to the shared manager and notify the UI
+            DispatchQueue.main.async {
+                var didChange = false
+                if ListTransactionsManager.shared.listTransactions != filtered {
+                    ListTransactionsManager.shared.listTransactions = filtered
+                    didChange = true
+                }
+                if didChange {
+                    NotificationCenter.default.post(name: .transactionsSelectionChanged, object: nil)
+                }
             }
         }
         
-        public func chartValueNothingSelected(_ chartView: ChartViewBase)
-        {
+        public func chartValueNothingSelected(_ chartView: ChartViewBase) {
+            let restored = self.fullFilteredCache
+            self.fullFilteredCache.removeAll()
+            DispatchQueue.main.async {
+                var didChange = false
+                if ListTransactionsManager.shared.listTransactions != restored {
+                    ListTransactionsManager.shared.listTransactions = restored
+                    didChange = true
+                }
+                if didChange {
+                    NotificationCenter.default.post(name: .transactionsSelectionChanged, object: nil)
+                }
+            }
         }
     }
 
         
-    private func initChart() {
+    private func configure(_ chartView: BarChartView) {
             
         // MARK: General
         chartView.drawBarShadowEnabled      = false
@@ -142,13 +174,14 @@ struct DGBarChart4Representable: NSViewRepresentable {
         chartView.drawGridBackgroundEnabled = true
         chartView.gridBackgroundColor       = .windowBackgroundColor
         chartView.fitBars                   = true
+        chartView.highlightPerTapEnabled   = true
         
         chartView.pinchZoomEnabled          = false
         chartView.doubleTapToZoomEnabled    = false
         chartView.dragEnabled               = false
         chartView.noDataText = "No chart Data Available"
         
-        //             MARK: xAxis
+        // MARK: xAxis
         let xAxis            = chartView.xAxis
         xAxis.centerAxisLabelsEnabled = true
         xAxis.drawGridLinesEnabled    = true
@@ -165,7 +198,7 @@ struct DGBarChart4Representable: NSViewRepresentable {
         xAxis.axisMaximum = Double(labels.count)
 
         
-        //             MARK: leftAxis
+        // MARK: leftAxis
         let leftAxis                   = chartView.leftAxis
         leftAxis.labelFont             = NSFont(name: "HelveticaNeue-Light", size: CGFloat(10.0))!
         leftAxis.labelCount            = 6

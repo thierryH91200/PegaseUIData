@@ -141,7 +141,7 @@ class RecetteDepenseBarViewModel: ObservableObject {
 
         let groupCount = resultArrayExpense.count + 1
         let startYear = 0
-        let endYear = startYear + groupCount
+//        let endYear = startYear + groupCount
 
 //        chartView.xAxis.axisMinimum = Double(startYear)
 //        chartView.xAxis.axisMaximum = Double(endYear)

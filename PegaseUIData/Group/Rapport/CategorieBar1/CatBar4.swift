@@ -8,75 +8,103 @@
 import SwiftUI
 import SwiftData
 import DGCharts
-import Combine
 
+
+extension Notification.Name {
+    static let BarChart7NeedsRefresh = Notification.Name("BarChart7NeedsRefresh")
+}
 
 struct DGBarChart7Representable: NSViewRepresentable {
     
     @ObservedObject var viewModel: CategorieBar1ViewModel
     let entries: [BarChartDataEntry]
-    
-    let hourSeconds = 3600.0 * 24.0 // one day
-    let chartView = BarChartView()
+    /// Called when a bar is tapped. Provides the selected index and its associated DataGraph.
+    var onSelectBar: ((Int, DataGraph) -> Void)? = nil
 
-    
+
     func makeCoordinator() -> Coordinator {
         Coordinator(parent: self)
     }
 
+    @MainActor
     final class Coordinator: NSObject, ChartViewDelegate {
         var parent: DGBarChart7Representable
-        var isUpdating = false
+        weak var chartView: BarChartView?
+        private var refreshObserver: NSObjectProtocol?
 
         init(parent: DGBarChart7Representable) {
             self.parent = parent
+            super.init()
+            refreshObserver = NotificationCenter.default.addObserver(forName: .BarChart7NeedsRefresh, object: nil, queue: .main) { [weak self] _ in
+                Task { @MainActor [weak self] in
+                    guard let self else { return }
+                    // Skip automatic refresh when a bar is selected
+                    guard self.parent.viewModel.isBarSelectionActive == false else { return }
+                    guard let chartView = self.chartView else { return }
+                    self.parent.setData(on: chartView, with: self.parent.viewModel.resultArray)
+                }
+            }
         }
 
-        public func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
+        deinit {
+            if let observer = refreshObserver {
+                NotificationCenter.default.removeObserver(observer)
+            }
+        }
+
+        func chartValueSelected(_ chartView: ChartViewBase,
+                                entry: ChartDataEntry,
+                                highlight: Highlight) {
             let index = Int(highlight.x)
             let entryX = entry.x
             let dataSetIndex = Int(highlight.dataSetIndex)
-            
+
             printTag("index: \(index), entryX: \(entryX), dataSetIndex: \(dataSetIndex) ")
-//            let firstDate = parent.lowerValue
-            
+
+#if DEBUG
             if parent.entries.indices.contains(index) {
                 print("Selected \(parent.entries[index])")
             } else {
                 print("Selected index out of range: \(index)")
             }
+#endif
+            
+            // Notify SwiftUI about the selection to display transactions
+            if parent.viewModel.resultArray.indices.contains(index) {
+                let item = parent.viewModel.resultArray[index]
+                parent.onSelectBar?(index, item)
+            }
+            
+            // Filter transactions by the selected rubric (bar) within the current range
+            if parent.viewModel.resultArray.indices.contains(index) {
+                let item = parent.viewModel.resultArray[index]
+                self.parent.viewModel.handleBarSelection(rubricName: item.name)
+            }
         }
-        
-        public func chartValueNothingSelected(_ chartView: ChartViewBase)
-        {
+
+        func chartValueNothingSelected(_ chartView: ChartViewBase) {
+            self.parent.viewModel.clearBarSelection()
         }
     }
 
 
     func makeNSView(context: Context) -> BarChartView {
         
+        let chartView = BarChartView()
+        context.coordinator.chartView = chartView
         chartView.delegate = context.coordinator
-        initChart(on: chartView)
-
-        chartView.chartDescription.enabled = false
-        initializeLegend(chartView.legend)
-        chartView.legend.enabled = true
-
+        configure(chartView) // voir ci-dessous
         return chartView
     }
-
+    
     func updateNSView(_ nsView: BarChartView, context: Context) {
-        DispatchQueue.main.async {
-            let newData = self.viewModel.resultArray
-            self.setData(on: nsView, with: newData)
-        }
+        setData(on: nsView, with: viewModel.resultArray)
     }
     
     func setData(on chartView: BarChartView, with data: [DataGraph]) {
         // If there's no data, clear the chart and return
         guard !data.isEmpty else {
             chartView.data = nil
-            chartView.data?.notifyDataChanged()
             chartView.notifyDataSetChanged()
             return
         }
@@ -106,7 +134,8 @@ struct DGBarChart7Representable: NSViewRepresentable {
 
             let barData = BarChartData(dataSets: [dataSet])
             barData.setValueFormatter(DefaultValueFormatter(formatter: viewModel.formatterPrice))
-            barData.setValueFont(NSFont(name: "HelveticaNeue-Light", size: CGFloat(11.0))!)
+            let valueFont = NSFont(name: "HelveticaNeue-Light", size: 11) ?? NSFont.systemFont(ofSize: 11, weight: .light)
+            barData.setValueFont(valueFont)
             barData.setValueTextColor(NSColor.labelColor)
 
             chartView.data = barData
@@ -120,9 +149,7 @@ struct DGBarChart7Representable: NSViewRepresentable {
         }
     }
     
-    func initChart(on chartView: BarChartView) {
-        
-        chartView.xAxis.valueFormatter = CurrencyValueFormatter()
+    func configure(_ chartView: BarChartView) {
         
         // MARK: General
         chartView.drawBarShadowEnabled      = false
@@ -133,6 +160,8 @@ struct DGBarChart7Representable: NSViewRepresentable {
         chartView.drawBordersEnabled        = true
         chartView.gridBackgroundColor       = .windowBackgroundColor
         chartView.fitBars                   = true
+        chartView.highlightPerTapEnabled   = true
+        chartView.highlightFullBarEnabled  = true
 
         chartView.pinchZoomEnabled          = false
         chartView.doubleTapToZoomEnabled    = false
@@ -143,16 +172,10 @@ struct DGBarChart7Representable: NSViewRepresentable {
         setUpAxis(chartView: chartView)
         
         // MARK: Legend
-//        initializeLegend(chartView.legend)
-//        chartView.legend.enabled = false
+        initializeLegend(chartView.legend)
         
         // MARK: Description
-        let bounds                           = chartView.bounds
-        let point    = CGPoint( x: bounds.width / 2, y: bounds.height * 0.25)
-        chartView.chartDescription.enabled  = true
-        chartView.chartDescription.text     = "Rubric"
-        chartView.chartDescription.position = point
-        chartView.chartDescription.font     = NSFont(name: "HelveticaNeue-Light", size: CGFloat(24.0))!
+        chartView.chartDescription.enabled = false
     }
     
     func initializeLegend(_ legend: Legend) {
@@ -162,33 +185,22 @@ struct DGBarChart7Representable: NSViewRepresentable {
         legend.orientation = .vertical
         legend.font = NSFont(name: "HelveticaNeue-Light", size: CGFloat(14.0))!
         legend.textColor = NSColor.labelColor
-
-        
-//        legend.horizontalAlignment           = .left
-//        legend.verticalAlignment             = .top
-//        legend.orientation                   = .vertical
-//        legend.drawInside                    = true
-//        legend.form                          = .square
-//        legend.formSize                      = 9.0
-//        legend.font                          = NSFont.systemFont(ofSize: CGFloat(11.0))
-//        legend.xEntrySpace                   = 4.0
     }
     
     func setUpAxis(chartView: BarChartView) {
         // MARK: xAxis
-        let xAxis                      = chartView.xAxis
+        let xAxis = chartView.xAxis
         xAxis.labelPosition            = .bottom
-        xAxis.labelFont                = NSFont(name: "HelveticaNeue-Light", size: CGFloat(14.0))!
+        xAxis.labelFont                = NSFont.systemFont(ofSize: 14, weight: .light)
         xAxis.drawGridLinesEnabled     = true
         xAxis.granularity              = 1
         xAxis.enabled                  = true
         xAxis.labelTextColor           = .labelColor
         xAxis.labelCount               = 10
-        xAxis.valueFormatter           = CurrencyValueFormatter()
 
         // MARK: leftAxis
         let leftAxis                   = chartView.leftAxis
-        leftAxis.labelFont             = NSFont(name: "HelveticaNeue-Light", size: CGFloat(10.0))!
+        leftAxis.labelFont = NSFont(name: "HelveticaNeue-Light", size: 10) ?? NSFont.systemFont(ofSize: 10, weight: .light)
         leftAxis.labelCount            = 12
         leftAxis.drawGridLinesEnabled  = true
         leftAxis.granularityEnabled    = true

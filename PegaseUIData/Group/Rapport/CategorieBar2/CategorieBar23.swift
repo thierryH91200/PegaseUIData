@@ -62,8 +62,7 @@ struct CategorieBar2View2: View {
                 } else {
                     DGBarChart2Representable(
                         entries: viewModel.dataEntries,
-                        labels: viewModel.labels,
-                        chartViewRef: $chartView)
+                        labels: viewModel.labels)
                     .frame(maxWidth: .infinity,maxHeight: 400)
                     .padding()
                 }

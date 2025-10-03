@@ -38,6 +38,7 @@ struct CategorieBar1View1: View {
     private let oneDay = 3600.0 * 24.0 // one day
     
     @State private var chartView: BarChartView?
+    @State private var selectedItem: DataGraph? = nil
     
     var body: some View {
         VStack {
@@ -96,8 +97,11 @@ struct CategorieBar1View1: View {
                 
                 DGBarChart7Representable(
                     viewModel: viewModel,
-                    entries: viewModel.dataEntries)
-                .frame(maxWidth: .infinity,maxHeight: 400)
+                    entries: viewModel.dataEntries,
+                    onSelectBar: { index, item in
+                        selectedItem = item
+                    })
+                .frame(maxWidth: .infinity, maxHeight: 400)
                 .padding()
                 .onAppear {
                     viewModel.updateAccount(minDate: minDate)
@@ -161,10 +165,30 @@ struct CategorieBar1View1: View {
     }
     
     private func updateChart() {
-        let start = Calendar.current.date(byAdding: .day, value: Int(selectedStart), to: minDate)!
-        let end = Calendar.current.date(byAdding: .day, value: Int(selectedEnd), to: minDate)!
+        let cal = Calendar.current
+        let base = cal.startOfDay(for: minDate)
 
-        viewModel.updateChartData( startDate: start, endDate: end)
+        // Calcul des bornes de période alignées sur la journée civile
+        let start = cal.date(byAdding: .day, value: Int(selectedStart), to: base)!
+        let endInclusive = cal.date(byAdding: .day, value: Int(selectedEnd), to: base)!
+        let endExclusive = cal.date(byAdding: .day, value: 1, to: cal.startOfDay(for: endInclusive))!
+
+        // 1) Met à jour le graphique en barres (endInclusive pour inclure la journée complète)
+        viewModel.updateChartData(startDate: start, endDate: endInclusive)
+
+        // 2) Met à jour la liste globale des transactions pour synchroniser la liste et les autres vues
+        let all = ListTransactionsManager.shared.getAllData(from: nil, to: nil, ascending: true)
+
+        // Filtrage par dateOperation afin d'être cohérent avec minDate/maxDate obtenues dans onAppear
+        let filtered = all.filter { tx in
+            tx.dateOperation >= start && tx.dateOperation < endExclusive
+        }
+
+        if ListTransactionsManager.shared.listTransactions != filtered {
+            ListTransactionsManager.shared.listTransactions = filtered
+            NotificationCenter.default.post(name: .transactionsSelectionChanged, object: nil)
+            NotificationCenter.default.post(name: .treasuryChartNeedsRefresh, object: nil)
+        }
     }
     
     func formattedDate(from dayOffset: Double) -> String {
@@ -200,4 +224,5 @@ struct CategorieBar1View1: View {
         return nil
     }
 }
+
 

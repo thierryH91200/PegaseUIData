@@ -47,7 +47,6 @@ struct CategorieBar1View: View {
                 }
             }
         }
-
     }
     
     private func performFalseTask() async {

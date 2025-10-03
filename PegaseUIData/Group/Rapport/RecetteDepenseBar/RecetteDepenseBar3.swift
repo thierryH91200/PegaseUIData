@@ -87,7 +87,7 @@ struct RecetteDepenseView: View {
                         trackHeight: 6
                     )
                     .frame(height: 30)
-                    SummaryView(dashboard: $dashboard  )
+                    ListTransactionsView100(dashboard: $dashboard)
                     Spacer()
                 }
                 .padding(.top, 4)
