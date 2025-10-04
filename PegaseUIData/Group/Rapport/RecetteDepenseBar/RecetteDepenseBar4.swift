@@ -93,17 +93,16 @@ struct DGBarChart4Representable: NSViewRepresentable {
         }
 
         public func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
-            let index = Int(round(highlight.x))
-            guard index >= 0, index < parent.labels.count else { return }
+            let index = highlight.x
+//            guard index >= 0, index < parent.labels.count else { return }
             
             let entryX = entry.x
             let dataSetIndex = Int(highlight.dataSetIndex)
 
             printTag("index: \(index), entryX: \(entryX), dataSetIndex: \(dataSetIndex) ")
 
-
             // Compute the current range window based on lower/upper values (in days) from the dataset min date
-            let all = ListTransactionsManager.shared.getAllData(ascending: true)
+            let all = ListTransactionsManager.shared.getAllData()
             guard let globalMin = all.first?.dateOperation else { return }
             let cal = Calendar.current
             let rangeStart = cal.date(byAdding: .day, value: Int(parent.lowerValue), to: globalMin) ?? globalMin
@@ -115,23 +114,51 @@ struct DGBarChart4Representable: NSViewRepresentable {
                     tx.dateOperation >= rangeStart && tx.dateOperation < rangeEndExclusive
                 }
             }
-
-            // Derive the selected month interval from the label if possible, else fall back to offset from rangeStart
+            
+            // Derive the selected month interval from the encoded label (year*1000 + month),
+            // else fall back to offset from rangeStart when decoding fails.
+            let label = parent.labels[Int(index)]
             var monthStart: Date
             var monthEndExclusive: Date
-            let label = parent.labels[index]
-            if let parsed = parent.formatterDate.date(from: label) {
-                monthStart = parsed.startOfMonth()
-                monthEndExclusive = parsed.endOfMonth()
+            if let code = Int(label) {
+                let year = code / 100
+                let month = code - year * 100
+                if (1...12).contains(month) {
+                    var comps = DateComponents()
+                    comps.year = year
+                    comps.month = month
+                    comps.day = 1
+                    monthStart = cal.date(from: comps) ?? rangeStart.startOfMonth()
+                    monthEndExclusive = cal.date(byAdding: .month, value: 1, to: monthStart) ?? monthStart
+                } else {
+                    let baseMonthStart = rangeStart.startOfMonth()
+                    let derived = cal.date(byAdding: .month, value: Int(index), to: baseMonthStart) ?? baseMonthStart
+                    monthStart = derived.startOfMonth()
+                    monthEndExclusive = derived.endOfMonth()
+                }
             } else {
                 let baseMonthStart = rangeStart.startOfMonth()
-                let derived = cal.date(byAdding: .month, value: index, to: baseMonthStart) ?? baseMonthStart
+                let derived = cal.date(byAdding: .month, value: Int(index), to: baseMonthStart) ?? baseMonthStart
                 monthStart = derived.startOfMonth()
                 monthEndExclusive = derived.endOfMonth()
             }
 
-            let filtered = self.fullFilteredCache.filter { tx in
-                tx.dateOperation >= monthStart && tx.dateOperation <= monthEndExclusive
+            // First, filter by the selected month range
+            let monthFiltered = self.fullFilteredCache.filter { tx in
+                tx.dateOperation >= monthStart && tx.dateOperation < monthEndExclusive
+            }
+
+            // Then, filter by sign depending on the selected dataset:
+            // dataSetIndex == 0 -> amount < 0 (expenses)
+            // dataSetIndex == 1 -> amount > 0 (income)
+            let filtered: [EntityTransaction]
+            switch dataSetIndex {
+            case 0:
+                filtered = monthFiltered.filter { $0.amount < 0 }
+            case 1:
+                filtered = monthFiltered.filter { $0.amount > 0 }
+            default:
+                filtered = monthFiltered
             }
 
             // Publish the filtered list to the shared manager and notify the UI
@@ -238,5 +265,4 @@ extension Date {
         return Calendar.current.date(byAdding: DateComponents(month: 1, day: 0), to: self.startOfMonth())!
     }
 }
-
 

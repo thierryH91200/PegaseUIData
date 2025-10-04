@@ -205,36 +205,24 @@ class ContainerManager: ObservableObject {
     @MainActor
     func closeCurrentDatabase() {
         // 1) Prévenir l’UI qu’on ferme, pour qu’elle cesse d’accéder aux entités
-//        showingSplashScreen = true
         currentDatabaseURL = nil
         currentDatabaseName = ""
         
         // 2) Vider les caches applicatifs qui conservent des instances SwiftData
         clearAllCaches()
-        
-//        let context = DataContext.shared.context
-//        guard let context = context else { return }
-//        clearAll(in: context)
-        
+                
         // 3) Laisser l’UI appliquer ces changements avant de débrancher le contexte
         Task { @MainActor in
             // Laisser passer au moins un cycle de runloop
             await Task.yield()
             try await Task.sleep(nanoseconds: 20_000_000) // 20ms pour être large (optionnel)
-
-//            // 4) Débrancher le contexte et le container
-//            DataContext.shared.context = nil
-//            DataContext.shared.undoManager = UndoManager()
-//            self.currentContainer = nil
             
             let emptyContainer = try? ModelContainer(for: DummyModel.self)
             DataContext.shared.container = emptyContainer
             DataContext.shared.context = ModelContext(emptyContainer!)
             DataContext.shared.undoManager = UndoManager()
-
         }
         showingSplashScreen = true
-
     }
     
     func clearAll(in context: ModelContext) {
