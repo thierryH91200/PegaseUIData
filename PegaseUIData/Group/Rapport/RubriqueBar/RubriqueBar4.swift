@@ -17,9 +17,7 @@ struct DGBarChart5Representable: NSViewRepresentable {
     let entries: [BarChartDataEntry]
     let title: String
     let labels: [String]
-    
-    let chartView = BarChartView()
-    
+        
     @State var firstDate: TimeInterval = 0.0
     @State var lastDate: TimeInterval = 0.0
     let hourSeconds = 3600.0 * 24.0 // one day
@@ -31,10 +29,12 @@ struct DGBarChart5Representable: NSViewRepresentable {
 
     func makeNSView(context: Context) -> BarChartView {
         
+        let chartView = BarChartView()
+
         chartView.delegate = context.coordinator
 
-        initChart()
-        
+        configure(chartView)
+
         let dataSet = BarChartDataSet(entries: entries, label: "Categorie Bar1")
         dataSet.colors = ChartColorTemplates.colorful()
         
@@ -91,14 +91,11 @@ struct DGBarChart5Representable: NSViewRepresentable {
         public func chartValueNothingSelected(_ chartView: ChartViewBase)
         {
         }
-
     }
     
-    private func initChart() {
-        
-            
+    private func configure(_ chartView: BarChartView) {
+    
             // MARK: General
-
             chartView.drawBarShadowEnabled      = false
             chartView.drawValueAboveBarEnabled  = true
             chartView.maxVisibleCount           = 60

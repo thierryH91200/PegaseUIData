@@ -97,7 +97,6 @@ struct CategorieBar1View1: View {
                 
                 DGBarChart7Representable(
                     viewModel: viewModel,
-                    entries: viewModel.dataEntries,
                     onSelectBar: { index, item in
                         selectedItem = item
                     })

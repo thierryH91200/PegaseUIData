@@ -396,18 +396,12 @@ struct DetailContainer: View {
             String(localized: "Notes",table: "Menu")                    : { isVisible in AnyView(NotesView(isVisible                  : isVisible)) },
             
             // Rapport
-            String(localized: "Category Bar1",table: "Menu")
-            : { isVisible in
-                AnyView(CategorieBar1View(
-                    dashboard: $dashboard)) },
-            String(localized: "Category Bar2",table: "Menu")
-            : { isVisible in
-                AnyView(CategorieBar2View(
-                    dashboard: $dashboard)) },
+            String(localized: "Category Bar1",table: "Menu")        : { isVisible in AnyView(CategorieBar1View(dashboard: $dashboard)) },
+            String(localized: "Category Bar2",table: "Menu")            : { isVisible in AnyView(CategorieBar2View( dashboard: $dashboard)) },
             String(localized: "Payment method" ,table: "Menu")          : { isVisible in AnyView(ModePaiementPieView(isVisible : isVisible)) },
-            String(localized: "Recipe / Expense Bar",table: "Menu")     : { isVisible in AnyView(RecetteDepenseBarView(isVisible: isVisible, dashboard: $dashboard)) },
-            String(localized: "Recipe / Expense Pie",table: "Menu")     : { isVisible in AnyView(RecetteDepensePieView(isVisible     : isVisible)) },
-            String(localized: "Rubric Bar",table: "Menu")               : { isVisible in AnyView(RubriqueBarView(isVisible           : isVisible)) },
+            String(localized: "Recipe / Expense Bar",table: "Menu")     : { isVisible in AnyView(RecetteDepenseBarView(dashboard: $dashboard)) },
+            String(localized: "Recipe / Expense Pie",table: "Menu")     : { isVisible in AnyView(RecetteDepensePieView(isVisible : isVisible)) },
+            String(localized: "Rubric Bar",table: "Menu")               : { isVisible in AnyView(RubriqueBarView(dashboard: $dashboard)) },
             String(localized: "Rubric Pie" ,table: "Menu")              : { isVisible in AnyView(RubriquePieView(isVisible           : isVisible)) },
             
             // Reglage

@@ -22,7 +22,9 @@ struct RubriqueBar: View {
     
     @StateObject private var viewModel = RubriqueBarViewModel()
 
-    let transactions: [EntityTransaction]   
+    let transactions: [EntityTransaction]
+    @Binding var dashboard: DashboardState
+
     @Binding var minDate: Date
     @Binding var maxDate: Date
     
@@ -46,7 +48,6 @@ struct RubriqueBar: View {
                 .padding()
             
             HStack(spacing: 12) {
-                Text("Rubrique:")
                 Picker("Rubrique", selection: $viewModel.nameRubrique) {
                     ForEach(viewModel.availableRubrics, id: \.self) { rub in
                         Text(rub.isEmpty ? String(localized: "(Toutes)") : rub).tag(rub)
@@ -102,6 +103,8 @@ struct RubriqueBar: View {
                         trackHeight: 6
                     )
                     .frame(height: 30)
+                    ListTransactionsView100(dashboard: $dashboard)
+                    Spacer()
                 }
                 .padding(.top, 4)
                 .padding(.horizontal)

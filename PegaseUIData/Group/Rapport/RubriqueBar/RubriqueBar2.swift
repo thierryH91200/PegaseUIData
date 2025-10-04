@@ -27,10 +27,6 @@ class RubriqueBarViewModel: ObservableObject {
     @Published var selectedEnd: Double = 30
     
     
-//    var totalValue: Double {
-//        resultArray.map { $0.value }.reduce(0, +)
-//    }
-//    
     var labels: [String] {
         resultArray.map { $0.name }
     }

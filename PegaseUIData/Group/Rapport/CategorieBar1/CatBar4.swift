@@ -14,10 +14,17 @@ extension Notification.Name {
     static let BarChart7NeedsRefresh = Notification.Name("BarChart7NeedsRefresh")
 }
 
+final class NumberFormatterAxisValueFormatter: AxisValueFormatter {
+    private let formatter: NumberFormatter
+    init(formatter: NumberFormatter) { self.formatter = formatter }
+    func stringForValue(_ value: Double, axis: AxisBase?) -> String {
+        return formatter.string(from: NSNumber(value: value)) ?? ""
+    }
+}
+
 struct DGBarChart7Representable: NSViewRepresentable {
     
     @ObservedObject var viewModel: CategorieBar1ViewModel
-    let entries: [BarChartDataEntry]
     /// Called when a bar is tapped. Provides the selected index and its associated DataGraph.
     var onSelectBar: ((Int, DataGraph) -> Void)? = nil
 
@@ -36,13 +43,11 @@ struct DGBarChart7Representable: NSViewRepresentable {
             self.parent = parent
             super.init()
             refreshObserver = NotificationCenter.default.addObserver(forName: .BarChart7NeedsRefresh, object: nil, queue: .main) { [weak self] _ in
-                Task { @MainActor [weak self] in
-                    guard let self else { return }
-                    // Skip automatic refresh when a bar is selected
-                    guard self.parent.viewModel.isBarSelectionActive == false else { return }
-                    guard let chartView = self.chartView else { return }
-                    self.parent.setData(on: chartView, with: self.parent.viewModel.resultArray)
-                }
+                guard let self else { return }
+                // Skip automatic refresh when a bar is selected
+                guard self.parent.viewModel.isBarSelectionActive == false else { return }
+                guard let chartView = self.chartView else { return }
+                self.parent.setData(on: chartView, with: self.parent.viewModel.resultArray)
             }
         }
 
@@ -61,13 +66,13 @@ struct DGBarChart7Representable: NSViewRepresentable {
 
             printTag("index: \(index), entryX: \(entryX), dataSetIndex: \(dataSetIndex) ")
 
-#if DEBUG
-            if parent.entries.indices.contains(index) {
-                print("Selected \(parent.entries[index])")
-            } else {
-                print("Selected index out of range: \(index)")
-            }
-#endif
+//#if DEBUG
+//            if parent.entries.indices.contains(index) {
+//                print("Selected \(parent.entries[index])")
+//            } else {
+//                print("Selected index out of range: \(index)")
+//            }
+//#endif
             
             // Notify SwiftUI about the selection to display transactions
             if parent.viewModel.resultArray.indices.contains(index) {
@@ -122,7 +127,8 @@ struct DGBarChart7Representable: NSViewRepresentable {
 
         // Configure xAxis labels
         chartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: labels)
-        chartView.xAxis.labelCount = labels.count
+        chartView.xAxis.labelCount = max(1, labels.count)
+        chartView.leftAxis.valueFormatter = NumberFormatterAxisValueFormatter(formatter: viewModel.formatterPrice)
 
         // Create or update dataset
         if chartView.data == nil {
@@ -143,7 +149,9 @@ struct DGBarChart7Representable: NSViewRepresentable {
             if let set1 = chartView.data?.dataSets.first as? BarChartDataSet {
                 set1.colors = colors
                 set1.replaceEntries(entries)
+                set1.valueFormatter = DefaultValueFormatter(formatter: viewModel.formatterPrice)
             }
+            chartView.data?.setValueFormatter(DefaultValueFormatter(formatter: viewModel.formatterPrice))
             chartView.data?.notifyDataChanged()
             chartView.notifyDataSetChanged()
         }
@@ -160,8 +168,8 @@ struct DGBarChart7Representable: NSViewRepresentable {
         chartView.drawBordersEnabled        = true
         chartView.gridBackgroundColor       = .windowBackgroundColor
         chartView.fitBars                   = true
-        chartView.highlightPerTapEnabled   = true
-        chartView.highlightFullBarEnabled  = true
+//        chartView.highlightPerTapEnabled   = true
+//        chartView.highlightFullBarEnabled  = true
 
         chartView.pinchZoomEnabled          = false
         chartView.doubleTapToZoomEnabled    = false
@@ -183,7 +191,8 @@ struct DGBarChart7Representable: NSViewRepresentable {
         legend.horizontalAlignment = .left
         legend.verticalAlignment = .top
         legend.orientation = .vertical
-        legend.font = NSFont(name: "HelveticaNeue-Light", size: CGFloat(14.0))!
+        let font = NSFont(name: "HelveticaNeue-Light", size: CGFloat(14.0)) ?? NSFont.systemFont(ofSize: 14, weight: .light)
+        legend.font = font
         legend.textColor = NSColor.labelColor
     }
     
@@ -196,8 +205,7 @@ struct DGBarChart7Representable: NSViewRepresentable {
         xAxis.granularity              = 1
         xAxis.enabled                  = true
         xAxis.labelTextColor           = .labelColor
-        xAxis.labelCount               = 10
-
+        
         // MARK: leftAxis
         let leftAxis                   = chartView.leftAxis
         leftAxis.labelFont = NSFont(name: "HelveticaNeue-Light", size: 10) ?? NSFont.systemFont(ofSize: 10, weight: .light)

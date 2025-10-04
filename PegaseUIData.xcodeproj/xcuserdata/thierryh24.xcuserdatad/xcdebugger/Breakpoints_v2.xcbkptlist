@@ -14,25 +14,9 @@
             filePath = "PegaseUIData/Group/Rapport/RecetteDepenseBar/RecetteDepenseBar4.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "39"
-            endingLineNumber = "39"
+            startingLineNumber = "37"
+            endingLineNumber = "37"
             landmarkName = "makeCoordinator()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "48C7AA5F-478A-4E87-BAEB-0DEEB4314664"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PegaseUIData/Group/Rapport/RecetteDepenseBar/RecetteDepenseBar4.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "78"
-            endingLineNumber = "78"
-            landmarkName = "updateNSView(_:context:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -135,22 +119,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "250AAAF7-99E0-47E8-A44B-847EB276DE52"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PegaseUIData/Group/Rapport/RecetteDepenseBar/RecetteDepenseBar4.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "102"
-            endingLineNumber = "102"
-            landmarkName = "chartValueSelected(_:entry:highlight:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "2D425DAE-C1C2-45DA-A857-25A76000D6DC"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -158,8 +126,8 @@
             filePath = "PegaseUIData/Group/Rapport/RecetteDepenseBar/RecetteDepenseBar4.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "97"
-            endingLineNumber = "97"
+            startingLineNumber = "95"
+            endingLineNumber = "95"
             landmarkName = "chartValueSelected(_:entry:highlight:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -167,48 +135,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "DEB4A781-1471-494F-B78C-B8F6B073C48D"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PegaseUIData/Group/Rapport/RecetteDepenseBar/RecetteDepenseBar2.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "127"
-            endingLineNumber = "127"
-            landmarkName = "applyData(expense:income:to:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "897FC700-7CD1-4D9C-9DE3-8F0D024B46E4"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PegaseUIData/Group/Rapport/RecetteDepenseBar/RecetteDepenseBar2.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "133"
-            endingLineNumber = "133"
-            landmarkName = "applyData(expense:income:to:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "206F955D-4BC0-4D19-91F3-D9471CAA9771"
-            shouldBeEnabled = "No"
+            uuid = "57E9C759-F685-4B2B-81FB-A83484B82871"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PegaseUIData/Group/Rapport/RecetteDepenseBar/RecetteDepenseBar4.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "126"
-            endingLineNumber = "126"
-            landmarkName = "chartValueSelected(_:entry:highlight:)"
+            startingLineNumber = "159"
+            endingLineNumber = "159"
+            landmarkName = "chartValueNothingSelected(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
