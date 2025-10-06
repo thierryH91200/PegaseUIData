@@ -68,6 +68,8 @@ extension EntityCheckBook {
 //    •    Gestion des erreurs ou des validations métier.
 //    •    Interaction avec des services tiers (APIs, bases de données, fichiers, etc.).
 //    •    Gestion des états globaux liés à l’application.
+
+@MainActor
 final class ChequeBookManager : ObservableObject {
     
     static let shared = ChequeBookManager()
@@ -84,11 +86,11 @@ final class ChequeBookManager : ObservableObject {
         checkBooks.removeAll()
     }
 
-    @MainActor @discardableResult
+    @discardableResult
     func create(name: String,
                 nbCheques: Int = 25,
                 numPremier: Int = 1,
-                numSuivant: Int = 1,
+                numSuivant: Int = 10,
                 prefix: String = "CH") -> EntityCheckBook? {
         // Créez une instance de EntityCarnetCheques
         guard let account = CurrentAccountManager.shared.getAccount() else {
@@ -111,11 +113,11 @@ final class ChequeBookManager : ObservableObject {
         return entity
     }
 
-    @MainActor func getAllData() -> [EntityCheckBook]? {
+    func getAllData() -> [EntityCheckBook] {
         
         guard let account = CurrentAccountManager.shared.getAccount() else {
             logTag("Erreur : aucun compte courant trouvé.")
-            return nil
+            return []
         }
 
         let lhs = account.uuid
@@ -151,7 +153,7 @@ final class ChequeBookManager : ObservableObject {
         modelContext.undoManager?.endUndoGrouping()
     }
     
-    @MainActor private func defaultCarnetCheques() {
+    private func defaultCarnetCheques() {
         guard checkBooks.isEmpty else { return }
         
         // Prefer injecting the account to avoid relying on a main-actor default init

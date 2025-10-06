@@ -48,7 +48,7 @@ protocol PaymentModeManaging {
     
     func create(account: EntityAccount, name: String, color: NSColor) throws -> EntityPaymentMode?
     func update(entity: EntityPaymentMode, name: String, color: NSColor)
-    func getAllData() -> [EntityPaymentMode]?
+    func getAllData() -> [EntityPaymentMode]
     func getAllNames() -> [String]
     func findOrCreate(account: EntityAccount, name: String, color: Color, uuid: UUID) -> EntityPaymentMode
     func find( account: EntityAccount?, name: String) -> EntityPaymentMode?
@@ -78,25 +78,26 @@ final class PaymentModeManager : PaymentModeManaging, ObservableObject {
     
     func reset() {
         modePayments.removeAll()
-        refresh()
+        _ = getAllData()
     }
 
-    func refresh() {
-        let account = CurrentAccountManager.shared.getAccount()
-        guard let account else { return }
-        
-        let lhs = account.uuid
-        let predicate = #Predicate<EntityPaymentMode> { $0.account.uuid == lhs }
-        let sort = [SortDescriptor(\EntityPaymentMode.name, order: .forward)]
-        let fetchDescriptor = FetchDescriptor<EntityPaymentMode>(predicate: predicate, sortBy: sort)
-        
-        do {
-            modePayments = try modelContext?.fetch(fetchDescriptor) ?? []
-        } catch {
-            printTag("Erreur refresh: \(error)")
-            modePayments = []
-        }
-    }
+//    func refresh() {
+//        let account = CurrentAccountManager.shared.getAccount()
+//        guard let account else { return }
+//        
+//        let lhs = account.uuid
+//        let predicate = #Predicate<EntityPaymentMode> { $0.account.uuid == lhs }
+//        let sort = [SortDescriptor(\EntityPaymentMode.name, order: .forward)]
+//        let fetchDescriptor = FetchDescriptor<EntityPaymentMode>(predicate: predicate, sortBy: sort)
+//        
+//        do {
+//            modePayments = try modelContext?.fetch(fetchDescriptor) ?? []
+//        } catch {
+//            printTag("Erreur refresh: \(error)")
+//            modePayments = []
+//        }
+//    }
+    
     func create(account: EntityAccount, name: String, color: NSColor) throws -> EntityPaymentMode? {
         let mode = EntityPaymentMode(account: account, name: name, color: color)
         modelContext?.insert(mode)
@@ -123,7 +124,7 @@ final class PaymentModeManager : PaymentModeManaging, ObservableObject {
         }
     }
 
-    @MainActor func getAllData() -> [EntityPaymentMode]? {
+    func getAllData() -> [EntityPaymentMode] {
                 
         let account = CurrentAccountManager.shared.getAccount()
         guard account != nil else {
@@ -148,9 +149,9 @@ final class PaymentModeManager : PaymentModeManaging, ObservableObject {
     }
     
     // MARK: getAllNames ModePaiement
-    @MainActor func getAllNames() -> [String] {
+    func getAllNames() -> [String] {
         
-         return getAllData()?.map { $0.name } ?? []
+         return getAllData().map { $0.name }
     }
 
     // MARK: findOrCreate ModePaiement

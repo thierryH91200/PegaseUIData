@@ -169,12 +169,9 @@ struct CheckView: View {
     private func setupDataManager() {
 
         if currentAccountManager.getAccount() != nil {
-            if let allData = ChequeBookManager.shared.getAllData() {
-                dataManager.checkBooks = allData
-                checkBooks = allData
-            } else {
-                print("❗️Erreur : getAllData() a renvoyé nil")
-            }
+            let allData = ChequeBookManager.shared.getAllData() 
+            dataManager.checkBooks = allData
+            checkBooks = allData
         } else {
             // Aucun compte courant — on vide la table pour éviter des crashs
             dataManager.checkBooks = []
@@ -203,7 +200,7 @@ struct CheckView: View {
     
     // Rafraîchit la liste des carnets de chèques
     private func refreshData() {
-        dataManager.checkBooks = ChequeBookManager.shared.getAllData() ?? []
+        dataManager.checkBooks = ChequeBookManager.shared.getAllData()
         checkBooks = dataManager.checkBooks
     }
 }

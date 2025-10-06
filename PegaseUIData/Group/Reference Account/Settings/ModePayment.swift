@@ -179,12 +179,9 @@ struct ModePaymentView: View {
     private func setupDataManager() {
         
         if currentAccountManager.getAccount() != nil {
-            if let allData = PaymentModeManager.shared.getAllData() {
-                dataManager.modePayments = allData
-                //                dataManager.modePayments = allData
-            } else {
-                print("❗️Erreur : getAllData() a renvoyé nil")
-            }
+            let allData = PaymentModeManager.shared.getAllData()
+            dataManager.modePayments = allData
+            //                dataManager.modePayments = allData
         }
     }
     
@@ -202,9 +199,8 @@ struct ModePaymentView: View {
     }
     
     private func refreshData() {
-        if let allData = PaymentModeManager.shared.getAllData() {
-            dataManager.modePayments = allData
-        }
+        let allData = PaymentModeManager.shared.getAllData()
+        dataManager.modePayments = allData
     }
 }
 

@@ -88,7 +88,7 @@ struct SchedulerFormView: View {
                 String(localized :"Year",table : "Account")]
             
             let entityPreference = PreferenceManager.shared.getAllData(for: account)
-            entityPaymentMode = PaymentModeManager.shared.getAllData()!
+            entityPaymentMode = PaymentModeManager.shared.getAllData()
             entityRubric = RubricManager.shared.getAllData()
             
             if let scheduler = scheduler {

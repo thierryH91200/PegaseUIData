@@ -39,11 +39,11 @@ extension EntityRubric: CustomStringConvertible {
     }
 }
 
+@MainActor
 final class RubricManager {
     
     static let shared = RubricManager()
     
-    @MainActor
     var currentAccount: EntityAccount {
         CurrentAccountManager.shared.getAccount() ?? EntityAccount()
     }
@@ -57,12 +57,11 @@ final class RubricManager {
     
     private init() { }
     
-    @MainActor func reset() {
+    func reset() {
         entitiesRubric.removeAll()
         refresh()
     }
 
-    @MainActor
     func refresh() {
         let account = CurrentAccountManager.shared.getAccount()
         guard let account else { return }
@@ -102,7 +101,7 @@ final class RubricManager {
         entitiesRubric.removeAll { $0.uuid == entity.uuid }
     }
     
-    @MainActor @discardableResult
+    @discardableResult
     func getAllData(account: EntityAccount? = nil) -> [EntityRubric] {
                
         let lhs = currentAccount.uuid
@@ -125,7 +124,7 @@ final class RubricManager {
         return entitiesRubric
     }
         
-    @MainActor func importCSV(from fileURL: URL) {
+    func importCSV(from fileURL: URL) {
         guard let content = try? String(contentsOf: fileURL, encoding: .utf8) else {
             printTag("Erreur de lecture du fichier")
             return
@@ -163,7 +162,7 @@ final class RubricManager {
         }
     }
     
-    @MainActor func defaultRubric(for account: EntityAccount) {
+    func defaultRubric(for account: EntityAccount) {
         guard let url = Bundle.main.url(forResource: "rubrique", withExtension: "csv") else {
             printTag("Error: File not found. ressources : rubrique.csv")
             return

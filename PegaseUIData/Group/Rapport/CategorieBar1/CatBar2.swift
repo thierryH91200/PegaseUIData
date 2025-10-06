@@ -31,6 +31,11 @@ class CategorieBar1ViewModel: ObservableObject {
     private var fullFilteredCache: [EntityTransaction] = []
     
     var chartView : BarChartView?
+    // X-axis labels and section ordering for selection mapping
+    @Published var monthLabels: [String] = []
+    var sectionOrder: [String] = []
+    // Persist unique rubrics for grouped bar rendering
+    private var uniqueRubrics: [RubricColor] = []
 
     static let shared = CategorieBar1ViewModel()
     
@@ -41,6 +46,12 @@ class CategorieBar1ViewModel: ObservableObject {
     var labels: [String] {
         resultArray.map { $0.name }
     }
+    
+    let formatterDate: DateFormatter = {
+        let fmt = DateFormatter()
+        fmt.dateFormat = DateFormatter.dateFormat(fromTemplate: "MMM/yyyy", options: 0, locale: Locale.current)
+        return fmt
+    }()
 
     let formatterPrice: NumberFormatter = {
         let _formatter = NumberFormatter()
@@ -67,8 +78,99 @@ class CategorieBar1ViewModel: ObservableObject {
         }
     }
 
+    private func setDataCount()
+    {
+        // Ensure we have a chart view and data
+        guard let chartView = self.chartView else { return }
+        let dataPoints = self.resultArray
+        let rubrics = self.uniqueRubrics
+
+        // No data: clear chart
+        guard !dataPoints.isEmpty else {
+            chartView.data = nil
+            chartView.data?.notifyDataChanged()
+            chartView.notifyDataSetChanged()
+            return
+        }
+
+        // Need at least one rubric to build grouped bars
+        guard !rubrics.isEmpty else {
+            chartView.data = nil
+            chartView.data?.notifyDataChanged()
+            chartView.notifyDataSetChanged()
+            return
+        }
+
+        // Collect and sort section keys (e.g., YYYYMM strings)
+        let allSectionIDs = Array(Set(dataPoints.map { $0.section }))
+        let sortedSectionIDs = allSectionIDs.sorted(by: { $0 < $1 })
+
+        // Build human-readable month labels from section IDs
+        var monthLabels: [String] = []
+        for section in sortedSectionIDs {
+            if let numeric = Int(section) {
+                var comp = DateComponents()
+                comp.year = numeric / 100
+                comp.month = numeric % 100
+                if let date = Calendar.current.date(from: comp) {
+                    monthLabels.append(formatterDate.string(from: date))
+                } else {
+                    monthLabels.append(section)
+                }
+            } else {
+                monthLabels.append(section)
+            }
+        }
+        // Persist labels and order for selection mapping
+        self.sectionOrder = sortedSectionIDs
+        self.monthLabels = monthLabels
+
+        // Build one dataset per rubric, aligned on the same X indexes (months)
+        let dataSets: [BarChartDataSet] = rubrics.map { rubric in
+            var entries: [BarChartDataEntry] = []
+            for (idx, monthKey) in sortedSectionIDs.enumerated() {
+                let value = dataPoints.first(where: { $0.section == monthKey && $0.name == rubric.name })?.value ?? 0
+                entries.append(BarChartDataEntry(x: Double(idx), y: abs(value)))
+            }
+            let set = BarChartDataSet(entries: entries, label: rubric.name)
+            set.colors = [rubric.color]
+            set.drawValuesEnabled = false
+            return set
+        }
+
+        // Configure grouped bars
+        let groupSpace = 0.2
+        let barSpace = 0.0
+        let barWidth = Double(0.8 / Double(rubrics.count))
+
+        let data = BarChartData(dataSets: dataSets)
+        data.setValueFormatter(DefaultValueFormatter(formatter: formatterPrice))
+        if let valueFont = NSFont(name: "HelveticaNeue-Light", size: CGFloat(11.0)) {
+            data.setValueFont(valueFont)
+        }
+        data.setValueTextColor(NSColor.labelColor)
+        data.barWidth = barWidth
+        data.groupBars(fromX: 0.0, groupSpace: groupSpace, barSpace: barSpace)
+
+        // X axis range and labels
+        let groupCount = sortedSectionIDs.count + 1
+        let startIndex = 0
+        let endIndex = startIndex + groupCount
+        chartView.xAxis.axisMinimum = Double(startIndex)
+        chartView.xAxis.axisMaximum = Double(endIndex)
+        chartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: monthLabels)
+
+        // Apply data to chart
+        chartView.data = data
+        chartView.fitBars = true
+        chartView.data?.notifyDataChanged()
+        chartView.notifyDataSetChanged()
+    }
+
     func updateChartData( startDate: Date, endDate: Date) {
         // Configure the transaction manager with context if needed
+        
+        var arrayUniqueRubriques   = [RubricColor]()
 
         // Fetch transactions in the requested range
         self.listTransactions = ListTransactionsManager.shared.getAllData(from: startDate, to: endDate)
@@ -80,46 +182,65 @@ class CategorieBar1ViewModel: ObservableObject {
         }
 
         // Build flat data from sousOperations
-        var dataArray: [DataGraph] = []
-        for transaction in listTransactions {
-            let sousOperations = transaction.sousOperations
+        // Récupere le nom de toutes les rubriques
+        // Récupere les datas pour la période choisie
+        var setUniqueRubrique     = Set<RubricColor>()
+        var dataRubrique = [DataGraph]()
+        
+        for listTransaction in listTransactions {
+            
+            let id = listTransaction.sectionIdentifier!
+            
+            let sousOperations = listTransaction.sousOperations
             for sousOperation in sousOperations {
-                if let rubric = sousOperation.category?.rubric {
-                    let name = rubric.name
-                    let value = sousOperation.amount
-                    let color = rubric.color
-                    dataArray.append(DataGraph(name: name, value: value, color: color))
-                }
+                
+                let amount    = sousOperation.amount
+                
+                let nameRubric = sousOperation.category?.rubric?.name
+                let color    = sousOperation.category?.rubric?.color
+                let rubricColor = RubricColor(name : nameRubric!, color: color ?? .black)
+                
+                setUniqueRubrique.insert(rubricColor)
+                
+                let data = DataGraph(section: id, name: nameRubric!, value: amount, color: color ?? .black)
+                dataRubrique.append( data)
+            }
+        }
+        arrayUniqueRubriques = setUniqueRubrique.sorted { $0.name > $1.name }
+        
+        // sum per rubric for each period (section)
+        var perSectionResults: [DataGraph] = []
+        let allSectionKeys = Set<String>(dataRubrique.map { $0.section })
+        let selectedRubricNames: Set<String>? = selectedCategories.isEmpty ? nil : Set(selectedCategories)
+
+        for sectionKey in allSectionKeys {
+            for rubric in arrayUniqueRubriques {
+                // Apply rubric filter if any
+                if let filter = selectedRubricNames, !filter.contains(rubric.name) { continue }
+                let matches = dataRubrique.filter { $0.section == sectionKey && $0.name == rubric.name }
+                let sum = matches.map({ $0.value }).reduce(0, +)
+                perSectionResults.append(DataGraph(section: sectionKey, name: rubric.name, value: sum, color: rubric.color))
             }
         }
 
-        // Group by name and sum values
-        let allKeys = Set(dataArray.map { $0.name })
-        var results: [DataGraph] = []
-        for key in allKeys {
-            let data = dataArray.filter { $0.name == key }
-            let sum = data.map { $0.value }.reduce(0, +)
-            if let color = data.first?.color {
-                results.append(DataGraph(name: key, value: sum, color: color))
-            }
+        // Sort consistently: by section (ascending), then rubric name (ascending)
+        perSectionResults.sort { (a, b) -> Bool in
+            if a.section == b.section { return a.name < b.name }
+            return a.section < b.section
         }
 
-        // Apply category filter if any
-        var filteredResults = results
-        if !selectedCategories.isEmpty {
-            filteredResults = results.filter { selectedCategories.contains($0.name) }
+        // Persist results and rubrics for setDataCount()
+        self.resultArray = perSectionResults
+        if let filter = selectedRubricNames {
+            self.uniqueRubrics = arrayUniqueRubriques.filter { filter.contains($0.name) }
+        } else {
+            self.uniqueRubrics = arrayUniqueRubriques
         }
 
-        // Sort and publish
-        let sorted = filteredResults.sorted { $0.name < $1.name }
-        self.resultArray = sorted
-
-        // Build chart entries
-        var entries: [BarChartDataEntry] = []
-        for (i, item) in sorted.enumerated() {
-            entries.append(BarChartDataEntry(x: Double(i), y: item.value))
+        // Ask the chart to refresh on the main thread
+        DispatchQueue.main.async {
+            self.setDataCount()
         }
-        self.dataEntries = entries
     }
     
     func handleBarSelection(rubricName: String) {
@@ -162,3 +283,4 @@ class CategorieBar1ViewModel: ObservableObject {
         self.isBarSelectionActive = false
     }
 }
+

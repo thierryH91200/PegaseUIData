@@ -78,7 +78,7 @@ final class PreferenceManager: PreferenceManaging {
             }
         }
         
-        newPreference.paymentMode = PaymentModeManager.shared.getAllData()?.first
+        newPreference.paymentMode = PaymentModeManager.shared.getAllData().first
 
         let rubrics = RubricManager.shared.getAllData(account: account)
         if let firstRubric = rubrics.first {

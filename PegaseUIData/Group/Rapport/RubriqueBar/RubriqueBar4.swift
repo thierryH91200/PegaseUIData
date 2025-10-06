@@ -90,6 +90,8 @@ struct DGBarChart5Representable: NSViewRepresentable {
         
         public func chartValueNothingSelected(_ chartView: ChartViewBase)
         {
+            guard !ListTransactionsManager.shared.listTransactions.isEmpty else { return }
+            ListTransactionsManager.shared.listTransactions = []
         }
     }
     

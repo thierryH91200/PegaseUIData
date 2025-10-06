@@ -4,7 +4,6 @@
 ////
 ////  Created by Thierry hentic on 16/04/2025.
 ////
-//
 import SwiftUI
 import SwiftData
 import DGCharts
@@ -32,13 +31,11 @@ struct CategorieBar1View1: View {
         let days = cal.dateComponents([.day], from: start, to: end).day ?? 0
         return 0...Double(max(0, days))
     }
-
+    
     @State private var selectedStart: Double = 0
     @State private var selectedEnd: Double = 30
     private let oneDay = 3600.0 * 24.0 // one day
     
-    @State private var chartView: BarChartView?
-    @State private var selectedItem: DataGraph? = nil
     
     var body: some View {
         VStack {
@@ -85,27 +82,10 @@ struct CategorieBar1View1: View {
             }
             .padding(.bottom, 8)
             
-            if viewModel.dataEntries.isEmpty {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 12).fill(Color.secondary.opacity(0.2))
-                    Text("No entries over the period")
-                        .foregroundStyle(.secondary)
-                }
-                .frame(width: 600, height: 400)
-                .padding()
-            } else {
-                
-                DGBarChart7Representable(
-                    viewModel: viewModel,
-                    onSelectBar: { index, item in
-                        selectedItem = item
-                    })
+            CategorieBarChartHost(
+                viewModel: viewModel)
                 .frame(maxWidth: .infinity, maxHeight: 400)
                 .padding()
-                .onAppear {
-                    viewModel.updateAccount(minDate: minDate)
-                }
-            }
 
             GroupBox(label: Label("Filter by period", systemImage: "calendar")) {
                 VStack(alignment: .leading, spacing: 8) {
@@ -146,10 +126,7 @@ struct CategorieBar1View1: View {
             maxDate = listTransactions.last?.dateOperation ?? Date()
             selectedEnd = maxDate.timeIntervalSince(minDate) / oneDay
 
-            chartView = BarChartView()
-            if let chartView = chartView {
-                CategorieBar1ViewModel.shared.configure(with: chartView)
-            }
+            viewModel.updateAccount(minDate: minDate)
             updateChart()
         }
         
@@ -198,7 +175,7 @@ struct CategorieBar1View1: View {
     }
     
     private func exportChartAsImage() {
-        guard let chartView = chartView else { return }
+        guard let chartView = viewModel.chartView else { return }
 
         let panel = NSSavePanel()
         panel.allowedContentTypes = [.png]
@@ -223,5 +200,4 @@ struct CategorieBar1View1: View {
         return nil
     }
 }
-
 

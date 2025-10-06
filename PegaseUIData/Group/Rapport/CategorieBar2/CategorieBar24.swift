@@ -61,6 +61,8 @@ struct DGBarChart2Representable: NSViewRepresentable {
         
         public func chartValueNothingSelected(_ chartView: ChartViewBase)
         {
+            guard !ListTransactionsManager.shared.listTransactions.isEmpty else { return }
+            ListTransactionsManager.shared.listTransactions = []
         }
     }
     
@@ -119,13 +121,13 @@ struct DGBarChart2Representable: NSViewRepresentable {
 
         // MARK: xAxis
         let xAxis                      = chartView.xAxis
-        xAxis.centerAxisLabelsEnabled = true
-        xAxis.granularity             = 1.0
         xAxis.gridLineWidth           = 2.0
         xAxis.labelCount              = 20
         xAxis.labelFont               = NSFont(name: "HelveticaNeue-Light", size: CGFloat(14.0))!
-        xAxis.labelPosition           = .bottom
         xAxis.labelTextColor          = .labelColor
+        xAxis.centerAxisLabelsEnabled = true
+        xAxis.granularity             = 1.0
+        xAxis.labelPosition           = .top
 
         // MARK: leftAxis
         let leftAxis                  = chartView.leftAxis

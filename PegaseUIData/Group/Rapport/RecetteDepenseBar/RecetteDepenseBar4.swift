@@ -59,8 +59,6 @@ struct DGBarChart4Representable: NSViewRepresentable {
         // Keep axis config in sync
         let xAxis = chartView.xAxis
         xAxis.valueFormatter = IndexAxisValueFormatter(values: labels)
-        xAxis.axisMinimum = -0.25
-        xAxis.axisMaximum = Double(labels.count) + 0.25
 
         let chartData = makeChartData()
         chartView.data = chartData
@@ -148,12 +146,12 @@ struct DGBarChart4Representable: NSViewRepresentable {
         }
         
         public func chartValueNothingSelected(_ chartView: ChartViewBase) {
-            let restored = self.fullFilteredCache
+            // On deselection, show no transactions
             self.fullFilteredCache.removeAll()
             DispatchQueue.main.async {
                 var didChange = false
-                if ListTransactionsManager.shared.listTransactions != restored {
-                    ListTransactionsManager.shared.listTransactions = restored
+                if !ListTransactionsManager.shared.listTransactions.isEmpty {
+                    ListTransactionsManager.shared.listTransactions = []
                     didChange = true
                 }
                 if didChange {
@@ -187,12 +185,13 @@ struct DGBarChart4Representable: NSViewRepresentable {
         xAxis.labelCount = 20
         xAxis.labelFont = NSFont.systemFont(ofSize: 14, weight: .light)
         xAxis.labelTextColor = .labelColor
+        
         xAxis.centerAxisLabelsEnabled = true
         xAxis.granularity = 1
         xAxis.labelPosition = .top
         
-        xAxis.axisMinimum = -0.25
-        xAxis.axisMaximum = Double(labels.count) + 0.25
+        xAxis.axisMinimum = 0.0
+        xAxis.axisMaximum = Double(labels.count)
 
         // MARK: leftAxis
         let leftAxis                   = chartView.leftAxis

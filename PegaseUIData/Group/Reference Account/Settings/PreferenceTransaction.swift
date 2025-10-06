@@ -238,9 +238,9 @@ struct PreferenceTransactionView: View {
     func configureFormState() async throws {
         guard DataContext.shared.context != nil else { return }
 
-        if let modes = PaymentModeManager.shared.getAllData() {
+        let modes = PaymentModeManager.shared.getAllData()
             entityPaymentMode = modes
-        }
+        
         if let account = CurrentAccountManager.shared.getAccount() {
             let status = StatusManager.shared.getAllData(for: account)
                 entityStatus = status
@@ -264,7 +264,7 @@ struct PreferenceTransactionView: View {
             selectedCategoryID = nil
             isExpanded = false
             entityStatus = StatusManager.shared.getAllData(for: account)
-            entityPaymentMode = PaymentModeManager.shared.getAllData() ?? []
+            entityPaymentMode = PaymentModeManager.shared.getAllData()
             entityRubric = RubricManager.shared.getAllData()
             entityCategorie = []
             return 
@@ -277,7 +277,7 @@ struct PreferenceTransactionView: View {
         isExpanded = entityPreference.signe
         
         entityStatus = StatusManager.shared.getAllData(for: account)
-        entityPaymentMode = PaymentModeManager.shared.getAllData() ?? [ ]
+        entityPaymentMode = PaymentModeManager.shared.getAllData()
         entityRubric = RubricManager.shared.getAllData()
         if let rubric = entityPreference.category?.rubric {
             entityCategorie = rubric.categorie
