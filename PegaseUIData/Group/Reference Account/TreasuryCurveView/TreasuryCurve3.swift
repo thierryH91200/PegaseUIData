@@ -11,15 +11,14 @@ import DGCharts
 import Combine
 
 
-
 @MainActor
-protocol TeeasuryManaging {
+protocol TreasuryManaging {
     func refresh(for account: EntityAccount?, minDate: Date)
     func updateChartData()
 }
 
 
-class TresuryLineViewModel: ObservableObject, TeeasuryManaging {
+class TresuryLineViewModel: ObservableObject, TreasuryManaging {
     
     @Published var listTransactions: [EntityTransaction] = []
     // Transactions of the currently selected day in the chart (for detail UI)
@@ -41,9 +40,6 @@ class TresuryLineViewModel: ObservableObject, TeeasuryManaging {
     
     static let shared = TresuryLineViewModel()
 
-    
-//    func updateAccount(minDate: Date) {
-    
     @MainActor func refresh(for account: EntityAccount?, minDate: Date)  {
         guard account != nil else {
             self.listTransactions = []

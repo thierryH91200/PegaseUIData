@@ -61,9 +61,19 @@ struct DGBarChart2Representable: NSViewRepresentable {
         
         public func chartValueNothingSelected(_ chartView: ChartViewBase)
         {
-            guard !ListTransactionsManager.shared.listTransactions.isEmpty else { return }
-            ListTransactionsManager.shared.listTransactions = []
+            // On deselectionne, show no transactions
+            DispatchQueue.main.async {
+                var didChange = false
+                if !ListTransactionsManager.shared.listTransactions.isEmpty {
+                    ListTransactionsManager.shared.listTransactions = []
+                    didChange = true
+                }
+                if didChange {
+                    NotificationCenter.default.post(name: .transactionsSelectionChanged, object: nil)
+                }
+            }
         }
+        
     }
     
     func makeNSView(context: Context) -> BarChartView {

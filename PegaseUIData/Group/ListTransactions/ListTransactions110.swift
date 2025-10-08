@@ -19,6 +19,7 @@ struct OperationRow: View {
     @EnvironmentObject private var colorManager          : ColorManager
     
     @Binding var selectedTransactions: Set<UUID>
+    var transactions: [EntityTransaction]
     @State private var info: String = ""
     
     @State private var showFileImporter = false
@@ -35,7 +36,7 @@ struct OperationRow: View {
                                  String(localized:"Status"),
                                  String(localized:"Amount")]
 
-    private var transactions: [EntityTransaction] { ListTransactionsManager.shared.listTransactions }
+    // private var transactions: [EntityTransaction] { ListTransactionsManager.shared.listTransactions }
     // Récupère le compte courant de manière sécurisée.
     var compteCurrent: EntityAccount? {
         CurrentAccountManager.shared.getAccount()
@@ -108,6 +109,17 @@ struct OperationRow: View {
             if let savedData = UserDefaults.standard.data(forKey: key),
                let loadedStates = try? JSONDecoder().decode([String: Bool].self, from: savedData) {
                 disclosureStates = loadedStates
+            }
+        }
+        .onChange(of: transactions.map { $0.id }) { _, _ in
+            // Ouvre par défaut les mois pour la nouvelle source de données
+            for yearGroup in groupTransactionsByYear(transactions: transactions) {
+                for monthGroup in yearGroup.monthGroups {
+                    let key = "month_\(yearGroup.year)_\(monthGroup.month)"
+                    if disclosureStates[key] == nil {
+                        disclosureStates[key] = true
+                    }
+                }
             }
         }
         .fileImporter(

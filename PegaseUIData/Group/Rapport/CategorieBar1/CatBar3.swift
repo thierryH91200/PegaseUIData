@@ -82,7 +82,7 @@ struct CategorieBar1View1: View {
             }
             .padding(.bottom, 8)
             
-            CategorieBarChartHost(
+            DGBarChart7Representable(
                 viewModel: viewModel)
                 .frame(maxWidth: .infinity, maxHeight: 400)
                 .padding()

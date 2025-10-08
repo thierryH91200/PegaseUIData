@@ -24,11 +24,6 @@ struct TreasuryCurveView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-
-            SummaryView(
-                dashboard: $dashboard
-            )
-            
             TreasuryCurve(dashboard: $dashboard,
                           allTransactions: $allTransactions)
                 .task {

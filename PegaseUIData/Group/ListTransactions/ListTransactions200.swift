@@ -1,140 +1,427 @@
+
+
 //
-//  ListTransactions1.swift
+//  Untitled 2.swift
 //  PegaseUIData
 //
-//  Created by Thierry hentic on 26/02/2025.
+//  Created by Thierry hentic on 25/03/2025.
 //
 
 import SwiftUI
 import SwiftData
 
-
-struct GradientText: View {
-    var text: String
-    var gradientImage: NSImage? {
-        NSImage(named: NSImage.Name("Gradient"))
-    }
+struct ListTransactions200: View {
     
-    var body: some View {
-        Text(text)
-            .font(.custom("Silom", size: 16))
-            .background(LinearGradient(gradient: Gradient(colors: [Color.yellow.opacity(0.3), Color.yellow.opacity(0.7)]), startPoint: .top, endPoint: .bottom))
-    }
-}
-
-//Statut de l'opération : Prévu, Engagé, Pointé. Vous pouvez utiliser le clavier pour choisir la valeur en tapant P pour Prévu, E pour Engagé et T pour Pointé.
-// Lorsque le statut est Prévu ou Engagé, la date de pointage est estimée et le montant est modifiable.
-// Lorsque le statut est Pointé, la date de pointage doit être celle indiquée sur le relevé et le montant n'est plus modifiable.
-
-struct SummaryView: View {
+    @Environment(\.modelContext) private var modelContext
+    
+    @EnvironmentObject private var currentAccountManager : CurrentAccountManager
+    @EnvironmentObject private var colorManager          : ColorManager
+    
+    var injectedTransactions: [EntityTransaction]? = nil
+    private var transactions: [EntityTransaction] { injectedTransactions ?? ListTransactionsManager.shared.listTransactions }
+    
     @Binding var dashboard: DashboardState
+    @Binding var selectedTransactions: Set<UUID>
+    @State private var information: AttributedString = ""
+    
+    @State private var refresh200 = false
+    @State private var currentSectionIndex: Int = 0
+    
+    @State var soldeBanque = 0.0
+    @State var soldeReel = 0.0
+    @State var soldeFinal = 0.0
+    
+    // Clipboard state for copy/cut/paste
+    @State private var clipboardTransactions: [EntityTransaction] = []
+    @State private var isCutOperation = false
+    
+    // Récupère le compte courant de manière sécurisée.
+    var compteCurrent: EntityAccount? {
+        CurrentAccountManager.shared.getAccount()
+    }
     
     var body: some View {
-        HStack(spacing: 0) {
-            
-            VStack {
-                Text("Final balance")
-                Text(String(format: "%.2f €", dashboard.planned))
-                    .font(.title)
-                    .foregroundColor(.green)
-            }
-            .frame(maxWidth: .infinity)
-            .background(LinearGradient(gradient: Gradient(colors: [Color.cyan.opacity(0.1), Color.cyan.opacity(0.6)]), startPoint: .top, endPoint: .bottom))
-            .border(Color.black, width: 1)
-
-            VStack {
-                Text("Actual balance")
-                Text(String(format: "%.2f €", dashboard.engaged))
-                    .font(.title)
-                    .foregroundColor(.orange)
-            }
-            .frame(maxWidth: .infinity)
-            .background(LinearGradient(gradient: Gradient(colors: [Color.cyan.opacity(0.1), Color.cyan.opacity(0.6)]), startPoint: .top, endPoint: .bottom))
-            .border(Color.black, width: 1)
-            
-            VStack {
-                Text("Bank balance")
-                Text(String(format: "%.2f €", dashboard.executed))
-                    .font(.title)
-                    .foregroundColor(.blue)
-            }
-            .frame(maxWidth: .infinity)
-            .background(LinearGradient(gradient: Gradient(colors: [Color.cyan.opacity(0.1), Color.cyan.opacity(0.6)]), startPoint: .top, endPoint: .bottom))
-            .border(Color.black, width: 1)
-
+        VStack {
+//            headerViewSection
+//                .transaction { $0.animation = nil }
+            summaryViewSection
+            transactionListSection
         }
-        .frame(maxWidth: .infinity)
+
+            .onChange(of: colorManager.colorChoix) { old, new in
+            }
+        
+            .onReceive(NotificationCenter.default.publisher(for: .transactionsAddEdit)) { _ in
+                printTag("transactionsAddEdit notification received")
+                DispatchQueue.main.async {
+                    _ = ListTransactionsManager.shared.getAllData()
+                    SwiftUI.withTransaction(SwiftUI.Transaction(animation: nil)) {
+ //                       refresh.toggle()
+                    }
+                    DispatchQueue.main.async {
+                        applyDashboardFromBalances()
+                    }
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .transactionsImported)) { _ in
+                printTag("transactionsImported notification received")
+                DispatchQueue.main.async {
+                    _ = ListTransactionsManager.shared.getAllData()
+                    SwiftUI.withTransaction(SwiftUI.Transaction(animation: nil)) {
+//                        refresh.toggle()
+                    }
+                    DispatchQueue.main.async {
+                        applyDashboardFromBalances()
+                    }
+                }
+            }
+
+            .onChange(of: currentAccountManager.currentAccountID) { old, new in
+                printTag("Chgt de compte détecté: \(String(describing: new))")
+                DispatchQueue.main.async {
+                    _ = ListTransactionsManager.shared.getAllData()
+                    SwiftUI.withTransaction(SwiftUI.Transaction(animation: nil)) {
+//                        refresh200.toggle()
+                    }
+                    DispatchQueue.main.async {
+                        applyDashboardFromBalances()
+                    }
+                }
+            }
+        
+            .onChange(of: selectedTransactions) { _, _ in
+                printTag("selectionDidChange called")
+                selectionDidChange()
+            }
+        
+            .onAppear() {
+                balanceCalculation()
+                DispatchQueue.main.async {
+                    applyDashboardFromBalances()
+                }
+                selectionDidChange()
+            }
+        
+        // Clipboard/copy/cut/paste handlers
+            .onReceive(NotificationCenter.default.publisher(for: .copySelectedTransactions)) { _ in
+                clipboardTransactions = transactions.filter { selectedTransactions.contains($0.id) }
+                isCutOperation = false
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .cutSelectedTransactions)) { _ in
+                clipboardTransactions = transactions.filter { selectedTransactions.contains($0.id) }
+                isCutOperation = true
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .pasteSelectedTransactions)) { _ in
+                if let targetAccount = CurrentAccountManager.shared.getAccount() {
+                    
+                    for transaction in clipboardTransactions {
+                        
+                        let status = StatusManager.shared.find(name : transaction.status!.name)
+                        let paymentMode = PaymentModeManager.shared.find(name: transaction.paymentMode!.name)
+                        
+                        let newTransaction = EntityTransaction()
+                        newTransaction.dateOperation = transaction.dateOperation
+                        newTransaction.datePointage  = transaction.datePointage
+                        newTransaction.status        = status
+                        newTransaction.paymentMode   = paymentMode
+                        newTransaction.checkNumber   = transaction.checkNumber
+                        newTransaction.bankStatement = transaction.bankStatement
+                        
+                        newTransaction.account = targetAccount
+                        
+                        for item in transaction.sousOperations {
+                            let sousOperation = EntitySousOperation()
+                            
+                            let category = CategoryManager.shared.find(name: item.category!.name)
+                            
+                            sousOperation.libelle     = item.libelle
+                            sousOperation.amount      = item.amount
+                            sousOperation.category    = category
+                            sousOperation.transaction = newTransaction
+                            
+                            modelContext.insert(sousOperation)
+                            newTransaction.addSubOperation(sousOperation)
+                        }
+                        
+                        modelContext.insert(newTransaction)
+                    }
+                    if isCutOperation {
+                        for transaction in clipboardTransactions {
+                            modelContext.delete(transaction)
+                        }
+                    }
+                    try? modelContext.save()
+                    
+                    _ = ListTransactionsManager.shared.getAllData()
+                    clipboardTransactions = []
+                    isCutOperation = false
+                    SwiftUI.withTransaction(SwiftUI.Transaction(animation: nil)) {
+ //                       refresh.toggle()
+                    }
+                    DispatchQueue.main.async {
+                        applyDashboardFromBalances()
+                    }
+                }
+            }
     }
-}
-
-// Représente un regroupement par année.
-struct TransactionsByYear100: Identifiable {
-    let id = UUID()
-    let year: String
-    let months: [TransactionsByMonth100]
-}
-
-// Représente un groupe de transactions d'un mois précis (par exemple 2023-02).
-struct TransactionsByMonth100: Identifiable {
-    let id = UUID()
-    let year: String
-    let month: Int
-    let transactions: [EntityTransaction]
     
-    /// Formatage mois (ex: "Février")
-    var monthName: String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "fr_FR") // ou "en_US" etc.
-        formatter.dateFormat = "LLLL" // nom du mois
-        if let transaction = transactions.first {
-            let date = transaction.datePointage
-            return formatter.string(from: date).capitalized
+    private var mainContent: some View {
+        VStack {
+            headerViewSection
+                .transaction { $0.animation = nil }
+            summaryViewSection
+            transactionListSection
         }
-        return "Mois Inconnu"
     }
-
-    /// Calcul du total du mois
-    var totalAmount: Double {
-        transactions.reduce(0.0) { $0 + $1.amount }
+    
+    private var summaryViewSection: some View {
+        return SummaryView(
+            dashboard: $dashboard
+        )
+            .frame(maxWidth: .infinity, maxHeight: 100)
     }
-}
+    
+    private var headerViewSection: some View {
+        HStack {
+            Text("\(compteCurrent?.name ?? String(localized: "No checking account"))")
+            Image(systemName: "info.circle")
+                .foregroundColor(.accentColor)
+            Text(information)
+                .font(.system(size: 16, weight: .bold))
+                .lineLimit(2)
+                .multilineTextAlignment(.leading)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(NSColor.windowBackgroundColor))
+    }
+    
+    private var transactionListSection: some View {
+        NavigationView {
+            GeometryReader { _ in
+                List {
+                    Section(header: EmptyView()) {
+                        HStack(spacing: 0) {
+                            columnGroup1()
+                            columnGroup2()
+                        }
+                    }
+                    .listRowInsets(EdgeInsets())
+                    .padding(.vertical, 6)
+                    .background(Color.gray.opacity(0.1))
+                    OperationRow(selectedTransactions: $selectedTransactions, transactions: transactions)
+                }
+                .transaction { $0.animation = nil }
+//                .animation(nil, value: refresh)
+                .listStyle(.plain)
+                .frame(minWidth: 800, maxWidth: 1200)
+//                .frame(height: .infinity)
+//                .id(refresh)
+            }
+            .background(Color.white)
+        }
+    }
+    @ViewBuilder
+    func verticalDivider() -> some View {
+        Rectangle()
+            .fill(Color.gray.opacity(0.4))
+            .frame(width: 2, height: 20)
+            .padding(.horizontal, 2)
+    }
+        
+    @MainActor
+    func resetDatabase(using context: ModelContext) {
+        let transactions = ListTransactionsManager.shared.getAllData()
+        
+        for transaction in transactions {
+            context.delete(transaction)
+        }
+        
+        try? context.save()
+//        loadTransactions()
+        balanceCalculation()
+    }
+    
+    private func columnGroup1() -> some View {
+        HStack(spacing: 0) {
+            Text("Date of pointing").bold().frame(width: ColumnWidths.datePointage, alignment: .leading)
+            verticalDivider()
+            Text("Date operation").bold().frame(width: ColumnWidths.dateOperation, alignment: .leading)
+            verticalDivider()
+            Text("Comment").bold().frame(width: ColumnWidths.libelle, alignment: .leading)
+            verticalDivider()
+            Text("Rubric").bold().frame(width: ColumnWidths.rubrique, alignment: .leading)
+            verticalDivider()
+            Text("Category").bold().frame(width: ColumnWidths.categorie, alignment: .leading)
+            verticalDivider()
+            Text("Amount").bold().frame(width: ColumnWidths.sousMontant, alignment: .leading)
+            verticalDivider()
+            Text("Bank Statement").bold().frame(width: ColumnWidths.releve, alignment: .leading)
+            verticalDivider()
+            Text("Check Number").bold().frame(width: ColumnWidths.cheque, alignment: .leading)
+            verticalDivider()
+        }
+    }
+    
+    private func columnGroup2() -> some View {
+        HStack(spacing: 0) {
+            Text("Status").bold().frame(width: ColumnWidths.statut, alignment: .leading)
+            verticalDivider()
+            Text("Payment method").bold().frame(width: ColumnWidths.modePaiement, alignment: .leading)
+            verticalDivider()
+            Text("Amount").bold().frame(width: ColumnWidths.montant, alignment: .trailing)
+        }
+    }
+    
+    func selectionDidChange() {
+        
+        let selectedRow = selectedTransactions
+        if selectedRow.isEmpty == false {
+            
+            var transactionsSelected = [EntityTransaction]()
+            
+            var solde = 0.0
+            var expense = 0.0
+            var income = 0.0
+            
+            let formatter = NumberFormatter()
+            formatter.locale = Locale.current
+            formatter.numberStyle = .currency
+            
+            // Filtrer les transactions correspondantes
+            let selectedEntities = transactions.filter { selectedRow.contains($0.id) }
+            
+            for transaction in selectedEntities {
+                transactionsSelected.append(transaction)
+                let amount = transaction.amount
+                
+                solde += amount
+                if amount < 0 {
+                    expense += amount
+                } else {
+                    income += amount
+                }
+            }
+            
+            // Info
+            let amountStr = formatter.string(from: solde as NSNumber)!
+            let strExpense = formatter.string(from: expense as NSNumber)!
+            let strIncome = formatter.string(from: income as NSNumber)!
+            let count = selectedEntities.count
+            
+            let info = AttributedString(String(localized:"Selected \(count) transactions. "))
+            
+            var expenseAttr = AttributedString("Expenses: \(strExpense)")
+            expenseAttr.foregroundColor = expense < 0 ? .red : .blue
+            
+            var incomeAttr = AttributedString(String(localized:", Incomes: \(strIncome)"))
+            incomeAttr.foregroundColor = income < 0 ? .red : .blue
+            
+            let totalAttr = AttributedString(String(localized:", Total: \(amountStr)"))
+            
+            information = info + expenseAttr + incomeAttr + totalAttr
+        }
+    }
+    
+    private func balanceCalculation() {
+        // Récupère les données de l'init
+        
+        guard let initCompte = InitAccountManager.shared.getAllData() else { return }
+        
+        // Initialisation des soldes
+        var balanceRealise = initCompte.realise
+        var balancePrevu   = initCompte.prevu
+        var balanceEngage  = initCompte.engage
+        let initialBalance = balancePrevu + balanceEngage + balanceRealise
+        
+        var computedSoldes: [(EntityTransaction, Double)] = []
+        
+        // Vérification des transactions disponibles
+//        let transactions = ListTransactionsManager.shared.listTransactions
+        let transactions = self.transactions
+        
+        let count = transactions.count
+        
+        // Calcul des soldes transaction par transaction
+        for index in stride(from: count - 1, to: -1, by: -1) {
+            let transaction = transactions[index]
+            
+            let status = transaction.status?.type ?? .inProgress
+            
+            // Mise à jour des soldes en fonction du status
+            switch status {
+            case .planned:
+                balancePrevu += transaction.amount
+            case .inProgress:
+                balanceEngage += transaction.amount
+            case .executed:
+                balanceRealise += transaction.amount
+            }
+            
+            // Calcul du solde de la transaction
+            let soldeValue = (index == count - 1) ?
+            (transaction.amount) + initialBalance :
+            (transactions[index + 1].solde ?? 0.0) + (transaction.amount)
+            computedSoldes.append((transaction, soldeValue))
+        }
+        
+        let newSoldeBanque = balanceRealise
+        let newSoldeReel   = balanceRealise + balanceEngage
+        let newSoldeFinal  = balanceRealise + balanceEngage + balancePrevu
 
-struct YearMonth: Hashable {
-    let year: String
-    let month: Int
-}
-
-func groupTransactionsByYear(transactions: [EntityTransaction]) -> [TransactionsByYear100] {
-    // Dictionnaire [year: [TransactionsByMonth]]
-    var dictionaryByYear: [String: [TransactionsByMonth100]] = [:]
-
-    // Dictionnaire [YearMonth : [EntityTransactions]]
-    var yearMonthDict: [YearMonth: [EntityTransaction]] = [:]
-
-    for transaction in transactions {
-        guard let yearString = transaction.sectionYear else { continue }
-        let datePointage = transaction.datePointage
+        DispatchQueue.main.async {
+            // Applique les soldes calculés aux transactions
+            for (transaction, solde) in computedSoldes {
+                transaction.solde = solde
+            }
+            // Met à jour les états locaux
+            self.soldeBanque = newSoldeBanque
+            self.soldeReel   = newSoldeReel
+            self.soldeFinal  = newSoldeFinal
+            // Met à jour le dashboard
+            applyDashboardFromBalances()
+        }
+        
+        //    NotificationCenter.send(.updateBalance) // Décommente si nécessaire
+    }
+    
+    private func applyDashboardFromBalances() {
+        var tx = SwiftUI.Transaction()
+        tx.disablesAnimations = true
+        SwiftUI.withTransaction(tx) {
+            dashboard.executed = soldeBanque
+            dashboard.engaged  = soldeFinal
+            dashboard.planned  = soldeReel
+        }
+    }
+    
+    private func groupTransactionsByYear(transactions: [EntityTransaction]) -> [YearGroup] {
+        var groupedItems: [YearGroup] = []
         let calendar = Calendar.current
-        let month = calendar.component(.month, from: datePointage)
-
-        let key = YearMonth(year: yearString, month: month)
-        yearMonthDict[key, default: []].append(transaction)
+        
+        // Group transactions by year
+        let groupedByYear = Dictionary(grouping: transactions) { (transaction) -> Int in
+            let components = calendar.dateComponents([.year], from: transaction.datePointage)
+            return components.year ?? 0
+        }
+        
+        for (year, yearTransactions) in groupedByYear {
+            var yearGroup = YearGroup(year: year, monthGroups: [])
+            
+            let groupedByMonth = Dictionary(grouping: yearTransactions) { (transaction) -> Int in
+                let components = calendar.dateComponents([.month], from: transaction.datePointage)
+                return components.month ?? 0
+            }
+            
+            for (month, monthTransactions) in groupedByMonth {
+                let monthName = DateFormatter().monthSymbols[month - 1]
+                let monthGroup = MonthGroup(month: monthName, transactions: monthTransactions)
+                
+                yearGroup.monthGroups.append(monthGroup)
+            }
+            
+            groupedItems.append(yearGroup)
+        }
+        
+        return groupedItems
     }
-
-    // Convertir yearMonthDict → dictionaryByYear
-    for (yearMonth, trans) in yearMonthDict {
-        let byMonth = TransactionsByMonth100(year: yearMonth.year, month: yearMonth.month, transactions: trans)
-        dictionaryByYear[yearMonth.year, default: []].append(byMonth)
-    }
-
-    // Construire un tableau de TransactionsByYear100
-    var result: [TransactionsByYear100] = []
-    for (year, monthsArray) in dictionaryByYear {
-        // Trier les mois par ordre croissant
-        let sortedMonths = monthsArray.sorted { $0.month > $1.month }
-        result.append(TransactionsByYear100(year: year, months: sortedMonths))
-    }
-
-    // Trier par année décroissante (ou croissante)
-    return result.sorted { $0.year > $1.year }
 }

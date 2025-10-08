@@ -146,7 +146,7 @@ struct DGBarChart4Representable: NSViewRepresentable {
         }
         
         public func chartValueNothingSelected(_ chartView: ChartViewBase) {
-            // On deselection, show no transactions
+            // On deselectionne, show no transactions
             self.fullFilteredCache.removeAll()
             DispatchQueue.main.async {
                 var didChange = false

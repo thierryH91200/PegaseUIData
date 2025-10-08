@@ -24,6 +24,10 @@ extension Notification.Name {
 struct DGLineChartRepresentable: NSViewRepresentable {
     @ObservedObject var viewModel: TresuryLineViewModel
     let entries: [ChartDataEntry]
+    
+    // Callbacks to notify SwiftUI when a day is selected/deselected on the chart
+    var onDaySelection: (([EntityTransaction]) -> Void)? = nil
+    var onDeselection: (() -> Void)? = nil
 
     @State private var selectedType: String = "Tous"
     
@@ -144,9 +148,20 @@ struct DGLineChartRepresentable: NSViewRepresentable {
 
         // Mise à jour des listes (manager + viewModel) sur le main thread
         DispatchQueue.main.async {
-            ListTransactionsManager.shared.listTransactions = filteredTransactions
-            self.viewModel.listTransactions = filteredTransactions
-            NotificationCenter.default.post(name: .transactionsSelectionChanged, object: nil)
+            let current = ListTransactionsManager.shared.listTransactions
+            let newIDs = filteredTransactions.map { $0.id }
+            let curIDs = current.map { $0.id }
+            let didChange = (newIDs != curIDs)
+            if didChange {
+                ListTransactionsManager.shared.listTransactions = filteredTransactions
+                self.viewModel.listTransactions = filteredTransactions
+                NotificationCenter.default.post(name: .transactionsSelectionChanged, object: nil)
+            } else {
+                // Keep viewModel in sync without spamming notifications
+                if self.viewModel.listTransactions.map({ $0.id }) != newIDs {
+                    self.viewModel.listTransactions = filteredTransactions
+                }
+            }
         }
     }
     
@@ -186,7 +201,12 @@ struct DGLineChartRepresentable: NSViewRepresentable {
         }
 
         public func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
-            // Cancel any pending deselection if a new selection occurs quickly
+            
+            let i = Int(round(highlight.x))
+            let dataSetIndex = Int(highlight.dataSetIndex)
+            
+            printTag("index: \(i), entryX: \(entry.x), dataSetIndex: \(dataSetIndex) ")
+
             self.deselectWorkItem?.cancel()
             self.deselectWorkItem = nil
 
@@ -274,64 +294,18 @@ struct DGLineChartRepresentable: NSViewRepresentable {
         
         public func chartValueNothingSelected(_ chartView: ChartViewBase)
         {
-            // Debounce deselection to avoid toggling to full list on quick double tap / drag jitter
-            self.deselectWorkItem?.cancel()
-            let work = DispatchWorkItem { [weak self] in
-                guard let self = self else { return }
-                // Reset last selected day to allow future updates
-                self.lastSelectedDayStart = nil
-                // Cancel any pending debounced selection update
-                self.selectionUpdateWorkItem?.cancel()
-                self.selectionUpdateWorkItem = nil
-
-                // Recompute the range-filtered transactions from the full dataset to avoid restoring all data
-                let calendar = Calendar.current
-                let allTransactions = ListTransactionsManager.shared.getAllData(from: nil, to: nil, ascending: true)
-                var restored: [EntityTransaction] = []
-                if let first = allTransactions.first, let last = allTransactions.last {
-                    let firstPointageStart = calendar.startOfDay(for: first.datePointage)
-                    let lastPointageStart  = calendar.startOfDay(for: last.datePointage)
-                    let maxIndex = calendar.dateComponents([.day], from: firstPointageStart, to: lastPointageStart).day ?? 0
-
-                    let selectedStartOffset = max(0, Int(self.parent.viewModel.selectedStart))
-                    let requestedEnd: Int = {
-                        if self.parent.viewModel.selectedEnd.isFinite {
-                            let clamped = max(0, min(self.parent.viewModel.selectedEnd, Double(maxIndex)))
-                            return Int(clamped)
-                        } else {
-                            return maxIndex
-                        }
-                    }()
-                    let selectedEndOffset = min(maxIndex, max(selectedStartOffset, requestedEnd))
-
-                    if let startDate = calendar.date(byAdding: .day, value: selectedStartOffset, to: firstPointageStart),
-                       let endDateExclusive = calendar.date(byAdding: .day, value: selectedEndOffset + 1, to: firstPointageStart) {
-                        restored = allTransactions.filter { tx in
-                            tx.datePointage >= startDate && tx.datePointage < endDateExclusive
-                        }
-                    }
+            DispatchQueue.main.async {
+                var didChange = false
+                if !ListTransactionsManager.shared.listTransactions.isEmpty {
+                    ListTransactionsManager.shared.listTransactions = []
+                    didChange = true
                 }
-
-                Task { @MainActor in
-                    // Unlock selection so auto-refresh can resume
-                    self.parent.viewModel.isDaySelectionActive = false
-                    self.fullFilteredCache.removeAll()
-                    var didChange = false
-                    if ListTransactionsManager.shared.listTransactions != restored {
-                        ListTransactionsManager.shared.listTransactions = restored
-                        didChange = true
-                    }
-                    if self.parent.viewModel.listTransactions != restored {
-                        self.parent.viewModel.listTransactions = restored
-                        didChange = true
-                    }
-                    if didChange {
-                        NotificationCenter.default.post(name: .transactionsSelectionChanged, object: nil)
-                    }
+                if didChange {
+                    NotificationCenter.default.post(name: .transactionsSelectionChanged, object: nil)
                 }
+                // Notify SwiftUI about deselection
+                self.parent.onDeselection?()
             }
-            self.deselectWorkItem = work
-            DispatchQueue.main.asyncAfter(deadline: .now() + self.deselectDebounceInterval, execute: work)
         }
     }
 
@@ -612,4 +586,5 @@ struct DGLineChartRepresentable: NSViewRepresentable {
 //    }
 
 }
+
 

@@ -86,6 +86,7 @@ struct RangeSlider: View {
                                 let newValue = round(valueFrom(percent: percent))
                                 if newValue <= upperValue {
                                     lowerValue = newValue
+                                    NotificationCenter.default.post(name: .sliderValueChanged, object: nil)
                                 }
                             }
                         }
@@ -96,6 +97,7 @@ struct RangeSlider: View {
                                 let newValue = round(valueFrom(percent: percent))
                                 if newValue >= lowerValue {
                                     upperValue = newValue
+                                    NotificationCenter.default.post(name: .sliderValueChanged, object: nil)
                                 }
                             }
                         }
@@ -122,4 +124,8 @@ struct RangeSlider: View {
             .gesture(gesture())
             .accessibilityLabel(isLeft ? "Start" : "End")
     }
+}
+
+extension Notification.Name {
+    static let sliderValueChanged = Notification.Name("sliderValueChanged")
 }
