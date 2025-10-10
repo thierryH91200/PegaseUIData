@@ -17,7 +17,6 @@ protocol TreasuryManaging {
     func updateChartData()
 }
 
-
 class TresuryLineViewModel: ObservableObject, TreasuryManaging {
     
     @Published var listTransactions: [EntityTransaction] = []

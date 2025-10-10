@@ -51,8 +51,9 @@ struct RecetteDepenseBarView: View {
     private func performFalseTask() async {
         // Exécute une tâche asynchrone (par exemple, un délai)
         try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 seconde de délai
-        dashboard.isVisible = false
+        dashboard.isVisible = true
     }
+    
     private func loadTransactions() async {
         transactions = ListTransactionsManager.shared.getAllData()
         minDate = transactions.first?.dateOperation ?? Date()

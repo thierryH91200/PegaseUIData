@@ -16,7 +16,7 @@ struct OperationRow: View {
     @Environment(\.dismiss) private var dismiss
 
     @EnvironmentObject private var currentAccountManager : CurrentAccountManager
-    @EnvironmentObject private var colorManager          : ColorManager
+//    @EnvironmentObject private var colorManager          : ColorManager
     
     @Binding var selectedTransactions: Set<UUID>
     var transactions: [EntityTransaction]

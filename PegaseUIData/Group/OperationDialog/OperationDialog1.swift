@@ -23,8 +23,16 @@ struct OperationDialog: View {
                 .environmentObject(formState)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .layoutPriority(1)
+                .onReceive(NotificationCenter.default.publisher(for: .transactionSelectionChanged)) { notification in
+                    if let transaction = notification.object as? EntityTransaction {
+                        transactionManager.selectedTransaction = transaction
+                    } else {
+                        transactionManager.selectedTransaction = nil
+                    }
+                }
                 .onChange(of: transactionManager.selectedTransaction) {old, new in
                 }
+
         }
         .padding()
     }
@@ -32,5 +40,6 @@ struct OperationDialog: View {
 
 
 //let selectedEntities = transactions.filter { selectedRow.contains($0.id) }
+
 
 

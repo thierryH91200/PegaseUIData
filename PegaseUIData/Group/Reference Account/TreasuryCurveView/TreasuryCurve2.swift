@@ -13,14 +13,13 @@ import Combine
 
 
 struct TreasuryCurve: View {
-    
     @Binding var dashboard: DashboardState
 
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject var currentAccountManager: CurrentAccountManager
-    @EnvironmentObject private var colorManager          : ColorManager
+    @EnvironmentObject private var currentAccountManager: CurrentAccountManager
+    @EnvironmentObject private var colorManager: ColorManager
+    @EnvironmentObject private var transactionManager: TransactionSelectionManager
 
-    
     @StateObject private var viewModel = TresuryLineViewModel()
     @ObservedObject private var transactionsManager = ListTransactionsManager.shared
 
@@ -29,10 +28,10 @@ struct TreasuryCurve: View {
 
     @State private var lowerValue: Double = 0
     @State private var upperValue: Double = 0
-    
+
     @State private var minDate: Date = Date()
     @State private var maxDate: Date = Date()
-    
+
     @State private var selectedStart: Double = 0
     @State private var selectedEnd: Double = 30
     @State private var isDraggingSlider: Bool = false
@@ -45,7 +44,7 @@ struct TreasuryCurve: View {
 
     @State private var lower: Double = 2
     @State private var upper: Double = 10
-    
+
     @State private var selectedTransactionID: EntityTransaction.ID? = nil
 
     @State private var pendingStart: Double = 0
@@ -60,6 +59,7 @@ struct TreasuryCurve: View {
     private var totalAmount: Double {
         filteredTransactions.reduce(0) { $0 + $1.amount }
     }
+
     private var totalDaysRange: ClosedRange<Double> {
         let cal = Calendar.current
         let start = cal.startOfDay(for: minDate)
@@ -68,153 +68,24 @@ struct TreasuryCurve: View {
         let upper = max(1, days)
         return 0...Double(upper)
     }
-    let formatterPrice: NumberFormatter = {
-        let _formatter = NumberFormatter()
-        _formatter.locale = Locale.current
-        _formatter.numberStyle = .currency
-        return _formatter
+
+    private let formatterPrice: NumberFormatter = {
+        let f = NumberFormatter()
+        f.locale = .current
+        f.numberStyle = .currency
+        return f
     }()
 
-
     var body: some View {
-//        let isSelected = selectedTransactions.contains(transaction.id)
-//        let textColor = isSelected ? Color.white : colorManager.colorForTransaction(transaction)
-
         GeometryReader { geometry in
-            
             VStack {
-                Text("Treasury curve")
-                    .font(.headline)
-                    .padding()
-
-                DGLineChartRepresentable(viewModel: viewModel,
-                                         entries: viewModel.dataEntries)
-                    .frame(width: geometry.size.width, height: 400)
-                    .padding()
-
-                GroupBox(label: Label("Filter by period", systemImage: "calendar")) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Selected period : \(dateFromOffset(isDraggingSlider ? pendingStart : selectedStart)) → \(dateFromOffset(isDraggingSlider ? pendingEnd : selectedEnd))")
-                            .font(.callout)
-                            .foregroundColor(.secondary)
-                        
-                        RangeSlider(
-                            lowerValue: $pendingStart,
-                            upperValue: $pendingEnd,
-                            totalRange: totalDaysRange,
-                            valueLabel: { value in
-                                let cal = Calendar.current
-                                let base = cal.startOfDay(for: minDate)
-                                let date = cal.date(byAdding: .day, value: Int(value), to: base) ?? base
-                                let formatter = DateFormatter()
-                                formatter.dateStyle = .short
-                                let date1 = formatter.string(from: date)
-                                return date1
-                            },
-                            thumbSize: 24,
-                            trackHeight: 6
-                    )
-                        .simultaneousGesture(
-                            DragGesture(minimumDistance: 0)
-                                .onChanged { _ in
-                                    if !isDraggingSlider { isDraggingSlider = true }
-                                }
-                                .onEnded { _ in
-                                    isDraggingSlider = false
-                                    selectedStart = pendingStart
-                                    selectedEnd = pendingEnd
-                                    applyFromCurrentSelection()
-                                }
-                        )
-                        .frame(height: 50)
-                        .onAppear {
-                            dashboard.isVisible = true
-
-                            // Initialize slider bounds based on available data
-                            let newStart = 0.0
-                            let newEnd = max(1, totalDaysRange.upperBound)
-                            selectedStart = newStart
-                            selectedEnd = (newEnd <= newStart) ? (newStart + 1) : newEnd
-                            pendingStart = selectedStart
-                            pendingEnd = selectedEnd
-                        }
-                        
-                        Text("\(selectedDays()) days — \(filteredTransactions.count) transaction\(filteredTransactions.count > 1 ? "s" : "") — Total: \(formattedAmount(totalAmount))")
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
-                            .padding(.top, 4)
-                            .transaction { $0.animation = nil }
-                        if hasAppliedInitial {
-                            List(filteredTransactions, id: \.id) { tx in
-                                let isSelected = (tx.id == selectedTransactionID)
-                                let textColor = isSelected ? Color.white : colorManager.colorForTransaction(tx)
-                                
-                                VStack(alignment: .leading, spacing: 4) {
-                                    HStack(alignment: .top, spacing: 4) {
-                                        Text(tx.datePointage, style: .date)
-                                            .frame(minWidth: 110, alignment: .leading)
-
-                                        Text(tx.dateOperation, style: .date)
-                                            .frame(minWidth: 110, alignment: .leading)
-
-                                        Text(tx.statusString)
-                                            .frame(minWidth: 120, alignment: .leading)
-
-                                        Text(tx.paymentModeString)
-                                            .frame(minWidth: 140, alignment: .leading)
-
-                                        Text(tx.bankStatementString)
-                                            .frame(minWidth: 160, alignment: .leading)
-                                    }
-                                    HStack(alignment: .top, spacing: 4) {
-                                        Text(tx.sousOperations.first?.libelle ?? "—")
-                                            .frame(minWidth: 220, alignment: .leading)
-                                        
-                                        Text(tx.sousOperations.first?.category?.rubric?.name ?? "—")
-                                            .frame(minWidth: 120, alignment: .leading)
-                                        
-                                        Text(tx.sousOperations.first?.category?.name ?? "—")
-                                            .frame(minWidth: 140, alignment: .leading)
-
-                                        let amountString = formatterPrice.string(from: NSNumber(value: tx.amount)) ?? "—"
-                                        Text(amountString)
-                                            .frame(minWidth: 160, alignment: .leading)
-                                    }
-                                }
-                                .foregroundColor(textColor)
-                                .padding(6)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .background(isSelected ? Color.accentColor.opacity(0.15) : Color.clear)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 6)
-                                        .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 1)
-                                )
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    if selectedTransactionID == tx.id {
-                                        selectedTransactionID = nil   // toggle off
-                                    } else {
-                                        selectedTransactionID = tx.id // select
-                                    }
-                                }
-                            }
-                            .transaction { $0.animation = nil }
-                            .frame(height: 600)
-                        }
-                        
-                    }
-                    .padding(.top, 4)
-                    .padding(.horizontal)
-                }
+                header
+                chartView(width: geometry.size.width)
+                filterBox
             }
-            .onAppear {
-                refreshData(for: currentAccountManager.getAccount())
-            }
+            .onAppear { refreshData(for: currentAccountManager.getAccount()) }
             .onReceive(NotificationCenter.default.publisher(for: .sliderValueChanged)) { _ in
-                // Applique le filtre correspondant à la position actuelle du slider
-                DispatchQueue.main.async {
-                    applyFromCurrentSelection()
-                }
+                DispatchQueue.main.async { applyFromCurrentSelection() }
             }
             .onReceive(NotificationCenter.default.publisher(for: .transactionsSelectionChanged)) { _ in
                 DispatchQueue.main.async {
@@ -224,10 +95,165 @@ struct TreasuryCurve: View {
         }
     }
 
+    // MARK: - Subviews
+
+    private var header: some View {
+        Text("Treasury curve")
+            .font(.headline)
+            .padding()
+    }
+
+    private func chartView(width: CGFloat) -> some View {
+        DGLineChartRepresentable(viewModel: viewModel, entries: viewModel.dataEntries)
+            .frame(width: width, height: 400)
+            .padding()
+    }
+
+    private var filterBox: some View {
+        GroupBox(label: Label("Filter by period", systemImage: "calendar")) {
+            VStack(alignment: .leading, spacing: 8) {
+                selectedPeriodLabel
+                periodSlider
+                periodSummary
+                if hasAppliedInitial {
+
+                    transactionsList
+                        .transaction { $0.animation = nil }
+                        .frame(height: 600)
+                }
+            }
+            .padding(.top, 4)
+            .padding(.horizontal)
+        }
+    }
+    
+    private var selectedPeriodLabel: some View {
+        let startText = dateFromOffset(isDraggingSlider ? pendingStart : selectedStart)
+        let endText = dateFromOffset(isDraggingSlider ? pendingEnd : selectedEnd)
+        return Text("Selected period : \(startText) → \(endText)")
+            .font(.callout)
+            .foregroundColor(.secondary)
+    }
+
+    private var periodSlider: some View {
+        RangeSlider(
+            lowerValue: $pendingStart,
+            upperValue: $pendingEnd,
+            totalRange: totalDaysRange,
+            valueLabel: { value in dateLabel(for: value) },
+            thumbSize: 24,
+            trackHeight: 6
+        )
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in if !isDraggingSlider { isDraggingSlider = true } }
+                .onEnded { _ in
+                    isDraggingSlider = false
+                    selectedStart = pendingStart
+                    selectedEnd = pendingEnd
+                    applyFromCurrentSelection()
+                }
+        )
+        .frame(height: 50)
+        .onAppear { initializeSliderBounds() }
+    }
+
+    private var periodSummary: some View {
+        Text("\(selectedDays()) days — \(filteredTransactions.count) transaction\(filteredTransactions.count > 1 ? "s" : "") — Total: \(formattedAmount(totalAmount))")
+            .font(.footnote)
+            .foregroundColor(.secondary)
+            .padding(.top, 4)
+            .transaction { $0.animation = nil }
+    }
+    
+    private var headerList: some View {
+        VStack(spacing: 4) {
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(alignment: .top, spacing: 4) {
+                    Text("Date of pointing :")
+                        .frame(minWidth: 110, alignment: .leading)
+                    Text("Date operation")
+                        .frame(minWidth: 110, alignment: .leading)
+                    Text("Status")
+                        .frame(minWidth: 120, alignment: .leading)
+                    Text("Mode")
+                        .frame(minWidth: 140, alignment: .leading)
+                    Text("Statement")
+                        .frame(minWidth: 160, alignment: .leading)
+                }
+                HStack(alignment: .top, spacing: 4) {
+                    Text("Comment")
+                        .frame(minWidth: 220, alignment: .leading)
+                    Text("Rubric")
+                        .frame(minWidth: 120, alignment: .leading)
+                    Text("Category")
+                        .frame(minWidth: 140, alignment: .leading)
+                    Text("Amount")
+                        .frame(minWidth: 160, alignment: .leading)
+                }
+            }
+            .foregroundColor(.black)
+            .bold()
+        }
+
+    }
+
+    private var transactionsList: some View {
+        List {
+            Section(header: headerList) {
+                ForEach(filteredTransactions, id: \.id) { tx in
+                    TransactionRow(tx: tx,
+                                   isSelected: tx.id == selectedTransactionID,
+                                   formatterPrice: formatterPrice,
+                                   colorManager: colorManager)
+                    .contentShape(Rectangle())
+                    .onTapGesture { handleTap(on: tx) }
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+//                            .fill(Color.blue.opacity(0.5))
+//                            .fill(isSelected ? Color.blue.opacity(0.5) : backgroundColor)
+                    )
+
+                }
+            }
+        }
+    }
+
+    // MARK: - Actions
+    private func handleTap(on tx: EntityTransaction) {
+        if selectedTransactionID == tx.id {
+            selectedTransactionID = nil
+        } else {
+            selectedTransactionID = tx.id
+        }
+        transactionManager.selectedTransactions = ListTransactionsManager.shared.listTransactions
+        if let id = selectedTransactionID, let selected = filteredTransactions.first(where: { $0.id == id }) {
+            transactionManager.selectedTransactions = [selected]
+            NotificationCenter.default.post(name: .transactionSelectionChanged, object: selected)
+        }
+    }
+
+    private func initializeSliderBounds() {
+        dashboard.isVisible = true
+        let newStart = 0.0
+        let newEnd = max(1, totalDaysRange.upperBound)
+        selectedStart = newStart
+        selectedEnd = (newEnd <= newStart) ? (newStart + 1) : newEnd
+        pendingStart = selectedStart
+        pendingEnd = selectedEnd
+    }
+
     // MARK: - Helpers
 
-    private var baseStartOfDay: Date {
-        Calendar.current.startOfDay(for: minDate)
+    private var baseStartOfDay: Date { Calendar.current.startOfDay(for: minDate) }
+
+    private func dateLabel(for value: Double) -> String {
+        let cal = Calendar.current
+        let base = cal.startOfDay(for: minDate)
+        let date = cal.date(byAdding: .day, value: Int(value), to: base) ?? base
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        return formatter.string(from: date)
     }
 
     private func endOfDay(for date: Date) -> Date {
@@ -251,10 +277,7 @@ struct TreasuryCurve: View {
         if isApplyingFilter { return }
         isApplyingFilter = true
         defer { isApplyingFilter = false }
-
-        // Avoid redundant work
         if Int(lastAppliedStart) == startDay && Int(lastAppliedEnd) == endDay { return }
-
         lastAppliedStart = Double(startDay)
         lastAppliedEnd = Double(endDay)
 
@@ -280,7 +303,6 @@ struct TreasuryCurve: View {
 
         if !dataChanged && !rangeChanged { return }
 
-        // Immediate: normalize selection only
         var immediateTx = SwiftUI.Transaction()
         immediateTx.disablesAnimations = true
         withTransaction(immediateTx) {
@@ -288,7 +310,6 @@ struct TreasuryCurve: View {
             selectedEnd = Double(endDay)
         }
 
-        // Tick 1: update chart only (coalesced, no animation)
         DispatchQueue.main.async {
             var tx = SwiftUI.Transaction()
             tx.disablesAnimations = true
@@ -301,8 +322,7 @@ struct TreasuryCurve: View {
                     viewModel.updateChartData()
                 }
             }
-            
-            // Tick 2: update list only (no animation)
+
             DispatchQueue.main.async {
                 var listTx = SwiftUI.Transaction()
                 listTx.disablesAnimations = true
@@ -314,16 +334,13 @@ struct TreasuryCurve: View {
                 }
                 hasAppliedInitial = true
                 applyCooldownUntil = Date().addingTimeInterval(0.3)
-                
-                // Tick 3: notify observers after everything is stable
+
                 DispatchQueue.main.async {
                     NotificationCenter.default.post(name: .treasuryChartNeedsRefresh, object: nil)
                 }
             }
         }
     }
-
-
 
     private func refreshData(for account: EntityAccount?) {
         guard let account = account else {
@@ -355,7 +372,6 @@ struct TreasuryCurve: View {
         DispatchQueue.main.async {
             applyFromCurrentSelection()
         }
-        // Initial apply is deferred to parent onAppear to avoid visible movement at startup
     }
 
     private func selectedDays() -> Int {
@@ -373,6 +389,80 @@ struct TreasuryCurve: View {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         return formatter.string(from: NSNumber(value: amount)) ?? "\(amount)"
+    }
+}
+
+// MARK: - Extracted Row
+
+private struct TransactionRow: View {
+    let tx: EntityTransaction
+    let isSelected: Bool
+    let formatterPrice: NumberFormatter
+    let colorManager: ColorManager
+
+    var body: some View {
+        let textColor = isSelected ? Color.white : colorManager.colorForTransaction(tx)
+        
+        VStack(alignment: .leading, spacing: 6) {
+            topRow
+            bottomRow
+        }
+        .foregroundColor(textColor)
+        .padding(8)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            Group {
+                if isSelected {
+                    LinearGradient(
+                        gradient: Gradient(colors: [
+                            Color.accentColor.opacity(0.18),
+                            Color.accentColor.opacity(0.10)
+                        ]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                } else {
+                    Color.clear
+                }
+            }
+        )
+        .cornerRadius(10)
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(isSelected ? Color.accentColor.opacity(0.8) : Color.clear, lineWidth: isSelected ? 2 : 0)
+        )
+        .shadow(color: isSelected ? Color.accentColor.opacity(0.2) : .clear, radius: isSelected ? 4 : 0, x: 0, y: 1)
+        .animation(.easeInOut(duration: 0.15), value: isSelected)
+    }
+
+    private var topRow: some View {
+        HStack(alignment: .top, spacing: 4) {
+            Text(tx.datePointage, style: .date)
+                .frame(minWidth: 110, alignment: .leading)
+            Text(tx.dateOperation, style: .date)
+                .frame(minWidth: 110, alignment: .leading)
+            Text(tx.statusString)
+                .frame(minWidth: 120, alignment: .leading)
+            Text(tx.paymentModeString)
+                .frame(minWidth: 140, alignment: .leading)
+            Text(tx.bankStatementString)
+                .frame(minWidth: 160, alignment: .leading)
+        }
+    }
+
+    private var bottomRow: some View {
+        HStack(alignment: .top, spacing: 4) {
+            Text(tx.sousOperations.first?.libelle ?? "—")
+                .frame(minWidth: 220, alignment: .leading)
+            Text(tx.sousOperations.first?.category?.rubric?.name ?? "—")
+                .frame(minWidth: 120, alignment: .leading)
+            Text(tx.sousOperations.first?.category?.name ?? "—")
+                .frame(minWidth: 140, alignment: .leading)
+            let amountString = formatterPrice.string(from: NSNumber(value: tx.amount)) ?? "—"
+            Text(amountString)
+                .bold()
+                .frame(minWidth: 160, alignment: .leading)
+        }
     }
 }
 

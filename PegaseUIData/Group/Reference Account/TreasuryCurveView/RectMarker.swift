@@ -26,6 +26,14 @@ open nonisolated class RectMarker: MarkerImage
     open var minimumSize = CGSize()
     var dateFormatter = DateFormatter()
     
+    private let formatterPrice: NumberFormatter = {
+        let f = NumberFormatter()
+        f.locale = .current
+        f.numberStyle = .currency
+        return f
+    }()
+
+    
     fileprivate var label: NSMutableAttributedString?
     fileprivate var _labelSize: CGSize = CGSize()
     
@@ -132,38 +140,44 @@ open nonisolated class RectMarker: MarkerImage
     open nonisolated override func refreshContent(entry: ChartDataEntry, highlight: Highlight)
     {
         var str = ""
-        let mutableString = NSMutableAttributedString( string: str )
-        
-        let chartView = self.chartView
-        var dataEntry = [ChartDataEntry]()
+        let mutableString = NSMutableAttributedString(string: str)
+
+        // Safely capture chartView and its dataSets on the main thread to respect main-actor isolation
+        guard let chartView = self.chartView else {
+            setLabel(mutableString)
+            return
+        }
+
+        // Snapshot dataSets synchronously on the main thread to respect main-actor isolation
+        let dataSetsSnapshot: [ChartDataSetProtocol] = chartView.data?.dataSets ?? []
+
         var dataEntryX = 0.0
-        for  dataSets in chartView!.data!.dataSets
-        {
-            dataEntry = dataSets.entriesForXValue(entry.x)
-            let label = dataSets.label
-            
-            if !dataEntry.isEmpty
-            {
-                let data = dataSets.valueFormatter.stringForValue(dataEntry[0].y, entry: dataEntry[0], dataSetIndex: 0, viewPortHandler: nil)
-                str = label! + " : " + data + "\n"
-                dataEntryX = dataEntry[0].x
-            } else
-            {
-                str = label! + " :\n"
+
+        for dataSets in dataSetsSnapshot {
+            let entries = dataSets.entriesForXValue(entry.x)
+            let label = dataSets.label ?? ""
+            if let first = entries.first {
+                let y = first.y
+                let priceString = formatterPrice.string(from: NSNumber(value: y)) ?? "\(y)"
+                str = label + " : " + priceString + "\n"
+                dataEntryX = first.x
+            } else {
+                str = label + " :\n"
             }
-            
-            let labelAttributes: [NSAttributedString.Key: Any]? = [
+
+            let labelAttributes: [NSAttributedString.Key: Any] = [
                 .font: NSFont.boldSystemFont(ofSize: 12.0),
-                .foregroundColor: dataSets.colors[0]]
+                .foregroundColor: dataSets.colors.first ?? NSColor.black
+            ]
             let addedString = NSAttributedString(string: str, attributes: labelAttributes)
             mutableString.append(addedString)
         }
-        
-        str = "\nDate : " + stringForValue( dataEntryX )
-        let labelAttributes: [NSAttributedString.Key: Any]? = [
+
+        str = "\nDate : " + stringForValue(dataEntryX)
+        let labelAttributes: [NSAttributedString.Key: Any] = [
             .font: NSFont.boldSystemFont(ofSize: 12.0),
-            .foregroundColor: NSColor.black ]
-        
+            .foregroundColor: NSColor.black
+        ]
         let addedString = NSAttributedString(string: str, attributes: labelAttributes)
         mutableString.append(addedString)
         setLabel(mutableString)
@@ -192,3 +206,4 @@ open nonisolated class RectMarker: MarkerImage
     }
     
 }
+

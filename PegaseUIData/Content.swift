@@ -48,6 +48,7 @@ class TransactionSelectionManager: ObservableObject, Identifiable {
         selectedTransactions.count > 1
     }
 }
+
 struct ContentView100: View {
     
     @AppStorage("choixCouleur") var choixCouleur: String = "Unie"
@@ -81,10 +82,6 @@ struct ContentView100: View {
 
     @State private var selectedColor: String? = "United"
 
-//    @State private var executed: Double = 0.0
-//    @State private var planned: Double = 0.0
-//    @State private var engaged: Double = 0.0
-//    
     @State private var dashboard: DashboardState = DashboardState()
       
     var body: some View {
@@ -427,7 +424,6 @@ struct DetailContainer: View {
         return detailViews[selection]
     }
 }
-
 
 struct Sidebar2A: View {
     @Binding var selection2: String?

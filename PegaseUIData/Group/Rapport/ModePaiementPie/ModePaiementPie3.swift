@@ -55,7 +55,7 @@ struct ModePaiementView: View {
                 if viewModel.dataEntriesRecette.isEmpty {
                     ZStack {
                         RoundedRectangle(cornerRadius: 12).fill(Color.secondary.opacity(0.2))
-                        Text("No receipts for the period")
+                        Text("No receipts over the period")
                             .foregroundStyle(.secondary)
                     }
                     .frame(width: 600, height: 400)

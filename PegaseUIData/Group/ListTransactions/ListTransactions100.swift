@@ -14,14 +14,11 @@ struct ListTransactionsView100: View {
     
     @State private var selectedTransactions: Set<UUID> = []
     @State private var refreshTick: Int = 0
-//    @State private var refresh100 = false
-
 
     @Binding var dashboard: DashboardState
     var injectedTransactions: [EntityTransaction]? = nil
 
     private var transactions: [EntityTransaction] { injectedTransactions ?? ListTransactionsManager.shared.listTransactions }
-//    private var transactions: [EntityTransaction] { ListTransactionsViewModel.listTransactions }
 
     var body: some View {
         

@@ -211,11 +211,8 @@ struct ListTransactions200: View {
                     OperationRow(selectedTransactions: $selectedTransactions, transactions: transactions)
                 }
                 .transaction { $0.animation = nil }
-//                .animation(nil, value: refresh)
                 .listStyle(.plain)
                 .frame(minWidth: 800, maxWidth: 1200)
-//                .frame(height: .infinity)
-//                .id(refresh)
             }
             .background(Color.white)
         }
