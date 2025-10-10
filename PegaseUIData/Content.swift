@@ -292,9 +292,7 @@ private func setAppearance(_ appearance: NSAppearance.Name) {
     }
 }
 
-
 // Helper : crée une NSImage colorée à partir d'un SF Symbol
-
 struct AppearancePopoverButton: View {
     @State private var showing = false
 

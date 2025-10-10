@@ -195,7 +195,6 @@ struct TreasuryCurve: View {
             .foregroundColor(.black)
             .bold()
         }
-
     }
 
     private var transactionsList: some View {
@@ -208,12 +207,20 @@ struct TreasuryCurve: View {
                                    colorManager: colorManager)
                     .contentShape(Rectangle())
                     .onTapGesture { handleTap(on: tx) }
-                    .background(
-                        RoundedRectangle(cornerRadius: 8)
-//                            .fill(Color.blue.opacity(0.5))
-//                            .fill(isSelected ? Color.blue.opacity(0.5) : backgroundColor)
-                    )
-
+                    .background {
+                        if tx.id == selectedTransactionID {
+                            LinearGradient(
+                                gradient: Gradient(colors: [
+                                    Color.accentColor.opacity(0.18),
+                                    Color.accentColor.opacity(0.10)
+                                ]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        } else {
+                            Rectangle().fill(Color.white)
+                        }
+                    }
                 }
             }
         }
@@ -410,22 +417,20 @@ private struct TransactionRow: View {
         .foregroundColor(textColor)
         .padding(8)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            Group {
-                if isSelected {
-                    LinearGradient(
-                        gradient: Gradient(colors: [
-                            Color.accentColor.opacity(0.18),
-                            Color.accentColor.opacity(0.10)
-                        ]),
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                } else {
-                    Color.clear
-                }
+        .background {
+            if isSelected {
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color.accentColor.opacity(0.18),
+                        Color.accentColor.opacity(0.10)
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            } else {
+                Rectangle().fill(Color.white)
             }
-        )
+        }
         .cornerRadius(10)
         .overlay(
             RoundedRectangle(cornerRadius: 10)
