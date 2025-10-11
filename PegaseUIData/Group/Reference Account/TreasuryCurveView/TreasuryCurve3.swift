@@ -10,7 +10,6 @@ import SwiftData
 import DGCharts
 import Combine
 
-
 @MainActor
 protocol TreasuryManaging {
     func refresh(for account: EntityAccount?, minDate: Date)
@@ -18,7 +17,7 @@ protocol TreasuryManaging {
 }
 
 class TresuryLineViewModel: ObservableObject, TreasuryManaging {
-    
+//    
     @Published var listTransactions: [EntityTransaction] = []
     // Transactions of the currently selected day in the chart (for detail UI)
     @Published var selectedDayTransactions: [EntityTransaction] = []

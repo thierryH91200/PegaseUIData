@@ -97,7 +97,8 @@ struct ContentView100: View {
                                 selectedTransaction: $selectedTransaction,
                                 isCreationMode: $isCreationMode,
                                 dashboard: $dashboard)
-                    .navigationSplitViewColumnWidth( min: 150, ideal: 800)
+                .environmentObject(transactionManager)
+                .navigationSplitViewColumnWidth( min: 150, ideal: 800)
             }
             detail :
             {
