@@ -114,7 +114,6 @@ struct CategorieBar1View1: View {
                 .padding(.top, 4)
                 .padding(.horizontal)
                 ListTransactionsView100(dashboard: $dashboard)
-
             }
             .padding()
             Spacer()

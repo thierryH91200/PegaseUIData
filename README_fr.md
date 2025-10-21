@@ -113,3 +113,6 @@ Echéanchier         : ok
 
 
 
+// pour l'incrementation de la build
+// https://blog.gingerbeardman.com/2025/06/28/automatic-build-number-incrementing-in-xcode/
+

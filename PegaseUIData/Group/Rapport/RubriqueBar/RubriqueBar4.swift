@@ -80,11 +80,25 @@ struct DGBarChart5Representable: NSViewRepresentable {
         
         public func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
             
+            var didChange = false
+
+            
             let index = Int(highlight.x)
             let entryX = entry.x
             let dataSetIndex = Int(highlight.dataSetIndex)
             
+            let allTransactions = ListTransactionsManager.shared.getAllData()
+            guard !allTransactions.isEmpty else { return }
+
+            
             printTag("index: \(index), entryX: \(entryX), dataSetIndex: \(dataSetIndex) ")
+//            if self.parent.viewModel.listTransactions != selectTransactions {
+//                self.parent.viewModel.listTransactions = selectTransactions
+                didChange = true
+//            }
+
+            
+            NotificationCenter.default.post(name: .transactionsSelectionChanged, object: nil)
 
         }
         

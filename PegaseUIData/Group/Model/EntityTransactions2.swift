@@ -24,7 +24,6 @@ final class ListTransactionsManager: ListManaging, ObservableObject {
     @EnvironmentObject var formState: TransactionFormState
 
     static let shared = ListTransactionsManager()
-    
     @Published var listTransactions = [EntityTransaction]()
 
     var ascending = false

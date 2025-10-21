@@ -16,7 +16,9 @@ struct RecetteDepenseView: View {
 
     let transactions: [EntityTransaction]
     @Binding var dashboard: DashboardState
+    @State private var filteredTransactions: [EntityTransaction] = []
 
+    @State private var hasAppliedInitial: Bool = false
 
     @Binding var minDate: Date
     @Binding var maxDate: Date
@@ -88,6 +90,9 @@ struct RecetteDepenseView: View {
                     )
                     .frame(height: 30)
                     ListTransactionsView100(dashboard: $dashboard)
+
+//                    TransactionLocal()
+
                     Spacer()
                 }
                 .padding(.top, 4)
@@ -95,6 +100,8 @@ struct RecetteDepenseView: View {
             }
         }
         .onAppear {
+//            refreshData()
+
             let listTransactions = ListTransactionsManager.shared.getAllData()
             if let first = listTransactions.first?.dateOperation, let last = listTransactions.last?.dateOperation {
                 minDate = first

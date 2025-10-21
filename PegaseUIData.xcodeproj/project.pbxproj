@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0327239E2EA670A900383C7E /* Config.md in Resources */ = {isa = PBXBuildFile; fileRef = 0327239D2EA670A900383C7E /* Config.md */; };
 		03AD3D082E7943D700125CD3 /* _config.yml in Resources */ = {isa = PBXBuildFile; fileRef = 03AD3D062E7943D700125CD3 /* _config.yml */; };
 		03AD3D092E7943D700125CD3 /* README_fr.md in Resources */ = {isa = PBXBuildFile; fileRef = 03AD3D052E7943D700125CD3 /* README_fr.md */; };
 		03AD3D0A2E7943D700125CD3 /* .gitattributes in Resources */ = {isa = PBXBuildFile; fileRef = 03AD3D072E7943D700125CD3 /* .gitattributes */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0327239D2EA670A900383C7E /* Config.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Config.md; sourceTree = "<group>"; };
 		03AD3CF42E79437B00125CD3 /* PegaseUIData.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PegaseUIData.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		03AD3D042E7943D700125CD3 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		03AD3D052E7943D700125CD3 /* README_fr.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README_fr.md; sourceTree = "<group>"; };
@@ -57,6 +59,7 @@
 		03AD3CEB2E79437B00125CD3 = {
 			isa = PBXGroup;
 			children = (
+				0327239D2EA670A900383C7E /* Config.md */,
 				03AD3D0D2E7943EB00125CD3 /* Doc */,
 				03AD3D0C2E7943E300125CD3 /* Docs */,
 				03AD3D042E7943D700125CD3 /* README.md */,
@@ -152,6 +155,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0327239E2EA670A900383C7E /* Config.md in Resources */,
 				03AD3D082E7943D700125CD3 /* _config.yml in Resources */,
 				03AD3D092E7943D700125CD3 /* README_fr.md in Resources */,
 				03AD3D0A2E7943D700125CD3 /* .gitattributes in Resources */,
@@ -174,6 +178,8 @@
 /* Begin XCBuildConfiguration section */
 		03AD3CFF2E79437B00125CD3 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 03AD3CF62E79437B00125CD3 /* PegaseUIData */;
+			baseConfigurationReferenceRelativePath = BuildNumber.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -242,6 +248,8 @@
 		};
 		03AD3D002E79437B00125CD3 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 03AD3CF62E79437B00125CD3 /* PegaseUIData */;
+			baseConfigurationReferenceRelativePath = BuildNumber.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -308,7 +316,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = "$(CURRENT_PROJECT_VERSION)";
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 84WLNJ2YG4;
 				ENABLE_APP_SANDBOX = NO;
@@ -343,7 +351,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = "$(CURRENT_PROJECT_VERSION)";
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 84WLNJ2YG4;
 				ENABLE_APP_SANDBOX = NO;

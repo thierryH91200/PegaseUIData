@@ -24,6 +24,7 @@ struct RubriqueBar: View {
 
     let transactions: [EntityTransaction]
     @Binding var dashboard: DashboardState
+    @State private var hasAppliedInitial: Bool = false
 
     @Binding var minDate: Date
     @Binding var maxDate: Date
@@ -103,7 +104,10 @@ struct RubriqueBar: View {
                         trackHeight: 6
                     )
                     .frame(height: 30)
+
                     ListTransactionsView100(dashboard: $dashboard)
+//                    TransactionList()
+
                     Spacer()
                 }
                 .padding(.top, 4)

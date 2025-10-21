@@ -1,10 +1,9 @@
-//
-//  Untitled.swift
-//  PegaseUIData
-//
-//  Created by Thierry hentic on 17/04/2025.
-//
-
+////
+////  Untitled.swift
+////  PegaseUIData
+////
+////  Created by Thierry hentic on 17/04/2025.
+////
 import SwiftUI
 import SwiftData
 import DGCharts
@@ -46,7 +45,7 @@ class TresuryLineViewModel: ObservableObject, TreasuryManaging {
         }
         
         let allTransactions = ListTransactionsManager.shared.getAllData()
-
+        
         self.listTransactions = allTransactions
         self.updateChartData()
     }
@@ -59,25 +58,25 @@ class TresuryLineViewModel: ObservableObject, TreasuryManaging {
         guard !listTransactions.isEmpty else {
             DispatchQueue.main.async { self.dataGraph = dataGraph }
             return }
-        
+
         let calendar = Calendar.current
         let grouped = Dictionary(grouping: listTransactions, by: { calendar.startOfDay(for: $0.datePointage) })
-        
+
         let startOffset = Int(lowerValue)
         let endOffset = Int(upperValue)
-        
+
         let initAccount = InitAccountManager.shared.getAllData()
         var soldeRealise = initAccount?.realise ?? 0
         var soldePrevu = initAccount?.prevu ?? 0
         var soldeEngage = initAccount?.engage ?? 0
-        
+
         for offset in startOffset...endOffset {
             let dayDate = Date(timeIntervalSince1970: firstDate + Double(offset) * hourSeconds)
             let dayTransactions = grouped[dayDate] ?? []
-            
+
             var prevu = 0.0
             var engage = 0.0
-            
+
             for tx in dayTransactions {
                 switch tx.status?.type {
                 case .planned: prevu += tx.amount
@@ -88,7 +87,7 @@ class TresuryLineViewModel: ObservableObject, TreasuryManaging {
             }
             soldePrevu += soldeRealise + engage + prevu
             soldeEngage += soldeRealise + engage
-            
+
             dataGraph.append(DataTresorerie(
                 x: Double(offset),
                 soldeRealise: soldeRealise,

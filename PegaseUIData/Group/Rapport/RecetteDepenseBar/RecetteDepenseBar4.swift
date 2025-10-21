@@ -183,12 +183,12 @@ struct DGBarChart4Representable: NSViewRepresentable {
         xAxis.drawGridLinesEnabled    = true
         xAxis.gridLineWidth = 2.0
         xAxis.labelCount = 20
-        xAxis.labelFont = NSFont.systemFont(ofSize: 14, weight: .light)
+        xAxis.labelFont = NSFont.systemFont(ofSize: 14, weight: .bold)
         xAxis.labelTextColor = .labelColor
         
         xAxis.centerAxisLabelsEnabled = true
         xAxis.granularity = 1
-        xAxis.labelPosition = .top
+        xAxis.labelPosition = .bottom
         
         xAxis.axisMinimum = 0.0
         xAxis.axisMaximum = Double(labels.count)

@@ -55,6 +55,7 @@ struct ContentView100: View {
     
     @EnvironmentObject var containerManager: ContainerManager
 //    let account: EntityAccount 
+    @StateObject private var listManager = ListTransactionsManager.shared
 
     @StateObject private var currentAccountManager = CurrentAccountManager.shared
     @StateObject private var transactionManager = TransactionSelectionManager()
@@ -98,6 +99,9 @@ struct ContentView100: View {
                                 isCreationMode: $isCreationMode,
                                 dashboard: $dashboard)
                 .environmentObject(transactionManager)
+                .environmentObject(listManager)
+                .environmentObject(colorManager)
+
                 .navigationSplitViewColumnWidth( min: 150, ideal: 800)
             }
             detail :
