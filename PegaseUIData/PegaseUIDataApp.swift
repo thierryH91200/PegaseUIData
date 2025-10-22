@@ -29,7 +29,7 @@ struct DatabaseManagerApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(containerManager)
-                .frame(minWidth: 900, minHeight: 600)
+//                .frame(minWidth: 900, minHeight: 600)
         }
         .commands {
             CommandGroup(after: .newItem) {
