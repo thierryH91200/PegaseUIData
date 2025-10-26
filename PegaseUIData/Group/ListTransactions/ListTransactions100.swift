@@ -217,7 +217,6 @@ func formatPrice(_ amount: Double) -> String {
     return format
 }
 
-
 struct PriceText: View {
     let amount: Double
 

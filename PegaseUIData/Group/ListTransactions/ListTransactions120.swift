@@ -110,6 +110,7 @@ struct TransactionLigne: View {
             }) {
                 Label("Show details", systemImage: "info.circle")
             }
+            Divider()
             // Liste des noms et couleurs des status
             let names = [ String(localized :"Planned"),
                           String(localized :"In progress"),
@@ -142,7 +143,8 @@ struct TransactionLigne: View {
             } label: {
                 Label("Bank statement", systemImage: "square.and.pencil")
             }
-            
+            Divider
+    ()
             Button(role: .destructive, action: {
                 supprimerTransactionsSelectionnees()
             }) {
