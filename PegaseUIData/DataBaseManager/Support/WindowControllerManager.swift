@@ -27,7 +27,7 @@ final class WindowControllerManager {
             backing: .buffered,
             defer: false
         )
-        window.title = String(localized: "Application Manual")
+        window.title = String(localized: "Application Manual",table:"Help'")
         window.isReleasedWhenClosed = false // important pour conserver la référence
         window.center()
         window.contentView = NSView()
