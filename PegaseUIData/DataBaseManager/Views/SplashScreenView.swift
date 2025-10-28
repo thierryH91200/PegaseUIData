@@ -72,7 +72,7 @@ private struct LeftPanelView: View {
                 .font(.largeTitle)
                 .fontWeight(.bold)
             
-            Text(            "Manage your SwiftData databases")
+            Text("Manage your SwiftData databases")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             

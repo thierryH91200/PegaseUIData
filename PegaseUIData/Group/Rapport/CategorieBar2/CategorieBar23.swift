@@ -46,7 +46,7 @@ struct CategorieBar2View2: View {
     
     var body: some View {
         VStack {
-            Text("CategorieBar2View2")
+            Text(String(localized:"CategorieBar2View2", table: "Charts"))
                 .font(.headline)
                 .padding()
             
@@ -54,7 +54,7 @@ struct CategorieBar2View2: View {
                 if viewModel.dataEntries.isEmpty {
                     ZStack {
                         RoundedRectangle(cornerRadius: 12).fill(Color.secondary.opacity(0.2))
-                        Text("No entries over the period")
+                        Text(String(localized:"No entries over the period", table: "Charts"))
                             .foregroundStyle(.secondary)
                     }
                     .frame(width: 600, height: 400)
@@ -67,7 +67,7 @@ struct CategorieBar2View2: View {
                     .padding()
                 }
             }
-            GroupBox(label: Label("Filter by period", systemImage: "calendar")) {
+            GroupBox(label: Label(String(localized:"Filter by period", table: "Charts"), systemImage: "calendar")) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("From \(formattedDate(from: selectedStart)) to \(formattedDate(from: selectedEnd))")
                         .font(.callout)
@@ -138,7 +138,6 @@ struct CategorieBar2View2: View {
         formatter.dateStyle = .medium
         return formatter.string(from: date)
     }
-
 }
 
 

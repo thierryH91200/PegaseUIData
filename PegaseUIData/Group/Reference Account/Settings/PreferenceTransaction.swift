@@ -65,7 +65,7 @@ struct PreferenceTransactionView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            Text("Default values ​​for transactions for this account.")
+            Text(String(localized:"Default values ​​for transactions for this account.",table: "Settings"))
                 .font(.headline)
                 .padding(.top)
             

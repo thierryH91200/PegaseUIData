@@ -95,8 +95,6 @@ struct BankStatementListView: View {
                     printTag("Redo effectué, on recharge les données")
                     refreshData()
                 }
-
-            
                 .onChange(of: selectedItem) { oldValue, newValue in
                     if let selected = newValue {
                         bankStatements =  dataManager.statements
@@ -121,7 +119,6 @@ struct BankStatementListView: View {
                 Button(action: {
                     isAddDialogPresented = true
                     isModeCreate = true
-
                 }) {
                     Label("Add", systemImage: "plus")
                         .padding()
@@ -256,20 +253,30 @@ struct BankStatementTable: View {
         Table(statements, selection: $selection) {
             
             Group {
-                TableColumn("N°") {  (statement: EntityBankStatement) in Text("\(statement.num)") }
-                TableColumn("Start Date") { statement in Text(dateFormatter.string(from: statement.startDate)) }
-                TableColumn("Initial balance") { statement in Text(statement.formattedStartSolde) }
-                TableColumn("Inter Date") { statement in Text(dateFormatter.string(from: statement.interDate)) }
-                TableColumn("Inter balance") { statement in Text(statement.formattedInterSolde) }
+                TableColumn(String(localized:"N°", table: "Charts"))
+                {  ( statement: EntityBankStatement) in Text("\(statement.num)") }
+                TableColumn(String(localized:"Start Date", table: "Charts"))
+                { statement in Text(dateFormatter.string(from: statement.startDate)) }
+                TableColumn(String(localized:"Initial balance", table: "Charts"))
+                { statement in Text(statement.formattedStartSolde) }
+                TableColumn(String(localized:"Inter Date", table: "Charts"))
+                { statement in Text(dateFormatter.string(from: statement.interDate)) }
+                TableColumn(String(localized:"Inter balance", table: "Charts"))
+                { statement in Text(statement.formattedInterSolde) }
             }
             
             Group {
-                TableColumn("End Date") {  (statement: EntityBankStatement) in Text(dateFormatter.string(from: statement.endDate)) }
-                TableColumn("End balance") { statement in Text(String(format: "%.2f €", statement.endSolde)) }
-                TableColumn("Date CB") { statement in Text(dateFormatter.string(from: statement.cbDate)) }
-                TableColumn("CB Balance") { statement in Text(String(format: "%.2f €", statement.cbSolde)) }
-                TableColumn("Surname") { statement in Text(statement.accountSurname) }
-                TableColumn("Name") { statement in Text(statement.accountName) }
+                TableColumn(String(localized:"End Date", table: "Charts"))  {
+                    (statement: EntityBankStatement) in Text(dateFormatter.string(from: statement.endDate)) }
+                TableColumn(String(localized:"End balance", table: "Charts")) {
+                    statement in Text(String(format: "%.2f €", statement.endSolde)) }
+                TableColumn(String(localized:"Date CB", table: "Charts"))  {
+                    statement in Text(dateFormatter.string(from: statement.cbDate)) }
+                TableColumn(String(localized:"CB Balance", table: "Charts"))  {
+                    statement in Text(String(format: "%.2f €", statement.cbSolde)) }
+                TableColumn(String(localized:"Surname", table: "Charts"))  {
+                    statement in Text(statement.accountSurname) }
+                TableColumn(String(localized:"Name", table: "Charts")) { statement in Text(statement.accountName) }
             }
         }
     }

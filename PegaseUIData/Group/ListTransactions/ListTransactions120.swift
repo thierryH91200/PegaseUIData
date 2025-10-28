@@ -33,64 +33,41 @@ struct TransactionLigne: View {
     }
     
     var body: some View {
-        let isSelected = selectedTransactions.contains(transaction.id)
-        let textColor = isSelected ? Color.white : colorManager.colorForTransaction(transaction)
-        
-        HStack(spacing: 0) {
-            Group {
-                Text(transaction.datePointageString)
-                    .frame(width: ColumnWidths.datePointage, alignment: .leading)
-                verticalDivider()
-                Text(transaction.dateOperationString)
-                    .frame(width: ColumnWidths.dateOperation, alignment: .leading)
-                verticalDivider()
-                Text(transaction.sousOperations.first?.libelle ?? "—")
-                    .frame(width: ColumnWidths.libelle, alignment: .leading)
-                verticalDivider()
-                Text(transaction.sousOperations.first?.category?.rubric?.name ?? "—")
-                    .frame(width: ColumnWidths.rubrique, alignment: .leading)
-                verticalDivider()
-                Text(transaction.sousOperations.first?.category?.name ?? "—")
-                    .frame(width: ColumnWidths.categorie, alignment: .leading)
-                verticalDivider()
-                Text(transaction.sousOperations.first?.amountString ?? "—")
-                    .frame(width: ColumnWidths.sousMontant, alignment: .leading)
-                verticalDivider()
-                Text(transaction.bankStatementString)
-                    .frame(width: ColumnWidths.releve, alignment: .leading)
-                verticalDivider()
-                Text(transaction.checkNumber != "0" ? transaction.checkNumber : "—").frame(width: ColumnWidths.cheque, alignment: .leading)
-                verticalDivider()
-            }
-            Group {
-                Text(transaction.statusString)
-                    .frame(width: ColumnWidths.statut, alignment: .leading)
-                verticalDivider()
-                Text(transaction.paymentModeString)
-                    .frame(width: ColumnWidths.modePaiement, alignment: .leading)
-                verticalDivider()
-                Text(transaction.amountString)
-                    .frame(width: ColumnWidths.montant, alignment: .trailing)
-            }
+        // Pré-calculs pour aider le vérificateur de types
+        let selected = isSelected
+        let textColor: Color = selected ? .white : colorManager.colorForTransaction(transaction)
+
+        // Pré-calculer les chaînes pour éviter les enchaînements optionnels profonds dans l'arbre de vues
+        let libelle = transaction.sousOperations.first?.libelle ?? "—"
+        let rubricName = transaction.sousOperations.first?.category?.rubric?.name ?? "—"
+        let categoryName = transaction.sousOperations.first?.category?.name ?? "—"
+        let sousAmount = transaction.sousOperations.first?.amountString ?? "—"
+        let chequeText = transaction.checkNumber != "0" ? transaction.checkNumber : "—"
+
+        return HStack(spacing: 0) {
+            rowLeftGroup(libelle: libelle,
+                         rubricName: rubricName,
+                         categoryName: categoryName,
+                         sousAmount: sousAmount,
+                         chequeText: chequeText)
+            rowRightGroup()
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .listRowInsets(EdgeInsets()) // ⬅️ Supprime la marge à gauche des lignes
+        .listRowInsets(EdgeInsets())
         .padding(.vertical, 6)
         .background(
             RoundedRectangle(cornerRadius: 8)
-                .fill(isSelected ? Color.blue.opacity(0.5) : backgroundColor)
+                .fill(selected ? Color.blue.opacity(0.5) : backgroundColor)
         )
         .shadow(color: Color.black.opacity(0.05), radius: 1, x: 0, y: 1)
         .padding(.horizontal, 4)
         .padding(.vertical, 2)
         .foregroundColor(textColor)
-        .cornerRadius(8) // Arrondi les coins du fond sélectionné
-        .contentShape(Rectangle()) // Permet de cliquer sur toute la ligne
-        .onTapGesture {
-            toggleSelection()
-        }
+        .cornerRadius(8)
+        .contentShape(Rectangle())
+        .onTapGesture { toggleSelection() }
         .onHover { hovering in
-            if !isSelected {
+            if !selected {
                 withAnimation {
                     backgroundColor = hovering ? Color.gray.opacity(0.1) : Color.clear
                 }
@@ -101,127 +78,10 @@ struct TransactionLigne: View {
                 .updating($isCmdPressed)   { _, state, _ in state = NSEvent.modifierFlags.contains(.command) }
                 .updating($isShiftPressed) { _, state, _ in state = NSEvent.modifierFlags.contains(.shift) }
         )
-        .contextMenu {
-            // Afficher les détails
-            Button(action: {
-                transactionManager.selectedTransaction = transaction
-                transactionManager.isCreationMode = false
-                showTransactionInfo = true
-            }) {
-                Label("Show details", systemImage: "info.circle")
-            }
-            Divider()
-            // Liste des noms et couleurs des status
-            let names = [ String(localized :"Planned"),
-                          String(localized :"In progress"),
-                          String(localized :"Executed") ]
-            Menu {
-                Button(names[0]) { mettreAJourStatusPourSelection(nouveauStatus: names[0]) }
-                Button(names[1]) { mettreAJourStatusPourSelection(nouveauStatus: names[1]) }
-                Button(names[2]) { mettreAJourStatusPourSelection(nouveauStatus: names[2]) }
-            } label: {
-                Label("Change status", systemImage: "square.and.pencil")
-            }
-            .disabled(selectedTransactions.isEmpty)
-            
-            let namesPayements = PaymentModeManager.shared.getAllNames()
-            Menu {
-                ForEach(namesPayements, id: \.self) { mode in
-                    Button(mode) {
-                        mettreAJourModePourSelection(nouveauMode: mode)
-                    }
-                }
-            } label: {
-                Label("Change Payment Mode", systemImage: "square.and.pencil")
-            }
-            .disabled(selectedTransactions.isEmpty)
-            
-            Menu {
-                Button("New statement…") {
-                    showPopover = true
-                }
-            } label: {
-                Label("Bank statement", systemImage: "square.and.pencil")
-            }
-            Divider
-    ()
-            Button(role: .destructive, action: {
-                supprimerTransactionsSelectionnees()
-            }) {
-                Label("Remove", systemImage: "trash")
-            }
-            .disabled(selectedTransactions.isEmpty)
-        }
-        
-        .popover(isPresented: $showPopover, arrowEdge: .trailing) {
-            VStack(spacing: 12) {
-                Text("Create a statement")
-                    .font(.headline)
-
-                TextField("Statement number", text: $inputText)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding(.horizontal)
-
-                HStack {
-                    Button("Cancel") {
-                        showPopover = false
-                    }
-                    Button("OK") {
-                        print("Relevé saisi: \(inputText)")
-                        mettreAJourRelevePourSelection(nouveauReleve: inputText)
-                        showPopover = false
-                    }
-                    .keyboardShortcut(.defaultAction)
-                }
-                .padding(.top, 8)
-            }
-            .padding()
-            .frame(width: 250)
-        }
-
-        .popover(isPresented: $showTransactionInfo, arrowEdge: .top) {
-            if let index = ListTransactionsManager.shared.listTransactions.firstIndex(where: { $0.id == transaction.id }) {
-                TransactionDetailView(currentSectionIndex: index, selectedTransaction: $selectedTransactions)
-                    .frame(minWidth: 400, minHeight: 300)
-            } else {
-                Text("Error: Transaction not found in the list.")
-                    .foregroundColor(.red)
-                    .padding()
-            }
-        }
-        // Keyboard shortcut: Cmd+A to select all transactions, Escape to deselect all
-        .onAppear {
-            backgroundColor = isSelected ? Color.accentColor.opacity(0.2) : Color.clear
-            NSEvent.addLocalMonitorForEvents(matching: [.keyDown]) { event in
-                if event.modifierFlags.contains(.command), event.charactersIgnoringModifiers == "a" {
-                    // Tout sélectionner
-                    for transaction in ListTransactionsManager.shared.listTransactions {
-                        selectedTransactions.insert(transaction.id)
-                    }
-                    transactionManager.selectedTransactions = ListTransactionsManager.shared.listTransactions
-                    return nil
-                }
-                
-                if event.keyCode == 53 { // Escape key
-                    // Tout désélectionner
-                    selectedTransactions.removeAll()
-                    transactionManager.selectedTransaction = nil
-                    transactionManager.selectedTransactions = []
-                    return nil
-                }
-                // Undo: Cmd+Z
-                if event.modifierFlags.contains(.command), event.charactersIgnoringModifiers == "z" {
-                    ListTransactionsManager.shared.undo()
-                    return nil
-                }
-                // Redo: Shift+Cmd+Z
-                if event.modifierFlags.contains([.command, .shift]), event.charactersIgnoringModifiers == "Z" {
-                    ListTransactionsManager.shared.redo()
-                    return nil
-                }
-                return event
-            }
-        }
+        .contextMenu { contextMenuContent() }
+        .popover(isPresented: $showPopover, arrowEdge: .trailing) { newStatementPopover() }
+        .popover(isPresented: $showTransactionInfo, arrowEdge: .top) { transactionInfoPopover() }
+        .onAppear { setupKeyHandlers(isSelected: selected) }
     }
     
     @ViewBuilder
@@ -417,6 +277,159 @@ struct TransactionLigne: View {
             undo.endUndoGrouping()
         }
     }
-}
+    
+    @ViewBuilder
+    private func rowLeftGroup(libelle: String, rubricName: String, categoryName: String, sousAmount: String, chequeText: String) -> some View {
+        Group {
+            Text(transaction.datePointageString)
+                .frame(width: ColumnWidths.datePointage, alignment: .leading)
+            verticalDivider()
+            Text(transaction.dateOperationString)
+                .frame(width: ColumnWidths.dateOperation, alignment: .leading)
+            verticalDivider()
+            Text(libelle)
+                .frame(width: ColumnWidths.libelle, alignment: .leading)
+            verticalDivider()
+            Text(rubricName)
+                .frame(width: ColumnWidths.rubrique, alignment: .leading)
+            verticalDivider()
+            Text(categoryName)
+                .frame(width: ColumnWidths.categorie, alignment: .leading)
+            verticalDivider()
+            Text(sousAmount)
+                .frame(width: ColumnWidths.sousMontant, alignment: .leading)
+            verticalDivider()
+            Text(transaction.bankStatementString)
+                .frame(width: ColumnWidths.releve, alignment: .leading)
+            verticalDivider()
+            Text(chequeText)
+                .frame(width: ColumnWidths.cheque, alignment: .leading)
+            verticalDivider()
+        }
+    }
 
+    @ViewBuilder
+    private func rowRightGroup() -> some View {
+        Group {
+            Text(transaction.statusString)
+                .frame(width: ColumnWidths.statut, alignment: .leading)
+            verticalDivider()
+            Text(transaction.paymentModeString)
+                .frame(width: ColumnWidths.modePaiement, alignment: .leading)
+            verticalDivider()
+            Text(transaction.amountString)
+                .frame(width: ColumnWidths.montant, alignment: .trailing)
+        }
+    }
+
+    @ViewBuilder
+    private func contextMenuContent() -> some View {
+        // Afficher les détails
+        Button(action: {
+            transactionManager.selectedTransaction = transaction
+            transactionManager.isCreationMode = false
+            showTransactionInfo = true
+        }) {
+            Label("Show details", systemImage: "info.circle")
+        }
+        Divider()
+
+        let names = [ String(localized :"Planned"),
+                      String(localized :"In progress"),
+                      String(localized :"Executed") ]
+        Menu {
+            Button(names[0]) { mettreAJourStatusPourSelection(nouveauStatus: names[0]) }
+            Button(names[1]) { mettreAJourStatusPourSelection(nouveauStatus: names[1]) }
+            Button(names[2]) { mettreAJourStatusPourSelection(nouveauStatus: names[2]) }
+        } label: {
+            Label("Change status", systemImage: "square.and.pencil")
+        }
+        .disabled(selectedTransactions.isEmpty)
+
+        let namesPayements = PaymentModeManager.shared.getAllNames()
+        Menu {
+            ForEach(namesPayements, id: \.self) { mode in
+                Button(mode) { mettreAJourModePourSelection(nouveauMode: mode) }
+            }
+        } label: {
+            Label("Change payment method", systemImage: "square.and.pencil")
+        }
+        .disabled(selectedTransactions.isEmpty)
+
+        Menu {
+            Button("New statement…") { showPopover = true }
+        } label: {
+            Label("Bank statement", systemImage: "square.and.pencil")
+        }
+
+        Divider()
+
+        Button(role: .destructive, action: { supprimerTransactionsSelectionnees() }) {
+            Label("Remove", systemImage: "trash")
+        }
+        .disabled(selectedTransactions.isEmpty)
+    }
+
+    @ViewBuilder
+    private func newStatementPopover() -> some View {
+        VStack(spacing: 12) {
+            Text("Create a statement").font(.headline)
+            TextField("Statement number", text: $inputText)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding(.horizontal)
+            HStack {
+                Button("Cancel") { showPopover = false }
+                Button("OK") {
+                    print("Relevé saisi: \(inputText)")
+                    mettreAJourRelevePourSelection(nouveauReleve: inputText)
+                    showPopover = false
+                }
+                .keyboardShortcut(.defaultAction)
+            }
+            .padding(.top, 8)
+        }
+        .padding()
+        .frame(width: 250)
+    }
+
+    @ViewBuilder
+    private func transactionInfoPopover() -> some View {
+        if let index = ListTransactionsManager.shared.listTransactions.firstIndex(where: { $0.id == transaction.id }) {
+            TransactionDetailView(currentSectionIndex: index, selectedTransaction: $selectedTransactions)
+                .frame(minWidth: 400, minHeight: 300)
+        } else {
+            Text("Error: Transaction not found in the list.")
+                .foregroundColor(.red)
+                .padding()
+        }
+    }
+
+    private func setupKeyHandlers(isSelected: Bool) {
+        backgroundColor = isSelected ? Color.accentColor.opacity(0.2) : Color.clear
+        NSEvent.addLocalMonitorForEvents(matching: [.keyDown]) { event in
+            if event.modifierFlags.contains(.command), event.charactersIgnoringModifiers == "a" {
+                for transaction in ListTransactionsManager.shared.listTransactions {
+                    selectedTransactions.insert(transaction.id)
+                }
+                transactionManager.selectedTransactions = ListTransactionsManager.shared.listTransactions
+                return nil
+            }
+            if event.keyCode == 53 { // Escape key
+                selectedTransactions.removeAll()
+                transactionManager.selectedTransaction = nil
+                transactionManager.selectedTransactions = []
+                return nil
+            }
+            if event.modifierFlags.contains(.command), event.charactersIgnoringModifiers == "z" {
+                ListTransactionsManager.shared.undo()
+                return nil
+            }
+            if event.modifierFlags.contains([.command, .shift]), event.charactersIgnoringModifiers == "Z" {
+                ListTransactionsManager.shared.redo()
+                return nil
+            }
+            return event
+        }
+    }
+}
 

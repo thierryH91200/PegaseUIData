@@ -37,7 +37,7 @@ struct SinglePie2ChartView: NSViewRepresentable {
 
     func makeNSView(context: Context) -> PieChartView {
         let chartView = PieChartView()
-        chartView.noDataText = String(localized: "No chart data available.")
+        chartView.noDataText = String(localized: "No chart data available.", table: "Charts")
         chartView.usePercentValuesEnabled = false
         chartView.drawHoleEnabled = true
         chartView.holeRadiusPercent = 0.4

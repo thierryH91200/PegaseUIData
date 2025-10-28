@@ -97,7 +97,7 @@ struct TreasuryCurve: View {
     // MARK: - Subviews
     
     private var header: some View {
-        Text("Treasury curve")
+        Text(String(localized:"Treasury curve", table: "Charts"))
             .font(.headline)
             .padding()
     }

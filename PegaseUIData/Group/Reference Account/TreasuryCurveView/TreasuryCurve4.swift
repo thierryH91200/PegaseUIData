@@ -433,7 +433,7 @@ struct DGLineChartRepresentable: NSViewRepresentable {
         chartView.drawGridBackgroundEnabled = false
         chartView.highlightPerDragEnabled = true
         chartView.highlightPerTapEnabled = true
-        chartView.noDataText = String(localized:"No chart data available.")
+        chartView.noDataText = String(localized: "No chart data available.", table: "Charts")
 
         chartView.scaleYEnabled = false
         chartView.scaleXEnabled = false

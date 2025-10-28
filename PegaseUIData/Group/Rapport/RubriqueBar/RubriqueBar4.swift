@@ -80,7 +80,7 @@ struct DGBarChart5Representable: NSViewRepresentable {
         
         public func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
             
-            var didChange = false
+//            var didChange = false
 
             
             let index = Int(highlight.x)
@@ -94,7 +94,7 @@ struct DGBarChart5Representable: NSViewRepresentable {
             printTag("index: \(index), entryX: \(entryX), dataSetIndex: \(dataSetIndex) ")
 //            if self.parent.viewModel.listTransactions != selectTransactions {
 //                self.parent.viewModel.listTransactions = selectTransactions
-                didChange = true
+//                didChange = true
 //            }
 
             

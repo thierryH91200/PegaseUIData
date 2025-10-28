@@ -16,6 +16,8 @@ import UniformTypeIdentifiers
 @main
 struct DatabaseManagerApp: App {
     
+    @Environment(\.openWindow) private var openWindow
+    
     @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
 
     @StateObject private var containerManager = ContainerManager()
@@ -32,6 +34,12 @@ struct DatabaseManagerApp: App {
 //                .frame(minWidth: 900, minHeight: 600)
         }
         .commands {
+            CommandGroup(replacing: .appInfo) {
+                Button("About \(Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "l’app")") {
+                    openWindow(id: "about")
+                }
+            }
+
             CommandGroup(after: .newItem) {
                 Button(String(localized: "Create New Document...")) {
                     presentSavePanelAndCreate()
@@ -62,6 +70,9 @@ struct DatabaseManagerApp: App {
                 }
                 .keyboardShortcut("?", modifiers: [.command])
             }
+        }
+        Window("About", id: "about") {
+            AboutView()
         }
     }
     

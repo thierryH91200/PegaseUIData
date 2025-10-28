@@ -89,7 +89,7 @@ struct DGBarChart7Representable: NSViewRepresentable {
         chartView.pinchZoomEnabled = false
         chartView.doubleTapToZoomEnabled = false
         chartView.dragEnabled = false
-        chartView.noDataText = String(localized: "No chart data available.")
+        chartView.noDataText = String(localized: "No chart data available.", table: "Charts")
         chartView.highlightPerTapEnabled = true
         chartView.highlightFullBarEnabled = false
 

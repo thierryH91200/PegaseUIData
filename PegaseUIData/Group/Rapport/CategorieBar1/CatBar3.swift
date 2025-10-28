@@ -39,18 +39,20 @@ struct CategorieBar1View1: View {
     
     var body: some View {
         VStack {
-            Text("CategorieBar1View1")
+            Text(String(localized: "CategorieBar1View1", table: "Charts"))
                 .font(.headline)
                 .padding()
             
-            Text("Total: \(viewModel.totalValue, format: .currency(code: viewModel.currencyCode))")
+            Text("Total: \(viewModel.totalValue, format: .currency(code: viewModel.currencyCode))") //,tableName: "Charts")
                 .font(.title3)
                 .bold()
                 .padding(.bottom, 4)
             
             if !viewModel.labels.isEmpty {
-                DisclosureGroup("Visible categories") {
-                    Button(viewModel.selectedCategories.count < viewModel.labels.count ? "All select" : "Deselect all") {
+                DisclosureGroup(String(localized:"Visible categories", table: "Charts")) {
+                    Button(viewModel.selectedCategories.count < viewModel.labels.count ?
+                           String(localized:"All select", table: "Charts") :
+                            String(localized:"Deselect all", table: "Charts")) {
                         if viewModel.selectedCategories.count < viewModel.labels.count {
                             viewModel.selectedCategories = Set(viewModel.labels)
                         } else {

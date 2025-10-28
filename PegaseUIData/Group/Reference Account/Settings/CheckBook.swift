@@ -176,7 +176,7 @@ struct CheckView: View {
             // Aucun compte courant — on vide la table pour éviter des crashs
             dataManager.checkBooks = []
             checkBooks = []
-            print("[ChequeBook] Aucun compte courant — table vidée.")
+            printTag("[ChequeBook] Aucun compte courant — table vide.")
         }
     }
     
@@ -214,33 +214,33 @@ struct CheckBookTable: View {
         
         Table(checkBooks, selection: $selection) {
             
-            TableColumn( "Name", value: \EntityCheckBook.name)
+            TableColumn( String(localized:"Name",table: "Settings"), value: \EntityCheckBook.name)
             
-            TableColumn( "Number of Checks") { (item: EntityCheckBook) in
+            TableColumn( String(localized:"Number of Checks", table: "Settings")) { (item: EntityCheckBook) in
                 Text(String(item.nbCheques))
             }
             
-            TableColumn( "First Number") { (item: EntityCheckBook) in
+            TableColumn( String(localized:"First Number", table: "Settings")) { (item: EntityCheckBook) in
                 Text(String(item.numPremier))
             }
             
-            TableColumn( "Next Number") { (item: EntityCheckBook) in
+            TableColumn( String(localized:"Next Number", table: "Settings")) { (item: EntityCheckBook) in
                 Text(String(item.numSuivant))
             }
             
-            TableColumn( "Prefix") { (item: EntityCheckBook) in
+            TableColumn( String(localized:"Prefix", table: "Settings")) { (item: EntityCheckBook) in
                 Text(item.prefix)
             }
             
-            TableColumn("Name") { item in
+            TableColumn(String(localized:"Name", table: "Settings")) { item in
                 Text(item.account?.identity?.name ?? "")
             }
             
-            TableColumn("Surname") { (item: EntityCheckBook) in
+            TableColumn(String(localized:"Surname", table: "Settings")) { (item: EntityCheckBook) in
                 Text(item.account?.identity?.surName ?? "")
             }
             
-            TableColumn("Number") { item in
+            TableColumn(String(localized:"Number", table: "Settings")) { item in
                 Text(item.account?.initAccount?.codeAccount ?? "")
             }
         }
@@ -273,40 +273,42 @@ struct CheckBookFormView: View {
             
             // Contenu principal
             VStack(spacing: 20) {
-                Text(isModeCreate ? "Add CheckBook" : "Edit CheckBook")
+                Text(isModeCreate ?
+                    String(localized:"Add CheckBook", table: "Settings") :
+                    String(localized:"Edit CheckBook", table: "Settings"))
                     .font(.headline)
                     .padding(.top, 10) // Ajoute un peu d'espace après le bandeau
                 
                 HStack {
-                    Text("Name")
+                    Text(String(localized:"Name", table: "Settings"))
                         .frame(width: 100, alignment: .leading)
                     TextField("", text: $name)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                 }
                 
                 HStack {
-                    Text("Number of Checks")
+                    Text(String(localized:"Number of Checks", table: "Settings"))
                         .frame(width: 100, alignment: .leading)
                     TextField("", value: $nbCheques, formatter: NumberFormatter())
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                 }
                 
                 HStack {
-                    Text("First Number")
+                    Text(String(localized:"First Number", table: "Settings"))
                         .frame(width: 100, alignment: .leading)
                     TextField("", value: $numPremier, formatter: NumberFormatter())
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                 }
                 
                 HStack {
-                    Text("Next Number")
+                    Text(String(localized:"Next Number", table: "Settings"))
                         .frame(width: 100, alignment: .leading)
                     TextField("", value: $numSuivant, formatter: NumberFormatter())
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                 }
                 
                 HStack {
-                    Text("Prefix")
+                    Text(String(localized:"Prefix", table: "Settings"))
                         .frame(width: 100, alignment: .leading)
                     TextField("", text: $prefix)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -314,16 +316,18 @@ struct CheckBookFormView: View {
                 Spacer()
             }
             .padding()
-            .navigationTitle(checkBook == nil ? "New checkBook" : "Edit CheckBook")
+            .navigationTitle(checkBook == nil ?
+                            String(localized:"New checkBook", table: "Settings") :
+                            String(localized:"Edit CheckBook", table: "Settings"))
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button(String(localized:"Cancel", table: "Settings")) {
                         isPresented = false
                         dismiss()
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
+                    Button(String(localized:"Save", table: "Settings")) {
                         isPresented = false
                         save()
                         dismiss()

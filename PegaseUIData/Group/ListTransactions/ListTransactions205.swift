@@ -33,7 +33,7 @@ struct SummaryView: View {
         HStack(spacing: 0) {
             
             VStack {
-                Text("Final balance")
+                Text("Final balance", tableName:"Charts")
                 Text(String(format: "%.2f €", dashboard.planned))
                     .font(.title)
                     .foregroundColor(.green)
@@ -43,7 +43,7 @@ struct SummaryView: View {
             .border(Color.black, width: 1)
 
             VStack {
-                Text("Actual balance")
+                Text("Actual balance", tableName:"Charts")
                 Text(String(format: "%.2f €", dashboard.engaged))
                     .font(.title)
                     .foregroundColor(.orange)
@@ -53,7 +53,7 @@ struct SummaryView: View {
             .border(Color.black, width: 1)
             
             VStack {
-                Text("Bank balance")
+                Text("Bank balance", tableName:"Charts")
                 Text(String(format: "%.2f €", dashboard.executed))
                     .font(.title)
                     .foregroundColor(.blue)
