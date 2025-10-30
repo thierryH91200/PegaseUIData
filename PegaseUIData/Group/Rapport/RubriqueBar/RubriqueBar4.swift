@@ -30,9 +30,7 @@ struct DGBarChart5Representable: NSViewRepresentable {
     func makeNSView(context: Context) -> BarChartView {
         
         let chartView = BarChartView()
-
         chartView.delegate = context.coordinator
-
         configure(chartView)
 
         let dataSet = BarChartDataSet(entries: entries, label: "Categorie Bar1")
@@ -52,21 +50,21 @@ struct DGBarChart5Representable: NSViewRepresentable {
         return chartView
     }
     
-    func updateNSView(_ nsView: BarChartView, context: Context) {
-        nsView.xAxis.valueFormatter = IndexAxisValueFormatter(values: labels)
-        nsView.xAxis.labelCount = labels.count
-        nsView.xAxis.granularity = 1
-        nsView.xAxis.drawGridLinesEnabled = false
+    func updateNSView(_ chartView: BarChartView, context: Context) {
+        chartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: labels)
+        chartView.xAxis.labelCount = labels.count
+        chartView.xAxis.granularity = 1
+        chartView.xAxis.drawGridLinesEnabled = false
         
-        if let data = nsView.data, let set = data.dataSets.first as? BarChartDataSet {
+        if let data = chartView.data, let set = data.dataSets.first as? BarChartDataSet {
             set.replaceEntries(entries)
             data.notifyDataChanged()
-            nsView.notifyDataSetChanged()
+            chartView.notifyDataSetChanged()
         } else {
             let dataSet = BarChartDataSet(entries: entries, label: "Recette Depense Bar")
             dataSet.colors = ChartColorTemplates.colorful()
-            nsView.data = BarChartData(dataSet: dataSet)
-            nsView.notifyDataSetChanged()
+            chartView.data = BarChartData(dataSet: dataSet)
+            chartView.notifyDataSetChanged()
         }
     }
     
@@ -79,10 +77,8 @@ struct DGBarChart5Representable: NSViewRepresentable {
         }
         
         public func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
-            
 //            var didChange = false
 
-            
             let index = Int(highlight.x)
             let entryX = entry.x
             let dataSetIndex = Int(highlight.dataSetIndex)
@@ -90,16 +86,12 @@ struct DGBarChart5Representable: NSViewRepresentable {
             let allTransactions = ListTransactionsManager.shared.getAllData()
             guard !allTransactions.isEmpty else { return }
 
-            
             printTag("index: \(index), entryX: \(entryX), dataSetIndex: \(dataSetIndex) ")
 //            if self.parent.viewModel.listTransactions != selectTransactions {
 //                self.parent.viewModel.listTransactions = selectTransactions
 //                didChange = true
 //            }
-
-            
             NotificationCenter.default.post(name: .transactionsSelectionChanged, object: nil)
-
         }
         
         public func chartValueNothingSelected(_ chartView: ChartViewBase)

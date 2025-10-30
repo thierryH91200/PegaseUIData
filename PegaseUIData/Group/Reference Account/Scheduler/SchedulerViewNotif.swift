@@ -18,19 +18,20 @@ class NotificationManager {
     static let shared = NotificationManager()
     
     func requestPermission() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { accordee, error in
             if let error = error {
                 printTag("Notification permission error: \(error.localizedDescription)")
             } else {
-                printTag("Notification permission granted: \(granted)")
+                printTag("Notification permission granted: \(accordee)")
             }
         }
     }
     
     func scheduleReminder(for scheduler: EntitySchedule) {
         let content = UNMutableNotificationContent()
-        content.title = "Upcoming Schedule"
-        content.body = "Reminder: \(scheduler.libelle) is due soon."
+        content.title = String(localized: "Upcoming Schedule", table: "Scheduler")
+        let bodyFormat = String(localized: "Reminder: %@ is due soon.", table: "Scheduler")
+        content.body = String(format: bodyFormat, scheduler.libelle)
         content.sound = .default
         
         let triggerDate = scheduler.dateValeur.addingTimeInterval(-86400) // 1 day before
@@ -61,7 +62,7 @@ struct UpcomingRemindersView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text("🔔 Upcoming Reminders")
+            Text(String(localized: "🔔 Upcoming Reminders", table: "Scheduler"))
                 .font(.headline)
             
             let filteredUpcoming = upcoming
@@ -69,7 +70,7 @@ struct UpcomingRemindersView: View {
                 .sorted { $0.dateValeur < $1.dateValeur }
             
             if filteredUpcoming.isEmpty {
-                Text("No scheduled operations.")
+                Text(String(localized: "No scheduled operations.", table: "Scheduler"))
                     .foregroundColor(.gray)
             } else {
                 List {
@@ -92,11 +93,12 @@ struct UpcomingRemindersView: View {
                                 let relativeLabel: String = {
                                     switch daysRemaining {
                                     case 0:
-                                        return "Aujourd’hui"
+                                        return String(localized: "Today", table: "Scheduler")
                                     case 1:
-                                        return "Demain"
+                                        return String(localized: "Tomorrow", table: "Scheduler")
                                     case 2...6:
-                                        return "Dans \(daysRemaining) jours"
+                                        let format = String(localized: "In %d days", table: "Scheduler")
+                                        return String(format: format, daysRemaining)
                                     default:
                                         return ""
                                     }
@@ -106,9 +108,11 @@ struct UpcomingRemindersView: View {
                                         .font(.caption2)
                                         .foregroundColor(.secondary)
                                     
-                                    Text("Date : \(dateFormatter.string(from: item.dateValeur))")
+                                    let datePrefix = String(localized: "Date:", table: "Scheduler")
+                                    Text("\(datePrefix) \(dateFormatter.string(from: item.dateValeur))")
                                         .font(.caption)
-                                    .foregroundColor(daysRemaining <= 1 ? .red : (daysRemaining <= 3 ? .orange : .secondary))                            }
+                                        .foregroundColor(daysRemaining <= 1 ? .red : (daysRemaining <= 3 ? .orange : .secondary))
+                                }
                                 Spacer()
                                 
                                 Text(String(format: "%.2f", item.amount))
@@ -132,3 +136,4 @@ struct UpcomingRemindersView: View {
 }
         
         
+

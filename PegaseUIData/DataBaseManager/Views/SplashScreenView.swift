@@ -225,6 +225,8 @@ private struct LeftPanelView: View {
                 containerManager.openDatabase(at: storeURL)
                 self.showCopySuccessAlert = true
             }
+            containerManager.openDatabase(at: storeURL)
+
         } catch {
             print("Erreur lors de la copie : \(error)")
         }

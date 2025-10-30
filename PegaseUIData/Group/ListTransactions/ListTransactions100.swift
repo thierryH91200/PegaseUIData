@@ -235,7 +235,6 @@ func cleanDouble(from string: String) -> Double {
     
     // Convertir la virgule en point si nécessaire
     let normalized = cleanedString.replacingOccurrences(of: ",", with: ".")
-    
     return Double(normalized) ?? 0.0
 }
 

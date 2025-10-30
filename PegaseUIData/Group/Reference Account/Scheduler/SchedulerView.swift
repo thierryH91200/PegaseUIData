@@ -78,7 +78,7 @@ struct Scheduler: View {
     var body: some View {
         VStack(spacing: 2) {
             if let account = CurrentAccountManager.shared.getAccount() {
-                Text("Account: \(account.name)")
+                Text("Account: \(account.name)", tableName:"Scheduler")
                     .font(.headline)
                     .padding(.bottom, 0)
             }
@@ -127,7 +127,6 @@ struct Scheduler: View {
                         dataManager.schedulers.removeAll()
                         selectedItem = nil
 //                      lastDeletedID = nil
-
                         refreshData()
                     }
                 }
@@ -151,7 +150,7 @@ struct Scheduler: View {
                     isAddDialogPresented = true
                     isModeCreate = true
                 }) {
-                    Label("Add", systemImage: "plus")
+                    Label(String(localized:"Add", table:"Scheduler"), systemImage: "plus")
                         .padding()
                         .background(Color.blue)
                         .foregroundColor(.white)
@@ -163,7 +162,7 @@ struct Scheduler: View {
                     isEditDialogPresented = true
                     isModeCreate = false
                 }) {
-                    Label("Edit", systemImage: "pencil")
+                    Label(String(localized:"Edit", table:"Scheduler"), systemImage: "pencil")
                         .padding()
                         .background(selectedItem == nil ? Color.gray : Color.green) // Fond gris si désactivé
                         .opacity(selectedItem == nil ? 0.6 : 1) // Opacité réduite si désactivé
@@ -176,7 +175,7 @@ struct Scheduler: View {
                     delete()
                     setupDataManager()
                 }) {
-                    Label("Delete", systemImage: "trash")
+                    Label(String(localized:"Delete", table:"Scheduler"), systemImage: "trash")
                         .padding()
                         .background(selectedItem == nil ? Color.gray : Color.red) // Fond gris si désactivé
                         .opacity(selectedItem == nil ? 0.6 : 1) // Opacité réduite si désactivé
@@ -190,15 +189,13 @@ struct Scheduler: View {
                     if let manager = undoManager, manager.canUndo {
                         selectedItem = nil
                         lastDeletedID = nil
-
                         undoManager?.undo()
-                        
                         DispatchQueue.main.async {
                             refreshData()
                         }
                     }
                 }) {
-                    Label("Undo", systemImage: "arrow.uturn.backward")
+                    Label(String(localized:"Undo", table:"Scheduler"), systemImage: "arrow.uturn.backward")
                         .frame(minWidth: 100) // Largeur minimale utile
                         .padding()
                         .background(canUndo == false ? Color.gray : Color.green)
@@ -212,15 +209,13 @@ struct Scheduler: View {
                     if let manager = undoManager, manager.canRedo {
                         selectedItem = nil
                         lastDeletedID = nil
-
                         manager.redo()
-
                         DispatchQueue.main.async {
                             refreshData()
                         }
                     }
                 }) {
-                    Label("Redo", systemImage: "arrow.uturn.forward")
+                    Label(String(localized:"Redo", table:"Scheduler"), systemImage: "arrow.uturn.forward")
                         .frame(minWidth: 100) // Largeur minimale utile
                         .padding()
                         .background( canRedo == false ? Color.gray : Color.orange)
@@ -234,14 +229,12 @@ struct Scheduler: View {
             UpcomingRemindersView(upcoming: upcoming)
             Spacer()
         }
-        
         .sheet(isPresented: $isAddDialogPresented, onDismiss: {setupDataManager()}) {
             SchedulerFormView(isPresented: $isAddDialogPresented,
                               isModeCreate: $isModeCreate,
-                              scheduler: selectedSchedule,
+                              scheduler: nil,
                               selectedTypeIndex: indexForSelectedType())
         }
-        
         .sheet(isPresented: $isEditDialogPresented, onDismiss: {setupDataManager()}) {
             SchedulerFormView(isPresented: $isEditDialogPresented,
                               isModeCreate: $isModeCreate,
@@ -262,7 +255,7 @@ struct Scheduler: View {
                 dataManager.schedulers = allData
                 schedulers = allData
             } else {
-                print("❗️Erreur : getAllData() a renvoyé nil")
+                printTag("❗️Erreur : getAllData() a renvoyé nil")
             }
         }
     }
@@ -291,7 +284,11 @@ struct Scheduler: View {
     }
     
     private func indexForSelectedType() -> Int {
-        let types = ["Day", "Week", "Month", "Year"]
+        let types = [
+            String(localized:"Day", table:"Scheduler"),
+            String(localized:"Week", table:"Scheduler"),
+            String(localized:"Month", table:"Scheduler"),
+            String(localized:"Year", table:"Scheduler")]
         return types.firstIndex(of: selectedType) ?? 2 // Retourne 2 (Month) par défaut
     }
 }
@@ -314,45 +311,45 @@ struct SchedulerTable: View {
         
         Table(schedulers, selection: $selection) {
             Group {
-                TableColumn("Value Date") { (item: EntitySchedule) in
+                TableColumn( String(localized:"Value Date", table:"Scheduler")) { (item: EntitySchedule) in
                     Text(dateFormatter.string(from: item.dateValeur))
                 }
-                TableColumn("Start Date") { (item: EntitySchedule) in
+                TableColumn( String(localized:"Start Date", table:"Scheduler")) { (item: EntitySchedule) in
                     Text(dateFormatter.string(from: item.dateValeur))
                 }
-                TableColumn("End Date") { (item: EntitySchedule) in
+                TableColumn( String(localized:"End Date", table:"Scheduler")) { (item: EntitySchedule) in
                     Text(dateFormatter.string(from: item.dateFin))
                 }
-                TableColumn("Amount") { (item: EntitySchedule) in
+                TableColumn( String(localized:"Amount", table:"Scheduler")) { (item: EntitySchedule) in
                     Text(String(item.amount))
                 }
-                TableColumn("Frequency") { (item: EntitySchedule) in
+                TableColumn( String(localized:"Frequency", table:"Scheduler")) { (item: EntitySchedule) in
                     Text(String(item.frequence))
                 }
-                TableColumn("Comment") { (item: EntitySchedule) in
+                TableColumn( String(localized:"Comment", table:"Scheduler")) { (item: EntitySchedule) in
                     Text(item.libelle)
                 }
-                TableColumn("Next") { (item: EntitySchedule) in
+                TableColumn( String(localized:"Next", table:"Scheduler")) { (item: EntitySchedule) in
                     Text(String(item.nextOccurrence))
                 }
-                TableColumn("Occurrence") { (item: EntitySchedule) in
+                TableColumn( String(localized:"Occurrence", table:"Scheduler")) { (item: EntitySchedule) in
                     Text(String(item.occurrence))
                 }
             }
             Group {
-                TableColumn("Mode") { (item: EntitySchedule) in
+                TableColumn( String(localized:"Mode", table:"Scheduler")) { (item: EntitySchedule) in
                     Text(item.paymentMode?.name ?? "N/A")
                 }
-                TableColumn("Rubric") { (item: EntitySchedule) in
+                TableColumn( String(localized:"Rubric", table:"Scheduler")) { (item: EntitySchedule) in
                     Text(item.category?.rubric?.name ?? "N/A")
                 }
-                TableColumn("Category") { (item: EntitySchedule) in
+                TableColumn( String(localized:"Category", table:"Scheduler")) { (item: EntitySchedule) in
                     Text(item.category?.name ?? "")
                 }
-                TableColumn("Name") { (item: EntitySchedule) in
+                TableColumn( String(localized:"Name", table:"Scheduler")) { (item: EntitySchedule) in
                     Text(item.account.name)
                 }
-                TableColumn("Number") { (item: EntitySchedule) in
+                TableColumn( String(localized:"Number", table:"Scheduler")) { (item: EntitySchedule) in
                     Text(item.account.initAccount?.codeAccount ?? "")
                 }
             }

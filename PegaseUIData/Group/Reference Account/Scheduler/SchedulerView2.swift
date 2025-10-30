@@ -58,19 +58,19 @@ struct SchedulerFormView: View {
         }
         .frame(width: 300)
         .padding()
-        .navigationTitle(scheduler == nil ? "New scheduler" : "Edit scheduler")
+        .navigationTitle(scheduler == nil ? String(localized: "New scheduler", table: "Scheduler") : String(localized: "Edit scheduler", table: "Scheduler"))
         .background(.white)
         .onChange(of: scheduler) { oldValue, newValue in
             printTag("scheduler a changé : \(oldValue?.libelle ?? "nil") -> \(newValue?.libelle ?? "nil")")
         }
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
-                Button("Cancel") {
+                Button(String(localized: "Cancel", table: "Scheduler")) {
                     dismiss()
                 }
             }
             ToolbarItem(placement: .confirmationAction) {
-                Button("Save") {
+                Button(String(localized: "Save", table: "Scheduler")) {
                     save()
                     dismiss()
                 }
@@ -136,15 +136,15 @@ struct SchedulerFormView: View {
     private var schedulerDateFields: some View {
         Group {
             HStack {
-                Text("Start Date").frame(width: 100, alignment: .leading)
+                Text(String(localized: "Start Date", table: "Scheduler")).frame(width: 100, alignment: .leading)
                 DatePicker("", selection: $dateDebut, displayedComponents: .date)
             }
             HStack {
-                Text("Value Date").frame(width: 100, alignment: .leading)
+                Text(String(localized: "Value Date", table: "Scheduler")).frame(width: 100, alignment: .leading)
                 DatePicker("", selection: $dateValeur, displayedComponents: .date)
             }
             HStack {
-                Text("End Date").frame(width: 100, alignment: .leading)
+                Text(String(localized: "End Date", table: "Scheduler")).frame(width: 100, alignment: .leading)
                 DatePicker("", selection: .constant(dateFin), displayedComponents: .date)
                     .disabled(true)
             }
@@ -157,24 +157,24 @@ struct SchedulerFormView: View {
     private var schedulerTextFields: some View {
         Group {
             HStack {
-                Text("Occurrence").frame(width: 100, alignment: .leading)
-                TextField("Occurrence", text: $occurrence)
+                Text(String(localized: "Occurrence", table: "Scheduler")).frame(width: 100, alignment: .leading)
+                TextField(String(localized: "Occurrence", table: "Scheduler"), text: $occurrence)
                     .textFieldStyle(.roundedBorder)
             }
             HStack {
-                Text("Next occurrence").frame(width: 100, alignment: .leading)
-                TextField("Next occurrence", text: $nextOccurrence)
+                Text(String(localized: "Next occurrence", table: "Scheduler")).frame(width: 100, alignment: .leading)
+                TextField(String(localized: "Next occurrence", table: "Scheduler"), text: $nextOccurrence)
                     .textFieldStyle(.roundedBorder)
                     .disabled(true)
             }
             HStack {
-                Text("Comment").frame(width: 100, alignment: .leading)
-                TextField("Comment", text: $libelle)
+                Text(String(localized: "Comment", table: "Scheduler")).frame(width: 100, alignment: .leading)
+                TextField(String(localized: "Comment", table: "Scheduler"), text: $libelle)
                     .textFieldStyle(.roundedBorder)
             }
             HStack {
-                Text("Amount").frame(width: 100, alignment: .leading)
-                TextField("Amount", text: $amount)
+                Text(String(localized: "Amount", table: "Scheduler")).frame(width: 100, alignment: .leading)
+                TextField(String(localized: "Amount", table: "Scheduler"), text: $amount)
                     .textFieldStyle(.roundedBorder)
             }
         }
@@ -184,7 +184,7 @@ struct SchedulerFormView: View {
     private var schedulerPickers: some View {
         Group {
             HStack {
-                Text("Frequency").frame(width: 100, alignment: .leading)
+                Text(String(localized: "Frequency", table: "Scheduler")).frame(width: 100, alignment: .leading)
                 TextField("", text: $frequency)
                     .textFieldStyle(.roundedBorder)
                 Picker("", selection: $selectedTypeIndex) {
@@ -198,7 +198,7 @@ struct SchedulerFormView: View {
             .onChange(of: frequency) { _, _ in update(.frequencyCount) }
 
             HStack {
-                Text("Mode").frame(width: 100, alignment: .leading)
+                Text(String(localized: "Mode", table: "Scheduler")).frame(width: 100, alignment: .leading)
                 Picker("", selection: $selectedMode) {
                     ForEach(entityPaymentMode, id: \.self) {
                         Text($0.name).tag($0)
@@ -208,7 +208,7 @@ struct SchedulerFormView: View {
             }
 
             HStack {
-                Text("Rubric").frame(width: 100, alignment: .leading)
+                Text(String(localized: "Rubric", table: "Scheduler")).frame(width: 100, alignment: .leading)
                 Picker("", selection: $selectedRubric) {
                     ForEach(entityRubric, id: \.self) {
                         Text($0.name).tag($0 as EntityRubric?)
@@ -230,7 +230,7 @@ struct SchedulerFormView: View {
             }
 
             HStack {
-                Text("Category").frame(width: 100, alignment: .leading)
+                Text(String(localized: "Category", table: "Scheduler")).frame(width: 100, alignment: .leading)
                 Picker("", selection: $selectedCategory) {
                     ForEach(entityCategorie, id: \.self) {
                         Text($0.name).tag($0 as EntityCategory?)
@@ -311,3 +311,4 @@ struct SchedulerFormView: View {
         }
     }
 }
+

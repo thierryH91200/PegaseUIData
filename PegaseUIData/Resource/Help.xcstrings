@@ -267,7 +267,7 @@
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Intro2 : Au lancement, l’écran d’accueil apparaît.\n  Depuis cet écran, vous pouvez :\n  - Créer une nouvelle base de données (Créer un nouveau fichier)\n  - Ouvrir une base de données existante (Ouvrir un document existant…)\n  - Ouvrir un projet d’exemple (Ouvrir le document d’exemple Project…)\n  - Ouvrir un fichier récent (Fichiers récents)"
           }
         }

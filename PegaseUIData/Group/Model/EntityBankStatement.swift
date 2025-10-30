@@ -78,8 +78,10 @@ extension EntityBankStatement {
     }
 
     var formattedStartSolde: String { formatEuro(startSolde) }
-    var formattedInterSolde: String { formatEuro(startSolde) }
-    
+    var formattedInterSolde: String { formatEuro(interSolde) }
+    var formattedendSolde: String { formatEuro(endSolde) }
+    var formattedCBSolde: String { formatEuro(cbSolde) }
+
     var accountName: String {
         account.identity?.name ?? ""
     }
@@ -117,6 +119,14 @@ final class BankStatementManager : BankStatementManaging, ObservableObject {
     }
 
     
+    func createEntity(entity: EntityBankStatement) throws -> EntityBankStatement? {
+        
+        let newMode = entity
+        modelContext?.insert(newMode)
+        try save()
+        return newMode
+    }
+    
     func create(num: Int, startDate: Date, startSolde: Double) throws -> EntityBankStatement? {
         
         guard let currentAccount = CurrentAccountManager.shared.getAccount() else {
@@ -132,6 +142,7 @@ final class BankStatementManager : BankStatementManaging, ObservableObject {
         return newMode
     }
     
+
     // MARK: - Public Methods
     func getAllData() -> [EntityBankStatement]? {
         

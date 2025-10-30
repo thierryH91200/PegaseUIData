@@ -104,7 +104,7 @@ struct CheckView: View {
                 }
                 .buttonStyle(.bordered)
                 .disabled(selectedItem == nil)
-#if !DEBUG
+
                 Button(action: {
                     if let manager = undoManager, manager.canUndo {
                         selectedItem = nil
@@ -122,8 +122,7 @@ struct CheckView: View {
                         .actionButtonStyle(isEnabled: canUndo == true, activeColor: .green)
                 }
                 .buttonStyle(.plain)
-#endif // DEBUG
-#if DEBUG
+
                 Button(action: {
                     if let manager = undoManager, manager.canRedo {
                         selectedItem = nil
@@ -141,7 +140,6 @@ struct CheckView: View {
                         .actionButtonStyle(isEnabled: canRedo == true, activeColor: .orange)
                 }
                 .buttonStyle(.plain)
-#endif
 
             }
             
@@ -373,7 +371,6 @@ struct CheckBookFormView: View {
                 try? modelContext.save()
             }
         }
-        
         isPresented = false
         dismiss()
     }

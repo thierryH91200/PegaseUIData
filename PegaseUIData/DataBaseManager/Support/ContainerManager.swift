@@ -176,6 +176,8 @@ class ContainerManager: ObservableObject {
             DataContext.shared.undoManager = globalUndo
             DataContext.shared.container = nil
             context.undoManager = globalUndo
+            print("Centraliser modelContext container:", context.container)
+
             
             // Publier l'état courant
             currentContainer = container

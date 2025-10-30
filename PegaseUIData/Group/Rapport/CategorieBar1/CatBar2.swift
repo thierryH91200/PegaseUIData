@@ -130,11 +130,16 @@ class CategorieBar1ViewModel: ObservableObject {
             var entries: [BarChartDataEntry] = []
             for (idx, monthKey) in sortedSectionIDs.enumerated() {
                 let value = dataPoints.first(where: { $0.section == monthKey && $0.name == rubric.name })?.value ?? 0
-                entries.append(BarChartDataEntry(x: Double(idx), y: abs(value)))
+                entries.append(BarChartDataEntry(x: Double(idx), y: value))
             }
             let set = BarChartDataSet(entries: entries, label: rubric.name)
             set.colors = [rubric.color]
-            set.drawValuesEnabled = false
+            set.drawValuesEnabled = true
+            set.valueFormatter = DefaultValueFormatter(formatter: formatterPrice)
+//            set.valueFormatter = CurrencyValueFormatter1()
+//            set.valueFormatter = DefaultValueFormatter(formatter : formatter)
+
+
             return set
         }
 

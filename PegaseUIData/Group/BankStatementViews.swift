@@ -2,7 +2,7 @@
 //  EntityBankStatements.swift
 //  PegaseUIData
 //
-//  Created by Thierry hentic on 29/01/2025.
+//  Created by Thierry Hentic on 29/01/2025.
 //
 
 import SwiftUI
@@ -33,7 +33,7 @@ struct BankStatementView: View {
 }
 
 struct BankStatementListView: View {
-    @Environment(\.modelContext) private var modelContext
+
     @Environment(\.undoManager) private var undoManager
     
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
@@ -164,8 +164,8 @@ struct BankStatementListView: View {
                 }) {
                     Label("Undo", systemImage: "arrow.uturn.backward")
                         .actionButtonStyle(
-                            isEnabled: canUndo == false,
-                            activeColor: .green)
+                            isEnabled: canUndo == true,
+                            activeColor: Color.green )
                 }
                 .buttonStyle(.plain)
                 
@@ -177,8 +177,8 @@ struct BankStatementListView: View {
                 }) {
                     Label("Redo", systemImage: "arrow.uturn.forward")
                         .actionButtonStyle(
-                            isEnabled: canRedo == false,
-                            activeColor: .orange)
+                            isEnabled: canRedo == true,
+                            activeColor: Color.orange )
                 }
                 .buttonStyle(.plain)
 
@@ -200,16 +200,21 @@ struct BankStatementListView: View {
         }
         
         .sheet(isPresented: $isAddDialogPresented , onDismiss: {setupDataManager()}) {
-            StatementFormView(isPresented: $isEditDialogPresented,
+            StatementFormView(isPresented: $isAddDialogPresented,
                               isModeCreate: $isModeCreate,
                               statement: nil )
         }
     }
-    
+
     private func setupDataManager() {
         
         if currentAccountManager.getAccount() != nil {
-            dataManager.statements = BankStatementManager.shared.getAllData()!
+            if let allData = BankStatementManager.shared.getAllData() {
+                dataManager.statements = allData
+                bankStatements = allData
+            } else {
+                printTag("❗️Erreur : getAllData() a renvoyé nil")
+            }
         }
     }
 
@@ -235,7 +240,6 @@ struct BankStatementListView: View {
         dataManager.statements = BankStatementManager.shared.getAllData() ?? [ ]
     }
 }
-
 
 struct BankStatementTable: View {
     
@@ -336,13 +340,15 @@ class StatementFormViewModel: ObservableObject {
 }
 
 struct StatementFormView: View {
-    @Environment(\.modelContext) private var modelContext
+
     @Environment(\.dismiss) private var dismiss
-        
+    
+    @EnvironmentObject var dataManager: BankStatementManager
+
     @Binding var isPresented: Bool
     @Binding var isModeCreate: Bool
     
-    @State var statement: EntityBankStatement?
+    var statement: EntityBankStatement?
 
     @StateObject private var viewModel = StatementFormViewModel()
     
@@ -404,6 +410,8 @@ struct StatementFormView: View {
             }
         }
         .onAppear {
+            print("isPresented \(isPresented)")
+            print("isModeCreate \(isModeCreate)")
             if let statement = statement {
                 viewModel.load(from: statement)
             }
@@ -411,19 +419,27 @@ struct StatementFormView: View {
     }
     
     private func save() {
-        let entityBankStatement: EntityBankStatement
         
+        let newItem: EntityBankStatement
         if let existingStatement = statement {
-            entityBankStatement = existingStatement
+            newItem = existingStatement
         } else {
-            entityBankStatement = EntityBankStatement()
-            modelContext.insert(entityBankStatement)
+            newItem = EntityBankStatement()
         }
+        viewModel.apply(to: newItem)
         
-        viewModel.apply(to: entityBankStatement)
-        entityBankStatement.account = CurrentAccountManager.shared.getAccount()!
-        
-        try? modelContext.save()
+        do {
+            _ = try BankStatementManager.shared.createEntity(entity:  newItem)
+
+            if let entities = BankStatementManager.shared.getAllData() {
+                dataManager.statements = entities
+                print("✅ \(entities.count) relevés bancaires enregistrés.")
+            } else {
+                print("⚠️ Aucune donnée renvoyée par getAllData()")
+            }
+        } catch {
+            print("❌ Erreur lors de la sauvegarde du relevé :", error.localizedDescription)
+        }
     }
 }
 
@@ -465,7 +481,6 @@ struct PDFDropDelegate: DropDelegate {
     }
 }
 
-
 struct StatementDetailView: View {
     let statement: EntityBankStatement
     
@@ -482,7 +497,6 @@ struct StatementDetailView: View {
 }
 
 // PDFKit wrapper for SwiftUI
-
 struct PDFKitView: NSViewRepresentable {
     let data: Data
     
