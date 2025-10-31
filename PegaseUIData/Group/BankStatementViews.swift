@@ -43,7 +43,6 @@ struct BankStatementListView: View {
         
     @State private var isAddDialogPresented = false
     @State private var isEditDialogPresented = false
-    @State private var isModeCreate = false
 
     @State private var selectedItem: EntityBankStatement.ID?
     @State private var lastDeletedID: UUID?
@@ -75,9 +74,9 @@ struct BankStatementListView: View {
                 Text("Account: \(account.name)")
                     .font(.headline)
             }
-            
+
             BankStatementTable(statements: dataManager.statements, selection: $selectedItem)
-                .frame(height: 300)
+//                .frame(width: 1000, height: 300)
                 .background(Color(nsColor: .windowBackgroundColor))
                 .tableStyle(.bordered)
 
@@ -118,7 +117,6 @@ struct BankStatementListView: View {
                 // Bouton pour ajouter un enregistrement
                 Button(action: {
                     isAddDialogPresented = true
-                    isModeCreate = true
                 }) {
                     Label("Add", systemImage: "plus")
                         .padding()
@@ -130,8 +128,6 @@ struct BankStatementListView: View {
                 // Bouton pour modifier un enregistrement
                 Button(action: {
                     isEditDialogPresented = true
-                    isModeCreate = false
-
                 }) {
                     Label("Edit", systemImage: "pencil")
                         .actionButtonStyle(
@@ -181,7 +177,6 @@ struct BankStatementListView: View {
                             activeColor: Color.orange )
                 }
                 .buttonStyle(.plain)
-
             }
             Spacer()
             
@@ -192,17 +187,14 @@ struct BankStatementListView: View {
                 Text("Select a statement")
             }
         }
+        .frame(width:500)
         
         .sheet(isPresented: $isEditDialogPresented , onDismiss: {setupDataManager()}) {
-            StatementFormView(isPresented: $isEditDialogPresented,
-                              isModeCreate: $isModeCreate,
-                              statement: selectedStatement)
+            StatementFormView(statement: selectedStatement)
         }
         
         .sheet(isPresented: $isAddDialogPresented , onDismiss: {setupDataManager()}) {
-            StatementFormView(isPresented: $isAddDialogPresented,
-                              isModeCreate: $isModeCreate,
-                              statement: nil )
+            StatementFormView(statement: nil )
         }
     }
 
@@ -281,6 +273,17 @@ struct BankStatementTable: View {
                 TableColumn(String(localized:"Surname", table: "Charts"))  {
                     statement in Text(statement.accountSurname) }
                 TableColumn(String(localized:"Name", table: "Charts")) { statement in Text(statement.accountName) }
+                TableColumn(String(localized: "PDF", table: "Charts")) { statement in
+                    if let data = statement.pdfDoc, !data.isEmpty {
+                        Label("Yes", systemImage: "doc.text.fill")
+                            .foregroundColor(.green)
+                            .help("A PDF document is associated.")
+                    } else {
+                        Label("No", systemImage: "xmark.circle")
+                            .foregroundColor(.secondary)
+                            .help("No PDF document is associated.")
+                    }
+                }
             }
         }
     }
@@ -342,13 +345,10 @@ class StatementFormViewModel: ObservableObject {
 struct StatementFormView: View {
 
     @Environment(\.dismiss) private var dismiss
-    
     @EnvironmentObject var dataManager: BankStatementManager
-
-    @Binding var isPresented: Bool
-    @Binding var isModeCreate: Bool
     
     var statement: EntityBankStatement?
+    @State private var isShowingPDFPreview = false
 
     @StateObject private var viewModel = StatementFormViewModel()
     
@@ -378,17 +378,100 @@ struct StatementFormView: View {
                 }
                 
                 Section("Document PDF") {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(dragOver ? Color.red.opacity(0.3) : Color.gray.opacity(0.2))
-                            .frame(height: 100)
-                        
-                        Text(viewModel.pdfData != nil ? "Selected PDF" : "Drop your PDF here")
+                    if let statement = statement {
+                        if statement.pdfDoc != nil {
+                            HStack {
+                                Label("PDF already added", systemImage: "doc.richtext")
+                                    .foregroundColor(.green)
+                                Spacer()
+                                Button("See") {
+                                    isShowingPDFPreview = true
+                                }
+                            }
+                            .padding(.vertical, 4)
+                        }
+                        PDFDropZone(statement: statement)
+                    } else {
+                        VStack {
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.gray.opacity(0.2))
+                                .frame(height: 100)
+                            Text("Save the statement before adding a PDF")
+                                .foregroundStyle(.secondary)
+                                .padding(.top, 4)
+                        }
                     }
-                    .onDrop(of: [UTType.pdf], delegate: PDFDropDelegate(pdfData: $viewModel.pdfData, isDragOver: $dragOver))
+                }
+                .sheet(isPresented: $isShowingPDFPreview) {
+                    if let pdfData = statement?.pdfDoc {
+                        ZStack(alignment: .topTrailing) {
+                            PDFKitView(data: pdfData)
+                                .frame(minWidth: 600, minHeight: 400)
+                                .background(Color(NSColor.windowBackgroundColor))
+                            
+                            // Barre d’outils flottante translucide
+                            HStack(spacing: 12) {
+                                // Fermer
+                                Button {
+                                    isShowingPDFPreview = false
+                                } label: {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .font(.title2)
+                                }
+                                .help("Close the PDF")
+                                
+                                Divider()
+                                    .frame(height: 20)
+                                
+                                // Zoom avant
+                                Button {
+                                    NotificationCenter.default.post(name: Notification.Name("ZoomInPDF"), object: nil)
+                                } label: {
+                                    Image(systemName: "plus.magnifyingglass")
+                                }
+                                .help("Zoom in")
+                                
+                                // Zoom arrière
+                                Button {
+                                    NotificationCenter.default.post(name: Notification.Name("ZoomOutPDF"), object: nil)
+                                } label: {
+                                    Image(systemName: "minus.magnifyingglass")
+                                }
+                                .help("Zoom out")
+                                
+                                Divider()
+                                    .frame(height: 20)
+                                
+                                // Imprimer le PDF
+                                Button {
+                                    if let pdfDoc = PDFDocument(data: pdfData) {
+                                        let printInfo = NSPrintInfo.shared
+                                        let printOperation = pdfDoc.printOperation(for: printInfo, scalingMode: .pageScaleNone, autoRotate: true)
+                                        printOperation?.run()
+                                    }
+                                } label: {
+                                    Image(systemName: "printer")
+                                }
+                                .help("Print the PDF")
+                            }
+                            .padding(10)
+                            .background(.regularMaterial)
+                            .cornerRadius(12)
+                            .padding()
+                            .shadow(radius: 4)
+                        }
+                    }
                 }
             }
+    
+//                .sheet(isPresented: $isShowingPDFPreview) {
+//                    if let pdfData = statement?.pdfDoc {
+//                        PDFKitView(data: pdfData)
+//                            .frame(minWidth: 600, minHeight: 400)
+//                    }
+//                }
             .padding()
+            
             .navigationTitle(statement == nil ? "New statement" : "Edit statement")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -410,8 +493,6 @@ struct StatementFormView: View {
             }
         }
         .onAppear {
-            print("isPresented \(isPresented)")
-            print("isModeCreate \(isModeCreate)")
             if let statement = statement {
                 viewModel.load(from: statement)
             }
@@ -442,6 +523,37 @@ struct StatementFormView: View {
         }
     }
 }
+
+struct PDFDropZone: View {
+    @Bindable var statement: EntityBankStatement
+    @State private var dragOver = false
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(dragOver ? Color.red.opacity(0.3) : Color.gray.opacity(0.2))
+                .frame(height: 100)
+
+            Text(statement.pdfDoc != nil ? "Selected PDF" : "Drop your PDF here")
+        }
+        .onDrop(of: [UTType.pdf], isTargeted: $dragOver) { providers in
+            if let provider = providers.first {
+                provider.loadDataRepresentation(forTypeIdentifier: UTType.pdf.identifier) { data, _ in
+                    if let data {
+                        Task { @MainActor in
+                            statement.pdfDoc = data
+                            try? statement.modelContext?.save()
+                            print("✅ PDF importé et sauvegardé.")
+                        }
+                    }
+                }
+                return true
+            }
+            return false
+        }
+    }
+}
+
 
 struct PDFDropDelegate: DropDelegate {
     @Binding var pdfData: Data?
@@ -499,17 +611,24 @@ struct StatementDetailView: View {
 // PDFKit wrapper for SwiftUI
 struct PDFKitView: NSViewRepresentable {
     let data: Data
-    
+
     func makeNSView(context: Context) -> PDFView {
         let pdfView = PDFView()
         pdfView.autoScales = true
+
+        NotificationCenter.default.addObserver(forName: Notification.Name("ZoomInPDF"), object: nil, queue: .main) { _ in
+            pdfView.zoomIn(nil)
+        }
+        NotificationCenter.default.addObserver(forName: Notification.Name("ZoomOutPDF"), object: nil, queue: .main) { _ in
+            pdfView.zoomOut(nil)
+        }
+
         return pdfView
     }
-    
+
     func updateNSView(_ pdfView: PDFView, context: Context) {
         if let document = PDFDocument(data: data) {
             pdfView.document = document
         }
     }
 }
-

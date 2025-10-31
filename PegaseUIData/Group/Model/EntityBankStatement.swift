@@ -118,7 +118,6 @@ final class BankStatementManager : BankStatementManaging, ObservableObject {
         statements.removeAll()
     }
 
-    
     func createEntity(entity: EntityBankStatement) throws -> EntityBankStatement? {
         
         let newMode = entity
@@ -170,18 +169,16 @@ final class BankStatementManager : BankStatementManaging, ObservableObject {
 
     
     // MARK: - Public Methods
-    // Supprimer une transaction
+    // Supprime une transaction
     func delete(entity: EntityBankStatement, undoManager: UndoManager?) {
         guard let context = modelContext else { return }
 
         context.undoManager = undoManager
-
         context.undoManager?.beginUndoGrouping()
         context.undoManager?.setActionName("Delete BankStatement")
         context.delete(entity)
         context.undoManager?.endUndoGrouping()
     }
-    
     
     func save () throws {
         

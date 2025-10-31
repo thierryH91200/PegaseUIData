@@ -43,7 +43,6 @@ func printTag(_ message: String,
     print("\(tag) [\(file):\(line)] \(function) — \(message)")
 }
 
-
 func logUI(_ message: String, pr: Bool = false) {
     if !pr { return }
     let ts = ISO8601DateFormatter().string(from: Date())

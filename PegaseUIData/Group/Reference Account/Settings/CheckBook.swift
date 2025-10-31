@@ -11,7 +11,7 @@ import SwiftData
 
 // Vue principale pour l'affichage des carnets de chèques
 struct CheckView: View {
-    @Environment(\.modelContext) private var modelContext
+//    @Environment(\.modelContext) private var modelContext
     @Environment(\.undoManager) private var undoManager
 
     @EnvironmentObject var currentAccountManager: CurrentAccountManager

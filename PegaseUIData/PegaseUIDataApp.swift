@@ -17,9 +17,7 @@ import UniformTypeIdentifiers
 struct DatabaseManagerApp: App {
     
     @Environment(\.openWindow) private var openWindow
-    
     @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
-
     @StateObject private var containerManager = ContainerManager()
     
     init() {
