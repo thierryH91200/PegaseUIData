@@ -35,8 +35,11 @@ struct DGBarChart5Representable: NSViewRepresentable {
 
         let dataSet = BarChartDataSet(entries: entries, label: "Categorie Bar1")
         dataSet.colors = ChartColorTemplates.colorful()
+        dataSet.drawValuesEnabled = true
         
         let data = BarChartData(dataSet: dataSet)
+        data.setValueFormatter(CurrencyValueFormatter1())
+
         chartView.data = data
         
         // Personnalisation du graphique
@@ -116,7 +119,6 @@ struct DGBarChart5Representable: NSViewRepresentable {
             chartView.doubleTapToZoomEnabled    = false
             chartView.dragEnabled               = false
             chartView.noDataText                = "No chart Data Available"
-            
             
             // MARK : xAxis
             let xAxis                      = chartView.xAxis

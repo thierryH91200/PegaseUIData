@@ -69,21 +69,26 @@ open nonisolated class RectMarker: MarkerImage
         let width = size.width
         let height = size.height
         let origin = point
-        
-        if origin.x + offset.x < 0.0
-        {
-            offset.x = -origin.x
-        } else if chart != nil && origin.x + width + offset.x > chart!.viewPortHandler.contentRect.maxX
-        {
-            offset.x =  -width
+
+        // Snapshot contentRect max values only if we're on the main thread to respect main-actor isolation
+        var contentMaxX: CGFloat? = nil
+        var contentMaxY: CGFloat? = nil
+        if Thread.isMainThread, let chart {
+            let rect = chart.viewPortHandler.contentRect
+            contentMaxX = rect.maxX
+            contentMaxY = rect.maxY
         }
-        
-        if origin.y + offset.y < 0
-        {
+
+        if origin.x + offset.x < 0.0 {
+            offset.x = -origin.x
+        } else if let maxX = contentMaxX, origin.x + width + offset.x > maxX {
+            offset.x = -width
+        }
+
+        if origin.y + offset.y < 0 {
             offset.y = height
-        } else if chart != nil && origin.y + height + offset.y > chart!.viewPortHandler.contentRect.maxY
-        {
-            offset.y =  -height
+        } else if let maxY = contentMaxY, origin.y + height + offset.y > maxY {
+            offset.y = -height
         }
         return offset
     }
@@ -206,4 +211,3 @@ open nonisolated class RectMarker: MarkerImage
     }
     
 }
-

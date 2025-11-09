@@ -355,7 +355,6 @@ struct TableView: View {
         try? context.save()
     }
 }
-
 extension DateFormatter {
     static let ofxDate: DateFormatter = {
         let df = DateFormatter()

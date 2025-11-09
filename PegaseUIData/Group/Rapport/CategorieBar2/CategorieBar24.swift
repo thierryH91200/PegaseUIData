@@ -87,12 +87,15 @@ struct DGBarChart2Representable: NSViewRepresentable {
     func updateNSView(_ nsView: BarChartView, context: Context) {
         if let data = nsView.data, let set = data.dataSets.first as? BarChartDataSet {
             set.replaceEntries(entries)
+//            data.setValueFormatter(CurrencyValueFormatter1())
             data.notifyDataChanged()
             nsView.notifyDataSetChanged()
         } else {
             let dataSet = BarChartDataSet(entries: entries, label: "Categorie Bar1")
             dataSet.colors = ChartColorTemplates.colorful()
             nsView.data = BarChartData(dataSet: dataSet)
+//            nsView.data?.setValueFormatter(CurrencyValueFormatter1())
+
             nsView.notifyDataSetChanged()
         }
     }
@@ -116,14 +119,12 @@ struct DGBarChart2Representable: NSViewRepresentable {
         chartView.borderColor = .controlBackgroundColor
         chartView.gridBackgroundColor = .gridColor
         chartView.drawBarShadowEnabled      = false
-        chartView.drawValueAboveBarEnabled  = false
+        chartView.drawValueAboveBarEnabled  = true
         chartView.maxVisibleCount           = 60
         chartView.drawGridBackgroundEnabled = true
         chartView.gridBackgroundColor       = .windowBackgroundColor
-
         chartView.fitBars                   = true
         chartView.drawBordersEnabled        = true
-
         chartView.pinchZoomEnabled          = false
         chartView.doubleTapToZoomEnabled    = false
         chartView.dragEnabled               = false
@@ -162,8 +163,12 @@ struct DGBarChart2Representable: NSViewRepresentable {
     private func applyInitialData(to chartView: BarChartView) {
         let dataSet = BarChartDataSet(entries: entries, label: "Categorie Bar1")
         dataSet.colors = ChartColorTemplates.colorful()
+        dataSet.drawValuesEnabled = true
 
         let data = BarChartData(dataSet: dataSet)
+        data.setValueFormatter(CurrencyValueFormatter1())
+        data.setValueFont(NSFont(name: "HelveticaNeue-Light", size: CGFloat(12.0))!)
+
         chartView.data = data
 
         // Personnalisation du graphique
@@ -206,7 +211,7 @@ struct DGBarChart2Representable: NSViewRepresentable {
 
             let dataSet = BarChartDataSet(entries: entries, label: dataRubrique[0].name)
             dataSet.colors = [dataRubrique[0].color]
-            dataSet.drawValuesEnabled = false
+            dataSet.drawValuesEnabled = true
             return dataSet
         }
 
@@ -226,8 +231,7 @@ struct DGBarChart2Representable: NSViewRepresentable {
 
         // MARK: BarChartData
         let data = BarChartData(dataSets: dataSets)
-
-        data.setValueFormatter(DefaultValueFormatter(formatter: formatterPrice))
+        data.setValueFormatter(CurrencyValueFormatter1())
         data.setValueFont(NSFont(name: "HelveticaNeue-Light", size: CGFloat(11.0))!)
         data.setValueTextColor(NSColor.black)
 

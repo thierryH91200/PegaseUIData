@@ -32,6 +32,7 @@ class RecetteDepenseBarViewModel: ObservableObject {
     let formatterPrice: NumberFormatter = {
         let _formatter = NumberFormatter()
         _formatter.locale = Locale.current
+        
         _formatter.numberStyle = .currency
         return _formatter
     }()
@@ -117,11 +118,13 @@ class RecetteDepenseBarViewModel: ObservableObject {
             var label = String(localized: "Expenses")
             dataSet1 = BarChartDataSet(entries: entriesExpense, label: label)
             dataSet1.colors = [#colorLiteral(red: 1, green: 0.1474981606, blue: 0, alpha: 1)]
+            dataSet1.drawValuesEnabled = true
             dataSet1.valueFormatter = DefaultValueFormatter(formatter: formatterPrice)
 
             label = String(localized: "Incomes")
             dataSet2 = BarChartDataSet(entries: entriesIncome, label: label)
             dataSet2.colors = [#colorLiteral(red: 0.01680417731, green: 0.1983509958, blue: 1, alpha: 1)]
+            dataSet1.drawValuesEnabled = true
             dataSet2.valueFormatter = DefaultValueFormatter(formatter: formatterPrice)
         } else {
             dataSet1 = (chartView.data!.dataSets[0] as! BarChartDataSet)
@@ -135,9 +138,10 @@ class RecetteDepenseBarViewModel: ObservableObject {
 
         // Build BarChartData
         let data = BarChartData(dataSets: [dataSet1, dataSet2])
+        data.setValueFormatter(CurrencyValueFormatter1())
+
         data.barWidth = barWidth
         data.groupBars(fromX: Double(0), groupSpace: groupSpace, barSpace: barSpace)
-        data.setValueFormatter(DefaultValueFormatter(formatter: formatterPrice))
         data.setValueFont(NSFont(name: "HelveticaNeue-Light", size: CGFloat(8.0))!)
         data.setValueTextColor(.black)
 

@@ -33,17 +33,17 @@ struct BankStatementView: View {
 }
 
 struct BankStatementListView: View {
-
+    
     @Environment(\.undoManager) private var undoManager
     
     @EnvironmentObject var currentAccountManager: CurrentAccountManager
     @EnvironmentObject var dataManager: BankStatementManager
     
     @State private var bankStatements: [EntityBankStatement] = []
-        
+    
     @State private var isAddDialogPresented = false
     @State private var isEditDialogPresented = false
-
+    
     @State private var selectedItem: EntityBankStatement.ID?
     @State private var lastDeletedID: UUID?
     
@@ -69,135 +69,126 @@ struct BankStatementListView: View {
     }()
     
     var body: some View {
-        NavigationSplitView {
-            if let account = CurrentAccountManager.shared.getAccount() {
-                Text("Account: \(account.name)")
-                    .font(.headline)
+        //        NavigationSplitView {
+        if let account = CurrentAccountManager.shared.getAccount() {
+            Text("Account: \(account.name)")
+                .font(.headline)
+        }
+        
+        BankStatementTable(statements: dataManager.statements, selection: $selectedItem)
+            .frame( height: 300)
+        //            .frame(width: 1000, height: 300)
+            .background(Color(nsColor: .windowBackgroundColor))
+            .tableStyle(.bordered)
+        
+            .onAppear {
+                setupDataManager()
             }
-
-            BankStatementTable(statements: dataManager.statements, selection: $selectedItem)
-//                .frame(width: 1000, height: 300)
-                .background(Color(nsColor: .windowBackgroundColor))
-                .tableStyle(.bordered)
-
-                .onAppear {
-                    setupDataManager()
-                }
-                .onDisappear {
-                    bankStatements.removeAll()
-                }
-
-                .onReceive(NotificationCenter.default.publisher(for: .NSUndoManagerDidUndoChange)) { _ in
-                    refreshData()
-                }
-                .onReceive(NotificationCenter.default.publisher(for: .NSUndoManagerDidRedoChange)) { _ in
-                    printTag("Redo effectué, on recharge les données")
-                    refreshData()
-                }
-                .onChange(of: selectedItem) { oldValue, newValue in
-                    if let selected = newValue {
-                        bankStatements =  dataManager.statements
-                        selectedItem = selected
-                        
-                    } else {
-                        selectedItem = nil
-                    }
-                }
-            
-                .onChange(of: currentAccountManager.getAccount()) { old, newAccount in
+            .onDisappear {
+                bankStatements.removeAll()
+            }
+        
+            .onReceive(NotificationCenter.default.publisher(for: .NSUndoManagerDidUndoChange)) { _ in
+                refreshData()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .NSUndoManagerDidRedoChange)) { _ in
+                printTag("Redo effectué, on recharge les données")
+                refreshData()
+            }
+            .onChange(of: selectedItem) { oldValue, newValue in
+                if let selected = newValue {
+                    bankStatements =  dataManager.statements
+                    selectedItem = selected
                     
-                    if newAccount != nil {
-                        dataManager.statements.removeAll()
-                        selectedItem = nil
-                        refreshData()
-                    }
+                } else {
+                    selectedItem = nil
                 }
+            }
+        
+            .onChange(of: currentAccountManager.getAccount()) { old, newAccount in
+                
+                if newAccount != nil {
+                    dataManager.statements.removeAll()
+                    selectedItem = nil
+                    refreshData()
+                }
+            }
+        
+        HStack {
+            // Bouton pour ajouter un enregistrement
+            Button(action: {
+                isAddDialogPresented = true
+            }) {
+                Label("Add", systemImage: "plus")
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
+            }
             
-            HStack {
-                // Bouton pour ajouter un enregistrement
-                Button(action: {
-                    isAddDialogPresented = true
-                }) {
-                    Label("Add", systemImage: "plus")
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
-                }
-                
-                // Bouton pour modifier un enregistrement
-                Button(action: {
-                    isEditDialogPresented = true
-                }) {
-                    Label("Edit", systemImage: "pencil")
-                        .actionButtonStyle(
-                            isEnabled: selectedStatement != nil,
-                            activeColor: .green)
-                }
-                .disabled(selectedStatement == nil) // Désactive le bouton si aucun élément n'est sélectionné
-                
-                // Bouton pour supprimer un enregistrement
-                Button(action: {
-                    delete()
-                }) {
-                    Label("Delete", systemImage: "trash")
-                        .actionButtonStyle(
-                            isEnabled: selectedStatement != nil,
-                            activeColor: .red)
-                }
-                .disabled(selectedStatement == nil) // Désactive le bouton si aucun élément n'est sélectionné
-                
-                Button(action: {
-                    if let manager = undoManager, manager.canUndo {
-                        selectedItem = nil
-                        lastDeletedID = nil
-                        manager.undo()
-                        
-                        DispatchQueue.main.async {
-                            setupDataManager()
-                        }
-                    }
-                }) {
-                    Label("Undo", systemImage: "arrow.uturn.backward")
-                        .actionButtonStyle(
-                            isEnabled: canUndo == true,
-                            activeColor: Color.green )
-                }
-                .buttonStyle(.plain)
-                
-                Button(action: {
-                    if let manager = undoManager, manager.canRedo {
-                        manager.redo()
+            // Bouton pour modifier un enregistrement
+            Button(action: {
+                isEditDialogPresented = true
+            }) {
+                Label("Edit", systemImage: "pencil")
+                    .actionButtonStyle(
+                        isEnabled: selectedStatement != nil,
+                        activeColor: .green)
+            }
+            .disabled(selectedStatement == nil) // Désactive le bouton si aucun élément n'est sélectionné
+            
+            // Bouton pour supprimer un enregistrement
+            Button(action: {
+                delete()
+            }) {
+                Label("Delete", systemImage: "trash")
+                    .actionButtonStyle(
+                        isEnabled: selectedStatement != nil,
+                        activeColor: .red)
+            }
+            .disabled(selectedStatement == nil) // Désactive le bouton si aucun élément n'est sélectionné
+            
+            Button(action: {
+                if let manager = undoManager, manager.canUndo {
+                    selectedItem = nil
+                    lastDeletedID = nil
+                    manager.undo()
+                    
+                    DispatchQueue.main.async {
                         setupDataManager()
                     }
-                }) {
-                    Label("Redo", systemImage: "arrow.uturn.forward")
-                        .actionButtonStyle(
-                            isEnabled: canRedo == true,
-                            activeColor: Color.orange )
                 }
-                .buttonStyle(.plain)
+            }) {
+                Label("Undo", systemImage: "arrow.uturn.backward")
+                    .actionButtonStyle(
+                        isEnabled: canUndo == true,
+                        activeColor: Color.green )
             }
-            Spacer()
+            .buttonStyle(.plain)
             
-        } detail: {
-            if let statement = selectedStatement {
-                StatementDetailView(statement: statement)
-            } else {
-                Text("Select a statement")
+            Button(action: {
+                if let manager = undoManager, manager.canRedo {
+                    manager.redo()
+                    setupDataManager()
+                }
+            }) {
+                Label("Redo", systemImage: "arrow.uturn.forward")
+                    .actionButtonStyle(
+                        isEnabled: canRedo == true,
+                        activeColor: Color.orange )
             }
+            .buttonStyle(.plain)
         }
-        .frame(width:500)
-        
-        .sheet(isPresented: $isEditDialogPresented , onDismiss: {setupDataManager()}) {
-            StatementFormView(statement: selectedStatement)
-        }
-        
-        .sheet(isPresented: $isAddDialogPresented , onDismiss: {setupDataManager()}) {
-            StatementFormView(statement: nil )
-        }
-    }
+        Spacer()
+            .sheet(isPresented: $isAddDialogPresented , onDismiss: {setupDataManager()}) {
+                StatementFormView(statement: nil )
+            }
 
+            .sheet(isPresented: $isEditDialogPresented , onDismiss: {setupDataManager()}) {
+                StatementFormView(statement: selectedStatement)
+            }
+    }
+    
     private func setupDataManager() {
         
         if currentAccountManager.getAccount() != nil {
@@ -209,7 +200,7 @@ struct BankStatementListView: View {
             }
         }
     }
-
+    
     private func delete() {
         
         if let id = selectedItem,
@@ -221,7 +212,6 @@ struct BankStatementListView: View {
             DispatchQueue.main.async {
                 selectedItem = nil
                 lastDeletedID = nil
-                
                 refreshData()
             }
             
@@ -343,13 +333,13 @@ class StatementFormViewModel: ObservableObject {
 }
 
 struct StatementFormView: View {
-
+    
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var dataManager: BankStatementManager
     
     var statement: EntityBankStatement?
     @State private var isShowingPDFPreview = false
-
+    
     @StateObject private var viewModel = StatementFormViewModel()
     
     @State private var dragOver = false
@@ -463,13 +453,6 @@ struct StatementFormView: View {
                     }
                 }
             }
-    
-//                .sheet(isPresented: $isShowingPDFPreview) {
-//                    if let pdfData = statement?.pdfDoc {
-//                        PDFKitView(data: pdfData)
-//                            .frame(minWidth: 600, minHeight: 400)
-//                    }
-//                }
             .padding()
             
             .navigationTitle(statement == nil ? "New statement" : "Edit statement")
@@ -511,10 +494,10 @@ struct StatementFormView: View {
         
         do {
             _ = try BankStatementManager.shared.createEntity(entity:  newItem)
-
+            
             if let entities = BankStatementManager.shared.getAllData() {
                 dataManager.statements = entities
-                print("✅ \(entities.count) relevés bancaires enregistrés.")
+                printTag("✅ \(entities.count) relevés bancaires enregistrés.")
             } else {
                 print("⚠️ Aucune donnée renvoyée par getAllData()")
             }
@@ -527,13 +510,13 @@ struct StatementFormView: View {
 struct PDFDropZone: View {
     @Bindable var statement: EntityBankStatement
     @State private var dragOver = false
-
+    
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 8)
                 .fill(dragOver ? Color.red.opacity(0.3) : Color.gray.opacity(0.2))
                 .frame(height: 100)
-
+            
             Text(statement.pdfDoc != nil ? "Selected PDF" : "Drop your PDF here")
         }
         .onDrop(of: [UTType.pdf], isTargeted: $dragOver) { providers in
@@ -553,7 +536,6 @@ struct PDFDropZone: View {
         }
     }
 }
-
 
 struct PDFDropDelegate: DropDelegate {
     @Binding var pdfData: Data?
@@ -593,39 +575,39 @@ struct PDFDropDelegate: DropDelegate {
     }
 }
 
-struct StatementDetailView: View {
-    let statement: EntityBankStatement
-    
-    var body: some View {
-        VStack {
-            if let pdfData = statement.pdfDoc {
-                PDFKitView(data: pdfData)
-            } else {
-                Text("No PDF available")
-            }
-        }
-        .padding()
-    }
-}
+//struct StatementDetailView: View {
+//    let statement: EntityBankStatement
+//
+//    var body: some View {
+//        VStack {
+//            if let pdfData = statement.pdfDoc {
+//                PDFKitView(data: pdfData)
+//            } else {
+//                Text("No PDF available")
+//            }
+//        }
+//        .padding()
+//    }
+//}
 
 // PDFKit wrapper for SwiftUI
 struct PDFKitView: NSViewRepresentable {
     let data: Data
-
+    
     func makeNSView(context: Context) -> PDFView {
         let pdfView = PDFView()
         pdfView.autoScales = true
-
+        
         NotificationCenter.default.addObserver(forName: Notification.Name("ZoomInPDF"), object: nil, queue: .main) { _ in
             pdfView.zoomIn(nil)
         }
         NotificationCenter.default.addObserver(forName: Notification.Name("ZoomOutPDF"), object: nil, queue: .main) { _ in
             pdfView.zoomOut(nil)
         }
-
+        
         return pdfView
     }
-
+    
     func updateNSView(_ pdfView: PDFView, context: Context) {
         if let document = PDFDocument(data: data) {
             pdfView.document = document

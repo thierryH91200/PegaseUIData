@@ -31,7 +31,7 @@ struct DataGraph : Equatable{
 class CurrencyValueFormatter: NSObject, AxisValueFormatter
 {
     let formatter = NumberFormatter()
-
+    
     public override init() {
         super.init()
         formatter.numberStyle = .currency
@@ -46,39 +46,46 @@ class CurrencyValueFormatter: NSObject, AxisValueFormatter
     }
 }
 
-class CurrencyValueFormatter1: ValueFormatter {
+final class CurrencyValueFormatter1: ValueFormatter {
+    
     private let formatter: NumberFormatter
-
-    init(currencyCode: String = "EUR") {
+    
+    init() {
         formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = currencyCode
-        formatter.maximumFractionDigits = 0
-        formatter.locale = Locale.current
+        formatter.numberStyle = .currency   // format monétaire
+        formatter.currencyCode = "EUR"      // ou "USD", "GBP", "JPY"...
+        if Locale.current.identifier == "en_FR" {
+            formatter.locale = Locale(identifier: "fr_FR")
+        } else {
+            formatter.locale = Locale.current
+        }
+        formatter.locale = Locale(identifier: "fr_FR")
+        formatter.maximumFractionDigits = 2
+        
     }
-
-    public func stringForValue(_ value: Double,
-                                 entry: ChartDataEntry,
-                                 dataSetIndex: Int,
-                                 viewPortHandler: ViewPortHandler?) -> String {
-        return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
+    
+    func stringForValue(_ value: Double, entry: ChartDataEntry, dataSetIndex: Int, viewPortHandler: ViewPortHandler?) -> String {
+        
+        let base = formatter.string(for: value) ?? "0.00"
+        return base
     }
+    
 }
 
 class PieValueFormatter: ValueFormatter {
     let formatter: NumberFormatter
-
+    
     init(currencyCode: String) {
         self.formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.currencyCode = currencyCode
         formatter.maximumFractionDigits = 2
     }
-
+    
     public func stringForValue(_ value: Double,
-                                 entry: ChartDataEntry,
-                                 dataSetIndex: Int,
-                                 viewPortHandler: ViewPortHandler?) -> String {
+                               entry: ChartDataEntry,
+                               dataSetIndex: Int,
+                               viewPortHandler: ViewPortHandler?) -> String {
         return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
     }
 }
@@ -86,21 +93,21 @@ class PieValueFormatter: ValueFormatter {
 // Résultat affiché : "1,2 k€", "850 €", etc.
 class CompactCurrencyFormatter: ValueFormatter {
     private let numberFormatter: NumberFormatter
-
+    
     init() {
         numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .decimal
         numberFormatter.maximumFractionDigits = 1
     }
-
+    
     public func stringForValue(_ value: Double,
-                                 entry: ChartDataEntry,
-                                 dataSetIndex: Int,
-                                 viewPortHandler: ViewPortHandler?) -> String {
+                               entry: ChartDataEntry,
+                               dataSetIndex: Int,
+                               viewPortHandler: ViewPortHandler?) -> String {
         let absValue = abs(value)
         let suffix: String
         let displayValue: Double
-
+        
         switch absValue {
         case 1_000_000...:
             displayValue = absValue / 1_000_000
@@ -112,7 +119,7 @@ class CompactCurrencyFormatter: ValueFormatter {
             displayValue = absValue
             suffix = " €"
         }
-
+        
         let formatted = numberFormatter.string(from: NSNumber(value: displayValue)) ?? "\(displayValue)"
         return formatted + suffix
     }

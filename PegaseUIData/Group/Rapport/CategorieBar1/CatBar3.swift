@@ -79,10 +79,12 @@ struct CategorieBar1View1: View {
                 }
                 .padding()
             }
+#if !DEBUG
             Button("Export to PNG") {
                 exportChartAsImage()
             }
             .padding(.bottom, 8)
+#endif
             
             DGBarChart7Representable(
                 viewModel: viewModel)

@@ -76,6 +76,7 @@ struct DGBarChart4Representable: NSViewRepresentable {
         guard !entries.isEmpty else { return nil }
         let dataSet = BarChartDataSet(entries: entries, label: title)
         dataSet.colors = ChartColorTemplates.colorful()
+        dataSet.drawValuesEnabled = true
         return BarChartData(dataSet: dataSet)
     }
     

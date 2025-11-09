@@ -7632,6 +7632,7 @@
       }
     },
     "Export to PNG" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -10692,6 +10693,7 @@
       }
     },
     "No PDF available" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -12915,6 +12917,7 @@
       }
     },
     "Select a statement" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

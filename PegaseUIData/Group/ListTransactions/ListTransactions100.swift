@@ -24,7 +24,7 @@ struct ListTransactionsView100: View {
         
         VStack(spacing: 0) {
                         
-            #if DEBUG
+            #if !DEBUG
                         Button("Load demo data") {
                             loadDemoData()
                         }

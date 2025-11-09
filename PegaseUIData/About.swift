@@ -32,6 +32,6 @@ struct AboutView: View {
                 .multilineTextAlignment(.center)
         }
         .padding(8) // padding réduit
-        .frame(minWidth: 72, minHeight: 72) // optionnel: borne mini alignée avec votre defaultSize
+        .frame(minWidth: 72, minHeight: 72)
     }
 }

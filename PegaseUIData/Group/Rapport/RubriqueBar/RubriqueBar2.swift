@@ -50,9 +50,7 @@ class RubriqueBarViewModel: ObservableObject {
             txn.sousOperations.compactMap { $0.category?.rubric?.name }
         })
         self.availableRubrics = [""] + rubricSet.sorted() // "" means all
-        
-        //        delegate?.updateListeTransactions( listTransactions)
-        
+                
         // grouped by month/year
         var name = ""
         var value = 0.0

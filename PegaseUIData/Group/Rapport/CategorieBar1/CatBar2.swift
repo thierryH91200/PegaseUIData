@@ -136,10 +136,6 @@ class CategorieBar1ViewModel: ObservableObject {
             set.colors = [rubric.color]
             set.drawValuesEnabled = true
             set.valueFormatter = DefaultValueFormatter(formatter: formatterPrice)
-//            set.valueFormatter = CurrencyValueFormatter1()
-//            set.valueFormatter = DefaultValueFormatter(formatter : formatter)
-
-
             return set
         }
 
@@ -149,7 +145,8 @@ class CategorieBar1ViewModel: ObservableObject {
         let barWidth = Double(0.8 / Double(rubrics.count))
 
         let data = BarChartData(dataSets: dataSets)
-        data.setValueFormatter(DefaultValueFormatter(formatter: formatterPrice))
+        data.setValueFormatter(CurrencyValueFormatter1())
+
         if let valueFont = NSFont(name: "HelveticaNeue-Light", size: CGFloat(11.0)) {
             data.setValueFont(valueFont)
         }
