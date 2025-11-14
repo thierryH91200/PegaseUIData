@@ -54,7 +54,7 @@ struct ContentView100: View {
     @AppStorage("choixCouleur") var choixCouleur: String = "Unie"
     
     @EnvironmentObject var containerManager: ContainerManager
-//    let account: EntityAccount 
+//    let account: EntityAccount
     @StateObject private var listManager = ListTransactionsManager.shared
 
     @StateObject private var currentAccountManager = CurrentAccountManager.shared
@@ -75,7 +75,7 @@ struct ContentView100: View {
     @State private var isVisible: Bool = true
     @State private var isToggle: Bool = false
 
-    @State private var entityAccount: [EntityAccount] = []    
+    @State private var entityAccount: [EntityAccount] = []
     @State private var inspectorIsShown: Bool = false
     
     @State private var showImportOFX = false
@@ -428,6 +428,40 @@ struct DetailContainer: View {
     }
 }
 
+//struct Sidebar2A: View {
+//    @Binding var selection2: String?
+//
+//    var body: some View {
+//        let datas = Bundle.main.decode([Datas].self, from: "Feeds.plist")
+//        ScrollView {
+//            LazyVStack(alignment: .leading, spacing: 4) {
+//                ForEach(datas) { section in
+//                    Text(section.name)
+//                        .font(.system(size: 12, weight: .bold))
+////                        .padding(.vertical, 2)
+//
+//                    ForEach(section.children) { child in
+//                        HStack(spacing: 6) {
+//                            Image(systemName: child.icon)
+//                                .font(.system(size: 13))
+//                            Text(child.name)
+//                                .font(.system(size: 11))
+////                                .lineLimit(1)
+//                        }
+//                        .frame(height: 14)
+////                        .padding(.horizontal, 6)
+//                    }
+//                }
+//            }
+//        }
+//        .navigationTitle("Display")
+//        .listStyle(SidebarListStyle())
+//        .listRowSeparator(.hidden)
+//        .environment(\.defaultMinListRowHeight, 14)
+//        .frame(maxHeight: .infinity)
+//    }
+//}
+
 struct Sidebar2A: View {
     @Binding var selection2: String?
 
@@ -440,7 +474,7 @@ struct Sidebar2A: View {
                     ForEach(section.children) { child in
                         Label {
                             Text(child.name)
-                                .font(.system(size: 11)) // plus petit
+                                .font(.system(size: 12)) // plus petit
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.8)
                         } icon: {

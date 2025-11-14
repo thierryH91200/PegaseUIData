@@ -11,12 +11,16 @@ import Combine
 
 
 struct AccountFactory {
-    static func createAccount(modelContext: ModelContext, name: String, icon: String) -> EntityAccount {
+    static func createAccount(modelContext: ModelContext,
+                              name: String,
+                              icon: String,
+                              folder: EntityFolderAccount) -> EntityAccount {
         
         let account = EntityAccount()
         account.name = name
         account.nameIcon = icon
         account.uuid = UUID()
+        account.folder = folder
         
         print(account.uuid.uuidString)
         
@@ -158,7 +162,8 @@ final class InitManager {
             var account = AccountFactory.createAccount(
                 modelContext: ctx,
                 name: config.0,
-                icon: config.1
+                icon: config.1,
+                folder: folder1
             )
             account = AccountFactory.createOptionAccount(
                 modelContext: ctx,
@@ -176,7 +181,8 @@ final class InitManager {
             var account = AccountFactory.createAccount(
                 modelContext: ctx,
                 name: config.0,
-                icon: config.1
+                icon: config.1,
+                folder: folder2
             )
             account = AccountFactory.createOptionAccount(
                 modelContext: ctx,

@@ -71,6 +71,10 @@ final class AccountFolderManager {
         folderAccount.removeAll()
     }
 
+    func create(name: String, nameImage: String) {
+        
+        
+    }
     
     func getAllData() -> [EntityFolderAccount] {
         
@@ -116,7 +120,8 @@ final class AccountFolderManager {
         var account1 = AccountFactory.createAccount(
             modelContext: modelContext,
             name: String(localized:"Current account1"),
-            icon: "dollarsign.circle")
+            icon: "dollarsign.circle",
+            folder: folder1 )
         account1 = AccountFactory.createOptionAccount(
             modelContext: modelContext,
             account: account1,
@@ -127,7 +132,9 @@ final class AccountFolderManager {
         var account2 = AccountFactory.createAccount(
             modelContext: modelContext,
             name: String(localized:"Current account2"),
-            icon: "eurosign.circle")
+            icon: "eurosign.circle",
+            folder: folder1
+        )
         account2 = AccountFactory.createOptionAccount(
             modelContext: modelContext,
             account: account2,
@@ -144,7 +151,8 @@ final class AccountFolderManager {
         var account3 = AccountFactory.createAccount(
             modelContext: modelContext,
             name: String(localized:"Current account3"),
-            icon: "calendar.circle")
+            icon: "calendar.circle",
+            folder: folder2 )
         account3 = AccountFactory.createOptionAccount(
             modelContext: modelContext,
             account: account3,
@@ -161,5 +169,14 @@ final class AccountFolderManager {
         
         try? modelContext.save()
     }
+    
+    func save () {
+        do {
+            try modelContext?.save()
+        } catch {
+            printTag("Erreur lors de la sauvegarde de l'entité : \(error)")
+        }
+    }
+
 
 }

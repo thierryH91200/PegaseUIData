@@ -214,7 +214,6 @@ struct BankStatementListView: View {
                 lastDeletedID = nil
                 refreshData()
             }
-            
         }
     }
     
@@ -575,21 +574,6 @@ struct PDFDropDelegate: DropDelegate {
     }
 }
 
-//struct StatementDetailView: View {
-//    let statement: EntityBankStatement
-//
-//    var body: some View {
-//        VStack {
-//            if let pdfData = statement.pdfDoc {
-//                PDFKitView(data: pdfData)
-//            } else {
-//                Text("No PDF available")
-//            }
-//        }
-//        .padding()
-//    }
-//}
-
 // PDFKit wrapper for SwiftUI
 struct PDFKitView: NSViewRepresentable {
     let data: Data
@@ -604,7 +588,6 @@ struct PDFKitView: NSViewRepresentable {
         NotificationCenter.default.addObserver(forName: Notification.Name("ZoomOutPDF"), object: nil, queue: .main) { _ in
             pdfView.zoomOut(nil)
         }
-        
         return pdfView
     }
     

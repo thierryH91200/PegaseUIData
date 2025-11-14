@@ -19,6 +19,8 @@ import Combine
     var dateEcheancier: Date = Date().noon
     var isDemo : Bool = false
     var isAccount : Bool = true
+    
+    @Relationship var folder: EntityFolderAccount?
 
     //    @Attribute(.ephemeral) var solde: Double? = 0.0
 
@@ -172,6 +174,17 @@ final class AccountManager {
         return entities
     }
 
+    func delete ( account : EntityAccount) {
+    }
+
+    func save() {
+        do {
+            try modelContext?.save()
+        } catch {
+            print(EnumError.saveFailed)
+        }
+    }
+    
     // Juste pour le debug
     func printAccount(entityAccount : EntityAccount, description : String) {
         let name     = entityAccount.name
@@ -183,14 +196,7 @@ final class AccountManager {
 
         printTag("\(description)       : \(id) \(name) \(idName ?? "") \(idSurname ?? "") \(idNumber ?? "")")
     }
-    
-    func save() {
-        do {
-            try modelContext?.save()
-        } catch {
-            print(EnumError.saveFailed)
-        }
-    }
+
 }
 
 //@MainActor

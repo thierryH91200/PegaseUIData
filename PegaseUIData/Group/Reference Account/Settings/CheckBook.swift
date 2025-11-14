@@ -144,19 +144,20 @@ struct CheckView: View {
             }
             
             // Feuilles modales pour l'ajout/modification
-            .sheet(isPresented: $isEditDialogPresented, onDismiss: {setupDataManager()})
-            {
-                CheckBookFormView(
-                    isPresented: $isEditDialogPresented,
-                    isModeCreate: $isModeCreate,
-                    checkBook: selectedCheckBook)
-            }
             .sheet(isPresented: $isAddDialogPresented , onDismiss: {setupDataManager()})
             {
                 CheckBookFormView(
                     isPresented: $isAddDialogPresented,
                     isModeCreate: $isModeCreate,
                     checkBook: nil)
+            }
+
+            .sheet(isPresented: $isEditDialogPresented, onDismiss: {setupDataManager()})
+            {
+                CheckBookFormView(
+                    isPresented: $isEditDialogPresented,
+                    isModeCreate: $isModeCreate,
+                    checkBook: selectedCheckBook)
             }
             .padding()
             Spacer()
@@ -263,7 +264,7 @@ struct CheckBookFormView: View {
     @State private var prefix: String = ""
     
     var body: some View {
-        VStack(spacing: 0) { // Spacing à 0 pour que les bandeaux soient collés au contenu
+        VStack(spacing: 0) {
             // Bandeau du haut
             Rectangle()
                 .fill(isModeCreate ? Color.blue : Color.green)
@@ -375,12 +376,12 @@ struct CheckBookFormView: View {
         dismiss()
     }
     
-    private func updateCheckBook(_ item: EntityCheckBook) {
-        item.name = name
-        item.nbCheques = nbCheques
-        item.numPremier = numPremier
-        item.numSuivant = numSuivant
-        item.prefix = prefix
-    }
+//    private func updateCheckBook(_ item: EntityCheckBook) {
+//        item.name = name
+//        item.nbCheques = nbCheques
+//        item.numPremier = numPremier
+//        item.numSuivant = numSuivant
+//        item.prefix = prefix
+//    }
 }
 
