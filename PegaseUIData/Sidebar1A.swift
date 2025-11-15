@@ -59,14 +59,6 @@ struct Sidebar1A: View {
     }
 }
 
-// private extension EntityFolderAccount {
-//     var _idForFolder: UUID { self.uuid }
-// }
-
-// private extension EntityAccount {
-//     var _idForAccount: UUID { self.uuid }
-// }
-
 class BalanceManager: ObservableObject {
     @Published var balance: Double = 123.45
 }
@@ -368,7 +360,6 @@ struct Bouton: View {
     private func setupDataManager() {
         
     }
-    
 }
 
 struct AccountFormView: View {
@@ -548,9 +539,14 @@ struct FolderSectionView: View {
                 AccountRow(
                     account: child,
                     isSelected: (selectedAccountID == child.uuid),
-                    onAdd: { selectedAccountID = child.uuid },
-                    onEdit: { },
-                    onDelete: { AccountManager.shared.delete(account: child) }
+                    onAdd: {
+                        print("Add account")
+                        selectedAccountID = child.uuid },
+                    onEdit: {
+                        print("Edit account") },
+                    onDelete: {
+                        print("Remove account")
+                        AccountManager.shared.delete(account: child) }
                 )
                 .tag(child.uuid)
             }
