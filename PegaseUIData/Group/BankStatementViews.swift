@@ -183,7 +183,7 @@ struct BankStatementListView: View {
             .sheet(isPresented: $isAddDialogPresented , onDismiss: {setupDataManager()}) {
                 StatementFormView(statement: nil )
             }
-
+        
             .sheet(isPresented: $isEditDialogPresented , onDismiss: {setupDataManager()}) {
                 StatementFormView(statement: selectedStatement)
             }
@@ -569,7 +569,6 @@ struct PDFDropDelegate: DropDelegate {
                 }
             }
         }
-        
         return true
     }
 }

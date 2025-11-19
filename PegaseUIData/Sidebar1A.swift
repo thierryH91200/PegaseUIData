@@ -12,11 +12,6 @@ struct Sidebar1A: View {
     
     @State var folders: [EntityFolderAccount] = []
     
-    //    @State private var isShowAccountFormView = false
-    //    @State private var isShowGroupFormView = false
-    //    @State private var isModeCreate = false
-    
-    
     @State private var selectedAccountID: UUID?
     @State private var selectedMode = "Check"
     
@@ -100,16 +95,17 @@ struct SectionHeader: View {
 }
 
 struct AccountRow: View {
-    let account: EntityAccount
-    let isSelected: Bool
-    var onAdd: (() -> Void)?
-    var onEdit: (() -> Void)?
-    var onDelete: (() -> Void)?
     
     @Environment(\.colorScheme) private var colorScheme
+
+    let account: EntityAccount?
+    let isSelected: Bool
     
+    @State private var isAddDialogPresented = false
+    @State private var isEditDialogPresented = false
+    @State private var selectedAccount : EntityAccount?
+
     // MARK: - Computed properties optimisées
-    
     private var rowBackground: Color {
         if isSelected {
             return colorScheme == .dark
@@ -127,20 +123,21 @@ struct AccountRow: View {
     }
     
     private var soldeColor: Color {
-        account.solde >= 0 ? .green : .red
+        account?.solde ?? 0.0 >= 0 ? .green : .red
     }
     
     private var identityText: String? {
-        guard let id = account.identity else { return nil }
+        guard let id = account?.identity else { return nil }
         return "\(id.name) \(id.surName)"
     }
     
     private var accountCodeText: String? {
-        account.initAccount?.codeAccount
+        account?.initAccount?.codeAccount
     }
-    
+    @State private var isShowAccountForm = false
+    @State private var isModeCreate = true
+
     // MARK: - Body
-    
     var body: some View {
         HStack {
             icon
@@ -154,12 +151,28 @@ struct AccountRow: View {
         .contextMenu {
             menu
         }
+        .onDelete {
+//            deleteAccount()
+        }
+        .sheet(item: $selectedAccount) { account in
+            AccountFormView(
+                isPresented: .constant(true),
+                isModeCreate: $isModeCreate,
+                account: account
+            )
+        }
+        .sheet(isPresented: $isAddDialogPresented)
+        {
+            AccountFormView(
+                isPresented: $isAddDialogPresented,
+                isModeCreate: $isModeCreate,
+                account: nil)
+        }
     }
     
     // MARK: - Sous-vues
-    
     private var icon: some View {
-        Image(systemName: account.nameIcon)
+        Image(systemName: account?.nameIcon ?? "questionmark.circle")
             .foregroundColor(.white)
             .padding(6)
             .background(iconBackground)
@@ -169,7 +182,7 @@ struct AccountRow: View {
     private var info: some View {
         VStack(alignment: .leading, spacing: 2) {
             
-            Text(account.name)
+            Text(account?.name ?? "")
                 .font(.body)
                 .foregroundColor(isSelected ? .white : .primary)
             
@@ -188,7 +201,7 @@ struct AccountRow: View {
     }
     
     private var solde: some View {
-        Text("\(account.solde, specifier: "%.2f") €")
+        Text("\((account?.solde ?? 0.0), specifier: "%.2f") €")
             .font(.caption)
             .foregroundColor(soldeColor)
             .frame(width: 80, alignment: .trailing)
@@ -196,91 +209,34 @@ struct AccountRow: View {
     
     private var menu: some View {
         Group {
-            Button { onAdd?() } label: {
+            Button {
+                isModeCreate = true
+                selectedAccount = nil
+                DispatchQueue.main.async {
+                    isAddDialogPresented = true
+                }
+            } label: {
                 Label("Add account", systemImage: "arrow.right.circle")
             }
-            
-            Button { onEdit?() } label: {
+
+            Button {
+                isModeCreate = false
+                selectedAccount = account
+                DispatchQueue.main.async {
+                    isEditDialogPresented = true
+                }
+            } label: {
                 Label("Edit account", systemImage: "pencil")
             }
-            
+
             Divider()
-            
-            Button(role: .destructive) { onDelete?() } label: {
+
+            Button(role: .destructive) {  } label: {
                 Label("Remove account", systemImage: "trash")
             }
         }
     }
 }
-
-//struct AccountRow: View {
-//    let account: EntityAccount
-//    var isSelected: Bool
-//    var onAdd: (() -> Void)?
-//    var onEdit: (() -> Void)?
-//    var onDelete: (() -> Void)?
-//    
-//    @Environment(\.colorScheme) var colorScheme
-//    
-//    var body: some View {
-//        HStack {
-//            Image(systemName: account.nameIcon)
-//                .foregroundColor(.white)
-//                .padding(6)
-//                .background(isSelected ? Color.accentColor : Color.gray.opacity(0.3))
-//                .clipShape(Circle())
-//            
-//            VStack(alignment: .leading, spacing: 2) {
-//                Text(String(account.name))
-//                    .font(.body)
-//                    .foregroundColor(isSelected ? .white : .primary)
-//                if let identity = account.identity {
-//                    Text(identity.name + " " + identity.surName)
-//                        .font(.caption)
-//                        .foregroundColor(isSelected ? .white : .primary)
-//                }
-//                if let initAcc = account.initAccount {
-//                    Text(initAcc.codeAccount)
-//                        .font(.caption2)
-//                        .foregroundColor(isSelected ? .white : .primary)
-//                }
-//            }
-//            Spacer()
-//            Text("\(account.solde, specifier: "%.2f") €")
-//                .font(.caption)
-//                .foregroundColor(account.solde >= 0 ? .green : .red)
-//                .frame(width: 80, alignment: .trailing)
-//        }
-//        .padding(8)
-//        .background(
-//            isSelected
-//            ? (colorScheme == .dark ? Color.accentColor.opacity(0.5) : Color.accentColor.opacity(0.6))
-//            : (colorScheme == .dark ? Color.white.opacity(0.05) : Color.clear)
-//        )
-//        .cornerRadius(6)
-//        .contextMenu {
-//            Button {
-//                onAdd?()
-//            } label: {
-//                Label("Add account", systemImage: "arrow.right.circle")
-//            }
-//            
-//            Button {
-//                onEdit?()
-//            } label: {
-//                Label("Edit account", systemImage: "pencil")
-//            }
-//            Divider()
-//            
-//            Button(role: .destructive) {
-//                onDelete?()
-//            } label: {
-//                Label("Remove account", systemImage: "trash")
-//            }
-//        }
-//        
-//    }
-//}
 
 struct Bouton: View {
     
@@ -362,173 +318,6 @@ struct Bouton: View {
     }
 }
 
-struct AccountFormView: View {
-    
-    @Environment(\.dismiss) private var dismiss
-    
-    @Binding var isPresented: Bool
-    @Binding var isModeCreate: Bool
-    
-    @State var name: String = ""
-    @State var surName: String = ""
-    @State var libelle: String = ""
-    @State var soldeInit: String = ""
-    @State var numero: String = ""
-    
-    let account: EntityAccount?
-    
-    var body: some View {
-        Text("AccountFormView")
-        Rectangle()
-            .fill(isModeCreate ? Color.blue : Color.green)
-            .frame(height: 10)
-        
-        ScrollView {
-            VStack(spacing: 20) {
-                HStack(spacing: 20) {
-                    Text(String(localized:"Name", table: "Settings"))
-                        .frame(width: 100, alignment: .leading)
-                    TextField("", text: $name)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                }
-                HStack {
-                    Text(String(localized:"Prénom", table: "Settings"))
-                        .frame(width: 100, alignment: .leading)
-                    TextField("", text: $surName)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                }
-                HStack {
-                    Text(String(localized:"Libellé", table: "Settings"))
-                        .frame(width: 100, alignment: .leading)
-                    TextField("", text: $libelle)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                }
-                HStack {
-                    Text(String(localized:"Solde initial", table: "Settings"))
-                        .frame(width: 100, alignment: .leading)
-                    TextField("", text: $soldeInit)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                }
-                HStack {
-                    Text(String(localized:"Numéro compte", table: "Settings"))
-                        .frame(width: 100, alignment: .leading)
-                    TextField("", text: $numero)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                }
-            }
-            .padding(.horizontal, 20)
-            .padding(.top, 20)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        
-        .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button(String(localized:"Cancel", table: "Settings")) {
-                    isPresented = false
-                    dismiss()
-                }
-            }
-            ToolbarItem(placement: .confirmationAction) {
-                Button(String(localized:"Save", table: "Settings")) {
-                    isPresented = false
-                    //                        save()
-                    dismiss()
-                }
-                .disabled(name.isEmpty )
-                .opacity( name.isEmpty ? 0.6 : 1)
-            }
-        }
-        .frame(width: 400)
-        
-        // Bandeau du bas
-        Rectangle()
-            .fill(isModeCreate ? Color.blue : Color.green)
-            .frame(height: 10)
-    }
-}
-
-struct GroupAccountFormView: View {
-    
-    @Environment(\.modelContext) private var modelContext
-    @Environment(\.dismiss) private var dismiss
-    
-    @Binding var isPresented: Bool
-    @Binding var isModeCreate: Bool
-    
-    let accountFolder: EntityFolderAccount?
-    
-    @State var name: String = ""
-    @State var nameImage: String = ""
-    
-    var body: some View {
-        Text("GroupAccountFormView")
-        Rectangle()
-            .fill(isModeCreate ? Color.blue : Color.green)
-            .frame(height: 10)
-        
-        ScrollView {
-            VStack(spacing: 20) {
-                HStack(spacing: 20) {
-                    Text(String(localized:"Name", table: "Settings"))
-                        .frame(width: 100, alignment: .leading)
-                    TextField("", text: $name)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                }
-                HStack(spacing: 20) {
-                    Text(String(localized:"Name Image", table: "Settings"))
-                        .frame(width: 100, alignment: .leading)
-                    TextField("", text: $nameImage)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                }
-                
-            }
-            
-            .padding(.horizontal, 20)
-            .padding(.top, 20)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button(String(localized:"Cancel", table: "Settings")) {
-                    isPresented = false
-                    dismiss()
-                }
-            }
-            ToolbarItem(placement: .confirmationAction) {
-                Button(String(localized:"Save", table: "Settings")) {
-                    isPresented = false
-                    save()
-                    dismiss()
-                }
-                .disabled(name.isEmpty )
-                .opacity( name.isEmpty ? 0.6 : 1)
-            }
-        }
-        .frame(width: 400)
-        
-        // Bandeau du bas
-        Rectangle()
-            .fill(isModeCreate ? Color.blue : Color.green)
-            .frame(height: 10)
-    }
-    
-    private func save() {
-        if isModeCreate { // Création
-            AccountFolderManager.shared.create(
-                name: name,
-                nameImage: nameImage)
-        } else { // Modification
-            if let existingItem = accountFolder {
-                existingItem.name = name
-                existingItem.nameImage = nameImage
-                AccountFolderManager.shared.save()
-            }
-        }
-        isPresented = false
-        dismiss()
-    }
-}
-
 struct FolderSectionView: View {
     let folder: EntityFolderAccount
     @Binding var selectedAccountID: UUID?
@@ -538,18 +327,11 @@ struct FolderSectionView: View {
             ForEach(folder.childrenSorted) { child in
                 AccountRow(
                     account: child,
-                    isSelected: (selectedAccountID == child.uuid),
-                    onAdd: {
-                        print("Add account")
-                        selectedAccountID = child.uuid },
-                    onEdit: {
-                        print("Edit account") },
-                    onDelete: {
-                        print("Remove account")
-                        AccountManager.shared.delete(account: child) }
+                    isSelected: (selectedAccountID == child.uuid)
                 )
                 .tag(child.uuid)
             }
         }
     }
 }
+

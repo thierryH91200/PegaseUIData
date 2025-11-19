@@ -1,11 +1,12 @@
 {
   "images" : [
     {
-      "filename" : "035-bank.png",
+      "filename" : "icons8-paypal-100.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "icons8-paypal-101.png",
       "idiom" : "universal",
       "scale" : "2x"
     },

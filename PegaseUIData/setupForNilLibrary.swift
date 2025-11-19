@@ -21,9 +21,6 @@ struct AccountFactory {
         account.nameIcon = icon
         account.uuid = UUID()
         account.folder = folder
-        
-        print(account.uuid.uuidString)
-        
         modelContext.insert(account)
         save()
         return account
@@ -135,10 +132,12 @@ final class InitManager {
         }
         
         // Création des dossiers (folders)
-        let folder1 = AccountFactory.createHeader(modelContext: ctx,
-                                                  name: String(localized :"Bank Account",table : "Account"))
-        let folder2 = AccountFactory.createHeader(modelContext: ctx,
-                                                  name: String(localized :"Save",table : "Account"))
+        let folder1 = AccountFactory.createHeader(
+            modelContext: ctx,
+            name: String(localized :"Bank Account",table : "Account"))
+        let folder2 = AccountFactory.createHeader(
+            modelContext: ctx,
+            name: String(localized :"Save",table : "Account"))
         
         let typeAccounts : [String] = [
             String(localized :"Current account1",table : "Account"),

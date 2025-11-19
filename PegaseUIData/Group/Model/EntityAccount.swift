@@ -94,7 +94,20 @@ extension EntityAccount {
     }
 }
 
-final class AccountManager {
+
+protocol AccountManaging {
+    func create(nameAccount: String,
+                nameImage: String,
+                idName: String,
+                idPrenom: String,
+                numAccount: String ) -> EntityAccount?
+    func getAccount(uuid: UUID) -> EntityAccount?
+    func getAllData() -> [EntityAccount]
+    func delete ( account : EntityAccount)
+    func save()
+}
+
+final class AccountManager: AccountManaging {
       
     static let shared = AccountManager()
     var entities = [EntityAccount]()
