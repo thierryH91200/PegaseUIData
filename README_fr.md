@@ -2,6 +2,152 @@
 
 ![Swift](https://img.shields.io/badge/Swift-5.7-orange) ![macOS](https://img.shields.io/badge/macOS-14-blue) ![License](https://img.shields.io/badge/License-MIT-green)
 
+
+ PegaseUIData
+
+🚀 Gestion financière personnelle pour macOS — Simple. Locale. Moderne.
+<p align="center">
+  <img src="Images/banner.png" width="80%" />
+</p>
+
+PegaseUIData est une application macOS développée en SwiftUI et SwiftData.
+Elle permet de gérer facilement ses comptes bancaires, ses opérations, ses dépenses et ses rappels financiers.
+L’application est gratuite, locale, sans abonnement, et ne collecte aucune donnée.
+
+
+✨ Fonctionnalités clés
+
+🧾 Comptes & Dossiers
+<p align="center">
+  <img src="Images/accounts.png" width="70%" />
+</p>
+
+
+    •    Organisation des comptes par dossiers
+    •    Icônes personnalisables pour chaque compte
+    •    Vue compacte optimisée pour macOS
+    •    Création / édition / suppression
+
+
+🎨 Sélecteur d’icônes
+
+<p align="center">
+  <img src="Images/icon_picker.png" width="60%" />
+</p>
+
+
+    •    Grille moderne avec prévisualisation
+    •    Icônes intégrés (banque, PayPal, portefeuille, etc.)
+    •    Interaction simple et fluide
+
+⸻
+
+💰 Suivi des opérations
+<p align="center">
+  <img src="Images/operations.png" width="70%" />
+</p>
+    •    Dépenses, revenus, virements
+    •    Catégorisation
+    •    Calcul automatique du solde
+    •    Filtrage par période
+
+📊 Graphiques & Statistiques
+<p align="center">
+  <img src="Images/charts.png" width="75%" />
+</p>
+
+    •    PieChart moderne
+    •    Graphique de solde dans le temps
+    •    Analyse des catégories
+
+⏰ Scheduler / Rappels
+<p align="center">
+  <img src="Images/scheduler.png" width="75%" />
+</p>
+
+
+    •    Rappels programmés et opérations récurrentes
+    •    Gestion complète avec SwiftData
+    •    Undo / Redo intégré
+    •    Tableau personnalisé pour les échéances
+
+
+🛠️ Technologies
+<p align="center">
+  <img src="Images/tech.png" width="50%" />
+</p>
+
+
+    •    SwiftUI
+    •    SwiftData
+    •    Architecture modulaire
+    •    macOS 14+
+    •    Animations légères et design fluide
+
+⸻
+
+🌍 Traductions
+
+PegaseUIData est en cours de traduction dans 5 langues.
+Contributeurs bienvenus pour améliorer les langues existantes.
+
+⸻
+
+🎯 Objectifs
+
+Créer une application de gestion financière :
+    •    📌 100% gratuite
+    •    📌 Sans abonnement
+    •    📌 Données locales uniquement
+    •    📌 Simple, rapide et élégante
+    •    📌 Pour tous les utilisateurs macOS
+
+⸻
+
+🤝 Contribuer
+
+Toutes les contributions sont bienvenues :
+    •    Améliorations UI/UX
+    •    Corrections de bugs
+    •    Traductions
+    •    Tests
+    •    Nouvelles idées
+    •    Documentation
+
+⸻
+
+🗂️ Organisation des images
+
+PegaseUIData/
+ ├── README.md
+ └── Images/
+      ├── banner.png
+      ├── icon.png
+      ├── accounts.png
+      ├── icon_picker.png
+      ├── operations.png
+      ├── charts.png
+      ├── scheduler.png
+      └── tech.png
+
+
+
+
+
+
+Contribution
+
+Sont bienvenues :
+    •    Corrections de bugs
+    •    Traductions
+    •    Améliorations UX/UI
+    •    Tests
+    •    Nouvelles idées
+    •    Amélioration de la documentation
+
+⸻
+
+
 le programme est complet
 il ne reste plus qu'à corriger les bugs
 

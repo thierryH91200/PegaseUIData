@@ -172,11 +172,12 @@ struct AccountRow: View {
     
     // MARK: - Sous-vues
     private var icon: some View {
-        Image(systemName: account?.nameIcon ?? "questionmark.circle")
-            .foregroundColor(.white)
-            .padding(6)
-            .background(iconBackground)
-            .clipShape(Circle())
+        Image(account?.nameIcon ?? "questionmark.circle")
+//        Image(systemName: account?.nameIcon ?? "questionmark.circle")
+            .resizable()
+            .scaledToFit()
+            .frame(width: 50, height: 50)
+            .padding(0)
     }
     
     private var info: some View {

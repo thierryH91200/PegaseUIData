@@ -34,7 +34,7 @@ struct AccountFormView: View {
     @State var codeAccount: String = ""
     
     @State private var showIconPicker = false
-    @State private var selectedIconName: String? = nil
+    @State private var selectedIconName: String = ""
 
     let icons: [IconItem] = [
         IconItem(title: "Bank",        imageName: "icons8-museum-80"),
@@ -90,20 +90,22 @@ struct AccountFormView: View {
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                 }
                 HStack {
-                    Text(String(localized:"Name Icon : \(selectedIconName ?? "none")", table: "Setting"))
+                    Text(String(localized:"Name Icon", table: "Settings"))
                         .frame(width: 100, alignment: .leading)
+                    TextField("", text: $selectedIconName)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
 
-                    if let name = selectedIconName {
-                        Image(name)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 80, height: 80)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
-                            )
-                    }
+                    let name = selectedIconName
+                    Image(name)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 80, height: 80)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+                        )
+                    
                 }
 
             }
@@ -162,7 +164,7 @@ struct AccountFormView: View {
         } else { // Modification
             if let existingItem = account {
                 existingItem.name = nameAccount
-                existingItem.nameIcon = nameIcon
+                existingItem.nameIcon = selectedIconName ?? ""
                 existingItem.identity?.name = name
                 existingItem.identity?.surName = surName
                 existingItem.initAccount?.codeAccount = codeAccount
@@ -177,7 +179,7 @@ struct AccountFormView: View {
 
 struct IconPickerGrid: View {
     let icons: [IconItem]
-    @Binding var selectedImage: String?
+    @Binding var selectedImage: String
     var onSelect: ((String) -> Void)? = nil
     @Environment(\.dismiss) private var dismiss
 

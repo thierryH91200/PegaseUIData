@@ -98,8 +98,8 @@ final class InitManager {
     static let shared = InitManager()
         
     private enum DefaultIcons {
-        static let currentAccount = "building.columns"
-        static let savings = "banknote"
+        static let currentAccount = "museum"
+        static let savings = "money-box"
         static let creditCard = "creditcard"
     }
     
