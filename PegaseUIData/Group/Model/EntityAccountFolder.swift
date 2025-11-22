@@ -27,9 +27,9 @@ final class EntityFolderAccount: Identifiable  {
     public init() {
     }
     
-    public init(name: String, isRoot: Bool, children: [EntityAccount]) {
+    public init(name: String, nameImage: String, children: [EntityAccount]) {
         self.name = name
-//        self.isRoot = isRoot
+        self.nameImage = nameImage
         self.children = children
     }
 }
@@ -55,8 +55,18 @@ extension EntityFolderAccount {
     }
 }
 
+protocol AccountFoldeManaging {
+    func reset()
+    func create(name: String, nameImage: String)
+    func getAllData() -> [EntityFolderAccount]
+    func getRoot() -> [EntityFolderAccount]
+    func findAccount(by id: UUID) -> EntityAccount?
+    func findFolder(containing account: EntityAccount) -> EntityFolderAccount?
+    @MainActor func preloadDataIfNeeded()
+    func saveIfNeeded()
+}
 
-final class AccountFolderManager {
+final class AccountFolderManager: AccountFoldeManaging {
     
     static let shared = AccountFolderManager()
     @Published var folderAccount = [EntityFolderAccount]()
@@ -72,8 +82,12 @@ final class AccountFolderManager {
     }
 
     func create(name: String, nameImage: String) {
+        let entity = EntityFolderAccount()
+        entity.name = name
+        entity.nameImage = nameImage
         
-        
+        modelContext?.insert(entity)
+        saveIfNeeded()
     }
     
     func getAllData() -> [EntityFolderAccount] {
@@ -94,13 +108,13 @@ final class AccountFolderManager {
         return folderAccount
     }
     
-    func getRoot(modelContext: ModelContext) -> [EntityFolderAccount] {
+    func getRoot() -> [EntityFolderAccount] {
         // NOTE: Current logic filters non-root items; keep this if you rely on it for preload decisions.
         let request = FetchDescriptor<EntityFolderAccount>(
             predicate: #Predicate { $0.isRoot == false }
         )
         do {
-            let entities = try modelContext.fetch(request)
+            let entities = try modelContext?.fetch(request) ?? []
             return entities
         } catch {
             printTag("Erreur lors du fetch des dossiers (getRoot): \(error.localizedDescription)")
@@ -108,8 +122,30 @@ final class AccountFolderManager {
         }
     }
     
-    @MainActor func preloadDataIfNeeded(modelContext: ModelContext) {
+    func findAccount(by id: UUID) -> EntityAccount? {
+        let folders = AccountFolderManager.shared.getAllData()
+        for folder in folders {
+            if let match = folder.children.first(where: { $0.uuid == id }) {
+                return match
+            }
+        }
+        return nil
+    }
+    
+    func findFolder(containing account: EntityAccount) -> EntityFolderAccount? {
+        let folders = AccountFolderManager.shared.getAllData()
+        for folder in folders {
+            if folder.children.contains(where: { $0.uuid == account.uuid }) {
+                return folder
+            }
+        }
+        return nil
+    }
+   
+    @MainActor func preloadDataIfNeeded() {
         // Vérifie si des données existent déjà
+        guard let modelContext = modelContext else { return }
+        
         let existingFolders = getAllData()
         guard existingFolders.isEmpty == true else { return }
         
@@ -170,13 +206,13 @@ final class AccountFolderManager {
         try? modelContext.save()
     }
     
-    func save () {
+    func saveIfNeeded() {
         do {
             try modelContext?.save()
         } catch {
-            printTag("Erreur lors de la sauvegarde de l'entité : \(error)")
+            #if DEBUG
+            print("Save failed: \(error)")
+            #endif
         }
     }
-
-
 }

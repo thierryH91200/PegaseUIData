@@ -30,6 +30,10 @@ struct AboutView: View {
             Text("© 2025 " + appName)
             Text("Manage your finance with ease!")
                 .multilineTextAlignment(.center)
+            Text("Optimised for Apple Silicon")
+                .multilineTextAlignment(.center)
+            Text("Icons by https://icones8.fr/icons/set/finance")
+                .multilineTextAlignment(.center)
         }
         .padding(8) // padding réduit
         .frame(minWidth: 72, minHeight: 72)

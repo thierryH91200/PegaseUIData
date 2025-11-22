@@ -117,7 +117,7 @@ final class InitManager {
             return
         }
         // Déterminer si des dossiers existent déjà (critère: isRoot == false)
-        let entities = AccountFolderManager.shared.getRoot(modelContext: ctx)
+        let entities = AccountFolderManager.shared.getRoot()
         guard entities.isEmpty == true else {
             // Déjà initialisé
             return

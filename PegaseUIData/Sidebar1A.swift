@@ -2,18 +2,19 @@ import SwiftUI
 import SwiftData
 import AppKit
 import Combine
+import UniformTypeIdentifiers
 
 //extension EntityFolderAccount: Identifiable {}
 //extension EntityAccount: Identifiable {}
 
 struct Sidebar1A: View {
     
-    @Environment(\.modelContext) private var modelContext
+//    @Environment(\.modelContext) private var modelContext
     
     @State var folders: [EntityFolderAccount] = []
     
     @State private var selectedAccountID: UUID?
-    @State private var selectedMode = "Check"
+    @State private var selectedMode = String(localized: "Check")
     
     var body: some View {
         
@@ -22,6 +23,7 @@ struct Sidebar1A: View {
                 FolderSectionView(
                     folder: folder,
                     selectedAccountID: $selectedAccountID
+//                    modelContext: modelContext
                 )
             }
         }
@@ -39,7 +41,7 @@ struct Sidebar1A: View {
             .onAppear {
                 Task {
                     folders = AccountFolderManager.shared.getAllData()
-                    AccountFolderManager.shared.preloadDataIfNeeded(modelContext: modelContext)
+                    AccountFolderManager.shared.preloadDataIfNeeded()
                     await MainActor.run {
                         if selectedAccountID == nil {
                             if let firstFolder = folders.first, let firstAccount = firstFolder.children.first {
@@ -173,7 +175,6 @@ struct AccountRow: View {
     // MARK: - Sous-vues
     private var icon: some View {
         Image(account?.nameIcon ?? "questionmark.circle")
-//        Image(systemName: account?.nameIcon ?? "questionmark.circle")
             .resizable()
             .scaledToFit()
             .frame(width: 50, height: 50)
@@ -319,9 +320,21 @@ struct Bouton: View {
     }
 }
 
+// MARK: - Helpers for drag & drop used in Sidebar1A
 struct FolderSectionView: View {
+    // Wrapper to make UUID transferable for drag and drop
+    struct AccountIDPayload: Transferable, Identifiable, Hashable, Codable {
+        var id: UUID { uuid }
+        let uuid: UUID
+
+        static var transferRepresentation: some TransferRepresentation {
+            CodableRepresentation(contentType: UTType.data)
+        }
+    }
+    
     let folder: EntityFolderAccount
     @Binding var selectedAccountID: UUID?
+//    let modelContext: ModelContext
 
     var body: some View {
         Section(header: SectionHeader(section: folder)) {
@@ -331,8 +344,41 @@ struct FolderSectionView: View {
                     isSelected: (selectedAccountID == child.uuid)
                 )
                 .tag(child.uuid)
+                .draggable(AccountIDPayload(uuid: child.uuid))
             }
         }
+        .dropDestination(for: AccountIDPayload.self) { items, location in
+            for payload in items {
+                moveAccount(with: payload.uuid, to: folder)
+            }
+            return true
+        } isTargeted: { isTargeted in
+            // Optionally handle highlighting when hovering over the section
+        }
+    }
+    
+    private func moveAccount(with id: UUID, to destinationFolder: EntityFolderAccount) {
+        // 1) Find the account by ID
+        guard let account = AccountFolderManager.shared.findAccount(by: id) else { return }
+
+        // If already in the destination folder, nothing to do
+        if let currentFolder = AccountFolderManager.shared.findFolder(containing: account), currentFolder == destinationFolder {
+            return
+        }
+
+        // 2) Remove from old folder
+        if let oldFolder = AccountFolderManager.shared.findFolder(containing: account) {
+            oldFolder.children.removeAll { $0.uuid == account.uuid }
+            // Re-normalize positions in the old folder if you use a 'position' field
+            // Removed as requested
+        }
+
+        // 3) Append to destination folder and assign position at end
+        destinationFolder.children.append(account)
+        // Removed position assignment as requested
+
+        // 4) Persist if needed
+        AccountFolderManager.shared.saveIfNeeded()
     }
 }
 

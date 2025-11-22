@@ -37,15 +37,15 @@ struct AccountFormView: View {
     @State private var selectedIconName: String = ""
 
     let icons: [IconItem] = [
-        IconItem(title: "Bank",        imageName: "icons8-museum-80"),
-        IconItem(title: "Safe",        imageName: "icons8-money-box-80"),
-        IconItem(title: "Money",       imageName: "icons8-money-100"),
-        IconItem(title: "Expensive",   imageName: "icons8-expensive-100"),
-        IconItem(title: "Purse",       imageName: "icons8-purse-100"),
-        IconItem(title: "Wallet",      imageName: "icons8-wallet-80"),
-        IconItem(title: "Safe",        imageName: "icons8-safe-100"),
+        IconItem(title: "Bank",        imageName: "museum"),
+        IconItem(title: "Safe",        imageName: "money"),
+        IconItem(title: "Money",       imageName: "money"),
+        IconItem(title: "Expensive",   imageName: "expensive"),
+        IconItem(title: "Purse",       imageName: "purse"),
+        IconItem(title: "Wallet",      imageName: "wallet"),
+        IconItem(title: "Safe",        imageName: "safe"),
         IconItem(title: "Card",        imageName: "discount"),
-        IconItem(title: "PayPal",      imageName: "icons8-paypal-100"),
+        IconItem(title: "PayPal",      imageName: "paypal"),
     ]
 
        
@@ -312,7 +312,7 @@ struct GroupAccountFormView: View {
             if let existingItem = accountFolder {
                 existingItem.name = name
                 existingItem.nameImage = nameImage
-                AccountFolderManager.shared.save()
+                AccountFolderManager.shared.saveIfNeeded()
             }
         }
         isPresented = false
