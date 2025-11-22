@@ -164,7 +164,7 @@ struct AccountFormView: View {
         } else { // Modification
             if let existingItem = account {
                 existingItem.name = nameAccount
-                existingItem.nameIcon = selectedIconName ?? ""
+                existingItem.nameIcon = selectedIconName
                 existingItem.identity?.name = name
                 existingItem.identity?.surName = surName
                 existingItem.initAccount?.codeAccount = codeAccount

@@ -21,8 +21,12 @@ final class EntityFolderAccount: Identifiable  {
     @Attribute(.unique) var uuid: UUID = UUID()
     public var id: UUID { uuid }
     
-//    @Relationship(deleteRule: .cascade, inverse: \EntityAccount.folder)
-    var children: [EntityAccount] = []
+//    @Relationship(deleteRule: .cascade, inverse: \EntityPaymentMode.account)
+//    var paymentMode: [EntityPaymentMode]?
+//
+    
+    @Relationship(deleteRule: .cascade, inverse: \EntityAccount.folder)
+    var children: [EntityAccount]?
     
     public init() {
     }
@@ -34,11 +38,6 @@ final class EntityFolderAccount: Identifiable  {
     }
 }
 
-extension EntityFolderAccount {
-    var childrenSorted: [EntityAccount] {
-        children.sorted { $0.name < $1.name }
-    }
-}
 
 extension EntityFolderAccount {
     func addAccounts(_ accounts: [EntityAccount]) {
@@ -48,10 +47,10 @@ extension EntityFolderAccount {
     }
     
     func addChild(_ child: EntityAccount) {
-        if children.isEmpty == true {
+        if children?.isEmpty == true {
             children = []
         }
-        children.append(child)
+        children?.append(child)
     }
 }
 
@@ -123,19 +122,17 @@ final class AccountFolderManager: AccountFoldeManaging {
     }
     
     func findAccount(by id: UUID) -> EntityAccount? {
-        let folders = AccountFolderManager.shared.getAllData()
-        for folder in folders {
-            if let match = folder.children.first(where: { $0.uuid == id }) {
-                return match
+        for folder in folderAccount {
+            if let child = folder.children?.first(where: { $0.uuid == id }) {
+                return child
             }
         }
         return nil
     }
     
     func findFolder(containing account: EntityAccount) -> EntityFolderAccount? {
-        let folders = AccountFolderManager.shared.getAllData()
-        for folder in folders {
-            if folder.children.contains(where: { $0.uuid == account.uuid }) {
+        for folder in folderAccount {
+            if folder.children?.contains(where: { $0.uuid == account.uuid }) == true {
                 return folder
             }
         }

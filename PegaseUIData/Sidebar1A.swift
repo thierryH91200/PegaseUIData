@@ -22,8 +22,10 @@ struct Sidebar1A: View {
             ForEach(folders) { folder in
                 FolderSectionView(
                     folder: folder,
-                    selectedAccountID: $selectedAccountID
-//                    modelContext: modelContext
+                    selectedAccountID: $selectedAccountID,
+                    onMoved: {
+                        folders = AccountFolderManager.shared.getAllData()
+                    }
                 )
             }
         }
@@ -44,7 +46,7 @@ struct Sidebar1A: View {
                     AccountFolderManager.shared.preloadDataIfNeeded()
                     await MainActor.run {
                         if selectedAccountID == nil {
-                            if let firstFolder = folders.first, let firstAccount = firstFolder.children.first {
+                            if let firstFolder = folders.first, let firstAccount = firstFolder.children?.first {
                                 selectedAccountID = firstAccount.uuid
                                 let firstModeName: String = firstAccount.paymentMode?.first?.name ?? ""
                                 selectedMode = firstModeName
@@ -70,7 +72,7 @@ struct SectionHeader: View {
     
     var body: some View {
         
-        let count: Int = section.children.count
+        let count: Int = section.children?.count ?? 0
         
         HStack {
             Image(systemName: section.nameImage)
@@ -90,7 +92,7 @@ struct SectionHeader: View {
                 .frame(width: 80, alignment: .trailing) // Aligne à droite avec une largeur fixe
         }
         .onAppear(){
-            balance = section.children.reduce(0) { $0 + $1.solde }
+            balance = section.children?.reduce(0) { $0 + $1.solde } ?? 0.0
         }
         .padding(.bottom, 5)
     }
@@ -329,16 +331,17 @@ struct FolderSectionView: View {
 
         static var transferRepresentation: some TransferRepresentation {
             CodableRepresentation(contentType: UTType.data)
+//            CodableRepresentation(contentType: .init(exportedAs: "com.pegase.account-id"))
         }
     }
     
     let folder: EntityFolderAccount
     @Binding var selectedAccountID: UUID?
-//    let modelContext: ModelContext
+    var onMoved: () -> Void = {}
 
     var body: some View {
         Section(header: SectionHeader(section: folder)) {
-            ForEach(folder.childrenSorted) { child in
+            ForEach(folder.children!) { child in
                 AccountRow(
                     account: child,
                     isSelected: (selectedAccountID == child.uuid)
@@ -368,17 +371,17 @@ struct FolderSectionView: View {
 
         // 2) Remove from old folder
         if let oldFolder = AccountFolderManager.shared.findFolder(containing: account) {
-            oldFolder.children.removeAll { $0.uuid == account.uuid }
+            oldFolder.children?.removeAll { $0.uuid == account.uuid }
             // Re-normalize positions in the old folder if you use a 'position' field
             // Removed as requested
         }
 
         // 3) Append to destination folder and assign position at end
-        destinationFolder.children.append(account)
+        destinationFolder.children?.append(account)
         // Removed position assignment as requested
 
         // 4) Persist if needed
         AccountFolderManager.shared.saveIfNeeded()
+        onMoved()
     }
 }
-
